@@ -42,7 +42,7 @@ class ScreenObjectManager:
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
 
-    def registerObject(self, obj: 'visual.objects.IVisualElement', key) -> str: # noqa: F821
+    def registerVisual(self, obj: 'visual.objects.IVisualElement', key) -> str: # noqa: F821
         assert key not in self.objects, f"Tried to register visual element to screen with key that is already in use: {key}"
         self.objects[key] = obj
         # It is assumed the z-value of an item will note change as time progresses,
@@ -55,12 +55,19 @@ class ScreenObjectManager:
             self.sorting_order.append(key)
         return key
 
-    def unregisterObject(self, key) -> 'visual.objects.IVisualElement': # noqa: F821
+    def unregisterVisual(self, key) -> 'visual.objects.IVisualElement': # noqa: F821
         obj = self.objects[key]
         del self.objects[key]
         # NOTE: We could speed this up with a binary search, possible performance gain with many objects.
         self.sorting_order.remove(key)
         return obj
+
+    def registerObject(self, obj: 'objects.base.BaseObject', key) -> str: # noqa: F821
+        if obj.visual is not None:
+            self.registerVisual(obj.visual, key)
+        for i, child in enumerate(obj.children):
+            new_key = key + str(child.__class__.__name__) + str(i)
+            self.registerObject(child, new_key)
 
     def applyToScreen(self):
         self.screen.fill(self.background_color)

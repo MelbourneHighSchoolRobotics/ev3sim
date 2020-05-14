@@ -138,3 +138,14 @@ class Circle(Colorable):
         if self.stroke:
             # Stroke width is calculated based on screen width, I can't think of something cleaner than this.
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width))
+
+def visualFactory(**options):
+    if 'name' not in options:
+        raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
+    for klass in (Rectangle, Circle):
+        if options['name'] == klass.__name__:
+            r = klass()
+            r.init_from_kwargs(**options)
+            return r
+    name = options['name']
+    raise ValueError(f"Unknown visual element, {name}")
