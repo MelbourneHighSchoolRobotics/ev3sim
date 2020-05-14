@@ -13,18 +13,21 @@ class ScreenObjectManager:
 
     _background_color: Tuple[int]
 
-    objects: Dict[str, 'IVisualElement']
+    objects: Dict[str, 'visual.objects.IVisualElement'] # noqa: F821
     sorting_order: List[str]
 
     def __init__(self, **kwargs):
         ScreenObjectManager.instance = self
         self.objects = {}
         self.sorting_order = []
-        self.init_from_kwargs(**kwargs)
+        self.initFromKwargs(**kwargs)
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self.screen_width = kwargs.get('screen_width', 640)
         self.screen_height = kwargs.get('screen_height', 480)
+        # NOTE: TEMPORARY - this would describe the dimensions of the simulated map vs the screen dimensions.
+        self.map_width = self.screen_width / 3
+        self.map_height = self.screen_height / 3
         self.background_color = kwargs.get('background_color', '#000000')
 
     @property
@@ -38,11 +41,11 @@ class ScreenObjectManager:
         else:
             self._background_color = value
 
-    def start_screen(self):
+    def startScreen(self):
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
 
-    def registerObject(self, obj: 'IVisualElement', key) -> str:
+    def registerVisual(self, obj: 'visual.objects.IVisualElement', key) -> str: # noqa: F821
         assert key not in self.objects, f"Tried to register visual element to screen with key that is already in use: {key}"
         self.objects[key] = obj
         # It is assumed the z-value of an item will note change as time progresses,
@@ -55,16 +58,29 @@ class ScreenObjectManager:
             self.sorting_order.append(key)
         return key
 
-    def unregisterObject(self, key) -> 'IVisualElement':
+    def unregisterVisual(self, key) -> 'visual.objects.IVisualElement': # noqa: F821
         obj = self.objects[key]
         del self.objects[key]
         # NOTE: We could speed this up with a binary search, possible performance gain with many objects.
         self.sorting_order.remove(key)
         return obj
 
+    def registerObject(self, obj: 'objects.base.BaseObject', key) -> str: # noqa: F821
+        if obj.visual is not None:
+            self.registerVisual(obj.visual, key)
+        for i, child in enumerate(obj.children):
+            new_key = key + str(child.__class__.__name__) + str(i)
+            self.registerObject(child, new_key)
+
     def applyToScreen(self):
         self.screen.fill(self.background_color)
         for key in self.sorting_order:
-            self.objects[key].apply_to_screen()
+            self.objects[key].applyToScreen()
         pygame.display.update()
 
+    def checkForClose(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                import sys
+                sys.exit()
