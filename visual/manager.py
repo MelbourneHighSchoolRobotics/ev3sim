@@ -68,3 +68,9 @@ class ScreenObjectManager:
             self.objects[key].apply_to_screen()
         pygame.display.update()
 
+    def checkForClose(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                import sys
+                sys.exit()
