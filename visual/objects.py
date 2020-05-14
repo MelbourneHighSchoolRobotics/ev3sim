@@ -12,7 +12,7 @@ class IVisualElement:
     # By convention, please let this position be the **centre** of your object.
     _position: np.ndarray
     # Rotation of a visual element is float, which should in theory range from 0 to 2pi, but should still work outside of those bounds.
-    rotation: float
+    _rotation: float
 
     def __init__(self, **kwargs):
         self.init_from_kwargs(**kwargs)
@@ -25,15 +25,28 @@ class IVisualElement:
     def position(self) -> np.ndarray:
         return self._position
 
+    @property
+    def rotation(self) -> float:
+        return self._rotation
+
     @position.setter
     def position(self, value):
         if not isinstance(value, np.ndarray):
             self._position = np.array(value)
         else:
             self._position = value
+        self.calculate_points()
+
+    @rotation.setter
+    def rotation(self, value):
+        self._rotation = value
+        self.calculate_points()
 
     def apply_to_screen(self):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `apply_to_screen`")
+
+    def calculate_points(self):
+        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculate_points`")
 
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
@@ -75,12 +88,16 @@ class Rectangle(Colorable):
     height: float
 
     def init_from_kwargs(self, **kwargs):
-        super().init_from_kwargs(**kwargs)
         self.width = kwargs.get('width', 0.5)
         self.height = kwargs.get('height', 0.5)
         self.points = [None]*4
+        super().init_from_kwargs(**kwargs)
 
     def calculate_points(self):
+        try:
+            tmp = self.width, self.height, self.rotation, self.position
+        except:
+            return
         mag = np.sqrt(pow(self.width, 2) + pow(self.height, 2))
         a1 = np.arctan(self.height / self.width)
         for i, a in enumerate([a1, np.pi-a1, np.pi+a1, -a1]):
@@ -90,7 +107,6 @@ class Rectangle(Colorable):
             )
 
     def apply_to_screen(self):
-        self.calculate_points()
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
@@ -102,10 +118,14 @@ class Circle(Colorable):
     radius: float
 
     def init_from_kwargs(self, **kwargs):
-        super().init_from_kwargs(**kwargs)
         self.radius = kwargs.get('radius', 0.2)
+        super().init_from_kwargs(**kwargs)
 
     def calculate_points(self):
+        try:
+            tmp = self.radius
+        except:
+            return
         self.point = (
             int(self.position[0] * ScreenObjectManager.instance.screen_width),
             int(self.position[1] * ScreenObjectManager.instance.screen_height),
@@ -113,7 +133,6 @@ class Circle(Colorable):
         self.v_radius = int(min(ScreenObjectManager.instance.screen_width, ScreenObjectManager.instance.screen_height) * self.radius)
 
     def apply_to_screen(self):
-        self.calculate_points()
         if self.fill:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
         if self.stroke:
