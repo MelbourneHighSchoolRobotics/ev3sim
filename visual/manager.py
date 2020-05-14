@@ -20,9 +20,9 @@ class ScreenObjectManager:
         ScreenObjectManager.instance = self
         self.objects = {}
         self.sorting_order = []
-        self.init_from_kwargs(**kwargs)
+        self.initFromKwargs(**kwargs)
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self.screen_width = kwargs.get('screen_width', 640)
         self.screen_height = kwargs.get('screen_height', 480)
         # NOTE: TEMPORARY - this would describe the dimensions of the simulated map vs the screen dimensions.
@@ -41,7 +41,7 @@ class ScreenObjectManager:
         else:
             self._background_color = value
 
-    def start_screen(self):
+    def startScreen(self):
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
 
@@ -75,7 +75,7 @@ class ScreenObjectManager:
     def applyToScreen(self):
         self.screen.fill(self.background_color)
         for key in self.sorting_order:
-            self.objects[key].apply_to_screen()
+            self.objects[key].applyToScreen()
         pygame.display.update()
 
     def checkForClose(self):

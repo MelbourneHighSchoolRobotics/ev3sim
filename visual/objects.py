@@ -15,9 +15,9 @@ class IVisualElement:
     _rotation: float
 
     def __init__(self, **kwargs):
-        self.init_from_kwargs(**kwargs)
+        self.initFromKwargs(**kwargs)
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self.position = kwargs.get('position', [0, 0, 0])
         self.rotation = kwargs.get('rotation', 0)
 
@@ -35,26 +35,26 @@ class IVisualElement:
             self._position = np.array(value)
         else:
             self._position = value
-        self.calculate_points()
+        self.calculatePoints()
 
     @rotation.setter
     def rotation(self, value):
         self._rotation = value
-        self.calculate_points()
+        self.calculatePoints()
 
-    def apply_to_screen(self):
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `apply_to_screen`")
+    def applyToScreen(self):
+        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `applyToScreen`")
 
-    def calculate_points(self):
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculate_points`")
+    def calculatePoints(self):
+        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
 
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
     _stroke: Optional[Tuple[int]]
     stroke_width: float
 
-    def init_from_kwargs(self, **kwargs):
-        super().init_from_kwargs(**kwargs)
+    def initFromKwargs(self, **kwargs):
+        super().initFromKwargs(**kwargs)
         self.fill = kwargs.get('fill', '#ffffff')
         self.stroke = kwargs.get('stroke', None)
         self.stroke_width = kwargs.get('stroke_width', 1)
@@ -86,13 +86,13 @@ class Rectangle(Colorable):
     width: float
     height: float
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self.width = kwargs.get('width', 20)
         self.height = kwargs.get('height', 20)
         self.points = [None]*4
-        super().init_from_kwargs(**kwargs)
+        super().initFromKwargs(**kwargs)
 
-    def calculate_points(self):
+    def calculatePoints(self):
         try:
             tmp = self.width, self.height, self.rotation, self.position
         except:
@@ -105,7 +105,7 @@ class Rectangle(Colorable):
                 ScreenObjectManager.instance.screen_height / 2 - ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * (self.position[1] + np.sin(self.rotation + a) * mag / 2),
             )
 
-    def apply_to_screen(self):
+    def applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
@@ -115,11 +115,11 @@ class Circle(Colorable):
 
     radius: float
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self.radius = kwargs.get('radius', 20)
-        super().init_from_kwargs(**kwargs)
+        super().initFromKwargs(**kwargs)
 
-    def calculate_points(self):
+    def calculatePoints(self):
         try:
             tmp = self.radius
         except:
@@ -130,7 +130,7 @@ class Circle(Colorable):
         )
         self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
 
-    def apply_to_screen(self):
+    def applyToScreen(self):
         if self.fill:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
         if self.stroke:
@@ -142,7 +142,7 @@ def visualFactory(**options):
     for klass in (Rectangle, Circle):
         if options['name'] == klass.__name__:
             r = klass()
-            r.init_from_kwargs(**options)
+            r.initFromKwargs(**options)
             return r
     name = options['name']
     raise ValueError(f"Unknown visual element, {name}")

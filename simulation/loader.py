@@ -10,7 +10,7 @@ class ScriptLoader:
 
     def startUp(self, **kwargs):
         man = ScreenObjectManager(**kwargs)
-        man.start_screen()
+        man.startScreen()
 
     def simulate(self, *interactors):
         self.active_scripts = list(interactors)

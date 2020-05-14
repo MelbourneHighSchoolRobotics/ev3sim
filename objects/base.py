@@ -13,7 +13,7 @@ class BaseObject:
     visual: IVisualElement
     children: List['BaseObject']
 
-    def init_from_kwargs(self, **kwargs):
+    def initFromKwargs(self, **kwargs):
         self._rotation = 0
         self.children = []
         self.parent = None
@@ -67,5 +67,5 @@ class BaseObject:
 
 def objectFactory(**options):
     r = BaseObject()
-    r.init_from_kwargs(**options)
+    r.initFromKwargs(**options)
     return r
