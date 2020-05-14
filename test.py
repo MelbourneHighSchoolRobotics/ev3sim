@@ -1,21 +1,27 @@
 # This is TEMPORARY
 import pygame
 from visual.manager import ScreenObjectManager
-from visual.objects import Rectangle
+from visual.objects import Rectangle, Circle
 
 man = ScreenObjectManager()
 man.start_screen()
 
 rect = Rectangle(height=0.15, width=0.3, stroke='#ff0000')
 rect2 = Rectangle(height=0.15, width=0.3, fill='#00ff00', stroke='#0000ff')
+circle = Circle(radius=0.15, fill='#ff00ff', stroke='#aaaaaa', stroke_width=0.01)
 man.registerObject(rect, 'testingRect')
 man.registerObject(rect2, 'testingRect2')
-
+man.registerObject(circle, 'testingCircle')
 
 import numpy as np
 import time
 
 for x in np.arange(0, 6*np.pi, step=0.1):
+    circle.position = (
+        0.5 + np.cos(-0.3*x) / 10,
+        0.5 + np.sin(-0.3*x) / 10,
+        2
+    )
     rect.rotation = x
     rect.position = (
         0.5 + np.cos(0.3*x) / 4,

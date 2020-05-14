@@ -35,23 +35,17 @@ class IVisualElement:
     def apply_to_screen(self):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `apply_to_screen`")
 
-class Rectangle(IVisualElement):
-
+class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
     _stroke: Optional[Tuple[int]]
     # These are relative to screen size (0-1).
     stroke_width: float
-    width: float
-    height: float
 
     def init_from_kwargs(self, **kwargs):
         super().init_from_kwargs(**kwargs)
         self.fill = kwargs.get('fill', '#ffffff')
         self.stroke = kwargs.get('stroke', None)
-        self.width = kwargs.get('width', 0.5)
-        self.height = kwargs.get('height', 0.5)
-        self.stroke_width = kwargs.get('stroke_width', self.width / 20)
-        self.points = [None]*4
+        self.stroke_width = kwargs.get('stroke_width', 0.02)
 
     @property
     def fill(self) -> Tuple[int]:
@@ -75,7 +69,18 @@ class Rectangle(IVisualElement):
         else:
             self._stroke = value
 
-    def calculate_polygon_points(self):
+class Rectangle(Colorable):
+
+    width: float
+    height: float
+
+    def init_from_kwargs(self, **kwargs):
+        super().init_from_kwargs(**kwargs)
+        self.width = kwargs.get('width', 0.5)
+        self.height = kwargs.get('height', 0.5)
+        self.points = [None]*4
+
+    def calculate_points(self):
         mag = np.sqrt(pow(self.width, 2) + pow(self.height, 2))
         a1 = np.arctan(self.height / self.width)
         for i, a in enumerate([a1, np.pi-a1, np.pi+a1, -a1]):
@@ -85,9 +90,32 @@ class Rectangle(IVisualElement):
             )
 
     def apply_to_screen(self):
-        self.calculate_polygon_points()
+        self.calculate_points()
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
             # Stroke width is calculated based on screen width, I can't think of something cleaner than this.
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width))
+
+class Circle(Colorable):
+
+    radius: float
+
+    def init_from_kwargs(self, **kwargs):
+        super().init_from_kwargs(**kwargs)
+        self.radius = kwargs.get('radius', 0.2)
+
+    def calculate_points(self):
+        self.point = (
+            int(self.position[0] * ScreenObjectManager.instance.screen_width),
+            int(self.position[1] * ScreenObjectManager.instance.screen_height),
+        )
+        self.v_radius = int(min(ScreenObjectManager.instance.screen_width, ScreenObjectManager.instance.screen_height) * self.radius)
+
+    def apply_to_screen(self):
+        self.calculate_points()
+        if self.fill:
+            pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
+        if self.stroke:
+            # Stroke width is calculated based on screen width, I can't think of something cleaner than this.
+            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width))
