@@ -9,32 +9,32 @@ class RandomInteractor(IInteractor):
     ROBOT_DEFINITION = {
         'visual': {
             'name': 'Circle',
-            'radius': 0.15,
+            'radius': 20,
             'fill': '#ff00ff',
             'stroke': '#aaaaaa',
-            'stroke_width': 0.01,
+            'stroke_width': 3,
         },
         'children': [
             {
                 'visual': {
                     'name': 'Rectangle',
-                    'width': 0.05,
-                    'height': 0.1,
+                    'width': 10,
+                    'height': 20,
                     'fill': '#00ff00',
                     'stroke': '#0000ff',
-                    'stroke_width': 0.003,
+                    'stroke_width': 2,
                 },
-                'position': (0.125, 0, 1)
+                'position': (15, 0, 1)
             },
             {
                 'visual': {
                     'name': 'Rectangle',
-                    'width': 0.05,
-                    'height': 0.1,
+                    'width': 10,
+                    'height': 20,
                     'stroke': '#ff0000',
-                    'stroke_width': 0.003,
+                    'stroke_width': 2,
                 },
-                'position': (-0.125, 0, 1)
+                'position': (-15, 0, 1)
             },
         ]
     }
@@ -47,8 +47,8 @@ class RandomInteractor(IInteractor):
         x = tick / 2000
         self.robot.rotation = x
         self.robot.position = (
-            0.5 + np.cos(0.3*x) / 4,
-            0.5 + np.sin(0.3*x) / 4,
+            np.cos(0.3*x) * 30,
+            np.sin(0.3*x) * 30,
             1
         )
         return x >= 4 * np.pi / 0.3

@@ -8,7 +8,7 @@ from visual.utils import hex_to_pycolor
 class IVisualElement:
 
     # Position of a visual element is a x/y/z vector, with z representing the order in which objects are shown to the screen.
-    # x/y ranges from 0-1, where 0,0 is the top-left corner of the screen, and x grows horizontally.
+    # x/y has 0,0 at the centre of the screen, and x grows horizontally to the right, while y grows vertically upwards.
     # By convention, please let this position be the **centre** of your object.
     _position: np.ndarray
     # Rotation of a visual element is float, which should in theory range from 0 to 2pi, but should still work outside of those bounds.
@@ -18,7 +18,7 @@ class IVisualElement:
         self.init_from_kwargs(**kwargs)
 
     def init_from_kwargs(self, **kwargs):
-        self.position = kwargs.get('position', np.array([0.5, 0.5, 0]))
+        self.position = kwargs.get('position', [0, 0, 0])
         self.rotation = kwargs.get('rotation', 0)
 
     @property
@@ -51,14 +51,13 @@ class IVisualElement:
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
     _stroke: Optional[Tuple[int]]
-    # These are relative to screen size (0-1).
     stroke_width: float
 
     def init_from_kwargs(self, **kwargs):
         super().init_from_kwargs(**kwargs)
         self.fill = kwargs.get('fill', '#ffffff')
         self.stroke = kwargs.get('stroke', None)
-        self.stroke_width = kwargs.get('stroke_width', 0.02)
+        self.stroke_width = kwargs.get('stroke_width', 1)
 
     @property
     def fill(self) -> Tuple[int]:
@@ -88,8 +87,8 @@ class Rectangle(Colorable):
     height: float
 
     def init_from_kwargs(self, **kwargs):
-        self.width = kwargs.get('width', 0.5)
-        self.height = kwargs.get('height', 0.5)
+        self.width = kwargs.get('width', 20)
+        self.height = kwargs.get('height', 20)
         self.points = [None]*4
         super().init_from_kwargs(**kwargs)
 
@@ -102,23 +101,22 @@ class Rectangle(Colorable):
         a1 = np.arctan(self.height / self.width)
         for i, a in enumerate([a1, np.pi-a1, np.pi+a1, -a1]):
             self.points[i] = (
-                ScreenObjectManager.instance.screen_width * (self.position[0] + np.cos(self.rotation + a) * mag / 2),
-                ScreenObjectManager.instance.screen_height * (self.position[1] + np.sin(self.rotation + a) * mag / 2),
+                ScreenObjectManager.instance.screen_width / 2 + ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * (self.position[0] + np.cos(self.rotation + a) * mag / 2),
+                ScreenObjectManager.instance.screen_height / 2 - ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * (self.position[1] + np.sin(self.rotation + a) * mag / 2),
             )
 
     def apply_to_screen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
-            # Stroke width is calculated based on screen width, I can't think of something cleaner than this.
-            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width))
+            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
 
 class Circle(Colorable):
 
     radius: float
 
     def init_from_kwargs(self, **kwargs):
-        self.radius = kwargs.get('radius', 0.2)
+        self.radius = kwargs.get('radius', 20)
         super().init_from_kwargs(**kwargs)
 
     def calculate_points(self):
@@ -127,17 +125,16 @@ class Circle(Colorable):
         except:
             return
         self.point = (
-            int(self.position[0] * ScreenObjectManager.instance.screen_width),
-            int(self.position[1] * ScreenObjectManager.instance.screen_height),
+            int(self.position[0] * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width + ScreenObjectManager.instance.screen_width / 2),
+            int(-self.position[1] * ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height + ScreenObjectManager.instance.screen_height / 2),
         )
-        self.v_radius = int(min(ScreenObjectManager.instance.screen_width, ScreenObjectManager.instance.screen_height) * self.radius)
+        self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
 
     def apply_to_screen(self):
         if self.fill:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
         if self.stroke:
-            # Stroke width is calculated based on screen width, I can't think of something cleaner than this.
-            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width))
+            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
 
 def visualFactory(**options):
     if 'name' not in options:
