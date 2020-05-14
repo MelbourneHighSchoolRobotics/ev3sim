@@ -1,3 +1,4 @@
+# This is TEMPORARY
 import pygame
 from visual.manager import ScreenObjectManager
 from visual.objects import Rectangle
