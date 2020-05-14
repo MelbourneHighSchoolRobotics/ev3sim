@@ -1,12 +1,11 @@
 import pygame
 from visual.manager import ScreenObjectManager
 from visual.objects import Rectangle
-from visual.utils import hex_to_pycolor
 
 man = ScreenObjectManager()
 man.start_screen()
 
-rect = Rectangle(height=0.15, width=0.3, stroke=hex_to_pycolor('#ff0000'))
+rect = Rectangle(height=0.15, width=0.3, stroke='#ff0000')
 
 import numpy as np
 import time
