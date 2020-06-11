@@ -1,0 +1,11 @@
+class_path: 'tests.random_testing.RandomInteractor'
+kwargs:
+  visual:
+    name: 'Circle'
+    radius: 10
+    fill: '#00ff00'
+    stroke: '#aaaaaa'
+    stroke_width: 1
+  children: []
+  key: 'test1'
+  offset: 0.5
