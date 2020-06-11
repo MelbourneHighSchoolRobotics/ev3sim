@@ -48,7 +48,7 @@ class RandomInteractor(IInteractor):
         ScreenObjectManager.instance.registerObject(self.robot, 'testingRobot')
 
     def tick(self, tick):
-        x = tick / 2000
+        x = tick / 30
         self.robot.rotation = x
         self.robot.position = (
             np.cos(0.3*x) * 30,
