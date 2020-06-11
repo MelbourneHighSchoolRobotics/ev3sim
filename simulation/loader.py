@@ -5,6 +5,8 @@ from visual import ScreenObjectManager
 
 class ScriptLoader:
 
+    KEY_TICKS_PER_SECOND = 'tps'
+
     active_scripts: List[IInteractor]
     VISUAL_TICK_RATE = 30
     GAME_TICK_RATE = 60
@@ -16,6 +18,7 @@ class ScriptLoader:
     def simulate(self, *interactors):
         self.active_scripts = list(interactors)
         for interactor in self.active_scripts:
+            interactor.constants = self.getSimulationConstants()
             interactor.startUp()
         tick = 0
         last_vis_update = time.time() - 2 / self.VISUAL_TICK_RATE
@@ -36,3 +39,8 @@ class ScriptLoader:
                 last_vis_update = new_time
                 ScreenObjectManager.instance.applyToScreen()
                 ScreenObjectManager.instance.checkForClose()
+
+    def getSimulationConstants(self):
+        return {
+            ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE
+        }

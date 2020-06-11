@@ -1,5 +1,7 @@
 class IInteractor:
 
+    constants: dict
+
     def __init__(self, **kwargs):
         pass
 

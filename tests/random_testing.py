@@ -1,6 +1,7 @@
 import numpy as np
 
 from simulation.interactor import IInteractor
+from simulation.loader import ScriptLoader
 from objects.base import objectFactory
 from visual import ScreenObjectManager
 
@@ -48,7 +49,7 @@ class RandomInteractor(IInteractor):
         ScreenObjectManager.instance.registerObject(self.robot, 'testingRobot')
 
     def tick(self, tick):
-        x = tick / 30
+        x = 3 * tick / self.constants[ScriptLoader.KEY_TICKS_PER_SECOND]
         self.robot.rotation = x
         self.robot.position = (
             np.cos(0.3*x) * 30,
