@@ -6,7 +6,7 @@ from visual import ScreenObjectManager
 
 class RandomInteractor(IInteractor):
 
-    ROBOT_DEFINITION = {
+    DEFAULT_ROBOT_DEFINITION = {
         'visual': {
             'name': 'Circle',
             'radius': 20,
@@ -39,8 +39,12 @@ class RandomInteractor(IInteractor):
         ]
     }
 
-    def startUp(self):
-        self.robot = objectFactory(**self.ROBOT_DEFINITION)
+    def __init__(self, **kwargs):
+        self.options = self.DEFAULT_ROBOT_DEFINITION
+        self.options.update(kwargs)
+
+    def startUp(self, **kwargs):
+        self.robot = objectFactory(**self.options)
         ScreenObjectManager.instance.registerObject(self.robot, 'testingRobot')
 
     def tick(self, tick):

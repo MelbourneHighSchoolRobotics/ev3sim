@@ -1,5 +1,8 @@
 class IInteractor:
 
+    def __init__(self, **kwargs):
+        pass
+
     def startUp(self):
         pass
 
