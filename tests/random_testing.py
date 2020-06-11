@@ -1,12 +1,13 @@
 import numpy as np
 
 from simulation.interactor import IInteractor
+from simulation.loader import ScriptLoader
 from objects.base import objectFactory
 from visual import ScreenObjectManager
 
 class RandomInteractor(IInteractor):
 
-    ROBOT_DEFINITION = {
+    DEFAULT_ROBOT_DEFINITION = {
         'visual': {
             'name': 'Circle',
             'radius': 20,
@@ -39,16 +40,27 @@ class RandomInteractor(IInteractor):
         ]
     }
 
-    def startUp(self):
-        self.robot = objectFactory(**self.ROBOT_DEFINITION)
-        ScreenObjectManager.instance.registerObject(self.robot, 'testingRobot')
+    key = 'testingRobot'
+    offset = 0
+
+    def __init__(self, **kwargs):
+        if 'key' in kwargs:
+            self.key = kwargs.pop('key')
+        if 'offset' in kwargs:
+            self.offset = kwargs.pop('offset')
+        self.options = self.DEFAULT_ROBOT_DEFINITION.copy()
+        self.options.update(kwargs)
+
+    def startUp(self, **kwargs):
+        self.robot = objectFactory(**self.options)
+        ScreenObjectManager.instance.registerObject(self.robot, self.key)
 
     def tick(self, tick):
-        x = tick / 2000
+        x = 3 * tick / self.constants[ScriptLoader.KEY_TICKS_PER_SECOND]
         self.robot.rotation = x
         self.robot.position = (
-            np.cos(0.3*x) * 30,
-            np.sin(0.3*x) * 30,
+            np.cos(0.3*x + self.offset * 2 * np.pi) * 30,
+            np.sin(0.3*x + self.offset * 2 * np.pi) * 30,
             1
         )
         return x >= 4 * np.pi / 0.3

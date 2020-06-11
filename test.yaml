@@ -1,0 +1,15 @@
+interactors:
+- filename: 'tests/interactors/random.yaml'
+- class_path: 'tests.random_testing.RandomInteractor'
+  kwargs:
+    visual:
+      name: 'Circle'
+      radius: 20
+      fill: '#ff00ff'
+      stroke: '#aaaaaa'
+      stroke_width: 3
+    children: []
+    key: 'test2'
+loader:
+  GAME_TICK_RATE: 120
+  VISUAL_TICK_RATE: 30

@@ -1,8 +1,5 @@
 # This is TEMPORARY
 
-from simulation.loader import ScriptLoader
-from tests.random_testing import RandomInteractor
+from simulation.loader import runFromFile
 
-sl = ScriptLoader()
-sl.startUp()
-sl.simulate(RandomInteractor())
+runFromFile('test.yaml')
