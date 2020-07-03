@@ -2,6 +2,7 @@ import numpy as np
 from typing import List
 
 from visual.objects import IVisualElement, visualFactory
+from objects.colliders import Collider, colliderFactory
 
 class BaseObject:
 
@@ -65,7 +66,62 @@ class BaseObject:
             for child in self.children:
                 child.updateVisualProperties()
 
+class PhysicsObject(BaseObject):
+
+    # TODO: Use these
+    velocity: np.ndarray
+    angular_velocity: float
+
+    _force: np.ndarray
+    _torque: float
+
+    mass: float
+    inertia: float
+
+    friction_coefficient: float
+    restitution_coefficient: float
+
+    collider: Collider
+
+    def initFromKwargs(self, **kwargs):
+        super().initFromKwargs(**kwargs)
+        if 'collider' not in kwargs:
+            raise ValueError("Collider not defined.")
+        self.collider = colliderFactory(self, **kwargs['collider'])
+        self.mass = kwargs.get('mass', 1)
+        # TODO: Currently unused
+        self.friction_coefficient = kwargs.get('friction', None)
+        # TODO: Currently unused
+        self.restitution_coefficient = kwargs.get('restitution', None)
+        self.collider.generateExtraPhysicsAttributes()
+
+    def updatePhysics(self, dt):
+        # Acceleration is set to 0 each update - no leakage.
+        acceleration = self._force / self.mass
+        self.velocity += acceleration * dt
+        self.position += self.velocity * dt
+
+        # Same with angular acceleration
+        angular_acceleration = self._torque / self.inertia
+        self.angular_velocity += angular_acceleration * dt
+        self.rotation += self.angular_velocity * dt
+
+        # Clear forces for next update.
+        self._force = np.ndarray([0, 0])
+
+    def apply_force(self, f, pos=None):
+        """Apply a force to the object, from a relative position"""
+        self._force += f
+        if pos is not None:
+            self.apply_torque(np.cross(pos, force))
+    
+    def apply_torque(self, t):
+        self._torque += t
+
 def objectFactory(**options):
-    r = BaseObject()
+    if options.get('physics', False):
+        r = PhysicsObject()
+    else:
+        r = BaseObject()
     r.initFromKwargs(**options)
     return r
