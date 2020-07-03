@@ -1,6 +1,7 @@
 import time
 from typing import List
 from simulation.interactor import IInteractor, fromOptions
+from simulation.world import World
 from visual import ScreenObjectManager
 
 class ScriptLoader:
@@ -18,6 +19,7 @@ class ScriptLoader:
     def startUp(self, **kwargs):
         man = ScreenObjectManager(**kwargs)
         man.startScreen()
+        self.world = World()
 
     def simulate(self, *interactors):
         self.active_scripts = list(interactors)
@@ -38,6 +40,7 @@ class ScriptLoader:
                 for i in to_remove[::-1]:
                     self.active_scripts[i].tearDown()
                     del self.active_scripts[i]
+                self.world.tick(1 / self.GAME_TICK_RATE)
                 tick += 1
             if new_time - last_vis_update > 1 / self.VISUAL_TICK_RATE:
                 last_vis_update = new_time
