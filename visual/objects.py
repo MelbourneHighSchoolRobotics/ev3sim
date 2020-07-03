@@ -3,7 +3,7 @@ import pygame
 from typing import Optional, Tuple
 
 from visual.manager import ScreenObjectManager
-from visual.utils import hex_to_pycolor
+from visual.utils import hex_to_pycolor, worldspace_to_screenspace
 
 class IVisualElement:
 
@@ -81,15 +81,13 @@ class Colorable(IVisualElement):
         else:
             self._stroke = value
 
-class Rectangle(Colorable):
+class Polygon(Colorable):
 
-    width: float
-    height: float
+    verts: np.array
 
     def initFromKwargs(self, **kwargs):
-        self.width = kwargs.get('width', 20)
-        self.height = kwargs.get('height', 20)
-        self.points = [None]*4
+        self.verts = kwargs.get('verts')
+        self.points = [None]*len(self.verts)
         super().initFromKwargs(**kwargs)
 
     def calculatePoints(self):
@@ -97,19 +95,34 @@ class Rectangle(Colorable):
             tmp = self.width, self.height, self.rotation, self.position
         except:
             return
-        mag = np.sqrt(pow(self.width, 2) + pow(self.height, 2))
-        a1 = np.arctan(self.height / self.width)
-        for i, a in enumerate([a1, np.pi-a1, np.pi+a1, -a1]):
-            self.points[i] = (
-                ScreenObjectManager.instance.screen_width / 2 + ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * (self.position[0] + np.cos(self.rotation + a) * mag / 2),
-                ScreenObjectManager.instance.screen_height / 2 - ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * (self.position[1] + np.sin(self.rotation + a) * mag / 2),
+        for i, v in enumerate(self.verts):
+            local_space = (
+                v[0] * np.cos(self.rotation) - v[1] * np.sin(self.rotation),
+                v[1] * np.cos(self.rotation) + v[0] * np.sin(self.rotation),
             )
+            self.points[i] = worldspace_to_screenspace(local_space + self.position[:2])
 
     def applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
+
+class Rectangle(Polygon):
+
+    width: float
+    height: float
+
+    def initFromKwargs(self, **kwargs):
+        self.width = kwargs.get('width', 20)
+        self.height = kwargs.get('height', 20)
+        kwargs['verts'] = [
+            [self.width, self.height],
+            [-self.width, self.height],
+            [-self.width, -self.height],
+            [self.width, -self.height],
+        ]
+        super().initFromKwargs(**kwargs)
 
 class Circle(Colorable):
 
@@ -124,10 +137,7 @@ class Circle(Colorable):
             tmp = self.radius
         except:
             return
-        self.point = (
-            int(self.position[0] * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width + ScreenObjectManager.instance.screen_width / 2),
-            int(-self.position[1] * ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height + ScreenObjectManager.instance.screen_height / 2),
-        )
+        self.point = worldspace_to_screenspace(self.position)
         self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
 
     def applyToScreen(self):
