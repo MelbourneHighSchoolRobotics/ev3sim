@@ -2,7 +2,7 @@ import numpy as np
 
 class Collider:
     
-    obj: 'objects.base.PhysicsObject'
+    obj: 'objects.base.PhysicsObject' # noqa: F821
 
     def __init__(self, obj):
         self.physicsObject = obj

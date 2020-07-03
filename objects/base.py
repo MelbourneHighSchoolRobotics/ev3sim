@@ -113,7 +113,7 @@ class PhysicsObject(BaseObject):
         """Apply a force to the object, from a relative position"""
         self._force += f
         if pos is not None:
-            self.apply_torque(np.cross(pos, force))
+            self.apply_torque(np.cross(pos, f))
     
     def apply_torque(self, t):
         self._torque += t
