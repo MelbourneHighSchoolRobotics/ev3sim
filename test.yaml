@@ -2,9 +2,19 @@ interactors:
 - filename: 'tests/interactors/random.yaml'
 - class_path: 'tests.random_testing.RandomInteractor'
   kwargs:
+    physics: true
+    collider:
+      name: 'ConvexPolygon'
+      verts:
+      - [20, 10]
+      - [-20, 10]
+      - [-20, -10]
+      - [20, -10]
+      - [20, 10]
     visual:
-      name: 'Circle'
-      radius: 20
+      name: 'Rectangle'
+      width: 20
+      height: 10
       fill: '#ff00ff'
       stroke: '#aaaaaa'
       stroke_width: 3

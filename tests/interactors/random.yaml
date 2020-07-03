@@ -1,5 +1,9 @@
 class_path: 'tests.random_testing.RandomInteractor'
 kwargs:
+  physics: true
+  collider:
+    name: 'Circle'
+    radius: 10
   visual:
     name: 'Circle'
     radius: 10
