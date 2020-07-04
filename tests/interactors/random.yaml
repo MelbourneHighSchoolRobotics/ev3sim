@@ -1,4 +1,4 @@
-class_path: 'tests.random_testing.RandomInteractor'
+class_path: 'tests.interactors.random_testing.RandomInteractor'
 kwargs:
   physics: true
   collider:

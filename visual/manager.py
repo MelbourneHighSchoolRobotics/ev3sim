@@ -26,8 +26,8 @@ class ScreenObjectManager:
         self.screen_width = kwargs.get('screen_width', 640)
         self.screen_height = kwargs.get('screen_height', 480)
         # NOTE: TEMPORARY - this would describe the dimensions of the simulated map vs the screen dimensions.
-        self.map_width = self.screen_width / 3
-        self.map_height = self.screen_height / 3
+        self.map_width = kwargs.get('map_width', 210)
+        self.map_height = kwargs.get('map_height', 160)
         self.background_color = kwargs.get('background_color', '#000000')
 
     @property

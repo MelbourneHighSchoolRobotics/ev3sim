@@ -66,7 +66,7 @@ def runFromFile(filename):
                 except Exception as exc:
                     print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
             if interactors:
-                sl.startUp()
+                sl.startUp(**config.get('screen', {}))
                 sl.simulate(*interactors)
             else:
                 print("No interactors succesfully loaded. Quitting...")
