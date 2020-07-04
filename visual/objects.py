@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 
 from visual.manager import ScreenObjectManager
 from visual.utils import hex_to_pycolor, worldspace_to_screenspace
+from objects.utils import local_space_to_world_space
 
 class IVisualElement:
 
@@ -92,15 +93,11 @@ class Polygon(Colorable):
 
     def calculatePoints(self):
         try:
-            tmp = self.width, self.height, self.rotation, self.position
+            tmp = self.rotation, self.position
         except:
             return
         for i, v in enumerate(self.verts):
-            local_space = (
-                v[0] * np.cos(self.rotation) - v[1] * np.sin(self.rotation),
-                v[1] * np.cos(self.rotation) + v[0] * np.sin(self.rotation),
-            )
-            self.points[i] = worldspace_to_screenspace(local_space + self.position[:2])
+            self.points[i] = worldspace_to_screenspace(local_space_to_world_space(v, self.rotation, self.position))
 
     def applyToScreen(self):
         if self.fill:
@@ -149,10 +146,9 @@ class Circle(Colorable):
 def visualFactory(**options):
     if 'name' not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
-    for klass in (Rectangle, Circle):
+    for klass in (Polygon, Rectangle, Circle):
         if options['name'] == klass.__name__:
-            r = klass()
-            r.initFromKwargs(**options)
+            r = klass(**options)
             return r
     name = options['name']
     raise ValueError(f"Unknown visual element, {name}")
