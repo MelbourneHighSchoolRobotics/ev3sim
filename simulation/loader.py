@@ -45,7 +45,9 @@ class ScriptLoader:
             if new_time - last_vis_update > 1 / self.VISUAL_TICK_RATE:
                 last_vis_update = new_time
                 ScreenObjectManager.instance.applyToScreen()
-                ScreenObjectManager.instance.checkForClose()
+                for event in ScreenObjectManager.instance.handleEvents():
+                    for interactor in self.active_scripts:
+                        interactor.handleEvent(event)
 
     def getSimulationConstants(self):
         return {

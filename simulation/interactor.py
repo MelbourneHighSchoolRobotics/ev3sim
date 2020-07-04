@@ -15,6 +15,10 @@ class IInteractor:
     def tearDown(self):
         pass
 
+    # Handles events pumped from pygame.
+    def handleEvent(self, event):
+        pass
+
 def fromOptions(options):
     if 'filename' in options:
         import yaml
