@@ -5,6 +5,8 @@ from typing import Optional, Tuple
 from visual.manager import ScreenObjectManager
 from visual.utils import hex_to_pycolor, worldspace_to_screenspace
 from objects.utils import local_space_to_world_space
+from objects.colliders import colliderFactory
+
 
 class IVisualElement:
 
@@ -48,6 +50,9 @@ class IVisualElement:
 
     def calculatePoints(self):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
+
+    def generateCollider(self, physObj):
+        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateCollider`")
 
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
@@ -105,6 +110,12 @@ class Polygon(Colorable):
         if self.stroke:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
 
+    def generateCollider(self, physObj):
+        return colliderFactory(physObj, **{
+            'name': 'ConvexPolygon',
+            'verts': self.verts + [self.verts[0]]
+        })
+
 class Rectangle(Polygon):
 
     width: float
@@ -142,6 +153,12 @@ class Circle(Colorable):
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
         if self.stroke:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
+
+    def generateCollider(self, physObj):
+        return colliderFactory(physObj, **{
+            'name': 'Circle',
+            'radius': self.radius
+        })
 
 def visualFactory(**options):
     if 'name' not in options:

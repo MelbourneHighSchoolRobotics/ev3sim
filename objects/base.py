@@ -87,7 +87,10 @@ class PhysicsObject(BaseObject):
         super().initFromKwargs(**kwargs)
         if 'collider' not in kwargs:
             raise ValueError("Collider not defined.")
-        self.collider = colliderFactory(self, **kwargs['collider'])
+        if kwargs['collider'] == 'inherit':
+            self.collider = self.visual.generateCollider(self)
+        else:
+            self.collider = colliderFactory(self, **kwargs['collider'])
         self.mass = kwargs.get('mass', 1)
         # TODO: Currently unused
         self.friction_coefficient = kwargs.get('friction', None)
