@@ -32,12 +32,10 @@ class Circle(Collider):
                 return {
                     'collision': True,
                     'world_space_position': displacement_vector * (self.radius / distance - 0.5*(1 - distance / (self.radius + other.radius))) + self.physicsObject.position,
-                    'distance_collided': self.radius + other.radius - distance
+                    'collision_vector': (-(self.radius + other.radius - distance) / distance) * displacement_vector
                 }
             return {
-                'collision': False,
-                'world_space_position': None,
-                'distance_collided': None
+                'collision': False
             }
         if isinstance(other, ConvexPolygon):
             # Find the closest intersection with the circle for each edge on the rectangle
@@ -71,12 +69,10 @@ class Circle(Collider):
                 return {
                     'collision': True,
                     'world_space_position': best_point,
-                    'distance_collided': self.radius - best_distance
+                    'collision_vector': (self.physicsObject.position - best_point) * ((self.radius - best_distance) / best_distance)
                 }
             return {
-                'collision': False,
-                'world_space_position': None,
-                'distance_collided': None
+                'collision': False
             }
         raise ValueError(f"Collision not handled: Circle to {str(other)}")
 
@@ -119,75 +115,94 @@ class ConvexPolygon(Collider):
             ]
             best_collision = -1
             best_collision_point = None
+            best_collision_vector = None
             for n, source, i in normals:
                 # We need the source here, because any intersecting vertex will not be from the source.
                 s_min = (1000000, None)
                 s_max = (-1000000, None)
                 o_min = (1000000, None)
                 o_max = (-1000000, None)
+                epsilon = 0.000001
                 for p in range(len(self_points)):
                     res = np.dot(self_points[p], n)
-                    if res > s_max[0]:
-                        s_max = (res, p)
-                    if res < s_min[0]:
-                        s_min = (res, p)
+                    if res - epsilon > s_max[0]:
+                        s_max = (res, [p])
+                    elif res + epsilon > s_max[0]:
+                        s_max = (res, [p] + s_max[1])
+                    if res + epsilon < s_min[0]:
+                        s_min = (res, [p])
+                    elif res - epsilon < s_min[0]:
+                        s_min = (res, [p] + s_min[1])
                 for p in range(len(other_points)):
                     res = np.dot(other_points[p], n)
-                    if res > o_max[0]:
-                        o_max = (res, p)
-                    if res < o_min[0]:
-                        o_min = (res, p)
+                    if res - epsilon > o_max[0]:
+                        o_max = (res, [p])
+                    elif res + epsilon > o_max[0]:
+                        o_max = (res, [p] + o_max[1])
+                    if res + epsilon < o_min[0]:
+                        o_min = (res, [p])
+                    elif res - epsilon < o_min[0]:
+                        o_min = (res, [p] + o_min[1])
                 # Check intersection
                 if s_min[0] > o_max[0] or s_max[0] < o_min[0]:
                     return {
-                        'collision': False,
-                        'world_space_position': None,
-                        'distance_collided': None
+                        'collision': False
                     }
                 # STEP 3: If the maximal collision did occur on this normal, it is between two maximums.
                 if source == 's':
                     # Check collision from other vertices
                     if s_min[0] < o_min[0] < s_max[0]:
-                        edge = self_points[i] - self_points[i+1]
-                        e1, e2 = np.dot(edge, self_points[i]), np.dot(edge, self_points[i+1])
-                        if min(e1, e2) <= np.dot(edge, other_points[o_min[1]]) <= max(e1, e2):
-                            if s_max[0] - o_min[0] > best_collision:
-                                best_collision = s_max[0] - o_min[0]
-                                best_collision_point = other_points[o_min[1]]
+                        if i in s_max[1]:
+                            for p in o_min[1]:
+                                edge = self_points[i] - self_points[i+1]
+                                e1, e2 = np.dot(edge, self_points[i]), np.dot(edge, self_points[i+1])
+                                if min(e1, e2) <= np.dot(edge, other_points[p]) <= max(e1, e2):
+                                    if s_max[0] - o_min[0] > best_collision:
+                                        best_collision = s_max[0] - o_min[0]
+                                        best_collision_point = other_points[p]
+                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
                     if s_max[0] > o_max[0] > s_min[0]:
-                        edge = self_points[i] - self_points[i+1]
-                        e1, e2 = np.dot(edge, self_points[i]), np.dot(edge, self_points[i+1])
-                        if min(e1, e2) <= np.dot(edge, other_points[o_max[1]]) <= max(e1, e2):
-                            if o_max[0] - s_min[0] > best_collision:
-                                best_collision = o_max[0] - s_min[0]
-                                best_collision_point = other_points[o_max[1]]
+                        if i in s_min[1]:
+                            for p in o_max[1]:
+                                edge = self_points[i] - self_points[i+1]
+                                e1, e2 = np.dot(edge, self_points[i]), np.dot(edge, self_points[i+1])
+                                if min(e1, e2) <= np.dot(edge, other_points[p]) <= max(e1, e2):
+                                    if o_max[0] - s_min[0] > best_collision:
+                                        best_collision = o_max[0] - s_min[0]
+                                        best_collision_point = other_points[p]
+                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
                 else:
                     # Check collision from self vertices
                     if o_min[0] < s_min[0] < o_max[0]:
-                        edge = other_points[i] - other_points[i+1]
-                        e1, e2 = np.dot(edge, other_points[i]), np.dot(edge, other_points[i+1])
-                        if min(e1, e2) <= np.dot(edge, self_points[s_min[1]]) <= max(e1, e2):
-                            if o_max[0] - s_min[0] > best_collision:
-                                best_collision = o_max[0] - s_min[0]
-                                best_collision_point = self_points[s_min[1]]
+                        if i in o_max[1]:
+                            for p in s_min[1]:
+                                edge = other_points[i] - other_points[i+1]
+                                e1, e2 = np.dot(edge, other_points[i]), np.dot(edge, other_points[i+1])
+                                if min(e1, e2) <= np.dot(edge, self_points[p]) <= max(e1, e2):
+                                    if o_max[0] - s_min[0] > best_collision:
+                                        best_collision = o_max[0] - s_min[0]
+                                        best_collision_point = self_points[p]
+                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
                     if o_max[0] > s_max[0] > o_min[0]:
-                        edge = other_points[i] - other_points[i+1]
-                        e1, e2 = np.dot(edge, other_points[i]), np.dot(edge, other_points[i+1])
-                        if min(e1, e2) <= np.dot(edge, self_points[s_max[1]]) <= max(e1, e2):
-                            if s_max[0] - o_min[0] > best_collision:
-                                best_collision = s_max[0] - o_min[0]
-                                best_collision_point = self_points[s_max[1]]
+                        if i in o_min[1]:
+                            for p in s_max[1]:
+                                edge = other_points[i] - other_points[i+1]
+                                e1, e2 = np.dot(edge, other_points[i]), np.dot(edge, other_points[i+1])
+                                if min(e1, e2) <= np.dot(edge, self_points[p]) <= max(e1, e2):
+                                    if s_max[0] - o_min[0] > best_collision:
+                                        best_collision = s_max[0] - o_min[0]
+                                        best_collision_point = self_points[p]
+                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
             # If no collision point is found, then the interesection of the two shapes does not include a vertex, in a physics simulation, this barely happens. So simply let it occur.
             if best_collision_point is None:
                 return {
-                    'collision': False,
-                    'world_space_position': None,
-                    'distance_collided': None
+                    'collision': False
                 }
+            best_collision_vector = np.append(best_collision_vector, [self.physicsObject.position[2]])
             return {
                 'collision': True,
                 'world_space_position': best_collision_point,
-                'distance_collided': best_collision
+                'collision_vector': best_collision_vector
             } 
         raise ValueError(f"Collision not handled: ConvexPolygon to {str(other)}")
     
