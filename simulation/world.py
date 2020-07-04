@@ -18,26 +18,12 @@ class World:
     def tick(self, dt):
         for obj in self.objects:
             obj.updatePhysics(dt)
-        # TODO: Add some options here, and do physics.
-        # I just check for collisions and scream if this is the case.
+        # In batches, try to handle collisions between all objects, handling immovable objects first.
         for i, obj in enumerate(self.objects):
             for obj2 in self.objects[i+1:]:
                 res = obj.collider.getCollisionInfo(obj2.collider)
                 if res['collision']:
-                    from visual.objects import visualFactory
-                    p = res['world_space_position']
-                    if len(p) == 3:
-                        p[2] = 10
-                    else:
-                        p = np.append(p, [10])
-                    obj = visualFactory(**{
-                        'name': 'Circle',
-                        'radius': 3,
-                        'fill': '#ffffff',
-                        'stroke_width': 0,
-                        'position': p
-                    })
-                    if 'point' in ScreenObjectManager.instance.objects:
-                        ScreenObjectManager.instance.unregisterVisual('point')
-                    ScreenObjectManager.instance.registerVisual(obj, 'point')
+                    # For now, just move objects apart.
+                    obj.position += res['collision_vector'] / 2
+                    obj2.position -= res['collision_vector'] / 2
                     
