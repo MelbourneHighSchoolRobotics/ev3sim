@@ -114,10 +114,10 @@ class Rectangle(Polygon):
         self.width = kwargs.get('width', 20)
         self.height = kwargs.get('height', 20)
         kwargs['verts'] = [
-            [self.width, self.height],
-            [-self.width, self.height],
-            [-self.width, -self.height],
-            [self.width, -self.height],
+            [self.width/2, self.height/2],
+            [-self.width/2, self.height/2],
+            [-self.width/2, -self.height/2],
+            [self.width/2, -self.height/2],
         ]
         super().initFromKwargs(**kwargs)
 
