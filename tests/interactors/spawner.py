@@ -9,6 +9,7 @@ class SpawnerInteractor(IInteractor):
     def __init__(self, **kwargs):
         self.prefix_key = kwargs.get('prefix', 'spawn_')
         self.items = kwargs['elements']
+        self.object_map = {}
 
     def startUp(self, **kwargs):
         self.objects = []
@@ -16,11 +17,13 @@ class SpawnerInteractor(IInteractor):
             if item['type'] == 'visual':
                 vis = visualFactory(**item)
                 ScreenObjectManager.instance.registerVisual(vis, self.prefix_key + item.get('key', 'object'))
+                self.object_map[item.get('key', 'object')] = vis
             elif item['type'] == 'object':
                 obj = objectFactory(**item)
                 if item.get('physics', False):
                     World.instance.registerObject(obj)    
                 ScreenObjectManager.instance.registerObject(obj, self.prefix_key + item.get('key', 'object'))
+                self.object_map[item.get('key', 'object')] = obj
 
     def tick(self, tick):
-        pass
+        return False
