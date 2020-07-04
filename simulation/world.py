@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from objects.base import PhysicsObject
 from visual.manager import ScreenObjectManager
 from visual.utils import worldspace_to_screenspace
@@ -21,10 +22,12 @@ class World:
             for obj2 in self.objects[i+1:]:
                 res = obj.collider.getCollisionInfo(obj2.collider)
                 if res['collision']:
-                    print("Colliding!")
                     from visual.objects import visualFactory
                     p = res['world_space_position']
-                    p[2] = 10
+                    if len(p) == 3:
+                        p[2] = 10
+                    else:
+                        p = np.append(p, [10])
                     obj = visualFactory(**{
                         'name': 'Circle',
                         'radius': 3,

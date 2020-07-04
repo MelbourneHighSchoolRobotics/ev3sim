@@ -58,7 +58,7 @@ class RandomInteractor(IInteractor):
         ScreenObjectManager.instance.registerObject(self.robot, self.key)
 
     def tick(self, tick):
-        x = 3 * tick / self.constants[ScriptLoader.KEY_TICKS_PER_SECOND]
+        x = 0.6 * tick / self.constants[ScriptLoader.KEY_TICKS_PER_SECOND]
         self.robot.rotation = x
         self.robot.position = (
             np.cos(0.3*x + self.offset * 2 * np.pi) * (30-x),

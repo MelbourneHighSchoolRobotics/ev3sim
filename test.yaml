@@ -21,5 +21,5 @@ interactors:
     children: []
     key: 'test2'
 loader:
-  GAME_TICK_RATE: 120
-  VISUAL_TICK_RATE: 30
+  GAME_TICK_RATE: 60
+  VISUAL_TICK_RATE: 60
