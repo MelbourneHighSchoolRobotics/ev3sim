@@ -34,7 +34,7 @@ class BaseObject:
     @position.setter
     def position(self, value):
         if not isinstance(value, np.ndarray):
-            self._position = np.array(value)
+            self._position = np.array([float(f) for f in value])
         else:
             self._position = value
         self.updateVisualProperties()
@@ -94,6 +94,10 @@ class PhysicsObject(BaseObject):
         # TODO: Currently unused
         self.restitution_coefficient = kwargs.get('restitution', None)
         self.collider.generateExtraPhysicsAttributes()
+        self._force = np.array([.0, .0, .0])
+        self.velocity = np.array([.0, .0, .0])
+        self._torque = 0
+        self.angular_velocity = 0
 
     def updatePhysics(self, dt):
         # Acceleration is set to 0 each update - no leakage.
@@ -107,7 +111,7 @@ class PhysicsObject(BaseObject):
         self.rotation += self.angular_velocity * dt
 
         # Clear forces for next update.
-        self._force = np.ndarray([0, 0])
+        self._force = np.array([0, 0, 0])
 
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
