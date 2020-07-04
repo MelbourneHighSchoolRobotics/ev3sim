@@ -16,6 +16,8 @@ class World:
         self.objects.append(obj)
     
     def tick(self, dt):
+        for obj in self.objects:
+            obj.updatePhysics(dt)
         # TODO: Add some options here, and do physics.
         # I just check for collisions and scream if this is the case.
         for i, obj in enumerate(self.objects):

@@ -1,6 +1,7 @@
 interactors:
-- class_path: 'tests.interactors.spawner.SpawnerInteractor'
+- class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
   kwargs:
+    accel: 5
     prefix: spawn_
     elements:
     - type: visual
@@ -50,7 +51,7 @@ interactors:
         stroke_width: 1
         stroke: '#ffffff'
       position: [20, 30, 2]
-      key: hex_bot
+      key: phys_obj
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60
