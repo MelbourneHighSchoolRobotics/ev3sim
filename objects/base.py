@@ -83,6 +83,8 @@ class PhysicsObject(BaseObject):
 
     collider: Collider
 
+    static: bool
+
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
         if 'collider' not in kwargs:
@@ -92,10 +94,11 @@ class PhysicsObject(BaseObject):
         else:
             self.collider = colliderFactory(self, **kwargs['collider'])
         self.mass = kwargs.get('mass', 1)
+        self.static = kwargs.get('static', False)
         # TODO: Currently unused
         self.friction_coefficient = kwargs.get('friction', None)
         # TODO: Currently unused
-        self.restitution_coefficient = kwargs.get('restitution', None)
+        self.restitution_coefficient = kwargs.get('restitution', 0.7)
         self.collider.generateExtraPhysicsAttributes()
         self._force = np.array([.0, .0, .0])
         self.velocity = np.array([.0, .0, .0])
