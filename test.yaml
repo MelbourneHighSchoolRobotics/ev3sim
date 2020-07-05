@@ -1,7 +1,7 @@
 interactors:
 - class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
   kwargs:
-    accel: 100
+    accel: 5000
     prefix: spawn_
     elements:
     - type: object
@@ -79,8 +79,9 @@ interactors:
         stroke_width: 1
         stroke: '#ffffff'
       position: [20, 30, 2]
-      mass: 12
+      mass: 100
       restitution: 0.2
+      friction: 0.7
       key: phys_obj
 loader:
   GAME_TICK_RATE: 60

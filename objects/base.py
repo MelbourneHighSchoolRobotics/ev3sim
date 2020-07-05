@@ -96,7 +96,7 @@ class PhysicsObject(BaseObject):
         self.mass = kwargs.get('mass', 1)
         self.static = kwargs.get('static', False)
         # TODO: Currently unused
-        self.friction_coefficient = kwargs.get('friction', None)
+        self.friction_coefficient = kwargs.get('friction', 0.1)
         # TODO: Currently unused
         self.restitution_coefficient = kwargs.get('restitution', 0.7)
         self.collider.generateExtraPhysicsAttributes()
@@ -106,6 +106,9 @@ class PhysicsObject(BaseObject):
         self.angular_velocity = 0
 
     def updatePhysics(self, dt):
+        # Create a friction force based on previous velocity
+        self.apply_force(-self.mass * self.velocity * self.friction_coefficient)
+
         # Acceleration is set to 0 each update - no leakage.
         acceleration = self._force / self.mass
         self.velocity += acceleration * dt
@@ -117,7 +120,7 @@ class PhysicsObject(BaseObject):
         self.rotation += self.angular_velocity * dt
 
         # Clear forces for next update.
-        self._force = np.array([0, 0, 0])
+        self._force = np.array([0., 0., 0.])
 
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
