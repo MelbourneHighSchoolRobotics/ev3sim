@@ -83,6 +83,24 @@ interactors:
       restitution: 0.2
       friction: 0.7
       key: phys_obj
+    - type: visual
+      name: Text
+      text: Testing
+      fill: '#00ff00'
+      font_size: 60
+      hAlignment: l
+      vAlignment: t
+      position: [-105, 80, 0]
+      key: topText
+    - type: visual
+      name: Text
+      text: Testing2
+      fill: '#ff0000'
+      font_size: 15
+      hAlignment: r
+      vAlignment: b
+      position: [105, -80, 0]
+      key: botText
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60

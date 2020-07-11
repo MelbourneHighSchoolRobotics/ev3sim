@@ -1,4 +1,5 @@
 import pygame
+import pygame.freetype
 from typing import Dict, List, Tuple
 
 from visual.utils import hex_to_pycolor

@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import pygame.freetype
 from typing import Optional, Tuple
 
 from visual.manager import ScreenObjectManager
@@ -160,10 +161,51 @@ class Circle(Colorable):
             'radius': self.radius
         })
 
+class Text(IVisualElement):
+
+    font_style: str
+    font_size: int
+    text: str
+
+    def initFromKwargs(self, **kwargs):
+        self.font_style = kwargs.get('font_style', pygame.font.get_default_font())
+        self.font_size = kwargs.get('font_size', 30)
+        self.font = pygame.freetype.SysFont(self.font_style, self.font_size)
+        self.text = kwargs.get('text', 'Test')
+        self.fill = hex_to_pycolor(kwargs.get('fill', '#ffffff'))
+        self.hAlignment = kwargs.get('hAlignment', 'l')
+        self.vAlignment = kwargs.get('vAlignment', 't')
+        super().initFromKwargs(**kwargs)
+
+    def calculatePoints(self):
+        self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
+        self.anchor = worldspace_to_screenspace(self.position)
+        if self.hAlignment == 'l':
+            pass
+        elif self.hAlignment == 'm':
+            self.anchor -= np.array([self.font.get_rect(self.text).width / 2.0, 0.0])
+        elif self.hAlignment == 'r':
+            self.anchor -= np.array([self.font.get_rect(self.text).width, 0.0])
+        else:
+            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
+        if self.vAlignment == 't':
+            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height / 2.0])
+        elif self.vAlignment == 'm':
+            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height])
+        elif self.vAlignment == 'b':
+            self.anchor -= np.array([0.0, 3 * self.font.get_rect(self.text).height / 2.0])
+        else:
+            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+        self.rect.move_ip(*self.anchor)
+    
+    def applyToScreen(self):
+        ScreenObjectManager.instance.screen.blit(self.surface, self.rect)
+
+
 def visualFactory(**options):
     if 'name' not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
-    for klass in (Polygon, Rectangle, Circle):
+    for klass in (Polygon, Rectangle, Circle, Text):
         if options['name'] == klass.__name__:
             r = klass(**options)
             return r
