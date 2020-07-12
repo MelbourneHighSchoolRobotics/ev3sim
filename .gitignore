@@ -136,3 +136,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+#.idea files
+misc.xml
+modules.xml
+RoboCup_Simulator.iml
+vcs.xml
+workspace.xml
