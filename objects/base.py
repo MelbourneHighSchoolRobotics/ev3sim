@@ -20,7 +20,7 @@ class BaseObject:
         self.parent = None
         if 'visual' in kwargs:
             self.visual = visualFactory(**kwargs['visual'])
-        self.position = kwargs.get('position', (0.5, 0.5, 0))
+        self.position = kwargs.get('position', (0.5, 0.5))
         self.rotation = kwargs.get('rotation', 0)
         for child in kwargs.get('children', []):
             self.children.append(objectFactory(**child))
@@ -59,8 +59,7 @@ class BaseObject:
             elif self.parent.visual is not None:
                 self.visual.position = self.parent.visual.position + np.array([
                     self.position[0] * np.cos(self.parent.visual.rotation) - self.position[1] * np.sin(self.parent.visual.rotation),
-                    self.position[1] * np.cos(self.parent.visual.rotation) + self.position[0] * np.sin(self.parent.visual.rotation),
-                    self.position[2]
+                    self.position[1] * np.cos(self.parent.visual.rotation) + self.position[0] * np.sin(self.parent.visual.rotation)
                 ])
                 self.visual.rotation = self.parent.visual.rotation + self.rotation
             for child in self.children:
@@ -95,13 +94,11 @@ class PhysicsObject(BaseObject):
             self.collider = colliderFactory(self, **kwargs['collider'])
         self.mass = kwargs.get('mass', 1)
         self.static = kwargs.get('static', False)
-        # TODO: Currently unused
         self.friction_coefficient = kwargs.get('friction', 0.1)
-        # TODO: Currently unused
         self.restitution_coefficient = kwargs.get('restitution', 0.7)
         self.collider.generateExtraPhysicsAttributes()
-        self._force = np.array([.0, .0, .0])
-        self.velocity = np.array([.0, .0, .0])
+        self._force = np.array([.0, .0])
+        self.velocity = np.array([.0, .0])
         self._torque = 0
         self.angular_velocity = 0
 
@@ -120,7 +117,7 @@ class PhysicsObject(BaseObject):
         self.rotation += self.angular_velocity * dt
 
         # Clear forces for next update.
-        self._force = np.array([0., 0., 0.])
+        self._force = np.array([0., 0.])
 
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""

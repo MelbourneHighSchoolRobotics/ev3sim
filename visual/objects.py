@@ -11,19 +11,22 @@ from objects.colliders import colliderFactory
 
 class IVisualElement:
 
-    # Position of a visual element is a x/y/z vector, with z representing the order in which objects are shown to the screen.
+    # Position of a visual element is a x/y vector.
     # x/y has 0,0 at the centre of the screen, and x grows horizontally to the right, while y grows vertically upwards.
     # By convention, please let this position be the **centre** of your object.
     _position: np.ndarray
     # Rotation of a visual element is float, which should in theory range from 0 to 2pi, but should still work outside of those bounds.
     _rotation: float
+    # zPosition handles sorting order of visual objects - higher values appear above lower values.
+    zPos: float
 
     def __init__(self, **kwargs):
         self.initFromKwargs(**kwargs)
 
     def initFromKwargs(self, **kwargs):
-        self.position = kwargs.get('position', [0, 0, 0])
+        self.position = kwargs.get('position', [0, 0])
         self.rotation = kwargs.get('rotation', 0)
+        self.zPos = kwargs.get('zPos', 0)
 
     @property
     def position(self) -> np.ndarray:

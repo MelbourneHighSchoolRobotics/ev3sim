@@ -25,7 +25,8 @@ interactors:
         height: 5
         fill: '#444444'
         stroke_width: 0
-      position: [0, -75, 5]
+      position: [0, -75]
+      zPos: 5
       static: true
       key: footer
     - type: object
@@ -37,7 +38,8 @@ interactors:
         height: 155
         fill: '#444444'
         stroke_width: 0
-      position: [-100, 0, 5]
+      position: [-100, 0]
+      zPos: 5
       static: true
       key: leftbar
     - type: object
@@ -49,7 +51,8 @@ interactors:
         height: 155
         fill: '#444444'
         stroke_width: 0
-      position: [100, 0, 5]
+      position: [100, 0]
+      zPos: 5
       static: true
       key: rightbar
     - type: object
@@ -61,7 +64,8 @@ interactors:
         fill: '#00ff00'
         stroke_width: 1
         stroke: '#ffffff'
-      position: [-20, -30, 2]
+      position: [-20, -30]
+      zPos: 2
       key: circ_bot
     - type: object
       physics: true
@@ -78,7 +82,8 @@ interactors:
         fill: '#ff00ff'
         stroke_width: 1
         stroke: '#ffffff'
-      position: [20, 30, 2]
+      position: [20, 30]
+      zPos: 2
       mass: 100
       restitution: 0.2
       friction: 0.7
@@ -90,7 +95,8 @@ interactors:
       font_size: 60
       hAlignment: l
       vAlignment: t
-      position: [-105, 80, 0]
+      position: [-105, 80]
+      zPos: 0
       key: topText
     - type: visual
       name: Text
@@ -99,7 +105,8 @@ interactors:
       font_size: 15
       hAlignment: r
       vAlignment: b
-      position: [105, -80, 0]
+      position: [105, -80]
+      zPos: 0
       key: botText
 loader:
   GAME_TICK_RATE: 60

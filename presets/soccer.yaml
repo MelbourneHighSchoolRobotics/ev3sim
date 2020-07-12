@@ -12,7 +12,8 @@ interactors:
       height: 1830
       fill: 'grass_color'
       stroke_width: 0
-      position: [0, -180, 3]
+      position: [0, -180]
+      zPos: 3
       key: grass
     - type: object
       physics: true
@@ -23,7 +24,8 @@ interactors:
         height: 10
         fill: 'wall_color'
         stroke_width: 0
-      position: [0, 735, 5]
+      position: [0, 735]
+      zPos: 5
       static: true
       key: topbar
     - type: object
@@ -35,7 +37,8 @@ interactors:
         height: 10
         fill: 'wall_color'
         stroke_width: 0
-      position: [0, -1095, 5]
+      position: [0, -1095]
+      zPos: 5
       static: true
       key: botbar
     - type: object
@@ -47,7 +50,8 @@ interactors:
         height: 1830
         fill: 'wall_color'
         stroke_width: 0
-      position: [-1215, -180, 5]
+      position: [-1215, -180]
+      zPos: 5
       static: true
       key: leftbar
     - type: object
@@ -59,7 +63,8 @@ interactors:
         height: 1830
         fill: 'wall_color'
         stroke_width: 0
-      position: [1215, -180, 5]
+      position: [1215, -180]
+      zPos: 5
       static: true
       key: rightbar
     - type: visual
@@ -68,7 +73,8 @@ interactors:
       height: 1330
       fill: 'strip_color'
       stroke_width: 0
-      position: [940, -180, 5]
+      position: [940, -180]
+      zPos: 5
       key: rightstrip
     - type: visual
       name: Rectangle
@@ -76,7 +82,8 @@ interactors:
       height: 1330
       fill: 'strip_color'
       stroke_width: 0
-      position: [-940, -180, 5]
+      position: [-940, -180]
+      zPos: 5
       key: leftstrip
     - type: visual
       name: Rectangle
@@ -84,7 +91,8 @@ interactors:
       height: 10
       fill: 'strip_color'
       stroke_width: 0
-      position: [0, 480, 5]
+      position: [0, 480]
+      zPos: 5
       key: topstrip
     - type: visual
       name: Rectangle
@@ -92,7 +100,8 @@ interactors:
       height: 10
       fill: 'strip_color'
       stroke_width: 0
-      position: [0, -840, 5]
+      position: [0, -840]
+      zPos: 5
       key: botstrip 
     - type: visual
       name: Text
@@ -101,7 +110,8 @@ interactors:
       font_size: 72
       hAlignment: m
       vAlignment: t
-      position: [0, 1100, 0]
+      position: [0, 1100]
+      zPos: 5
       key: scoreText
     - type: visual
       name: Text
@@ -110,7 +120,8 @@ interactors:
       font_size: 72
       hAlignment: l
       vAlignment: t
-      position: [-1466.5, 1100, 0]
+      position: [-1466.5, 1100]
+      zPos: 5
       key: team1Text
     - type: visual
       name: Text
@@ -119,7 +130,8 @@ interactors:
       font_size: 72
       hAlignment: r
       vAlignment: t
-      position: [1466.5, 1100, 0]
+      position: [1466.5, 1100]
+      zPos: 5
       key: team2Text
 
 loader:

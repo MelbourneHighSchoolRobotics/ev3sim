@@ -1,5 +1,5 @@
 import numpy as np
-from objects.utils import local_space_to_world_space
+from objects.utils import local_space_to_world_space, magnitude_sq
 
 class Collider:
     
@@ -27,7 +27,7 @@ class Circle(Collider):
     def getCollisionInfo(self, other: Collider):
         if isinstance(other, Circle):
             displacement_vector = other.physicsObject.position - self.physicsObject.position
-            distance = np.sqrt(pow(displacement_vector[0], 2) + pow(displacement_vector[1], 2))
+            distance = np.sqrt(magnitude_sq(displacement_vector))
             if distance < self.radius + other.radius:
                 return {
                     'collision': True,
@@ -46,8 +46,8 @@ class Circle(Collider):
                 ws_b = local_space_to_world_space(b, other.physicsObject.rotation, other.physicsObject.position)
                 ws_a = local_space_to_world_space(a, other.physicsObject.rotation, other.physicsObject.position)
                 ws_vec = ws_b - ws_a
-                a_to_circle = self.physicsObject.position[:2] - ws_a
-                edge_length = np.sqrt(pow(ws_vec[0], 2) + pow(ws_vec[1], 2))
+                a_to_circle = self.physicsObject.position - ws_a
+                edge_length = np.sqrt(magnitude_sq(ws_vec))
                 edge_normalize = ws_vec / edge_length
                 dotP = np.dot(a_to_circle, edge_normalize)
                 if dotP < 0:
@@ -59,12 +59,11 @@ class Circle(Collider):
                 else:
                     # Closest point is ws_a + dotP * edge_normalize
                     intersection_point = ws_a + edge_normalize * dotP
-                vec = intersection_point - self.physicsObject.position[:2]
-                d = np.sqrt(pow(vec[0], 2) + pow(vec[1], 2))
+                vec = intersection_point - self.physicsObject.position
+                d = np.sqrt(magnitude_sq(vec))
                 if d < best_distance:
                     best_distance = d
                     best_point = intersection_point
-                    best_point = np.append(best_point, np.array([self.physicsObject.position[2]]))
             if best_distance < self.radius:
                 return {
                     'collision': True,
@@ -90,7 +89,7 @@ class ConvexPolygon(Collider):
         # Generate inertia for each tri
         i = 0
         for a, b in zip(self.verts[:-1], self.verts[1:]):
-            i += (pow(a[0], 2) + pow(a[1], 2) + pow(b[0], 2) + pow(b[1], 2) + np.dot(a, b)) / 6
+            i += (magnitude_sq(a) + magnitude_sq(b) + np.dot(a, b)) / 6
         self.physicsObject.inertia = i * self.physicsObject.mass
 
     def getCollisionInfo(self, other: Collider):
@@ -101,9 +100,9 @@ class ConvexPolygon(Collider):
             # STEP 1: Translate normals for each shape into worldspace.
             normals = []
             for i, n in enumerate(self.normals):
-                normals.append((local_space_to_world_space(n, self.physicsObject.rotation, np.array([0, 0, 0])), 's', i))
+                normals.append((local_space_to_world_space(n, self.physicsObject.rotation, np.array([0, 0])), 's', i))
             for i, n in enumerate(other.normals):
-                normals.append((local_space_to_world_space(n, other.physicsObject.rotation, np.array([0, 0, 0])), 'e', i))
+                normals.append((local_space_to_world_space(n, other.physicsObject.rotation, np.array([0, 0])), 'e', i))
             # STEP 2: For each normal, calculate the overlap.
             self_points = [
                 local_space_to_world_space(v, self.physicsObject.rotation, self.physicsObject.position)
@@ -160,7 +159,7 @@ class ConvexPolygon(Collider):
                                     if s_max[0] - o_min[0] > best_collision:
                                         best_collision = s_max[0] - o_min[0]
                                         best_collision_point = other_points[p]
-                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
+                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / magnitude_sq(n)
                     if s_max[0] > o_max[0] > s_min[0]:
                         if i in s_min[1]:
                             for p in o_max[1]:
@@ -170,7 +169,7 @@ class ConvexPolygon(Collider):
                                     if o_max[0] - s_min[0] > best_collision:
                                         best_collision = o_max[0] - s_min[0]
                                         best_collision_point = other_points[p]
-                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
+                                        best_collision_vector = np.dot(n, best_collision_point - self_points[i+1]) * n / magnitude_sq(n)
                 else:
                     # Check collision from self vertices
                     if o_min[0] < s_min[0] < o_max[0]:
@@ -182,7 +181,7 @@ class ConvexPolygon(Collider):
                                     if o_max[0] - s_min[0] > best_collision:
                                         best_collision = o_max[0] - s_min[0]
                                         best_collision_point = self_points[p]
-                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
+                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / magnitude_sq(n)
                     if o_max[0] > s_max[0] > o_min[0]:
                         if i in o_min[1]:
                             for p in s_max[1]:
@@ -192,13 +191,12 @@ class ConvexPolygon(Collider):
                                     if s_max[0] - o_min[0] > best_collision:
                                         best_collision = s_max[0] - o_min[0]
                                         best_collision_point = self_points[p]
-                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / (pow(n[0], 2) + pow(n[1], 2))
+                                        best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / magnitude_sq(n)
             # If no collision point is found, then the interesection of the two shapes does not include a vertex, in a physics simulation, this barely happens. So simply let it occur.
             if best_collision_point is None:
                 return {
                     'collision': False
                 }
-            best_collision_vector = np.append(best_collision_vector, [self.physicsObject.position[2]])
             return {
                 'collision': True,
                 'world_space_position': best_collision_point,

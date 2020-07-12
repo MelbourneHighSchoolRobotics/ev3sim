@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 from objects.base import PhysicsObject
+from objects.utils import magnitude_sq
 from visual.manager import ScreenObjectManager
 from visual.utils import worldspace_to_screenspace
 
@@ -30,26 +31,26 @@ class World:
                     # STEP 1: Resolve collision by moving non-static object away.
                     obj.position += res['collision_vector']
                     # Ensure that this object then can't 'phase through' this later.
-                    obj.immovable_directions.append(res['collision_vector'] / np.sqrt(pow(res['collision_vector'][0], 2) + pow(res['collision_vector'][1], 2)))
+                    obj.immovable_directions.append(res['collision_vector'] / np.sqrt(magnitude_sq(res['collision_vector'])))
                     # STEP 2: Change velocity based on restitution (https://en.wikipedia.org/wiki/Coefficient_of_restitution)
-                    obj.velocity -= (1 + obj.restitution_coefficient) * res['collision_vector'] * np.dot(res['collision_vector'][:2], obj.velocity[:2]) / (pow(res['collision_vector'][0], 2) + pow(res['collision_vector'][1], 2))
+                    obj.velocity -= (1 + obj.restitution_coefficient) * res['collision_vector'] * np.dot(res['collision_vector'], obj.velocity) / magnitude_sq(res['collision_vector'])
         for i, obj in enumerate(self.objects):
             for obj2 in self.objects[i+1:]:
                 res = obj.collider.getCollisionInfo(obj2.collider)
                 if res['collision']:
                     restitution = obj.restitution_coefficient * obj2.restitution_coefficient
                     # STEP 1: Resolve collision by moving objects away relative to their momentum.
-                    obj_velocity = np.dot(obj.velocity[:2], res['collision_vector'][:2]) * res['collision_vector'] / (pow(res['collision_vector'][0], 2) + pow(res['collision_vector'][1], 2))
-                    obj2_velocity = np.dot(obj2.velocity[:2], res['collision_vector'][:2]) * res['collision_vector'] / (pow(res['collision_vector'][0], 2) + pow(res['collision_vector'][1], 2))
-                    m_obj = np.sqrt(pow(obj_velocity[0], 2) + pow(obj_velocity[1], 2)) * obj.mass
-                    m_obj2 = np.sqrt(pow(obj2_velocity[0], 2) + pow(obj2_velocity[1], 2)) * obj2.mass
+                    obj_velocity = np.dot(obj.velocity, res['collision_vector']) * res['collision_vector'] / magnitude_sq(res['collision_vector'])
+                    obj2_velocity = np.dot(obj2.velocity, res['collision_vector']) * res['collision_vector'] / magnitude_sq(res['collision_vector'])
+                    m_obj = np.sqrt(magnitude_sq(obj_velocity)) * obj.mass
+                    m_obj2 = np.sqrt(magnitude_sq(obj2_velocity)) * obj2.mass
 
                     # It is assumed only one object has immovable directions which affect the calculations.
                     if obj.immovable_directions:
                         # We need to ensure that we don't move opposite this immovable direction.
                         result = res['collision_vector'].copy()
                         for direction in obj.immovable_directions:
-                            aligned = np.dot(direction[:2], result[:2])
+                            aligned = np.dot(direction, result)
                             if aligned < 0:
                                 result -= aligned * direction
                         obj.position += result * m_obj2 / (m_obj + m_obj2)
@@ -58,7 +59,7 @@ class World:
                         # We need to ensure that we don't move opposite this immovable direction.
                         result = res['collision_vector'].copy()
                         for direction in obj2.immovable_directions:
-                            aligned = np.dot(direction[:2], result[:2])
+                            aligned = np.dot(direction, result)
                             if aligned < 0:
                                 result -= aligned * direction
                         obj.position += (res['collision_vector'] - result) + result * m_obj2 / (m_obj + m_obj2)

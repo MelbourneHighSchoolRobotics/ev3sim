@@ -53,7 +53,7 @@ class ScreenObjectManager:
         # so no extra checks need to be made to sorting_order.
         # NOTE: We could speed this up with a binary search, possible performance gain with many objects.
         for x in range(len(self.sorting_order)):
-            if self.objects[self.sorting_order[x]].position[2] > obj.position[2]:
+            if self.objects[self.sorting_order[x]].zPos > obj.zPos:
                 self.sorting_order.insert(x, key)
         else:
             self.sorting_order.append(key)
