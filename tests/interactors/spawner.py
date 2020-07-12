@@ -9,6 +9,12 @@ class SpawnerInteractor(IInteractor):
     def __init__(self, **kwargs):
         self.prefix_key = kwargs.get('prefix', 'spawn_')
         self.items = kwargs['elements']
+        # Handle any programmatic color references.
+        for x in range(len(self.items)):
+            if 'fill' in self.items[x] and self.items[x]['fill'] in kwargs:
+                self.items[x]['fill'] = kwargs[self.items[x]['fill']]
+            if self.items[x]['type'] == 'object' and self.items[x].get('visual', {}).get('fill', '') in kwargs:
+                self.items[x]['visual']['fill'] = kwargs[self.items[x]['visual']['fill']]
         self.object_map = {}
 
     def startUp(self, **kwargs):
