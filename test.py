@@ -2,4 +2,4 @@
 
 from simulation.loader import runFromFile
 
-runFromFile('test.yaml')
+runFromFile('presets/soccer.yaml')
