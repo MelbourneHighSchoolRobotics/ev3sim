@@ -1,0 +1,145 @@
+interactors:
+- class_path: 'tests.interactors.spawner.SpawnerInteractor'
+  kwargs:
+    text_color: '#e63946'
+    wall_color: '#2a9d8f'
+    strip_color: '#f1faee'
+    grass_color: '#55a630'
+    elements:
+    - type: visual
+      name: Rectangle
+      width: 2430
+      height: 1830
+      fill: 'grass_color'
+      stroke_width: 0
+      position: [0, -180]
+      zPos: 3
+      key: grass
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Rectangle
+        width: 2430
+        height: 10
+        fill: 'wall_color'
+        stroke_width: 0
+      position: [0, 735]
+      zPos: 5
+      static: true
+      key: topbar
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Rectangle
+        width: 2430
+        height: 10
+        fill: 'wall_color'
+        stroke_width: 0
+      position: [0, -1095]
+      zPos: 5
+      static: true
+      key: botbar
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Rectangle
+        width: 10
+        height: 1830
+        fill: 'wall_color'
+        stroke_width: 0
+      position: [-1215, -180]
+      zPos: 5
+      static: true
+      key: leftbar
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Rectangle
+        width: 10
+        height: 1830
+        fill: 'wall_color'
+        stroke_width: 0
+      position: [1215, -180]
+      zPos: 5
+      static: true
+      key: rightbar
+    - type: visual
+      name: Rectangle
+      width: 10
+      height: 1330
+      fill: 'strip_color'
+      stroke_width: 0
+      position: [940, -180]
+      zPos: 5
+      key: rightstrip
+    - type: visual
+      name: Rectangle
+      width: 10
+      height: 1330
+      fill: 'strip_color'
+      stroke_width: 0
+      position: [-940, -180]
+      zPos: 5
+      key: leftstrip
+    - type: visual
+      name: Rectangle
+      width: 1880
+      height: 10
+      fill: 'strip_color'
+      stroke_width: 0
+      position: [0, 480]
+      zPos: 5
+      key: topstrip
+    - type: visual
+      name: Rectangle
+      width: 1880
+      height: 10
+      fill: 'strip_color'
+      stroke_width: 0
+      position: [0, -840]
+      zPos: 5
+      key: botstrip 
+    - type: visual
+      name: Text
+      text: '0 - 0'
+      fill: 'text_color'
+      font_size: 72
+      hAlignment: m
+      vAlignment: t
+      position: [0, 1100]
+      zPos: 5
+      key: scoreText
+    - type: visual
+      name: Text
+      text: 'Team 1'
+      fill: 'text_color'
+      font_size: 72
+      hAlignment: l
+      vAlignment: t
+      position: [-1466.5, 1100]
+      zPos: 5
+      key: team1Text
+    - type: visual
+      name: Text
+      text: 'Team 2'
+      fill: 'text_color'
+      font_size: 72
+      hAlignment: r
+      vAlignment: t
+      position: [1466.5, 1100]
+      zPos: 5
+      key: team2Text
+
+loader:
+  GAME_TICK_RATE: 60
+  VISUAL_TICK_RATE: 60
+screen:
+  screen_width: 1280
+  screen_height: 960
+  map_width: 2933
+  map_height: 2200
+  background_color: '#264653'
