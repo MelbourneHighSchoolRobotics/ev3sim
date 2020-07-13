@@ -1,8 +1,8 @@
 import pygame
 import numpy as np
-from tests.interactors.spawner import SpawnerInteractor
+from simulation.interactor import IInteractor
 
-class ControllablePhysics(SpawnerInteractor):
+class ControllablePhysics(IInteractor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

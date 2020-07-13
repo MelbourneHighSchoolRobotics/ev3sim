@@ -1,5 +1,5 @@
 interactors:
-- class_path: 'tests.interactors.spawner.SpawnerInteractor'
+- class_path: 'simulation.interactor.IInteractor'
   kwargs:
     text_color: '#e63946'
     wall_color: '#2a9d8f'
