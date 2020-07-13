@@ -19,6 +19,8 @@ class IVisualElement:
     _rotation: float
     # zPosition handles sorting order of visual objects - higher values appear above lower values.
     zPos: float
+    # Whether this visual object should be visible from a color sensor.
+    sensorVisible: bool
 
     def __init__(self, **kwargs):
         self.initFromKwargs(**kwargs)
@@ -27,6 +29,7 @@ class IVisualElement:
         self.position = kwargs.get('position', [0, 0])
         self.rotation = kwargs.get('rotation', 0)
         self.zPos = kwargs.get('zPos', 0)
+        self.sensorVisible = kwargs.get('sensorVisible', False)
 
     @property
     def position(self) -> np.ndarray:

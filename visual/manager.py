@@ -80,8 +80,16 @@ class ScreenObjectManager:
     def applyToScreen(self):
         self.screen.fill(self.background_color)
         for key in self.sorting_order:
-            self.objects[key].applyToScreen()
+            if self.objects[key].sensorVisible:
+                self.objects[key].applyToScreen()
+        self.sensorScreen = self.screen.copy()
+        for key in self.sorting_order:
+            if not self.objects[key].sensorVisible:
+                self.objects[key].applyToScreen()
         pygame.display.update()
+
+    def colourAtPixel(self, screen_position):
+        return self.sensorScreen.get_at(screen_position)
 
     def handleEvents(self):
         for event in pygame.event.get():

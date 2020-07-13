@@ -15,6 +15,7 @@ interactors:
       position: [0, -180]
       zPos: 3
       key: grass
+      sensorVisible: true
     - type: object
       physics: true
       collider: inherit
@@ -24,6 +25,7 @@ interactors:
         height: 10
         fill: 'wall_color'
         stroke_width: 0
+        sensorVisible: true
       position: [0, 735]
       zPos: 5
       static: true
@@ -37,6 +39,7 @@ interactors:
         height: 10
         fill: 'wall_color'
         stroke_width: 0
+        sensorVisible: true
       position: [0, -1095]
       zPos: 5
       static: true
@@ -50,6 +53,7 @@ interactors:
         height: 1830
         fill: 'wall_color'
         stroke_width: 0
+        sensorVisible: true
       position: [-1215, -180]
       zPos: 5
       static: true
@@ -63,6 +67,7 @@ interactors:
         height: 1830
         fill: 'wall_color'
         stroke_width: 0
+        sensorVisible: true
       position: [1215, -180]
       zPos: 5
       static: true
@@ -76,6 +81,7 @@ interactors:
       position: [940, -180]
       zPos: 5
       key: rightstrip
+      sensorVisible: true
     - type: visual
       name: Rectangle
       width: 10
@@ -85,6 +91,7 @@ interactors:
       position: [-940, -180]
       zPos: 5
       key: leftstrip
+      sensorVisible: true
     - type: visual
       name: Rectangle
       width: 1880
@@ -94,6 +101,7 @@ interactors:
       position: [0, 480]
       zPos: 5
       key: topstrip
+      sensorVisible: true
     - type: visual
       name: Rectangle
       width: 1880
@@ -103,6 +111,7 @@ interactors:
       position: [0, -840]
       zPos: 5
       key: botstrip 
+      sensorVisible: true
     - type: visual
       name: Text
       text: '0 - 0'
