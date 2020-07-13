@@ -142,6 +142,48 @@ interactors:
       position: [1466.5, 1100]
       zPos: 5
       key: team2Text
+- class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
+  kwargs:
+    accel: 900000
+    prefix: spawn_
+    elements:
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Circle
+        radius: 50
+        fill: '#00ff00'
+        stroke_width: 1
+        stroke: '#ffffff'
+      position: [-20, -30]
+      zPos: 2
+      key: circ_bot
+    - type: object
+      physics: true
+      collider: inherit
+      visual:
+        name: Polygon
+        verts:
+        - [300, 150]
+        - [0, 300]
+        - [-300, 150]
+        - [-300, -150]
+        - [0, -300]
+        - [300, -150]
+        fill: '#ff00ff'
+        stroke_width: 1
+        stroke: '#ffffff'
+      children:
+      - type: sensor
+        name: ColorSensor
+        position: [0, 250]
+      position: [300, 300]
+      zPos: 2
+      mass: 300
+      restitution: 0.2
+      friction: 3
+      key: phys_obj
 
 loader:
   GAME_TICK_RATE: 60
