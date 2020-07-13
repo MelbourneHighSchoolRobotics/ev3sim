@@ -117,28 +117,28 @@ class ConvexPolygon(Collider):
             best_collision_vector = None
             for n, source, i in normals:
                 # We need the source here, because any intersecting vertex will not be from the source.
-                s_min = (1000000, None)
-                s_max = (-1000000, None)
-                o_min = (1000000, None)
-                o_max = (-1000000, None)
+                s_min = (1000000000000, None)
+                s_max = (-1000000000000, None)
+                o_min = (1000000000000, None)
+                o_max = (-1000000000000, None)
                 epsilon = 0.000001
                 for p in range(len(self_points)):
                     res = np.dot(self_points[p], n)
-                    if res - epsilon > s_max[0]:
+                    if res - epsilon > s_max[0] or s_max[1] is None:
                         s_max = (res, [p])
                     elif res + epsilon > s_max[0]:
                         s_max = (res, [p] + s_max[1])
-                    if res + epsilon < s_min[0]:
+                    if res + epsilon < s_min[0] or s_min[1] is None:
                         s_min = (res, [p])
                     elif res - epsilon < s_min[0]:
                         s_min = (res, [p] + s_min[1])
                 for p in range(len(other_points)):
                     res = np.dot(other_points[p], n)
-                    if res - epsilon > o_max[0]:
+                    if res - epsilon > o_max[0] or o_max[1] is None:
                         o_max = (res, [p])
                     elif res + epsilon > o_max[0]:
                         o_max = (res, [p] + o_max[1])
-                    if res + epsilon < o_min[0]:
+                    if res + epsilon < o_min[0] or o_min[1] is None:
                         o_min = (res, [p])
                     elif res - epsilon < o_min[0]:
                         o_min = (res, [p] + o_min[1])
