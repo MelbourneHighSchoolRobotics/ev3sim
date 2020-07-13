@@ -9,17 +9,17 @@ class IInteractor:
 
     def __init__(self, **kwargs):
         self.prefix_key = kwargs.get('prefix', 'spawn_')
-        self.items = kwargs['elements']
+        self.items = kwargs.get('elements', [])
         # Handle any programmatic color references.
         for x in range(len(self.items)):
             if 'fill' in self.items[x] and self.items[x]['fill'] in kwargs:
                 self.items[x]['fill'] = kwargs[self.items[x]['fill']]
-            if self.items[x]['type'] == 'object' and self.items[x].get('visual', {}).get('fill', '') in kwargs:
+            if self.items[x].get('visual', {}).get('fill', '') in kwargs:
                 self.items[x]['visual']['fill'] = kwargs[self.items[x]['visual']['fill']]
         self.object_map = {}
 
     def startUp(self):
-        self.objects = []
+        from sensors.base import initialise_sensor
         for item in self.items:
             if item['type'] == 'visual':
                 vis = visualFactory(**item)
@@ -27,8 +27,16 @@ class IInteractor:
                 ScreenObjectManager.instance.registerVisual(vis, vis.key)
                 self.object_map[item.get('key', 'object')] = vis
             elif item['type'] == 'object':
+                sensors = []
+                for x in range(len(item.get('children', []))):
+                    if item['children'][x]['type'] == 'sensor':
+                        sensors.append(item['children'][x])
+                        del item['children'][x]
                 obj = objectFactory(**item)
                 obj.key = self.prefix_key + item.get('key', 'object')
+                for sensor in sensors:
+                    # Instantiate the sensors.
+                    initialise_sensor(sensor, obj)
                 if item.get('physics', False):
                     World.instance.registerObject(obj)    
                 ScreenObjectManager.instance.registerObject(obj, obj.key)

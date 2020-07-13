@@ -12,7 +12,10 @@ class ScriptLoader:
     VISUAL_TICK_RATE = 30
     GAME_TICK_RATE = 60
 
+    instance: 'ScriptLoader' = None
+
     def __init__(self, **kwargs):
+        ScriptLoader.instance = self
         for key, value in kwargs.items():
             setattr(self, key, value)
 
