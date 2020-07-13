@@ -23,13 +23,15 @@ class IInteractor:
         for item in self.items:
             if item['type'] == 'visual':
                 vis = visualFactory(**item)
-                ScreenObjectManager.instance.registerVisual(vis, self.prefix_key + item.get('key', 'object'))
+                vis.key = self.prefix_key + item.get('key', 'object')
+                ScreenObjectManager.instance.registerVisual(vis, vis.key)
                 self.object_map[item.get('key', 'object')] = vis
             elif item['type'] == 'object':
                 obj = objectFactory(**item)
+                obj.key = self.prefix_key + item.get('key', 'object')
                 if item.get('physics', False):
                     World.instance.registerObject(obj)    
-                ScreenObjectManager.instance.registerObject(obj, self.prefix_key + item.get('key', 'object'))
+                ScreenObjectManager.instance.registerObject(obj, obj.key)
                 self.object_map[item.get('key', 'object')] = obj
 
     # tick returns a boolean, which is true if the script should end.
