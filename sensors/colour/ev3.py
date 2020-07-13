@@ -7,7 +7,6 @@ from visual.utils import worldspace_to_screenspace
 class ColorInteractor(ISensorInteractor):
     
     def tick(self, tick):
-        super().tick(tick)
         try:
             self.sensor_class.calc_raw()
             self.object_map['light_up'].visual.fill = self.sensor_class.rgb()

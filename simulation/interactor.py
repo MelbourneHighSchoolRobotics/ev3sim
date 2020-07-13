@@ -46,6 +46,9 @@ class IInteractor:
     def tick(self, tick) -> bool:
         return False
 
+    def afterPhysics(self):
+        pass
+
     def tearDown(self):
         pass
 

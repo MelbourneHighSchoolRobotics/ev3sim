@@ -44,6 +44,8 @@ class ScriptLoader:
                     self.active_scripts[i].tearDown()
                     del self.active_scripts[i]
                 self.world.tick(1 / self.GAME_TICK_RATE)
+                for interactor in self.active_scripts:
+                    interactor.afterPhysics()
                 tick += 1
             if new_time - last_vis_update > 1 / self.VISUAL_TICK_RATE:
                 last_vis_update = new_time
