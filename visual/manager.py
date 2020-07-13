@@ -45,6 +45,10 @@ class ScreenObjectManager:
     def startScreen(self):
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+        pygame.display.set_caption('MHS Robotics Club Simulator')
+        img = pygame.image.load('presets/Logo.png')
+        img.set_colorkey((255, 255, 255))
+        pygame.display.set_icon(img)
 
     def registerVisual(self, obj: 'visual.objects.IVisualElement', key) -> str: # noqa: F821
         assert key not in self.objects, f"Tried to register visual element to screen with key that is already in use: {key}"
