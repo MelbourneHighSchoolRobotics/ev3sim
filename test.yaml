@@ -108,6 +108,10 @@ interactors:
       position: [105, -80]
       zPos: 0
       key: botText
+#TODO Fill out the rest of the soccer interactor
+-class_path: 'tests.interactors.soccer_interactor.SoccerInteractor'
+  -team1score: 0
+  -team2score: 0
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60
