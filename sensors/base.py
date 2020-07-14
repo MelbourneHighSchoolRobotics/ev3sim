@@ -8,11 +8,12 @@ from visual.manager import ScreenObjectManager
 
 class Sensor:
 
-    def __init__(self, parent, relativePos):
+    def __init__(self, parent, relativePos, relativeRot):
         # parent is the physics object containing this sensor.
         # visual is the object representing the sensor
         self.parent = parent
         self.relativePos = relativePos
+        self.relativeRot = relativeRot
     
     @property
     def global_position(self):
@@ -28,6 +29,7 @@ class ISensorInteractor(IInteractor):
         self.sensor_class = kwargs.get('sensor')
         self.physical_object = kwargs.get('parent')
         self.relative_location = kwargs.get('relative_location')
+        self.relative_rotation = kwargs.get('relative_rotation')
         self.prefix_key = self.physical_object.key + str(self.sensor_class.__class__)
     
     def startUp(self):
@@ -45,7 +47,7 @@ class ISensorInteractor(IInteractor):
     def afterPhysics(self):
         for obj in self.object_map.values():
             obj.position = local_space_to_world_space(self.relative_location, self.physical_object.rotation, self.physical_object.position)
-            obj.rotation = self.physical_object.rotation
+            obj.rotation = self.physical_object.rotation + self.relative_rotation
 
 def initialise_sensor(sensorData, parentObj):
     sensors = yaml.safe_load(open('sensors/classes.yaml', 'r'))
@@ -59,13 +61,15 @@ def initialise_sensor(sensorData, parentObj):
             import importlib
             klass = getattr(importlib.import_module(mname), cname)
             relative_location = sensorData.get('position', [0, 0])
-            sensor = klass(parentObj, relative_location)
+            relative_rotation = sensorData.get('rotation', 0) * np.pi/180
+            sensor = klass(parentObj, relative_location, relative_rotation)
             for opt in config.get('interactors', []):
                 res = opt.get('kwargs', {})
                 res.update({
                     'sensor': sensor,
                     'parent': parentObj,
                     'relative_location': relative_location,
+                    'relative_rotation': relative_rotation
                 })
                 opt['kwargs'] = res
                 ScriptLoader.instance.active_scripts.append(fromOptions(opt))
