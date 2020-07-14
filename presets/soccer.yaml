@@ -8,11 +8,11 @@ interactors:
     elements:
     - type: visual
       name: Rectangle
-      width: 2430
-      height: 1830
+      width: 243
+      height: 183
       fill: 'grass_color'
       stroke_width: 0
-      position: [0, -180]
+      position: [0, -18]
       zPos: 3
       key: grass
       sensorVisible: true
@@ -21,12 +21,12 @@ interactors:
       collider: inherit
       visual:
         name: Rectangle
-        width: 2430
-        height: 10
+        width: 246
+        height: 3
         fill: 'wall_color'
         stroke_width: 0
         sensorVisible: true
-      position: [0, 735]
+      position: [0, 73.5]
       zPos: 5
       static: true
       key: topbar
@@ -35,12 +35,12 @@ interactors:
       collider: inherit
       visual:
         name: Rectangle
-        width: 2430
-        height: 10
+        width: 246
+        height: 3
         fill: 'wall_color'
         stroke_width: 0
         sensorVisible: true
-      position: [0, -1095]
+      position: [0, -109.5]
       zPos: 5
       static: true
       key: botbar
@@ -49,12 +49,12 @@ interactors:
       collider: inherit
       visual:
         name: Rectangle
-        width: 10
-        height: 1830
+        width: 3
+        height: 183
         fill: 'wall_color'
         stroke_width: 0
         sensorVisible: true
-      position: [-1215, -180]
+      position: [-121.5, -18]
       zPos: 5
       static: true
       key: leftbar
@@ -63,52 +63,52 @@ interactors:
       collider: inherit
       visual:
         name: Rectangle
-        width: 10
-        height: 1830
+        width: 3
+        height: 183
         fill: 'wall_color'
         stroke_width: 0
         sensorVisible: true
-      position: [1215, -180]
+      position: [121.5, -18]
       zPos: 5
       static: true
       key: rightbar
     - type: visual
       name: Rectangle
-      width: 10
-      height: 1330
+      width: 1
+      height: 133
       fill: 'strip_color'
       stroke_width: 0
-      position: [940, -180]
+      position: [94, -18]
       zPos: 5
       key: rightstrip
       sensorVisible: true
     - type: visual
       name: Rectangle
-      width: 10
-      height: 1330
+      width: 1
+      height: 133
       fill: 'strip_color'
       stroke_width: 0
-      position: [-940, -180]
+      position: [-94, -18]
       zPos: 5
       key: leftstrip
       sensorVisible: true
     - type: visual
       name: Rectangle
-      width: 1880
-      height: 10
+      width: 188
+      height: 1
       fill: 'strip_color'
       stroke_width: 0
-      position: [0, 480]
+      position: [0, 48]
       zPos: 5
       key: topstrip
       sensorVisible: true
     - type: visual
       name: Rectangle
-      width: 1880
-      height: 10
+      width: 188
+      height: 1
       fill: 'strip_color'
       stroke_width: 0
-      position: [0, -840]
+      position: [0, -84]
       zPos: 5
       key: botstrip 
       sensorVisible: true
@@ -119,7 +119,7 @@ interactors:
       font_size: 72
       hAlignment: m
       vAlignment: t
-      position: [0, 1100]
+      position: [0, 110]
       zPos: 5
       key: scoreText
     - type: visual
@@ -129,7 +129,7 @@ interactors:
       font_size: 72
       hAlignment: l
       vAlignment: t
-      position: [-1466.5, 1100]
+      position: [-146.65, 110]
       zPos: 5
       key: team1Text
     - type: visual
@@ -139,12 +139,12 @@ interactors:
       font_size: 72
       hAlignment: r
       vAlignment: t
-      position: [1466.5, 1100]
+      position: [146.65, 110]
       zPos: 5
       key: team2Text
 - class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
   kwargs:
-    accel: 900000
+    accel: 120000
     prefix: spawn_
     elements:
     - type: object
@@ -152,11 +152,11 @@ interactors:
       collider: inherit
       visual:
         name: Circle
-        radius: 50
+        radius: 5
         fill: '#00ff00'
         stroke_width: 1
         stroke: '#ffffff'
-      position: [-20, -30]
+      position: [-2, -3]
       zPos: 2
       key: circ_bot
     - type: object
@@ -165,24 +165,24 @@ interactors:
       visual:
         name: Polygon
         verts:
-        - [300, 150]
-        - [0, 300]
-        - [-300, 150]
-        - [-300, -150]
-        - [0, -300]
-        - [300, -150]
+        - [30, 15]
+        - [0, 30]
+        - [-30, 15]
+        - [-30, -15]
+        - [0, -30]
+        - [30, -15]
         fill: '#ff00ff'
         stroke_width: 1
         stroke: '#ffffff'
       children:
       - type: sensor
         name: ColorSensor
-        position: [0, 250]
-      position: [300, 300]
+        position: [0, 25]
+      position: [30, 30]
       zPos: 2
       mass: 300
       restitution: 0.2
-      friction: 3
+      friction: 4
       key: phys_obj
 
 loader:
@@ -191,6 +191,6 @@ loader:
 screen:
   screen_width: 1280
   screen_height: 960
-  map_width: 2933
-  map_height: 2200
+  map_width: 293.3
+  map_height: 220
   background_color: '#264653'

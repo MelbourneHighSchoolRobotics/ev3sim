@@ -6,8 +6,8 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 80
-        height: 80
+        width: 8
+        height: 8
         fill: 'back_color'
         stroke_width: 1
         stroke: '#000000'
@@ -16,7 +16,7 @@ interactors:
       key: main_block
     - visual:
         name: Circle
-        radius: 15
+        radius: 1.5
         fill: '#000000'
         stroke_width: 0
       position: [0, 0]
