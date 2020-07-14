@@ -28,10 +28,13 @@ class IInteractor:
                 self.object_map[item.get('key', 'object')] = vis
             elif item['type'] == 'object':
                 sensors = []
+                to_remove = []
                 for x in range(len(item.get('children', []))):
                     if item['children'][x]['type'] == 'sensor':
                         sensors.append(item['children'][x])
-                        del item['children'][x]
+                        to_remove.append(x)
+                for x in to_remove[::-1]:
+                    del item['children'][x]
                 obj = objectFactory(**item)
                 obj.key = self.prefix_key + item.get('key', 'object')
                 for sensor in sensors:

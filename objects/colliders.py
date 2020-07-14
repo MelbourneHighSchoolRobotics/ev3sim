@@ -94,7 +94,10 @@ class ConvexPolygon(Collider):
 
     def getCollisionInfo(self, other: Collider):
         if isinstance(other, Circle):
-            return other.getCollisionInfo(self)
+            res = other.getCollisionInfo(self)
+            if res['collision']:
+                res['collision_vector'] = -res['collision_vector']
+            return res
         if isinstance(other, ConvexPolygon):
             # Use the separating axis method to generate collision info between two convex polygons.
             # STEP 1: Translate normals for each shape into worldspace.
