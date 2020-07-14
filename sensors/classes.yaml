@@ -1,1 +1,2 @@
 ColorSensor: colour/sensor.yaml
+UltrasonicSensor: ultrasonic/sensor.yaml

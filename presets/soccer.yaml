@@ -179,6 +179,10 @@ interactors:
       - type: sensor
         name: ColorSensor
         position: [0, 25]
+      - type: sensor
+        name: UltrasonicSensor
+        position: [0, -25]
+        rotation: -90
       position: [30, 30]
       zPos: 2
       mass: 300

@@ -1,0 +1,44 @@
+from objects.base import objectFactory
+from sensors.base import Sensor, ISensorInteractor
+from sensors.ultrasonic.base import UltrasonicSensorMixin
+from simulation.loader import ScriptLoader
+from visual.manager import ScreenObjectManager
+
+class UltrasonicInteractor(ISensorInteractor):
+
+    UPDATE_PER_SECOND = 5
+    DRAW_RAYCAST = False
+
+    def tick(self, tick):
+        if tick % (ScriptLoader.instance.GAME_TICK_RATE // self.UPDATE_PER_SECOND) == 0:
+            self.sensor_class.calc()
+            self.object_map['light_up'].visual.fill = (
+                min(max((self.sensor_class.MAX_RAYCAST - self.sensor_class.distance_centimeters) * 255 / self.sensor_class.MAX_RAYCAST, 0), 255),
+                0,
+                0,
+            )
+            if self.DRAW_RAYCAST:
+                obj = self.sensor_class._GenerateRaycast(self.sensor_class.global_position, self.sensor_class.parent.rotation + self.sensor_class.relativeRot, self.sensor_class.distance_centimeters).visual
+                key = self.object_map['light_up'].key + '_US'
+                if key in ScreenObjectManager.instance.objects:
+                    ScreenObjectManager.instance.unregisterVisual(key)
+                ScreenObjectManager.instance.registerVisual(obj, key)
+        return False
+
+class UltrasonicSensor(Sensor, UltrasonicSensorMixin):
+
+    def __init__(self, parent, relativePos, relativeRot, **kwargs):
+        super().__init__(parent, relativePos, relativeRot, **kwargs)
+        self._SetIgnoredObjects([parent])
+        self._InitialiseRaycast()
+
+    def calc(self):
+        self.saved = self._DistanceFromSensor(self.global_position, self.parent.rotation + self.relativeRot)
+    
+    @property
+    def distance_centimeters(self):
+        return self.saved
+    
+    @property
+    def distance_inches(self):
+        raise NotImplementedError("`distance_inches` is currently not implemented.")
