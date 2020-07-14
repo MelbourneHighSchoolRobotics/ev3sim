@@ -105,6 +105,7 @@ class PhysicsObject(BaseObject):
     def updatePhysics(self, dt):
         # Create a friction force based on previous velocity
         self.apply_force(-self.mass * self.velocity * self.friction_coefficient)
+        self.apply_torque(-self.mass * self.angular_velocity * self.friction_coefficient * 1000)
 
         # Acceleration is set to 0 each update - no leakage.
         acceleration = self._force / self.mass
@@ -118,6 +119,7 @@ class PhysicsObject(BaseObject):
 
         # Clear forces for next update.
         self._force = np.array([0., 0.])
+        self._torque = 0
 
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""

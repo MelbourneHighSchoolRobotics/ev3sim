@@ -145,6 +145,7 @@ interactors:
 - class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
   kwargs:
     accel: 120000
+    ang_accel: 3000000
     prefix: spawn_
     elements:
     - type: object
