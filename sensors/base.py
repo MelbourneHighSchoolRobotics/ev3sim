@@ -45,6 +45,7 @@ class ISensorInteractor(IInteractor):
     def afterPhysics(self):
         for obj in self.object_map.values():
             obj.position = local_space_to_world_space(self.relative_location, self.physical_object.rotation, self.physical_object.position)
+            obj.rotation = self.physical_object.rotation
 
 def initialise_sensor(sensorData, parentObj):
     sensors = yaml.safe_load(open('sensors/classes.yaml', 'r'))
