@@ -195,8 +195,32 @@ class ConvexPolygon(Collider):
                                         best_collision = s_max[0] - o_min[0]
                                         best_collision_point = self_points[p]
                                         best_collision_vector = -np.dot(n, best_collision_point - other_points[i+1]) * n / magnitude_sq(n)
-            # If no collision point is found, then the interesection of the two shapes does not include a vertex, in a physics simulation, this barely happens. So simply let it occur.
+            # If no collision point is found, then the intersection of the two shapes does not include a vertex. This only really happens if walls are too thin, or doing something like ultrasonic sensing.
+            # In either case, try to calculate collisions, but don't worry about the intersection point
             if best_collision_point is None:
+                self_points = [
+                    local_space_to_world_space(v, self.physicsObject.rotation, self.physicsObject.position)
+                    for v in self.verts
+                ]
+                other_points = [
+                    local_space_to_world_space(v, other.physicsObject.rotation, other.physicsObject.position)
+                    for v in other.verts
+                ]
+                for a, b in zip(self_points[:-1], self_points[1:]):
+                    for c, d in zip(other_points[:-1], other_points[1:]):
+                        r = (a[0] - b[0])*(c[1] - d[1]) - (a[1] - b[1])*(c[0] - d[0])
+                        if r == 0: continue
+                        t = ((a[0]-c[0])*(c[1]-d[1])-(a[1]-c[1])*(c[0]-d[0])) / r
+                        u = -((a[0]-b[0])*(a[1]-c[1])-(a[1]-b[1])*(a[0]-c[0])) / r
+                        if not(0<=t<=1 and 0<=u<=1): continue
+                        return {
+                            'collision': True,
+                            'world_space_position': np.array([
+                                a[0] + t * (b[0] - a[0]),
+                                a[1] + t * (b[1] - a[1]),
+                            ]),
+                            'collision_vector': np.array([0, 0])
+                        }
                 return {
                     'collision': False
                 }
