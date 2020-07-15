@@ -7,8 +7,8 @@ from visual.manager import ScreenObjectManager
 
 class UltrasonicInteractor(ISensorInteractor):
 
-    UPDATE_PER_SECOND = 10
-    DRAW_RAYCAST = True
+    UPDATE_PER_SECOND = 20
+    DRAW_RAYCAST = False
 
     def startUp(self):
         super().startUp()

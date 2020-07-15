@@ -3,7 +3,7 @@ import numpy as np
 
 class ColourSensorMixin:
 
-    SENSOR_RADIUS = 1.5
+    SENSOR_RADIUS = 1
     SENSOR_POINTS = 100
 
     def _SenseValueAboutPosition(self, centrePosition, valueGetter):
