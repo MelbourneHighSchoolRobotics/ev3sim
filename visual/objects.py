@@ -94,6 +94,36 @@ class Colorable(IVisualElement):
         else:
             self._stroke = value
 
+class Line(Colorable):
+
+    # THESE DON'T HAVE A LOCAL POSITION
+
+    def initFromKwargs(self, **kwargs):
+        self.start = kwargs.get('start')
+        self.end = kwargs.get('end')
+        super().initFromKwargs(**kwargs)
+
+    def calculatePoints(self):
+        return
+
+    def applyToScreen(self):
+        if self.fill:
+            pygame.draw.line(
+                ScreenObjectManager.instance.screen, 
+                self.fill, 
+                worldspace_to_screenspace(self.start),
+                worldspace_to_screenspace(self.end),
+                1,
+            )
+        if self.stroke:
+            pygame.draw.line(
+                ScreenObjectManager.instance.screen, 
+                self.fill, 
+                worldspace_to_screenspace(self.start),
+                worldspace_to_screenspace(self.end),
+                max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)),
+            )
+
 class Polygon(Colorable):
 
     verts: np.array

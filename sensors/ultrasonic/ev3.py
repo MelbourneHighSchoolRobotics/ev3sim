@@ -1,3 +1,4 @@
+import numpy as np
 from objects.base import objectFactory
 from sensors.base import Sensor, ISensorInteractor
 from sensors.ultrasonic.base import UltrasonicSensorMixin
@@ -6,8 +7,21 @@ from visual.manager import ScreenObjectManager
 
 class UltrasonicInteractor(ISensorInteractor):
 
-    UPDATE_PER_SECOND = 5
-    DRAW_RAYCAST = False
+    UPDATE_PER_SECOND = 10
+    DRAW_RAYCAST = True
+
+    def startUp(self):
+        super().startUp()
+        if self.DRAW_RAYCAST:
+            from visual.objects import Line
+            self.raycast_line = Line(
+                start=self.object_map['light_up'].position,
+                end=self.object_map['light_up'].position,
+                fill='#ff0000',
+            )
+            key = self.object_map['light_up'].key + '_US_RAYCAST'
+            ScreenObjectManager.instance.registerVisual(self.raycast_line, key)
+
 
     def tick(self, tick):
         if tick % (ScriptLoader.instance.GAME_TICK_RATE // self.UPDATE_PER_SECOND) == 0:
@@ -19,10 +33,8 @@ class UltrasonicInteractor(ISensorInteractor):
             )
             if self.DRAW_RAYCAST:
                 obj = self.sensor_class._GenerateRaycast(self.sensor_class.global_position, self.sensor_class.parent.rotation + self.sensor_class.relativeRot, self.sensor_class.distance_centimeters).visual
-                key = self.object_map['light_up'].key + '_US'
-                if key in ScreenObjectManager.instance.objects:
-                    ScreenObjectManager.instance.unregisterVisual(key)
-                ScreenObjectManager.instance.registerVisual(obj, key)
+                self.raycast_line.start = self.sensor_class.global_position
+                self.raycast_line.end = self.sensor_class.global_position + self.sensor_class.distance_centimeters * np.array([np.cos(self.sensor_class.parent.rotation + self.sensor_class.relativeRot), np.sin(self.sensor_class.parent.rotation + self.sensor_class.relativeRot)])
         return False
 
 class UltrasonicSensor(Sensor, UltrasonicSensorMixin):
