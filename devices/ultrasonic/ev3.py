@@ -13,14 +13,8 @@ class UltrasonicInteractor(IDeviceInteractor):
     def startUp(self):
         super().startUp()
         if self.DRAW_RAYCAST:
-            from visual.objects import Line
-            self.raycast_line = Line(
-                start=self.object_map['light_up'].position,
-                end=self.object_map['light_up'].position,
-                fill='#ff0000',
-            )
             key = self.object_map['light_up'].key + '_US_RAYCAST'
-            ScreenObjectManager.instance.registerVisual(self.raycast_line, key)
+            ScreenObjectManager.instance.registerVisual(self.device_class.raycast.visual, key)
 
 
     def tick(self, tick):
@@ -31,10 +25,6 @@ class UltrasonicInteractor(IDeviceInteractor):
                 0,
                 0,
             )
-            if self.DRAW_RAYCAST:
-                obj = self.device_class._GenerateRaycast(self.device_class.global_position, self.device_class.parent.rotation + self.device_class.relativeRot, self.device_class.distance_centimeters).visual
-                self.raycast_line.start = self.device_class.global_position
-                self.raycast_line.end = self.device_class.global_position + self.device_class.distance_centimeters * np.array([np.cos(self.device_class.parent.rotation + self.device_class.relativeRot), np.sin(self.device_class.parent.rotation + self.device_class.relativeRot)])
         return False
 
 class UltrasonicSensor(Device, UltrasonicSensorMixin):
