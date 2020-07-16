@@ -183,6 +183,14 @@ interactors:
         name: UltrasonicSensor
         position: [0, -25]
         rotation: -90
+      - type: device
+        name: LargeMotor
+        position: [-15, 0]
+        rotation: 90
+      - type: device
+        name: MediumMotor
+        position: [15, 0]
+        rotation: 90
       position: [30, 30]
       zPos: 2
       mass: 300
