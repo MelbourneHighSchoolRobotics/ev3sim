@@ -1,6 +1,6 @@
-class: sensors.ultrasonic.ev3.UltrasonicSensor
+class: devices.colour.ev3.ColorSensor
 interactors:
-- class_path: sensors.ultrasonic.ev3.UltrasonicInteractor
+- class_path: devices.colour.ev3.ColorInteractor
   kwargs:
     back_color: '#f1faee'
     elements:

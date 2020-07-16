@@ -19,7 +19,7 @@ class IInteractor:
         self.object_map = {}
 
     def startUp(self):
-        from sensors.base import initialise_sensor
+        from devices.base import initialise_device
         for item in self.items:
             if item['type'] == 'visual':
                 vis = visualFactory(**item)
@@ -27,19 +27,19 @@ class IInteractor:
                 ScreenObjectManager.instance.registerVisual(vis, vis.key)
                 self.object_map[item.get('key', 'object')] = vis
             elif item['type'] == 'object':
-                sensors = []
+                devices = []
                 to_remove = []
                 for x in range(len(item.get('children', []))):
-                    if item['children'][x]['type'] == 'sensor':
-                        sensors.append(item['children'][x])
+                    if item['children'][x]['type'] == 'device':
+                        devices.append(item['children'][x])
                         to_remove.append(x)
                 for x in to_remove[::-1]:
                     del item['children'][x]
                 obj = objectFactory(**item)
                 obj.key = self.prefix_key + item.get('key', 'object')
-                for sensor in sensors:
-                    # Instantiate the sensors.
-                    initialise_sensor(sensor, obj)
+                for device in devices:
+                    # Instantiate the devices.
+                    initialise_device(device, obj)
                 if item.get('physics', False):
                     World.instance.registerObject(obj)    
                 ScreenObjectManager.instance.registerObject(obj, obj.key)

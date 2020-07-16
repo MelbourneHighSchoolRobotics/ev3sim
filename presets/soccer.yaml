@@ -176,10 +176,10 @@ interactors:
         stroke_width: 1
         stroke: '#ffffff'
       children:
-      - type: sensor
+      - type: device
         name: ColorSensor
         position: [0, 25]
-      - type: sensor
+      - type: device
         name: UltrasonicSensor
         position: [0, -25]
         rotation: -90

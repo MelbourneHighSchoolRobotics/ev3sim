@@ -1,20 +1,20 @@
 import random
-from sensors.base import Sensor, ISensorInteractor
-from sensors.colour.base import ColourSensorMixin
+from devices.base import Device, IDeviceInteractor
+from devices.colour.base import ColourSensorMixin
 from visual.manager import ScreenObjectManager
 from visual.utils import worldspace_to_screenspace
 
-class ColorInteractor(ISensorInteractor):
+class ColorInteractor(IDeviceInteractor):
     
     def tick(self, tick):
         try:
-            self.sensor_class.calc_raw()
-            self.object_map['light_up'].visual.fill = self.sensor_class.rgb()
+            self.device_class.calc_raw()
+            self.object_map['light_up'].visual.fill = self.device_class.rgb()
         except:
             pass
         return False
 
-class ColorSensor(Sensor, ColourSensorMixin):
+class ColorSensor(Device, ColourSensorMixin):
 
     _r_calibration_max = 300
     _g_calibration_max = 300
