@@ -1,49 +1,12 @@
-from simulation.world import World
-from objects.base import objectFactory
-from visual.objects import visualFactory
-from visual import ScreenObjectManager
-
 class IInteractor:
 
     constants: dict
 
     def __init__(self, **kwargs):
-        self.prefix_key = kwargs.get('prefix', 'spawn_')
-        self.items = kwargs.get('elements', [])
-        # Handle any programmatic color references.
-        for x in range(len(self.items)):
-            if 'fill' in self.items[x] and self.items[x]['fill'] in kwargs:
-                self.items[x]['fill'] = kwargs[self.items[x]['fill']]
-            if self.items[x].get('visual', {}).get('fill', '') in kwargs:
-                self.items[x]['visual']['fill'] = kwargs[self.items[x]['visual']['fill']]
-        self.object_map = {}
+        pass
 
     def startUp(self):
-        from devices.base import initialise_device
-        for item in self.items:
-            if item['type'] == 'visual':
-                vis = visualFactory(**item)
-                vis.key = self.prefix_key + item.get('key', 'object')
-                ScreenObjectManager.instance.registerVisual(vis, vis.key)
-                self.object_map[item.get('key', 'object')] = vis
-            elif item['type'] == 'object':
-                devices = []
-                to_remove = []
-                for x in range(len(item.get('children', []))):
-                    if item['children'][x]['type'] == 'device':
-                        devices.append(item['children'][x])
-                        to_remove.append(x)
-                for x in to_remove[::-1]:
-                    del item['children'][x]
-                obj = objectFactory(**item)
-                obj.key = self.prefix_key + item.get('key', 'object')
-                for device in devices:
-                    # Instantiate the devices.
-                    initialise_device(device, obj)
-                if item.get('physics', False):
-                    World.instance.registerObject(obj)    
-                ScreenObjectManager.instance.registerObject(obj, obj.key)
-                self.object_map[item.get('key', 'object')] = obj
+        pass
 
     # tick returns a boolean, which is true if the script should end.
     def tick(self, tick) -> bool:

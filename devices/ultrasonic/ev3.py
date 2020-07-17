@@ -13,14 +13,14 @@ class UltrasonicInteractor(IDeviceInteractor):
     def startUp(self):
         super().startUp()
         if self.DRAW_RAYCAST:
-            key = self.object_map['light_up'].key + '_US_RAYCAST'
+            key = self.getPrefix() + '_US_RAYCAST'
             ScreenObjectManager.instance.registerVisual(self.device_class.raycast.visual, key)
 
 
     def tick(self, tick):
         if tick % (ScriptLoader.instance.GAME_TICK_RATE // self.UPDATE_PER_SECOND) == 0:
             self.device_class.calc()
-            self.object_map['light_up'].visual.fill = (
+            ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (
                 min(max((self.device_class.MAX_RAYCAST - self.device_class.distance_centimeters) * 255 / self.device_class.MAX_RAYCAST, 0), 255),
                 0,
                 0,
@@ -28,6 +28,8 @@ class UltrasonicInteractor(IDeviceInteractor):
         return False
 
 class UltrasonicSensor(Device, UltrasonicSensorMixin):
+
+    name = 'Ultrasonic'
 
     def __init__(self, parent, relativePos, relativeRot, **kwargs):
         super().__init__(parent, relativePos, relativeRot, **kwargs)

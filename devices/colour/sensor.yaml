@@ -1,14 +1,15 @@
 class: devices.colour.ev3.ColorSensor
+colours:
+  COLOUR_back_color: '#f1faee'
 interactors:
 - class_path: devices.colour.ev3.ColorInteractor
   kwargs:
-    back_color: '#f1faee'
     elements:
     - visual:
         name: Rectangle
         width: 8
         height: 8
-        fill: 'back_color'
+        fill: 'COLOUR_back_color'
         stroke_width: 1
         stroke: '#000000'
       position: [0, 0]

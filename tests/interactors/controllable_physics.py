@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 from simulation.interactor import IInteractor
+from simulation.loader import ScriptLoader
 
 class ControllablePhysics(IInteractor):
 
@@ -12,8 +13,8 @@ class ControllablePhysics(IInteractor):
         self.a = 0
 
     def tick(self, tick):
-        self.object_map['phys_obj'].apply_force(self.f)
-        self.object_map['phys_obj'].apply_torque(self.a)
+        ScriptLoader.instance.object_map['phys_obj'].apply_force(self.f)
+        ScriptLoader.instance.object_map['phys_obj'].apply_torque(self.a)
         return False
 
     def handleEvent(self, event):

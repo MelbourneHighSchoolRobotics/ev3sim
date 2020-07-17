@@ -1,7 +1,8 @@
 from typing import Tuple
+
+GLOBAL_COLOURS = {}
+
 def hex_to_pycolor(hex_str: str) -> Tuple[int]:
-    if hex_str.startswith('#'):
-        hex_str = hex_str[1:]
     assert len(hex_str) == 6, f"Invalid hex string, #{hex_str}"
     return (
         int(hex_str[:2], 16),

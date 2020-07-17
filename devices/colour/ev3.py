@@ -1,15 +1,18 @@
 import random
 from devices.base import Device, IDeviceInteractor
 from devices.colour.base import ColourSensorMixin
+from simulation.loader import ScriptLoader
 from visual.manager import ScreenObjectManager
 from visual.utils import worldspace_to_screenspace
 
 class ColorInteractor(IDeviceInteractor):
     
+    name = 'COLOUR'
+
     def tick(self, tick):
         try:
             self.device_class.calc_raw()
-            self.object_map['light_up'].visual.fill = self.device_class.rgb()
+            ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = self.device_class.rgb()
         except:
             pass
         return False

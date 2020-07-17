@@ -1,14 +1,15 @@
 class: devices.ultrasonic.ev3.UltrasonicSensor
+colours:
+  US_back_color: '#f1faee'
 interactors:
 - class_path: devices.ultrasonic.ev3.UltrasonicInteractor
   kwargs:
-    back_color: '#f1faee'
     elements:
     - visual:
         name: Rectangle
         width: 8
         height: 8
-        fill: 'back_color'
+        fill: 'US_back_color'
         stroke_width: 1
         stroke: '#000000'
       position: [0, 0]

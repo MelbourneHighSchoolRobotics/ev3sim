@@ -9,6 +9,12 @@ from visual.objects import visualFactory
 
 class MotorInteractor(IDeviceInteractor):
 
+    @property
+    def name(self):
+        if isinstance(self.device_class, LargeMotor):
+            return 'LMotor'
+        return 'MMotor'
+
     def handleEvent(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == self.device_class.F_k:
@@ -24,9 +30,9 @@ class MotorInteractor(IDeviceInteractor):
     def tick(self, tick):
         self.device_class._updateTime(tick)
         if self.device_class.applied_force > 0:
-            self.object_map['light_up'].visual.fill = (0, 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0)
+            ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (0, 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0)
         else:
-            self.object_map['light_up'].visual.fill = (- 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0, 0)
+            ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (- 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0, 0)
         self.device_class._applyMotors(self.physical_object, local_space_to_world_space(self.relative_location, self.physical_object.rotation, np.array([0, 0])), self.relative_rotation + self.physical_object.rotation)
         return False
 

@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 from typing import Dict, List, Tuple
 
-from visual.utils import hex_to_pycolor
+import visual.utils as utils
 
 class ScreenObjectManager:
 
@@ -38,7 +38,11 @@ class ScreenObjectManager:
     @background_color.setter
     def background_color(self, value):
         if isinstance(value, str):
-            self._background_color = hex_to_pycolor(value)
+            if value in utils.GLOBAL_COLOURS:
+                value = utils.GLOBAL_COLOURS[value]
+            if value.startswith('#'):
+                value = value[1:]
+            self._background_color = utils.hex_to_pycolor(value)
         else:
             self._background_color = value
 

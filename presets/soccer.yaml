@@ -1,203 +1,199 @@
 interactors:
-- class_path: 'simulation.interactor.IInteractor'
-  kwargs:
-    text_color: '#e63946'
-    wall_color: '#2a9d8f'
-    strip_color: '#f1faee'
-    grass_color: '#55a630'
-    elements:
-    - type: visual
-      name: Rectangle
-      width: 243
-      height: 183
-      fill: 'grass_color'
-      stroke_width: 0
-      position: [0, -18]
-      zPos: 3
-      key: grass
-      sensorVisible: true
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Rectangle
-        width: 246
-        height: 3
-        fill: 'wall_color'
-        stroke_width: 0
-        sensorVisible: true
-      position: [0, 73.5]
-      zPos: 5
-      static: true
-      key: topbar
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Rectangle
-        width: 246
-        height: 3
-        fill: 'wall_color'
-        stroke_width: 0
-        sensorVisible: true
-      position: [0, -109.5]
-      zPos: 5
-      static: true
-      key: botbar
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Rectangle
-        width: 3
-        height: 183
-        fill: 'wall_color'
-        stroke_width: 0
-        sensorVisible: true
-      position: [-121.5, -18]
-      zPos: 5
-      static: true
-      key: leftbar
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Rectangle
-        width: 3
-        height: 183
-        fill: 'wall_color'
-        stroke_width: 0
-        sensorVisible: true
-      position: [121.5, -18]
-      zPos: 5
-      static: true
-      key: rightbar
-    - type: visual
-      name: Rectangle
-      width: 1
-      height: 133
-      fill: 'strip_color'
-      stroke_width: 0
-      position: [94, -18]
-      zPos: 5
-      key: rightstrip
-      sensorVisible: true
-    - type: visual
-      name: Rectangle
-      width: 1
-      height: 133
-      fill: 'strip_color'
-      stroke_width: 0
-      position: [-94, -18]
-      zPos: 5
-      key: leftstrip
-      sensorVisible: true
-    - type: visual
-      name: Rectangle
-      width: 188
-      height: 1
-      fill: 'strip_color'
-      stroke_width: 0
-      position: [0, 48]
-      zPos: 5
-      key: topstrip
-      sensorVisible: true
-    - type: visual
-      name: Rectangle
-      width: 188
-      height: 1
-      fill: 'strip_color'
-      stroke_width: 0
-      position: [0, -84]
-      zPos: 5
-      key: botstrip 
-      sensorVisible: true
-    - type: visual
-      name: Text
-      text: '0 - 0'
-      fill: 'text_color'
-      font_size: 72
-      hAlignment: m
-      vAlignment: t
-      position: [0, 110]
-      zPos: 5
-      key: scoreText
-    - type: visual
-      name: Text
-      text: 'Team 1'
-      fill: 'text_color'
-      font_size: 72
-      hAlignment: l
-      vAlignment: t
-      position: [-146.65, 110]
-      zPos: 5
-      key: team1Text
-    - type: visual
-      name: Text
-      text: 'Team 2'
-      fill: 'text_color'
-      font_size: 72
-      hAlignment: r
-      vAlignment: t
-      position: [146.65, 110]
-      zPos: 5
-      key: team2Text
 - class_path: 'tests.interactors.controllable_physics.ControllablePhysics'
   kwargs:
     accel: 120000
     ang_accel: 3000000
-    prefix: spawn_
-    elements:
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Circle
-        radius: 5
-        fill: '#00ff00'
-        stroke_width: 1
-        stroke: '#ffffff'
-      position: [-2, -3]
-      zPos: 2
-      key: circ_bot
-    - type: object
-      physics: true
-      collider: inherit
-      visual:
-        name: Polygon
-        verts:
-        - [30, 15]
-        - [0, 30]
-        - [-30, 15]
-        - [-30, -15]
-        - [0, -30]
-        - [30, -15]
-        fill: '#ff00ff'
-        stroke_width: 1
-        stroke: '#ffffff'
-      children:
-      - type: device
-        name: ColorSensor
-        position: [0, 25]
-      - type: device
-        name: UltrasonicSensor
-        position: [0, -25]
-        rotation: -90
-      - type: device
-        name: LargeMotor
-        position: [-15, 0]
-        rotation: 90
-      - type: device
-        name: MediumMotor
-        position: [15, 0]
-        rotation: 90
-      position: [30, 30]
-      zPos: 2
-      mass: 300
-      restitution: 0.2
-      friction: 4
-      key: phys_obj
-
+colours:
+  text_color: '#e63946'
+  wall_color: '#2a9d8f'
+  strip_color: '#f1faee'
+  grass_color: '#55a630'
+elements:
+- type: visual
+  name: Rectangle
+  width: 243
+  height: 183
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [0, -18]
+  zPos: 3
+  key: grass
+  sensorVisible: true
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 246
+    height: 3
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+  position: [0, 73.5]
+  zPos: 5
+  static: true
+  key: topbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 246
+    height: 3
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+  position: [0, -109.5]
+  zPos: 5
+  static: true
+  key: botbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 183
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+  position: [-121.5, -18]
+  zPos: 5
+  static: true
+  key: leftbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 183
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+  position: [121.5, -18]
+  zPos: 5
+  static: true
+  key: rightbar
+- type: visual
+  name: Rectangle
+  width: 1
+  height: 133
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [94, -18]
+  zPos: 5
+  key: rightstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 1
+  height: 133
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [-94, -18]
+  zPos: 5
+  key: leftstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 188
+  height: 1
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [0, 48]
+  zPos: 5
+  key: topstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 188
+  height: 1
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [0, -84]
+  zPos: 5
+  key: botstrip 
+  sensorVisible: true
+- type: visual
+  name: Text
+  text: '0 - 0'
+  fill: 'text_color'
+  font_size: 72
+  hAlignment: m
+  vAlignment: t
+  position: [0, 110]
+  zPos: 5
+  key: scoreText
+- type: visual
+  name: Text
+  text: 'Team 1'
+  fill: 'text_color'
+  font_size: 72
+  hAlignment: l
+  vAlignment: t
+  position: [-146.65, 110]
+  zPos: 5
+  key: team1Text
+- type: visual
+  name: Text
+  text: 'Team 2'
+  fill: 'text_color'
+  font_size: 72
+  hAlignment: r
+  vAlignment: t
+  position: [146.65, 110]
+  zPos: 5
+  key: team2Text
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Circle
+    radius: 5
+    fill: '#00ff00'
+    stroke_width: 1
+    stroke: '#ffffff'
+  position: [-2, -3]
+  zPos: 2
+  key: circ_bot
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Polygon
+    verts:
+    - [30, 15]
+    - [0, 30]
+    - [-30, 15]
+    - [-30, -15]
+    - [0, -30]
+    - [30, -15]
+    fill: '#ff00ff'
+    stroke_width: 1
+    stroke: '#ffffff'
+  children:
+  - type: device
+    name: ColorSensor
+    position: [0, 25]
+  - type: device
+    name: UltrasonicSensor
+    position: [0, -25]
+    rotation: -90
+  - type: device
+    name: LargeMotor
+    position: [-15, 0]
+    rotation: 90
+  - type: device
+    name: MediumMotor
+    position: [15, 0]
+    rotation: 90
+  position: [30, 30]
+  zPos: 2
+  mass: 300
+  restitution: 0.2
+  friction: 4
+  key: phys_obj
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60
