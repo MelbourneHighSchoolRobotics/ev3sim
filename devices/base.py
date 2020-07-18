@@ -35,11 +35,11 @@ class IDeviceInteractor(IInteractor):
         self.relative_rotation = kwargs.get('relative_rotation')
         i1, i2 = kwargs.get('device_index'), kwargs.get('single_device_index')
         self.index = f'{i1}-{i2}'
-        self.prefix_key = self.physical_object.key + str(self.device_class.__class__)
         self.items = kwargs.get('elements', [])
+        self.port = kwargs.get('port')
     
     def getPrefix(self):
-        return f'{self.name}-{self.index}-'
+        return f'{self.physical_object.key}-{self.name}-{self.index}-'
 
     def startUp(self):
         for x in range(len(self.items)):
@@ -80,9 +80,15 @@ def initialise_device(deviceData, parentObj, index):
                     'relative_rotation': relative_rotation,
                     'device_index': index,
                     'single_device_index': i,
+                    'port': deviceData['port'],
                 })
                 opt['kwargs'] = res
-                ScriptLoader.instance.active_scripts.append(fromOptions(opt))
+                interactor = fromOptions(opt)
+                if not hasattr(parentObj, 'device_interactors'):
+                    parentObj.device_interactors = []
+                parentObj.device_interactors.append(interactor)
+                # Device interactors always act first.
+                ScriptLoader.instance.active_scripts.insert(0, interactor)
         except yaml.YAMLError as exc:
             print(f"An error occured while loading devices. Exited with error: {exc}")
         

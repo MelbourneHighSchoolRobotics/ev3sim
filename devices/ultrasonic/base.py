@@ -46,7 +46,7 @@ class UltrasonicSensorMixin:
             rect = self._GenerateRaycast(centrePosition, centreRotation, length)
             # Look for collisions
             collided = False
-            shortest_collision_length = length + 2 * self.ACCEPTANCE_LEVEL
+            shortest_collision_length = length + self.ACCEPTANCE_LEVEL
             for obj in World.instance.objects + World.instance.static_objects:
                 if obj.key in self.ignore_objects: continue
                 info = obj.collider.getCollisionInfo(rect.collider)
@@ -56,7 +56,7 @@ class UltrasonicSensorMixin:
                     if test > 0:
                         shortest_collision_length = min(test, shortest_collision_length)
             if collided:
-                if shortest_collision_length - length > self.ACCEPTANCE_LEVEL: break
+                if shortest_collision_length - length > self.ACCEPTANCE_LEVEL * 0.5: break
                 length = shortest_collision_length - self.ACCEPTANCE_LEVEL
             else:
                 break
