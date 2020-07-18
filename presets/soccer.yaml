@@ -3,6 +3,27 @@ colours:
   wall_color: '#2a9d8f'
   strip_color: '#f1faee'
   grass_color: '#55a630'
+  goal_fill: '#e63946'
+interactors:
+- class_path: presets.soccer.SoccerInteractor
+  kwargs:
+    names:
+    - Unicorns
+    - Stah...schaft
+    spawns:
+    - [[-90, -18], 0]
+    - [[90, 18], 180]
+    goals:
+    - name: Rectangle
+      width: 3
+      height: 60
+      position: [-121.5, -18]
+      fill: goal_fill
+    - name: Rectangle
+      width: 3
+      height: 60
+      position: [121.5, -18]
+      fill: goal_fill
 elements:
 - type: visual
   name: Rectangle
@@ -112,14 +133,24 @@ elements:
   sensorVisible: true
 - type: visual
   name: Text
-  text: '0 - 0'
+  text: '0'
   fill: 'text_color'
   font_size: 72
-  hAlignment: m
+  hAlignment: r
   vAlignment: t
-  position: [0, 110]
+  position: [-10, 110]
   zPos: 5
-  key: scoreText
+  key: score1Text
+- type: visual
+  name: Text
+  text: '0'
+  fill: 'text_color'
+  font_size: 72
+  hAlignment: l
+  vAlignment: t
+  position: [10, 110]
+  zPos: 5
+  key: score2Text
 - type: visual
   name: Text
   text: 'Team 1'
@@ -129,7 +160,7 @@ elements:
   vAlignment: t
   position: [-146.65, 110]
   zPos: 5
-  key: team1Text
+  key: name1Text
 - type: visual
   name: Text
   text: 'Team 2'
@@ -139,7 +170,7 @@ elements:
   vAlignment: t
   position: [146.65, 110]
   zPos: 5
-  key: team2Text
+  key: name2Text
 - type: object
   physics: true
   collider: inherit
@@ -151,7 +182,7 @@ elements:
     stroke: '#ffffff'
   position: [-2, -3]
   zPos: 2
-  key: circ_bot
+  key: soccer_ball
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60
