@@ -61,8 +61,7 @@ class ScriptLoader:
                 elements.append(obj)
         return elements
 
-    def simulate(self, *interactors):
-        self.active_scripts.extend(interactors)
+    def simulate(self):
         for interactor in self.active_scripts:
             interactor.constants = self.getSimulationConstants()
             interactor.startUp()
@@ -96,26 +95,30 @@ class ScriptLoader:
             ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE
         }
 
+def runFromConfig(config):
+    from robot import initialise_bot, RobotInteractor
+    sl = ScriptLoader(**config.get('loader', {}))
+    sl.active_scripts = []
+    visual.utils.GLOBAL_COLOURS = config.get('colours', {})
+    for index, robot in enumerate(config.get('robots', [])):
+        initialise_bot(config, robot, f'Robot-{index}')
+    for opt in config.get('interactors', []):
+        try:
+            sl.active_scripts.append(fromOptions(opt))
+        except Exception as exc:
+            print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
+    if sl.active_scripts:
+        sl.startUp(**config.get('screen', {}))
+        sl.loadElements(config.get('elements', []))
+        for interactor in sl.active_scripts:
+            if isinstance(interactor, RobotInteractor):
+                interactor.connectDevices()
+        sl.simulate()
+    else:
+        print("No interactors succesfully loaded. Quitting...")
 
 def runFromFile(filename):
     import yaml
     with open(filename, 'r') as f:
-        try:
-            config = yaml.safe_load(f)
-            sl = ScriptLoader(**config.get('loader', {}))
-            sl.active_scripts = []
-            visual.utils.GLOBAL_COLOURS = config.get('colours', {})
-            interactors = []
-            for opt in config.get('interactors', []):
-                try:
-                    interactors.append(fromOptions(opt))
-                except Exception as exc:
-                    print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
-            if interactors:
-                sl.startUp(**config.get('screen', {}))
-                sl.loadElements(config.get('elements', []))
-                sl.simulate(*interactors)
-            else:
-                print("No interactors succesfully loaded. Quitting...")
-        except yaml.YAMLError as exc:
-            print(f"An error occured while loading script preset {filename}. Exited with error: {exc}")
+        config = yaml.safe_load(f)
+    runFromConfig(config)
