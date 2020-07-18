@@ -209,17 +209,25 @@ class Text(Colorable):
 
     font_style: str
     font_size: int
-    text: str
+    _text: str
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+        self.calculatePoints()
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
         self.font_style = kwargs.get('font_style', pygame.font.get_default_font())
         self.font_size = kwargs.get('font_size', 30)
         self.font = pygame.freetype.SysFont(self.font_style, self.font_size)
-        self.text = kwargs.get('text', 'Test')
         self.hAlignment = kwargs.get('hAlignment', 'l')
         self.vAlignment = kwargs.get('vAlignment', 't')
-        self.calculatePoints()
+        self.text = kwargs.get('text', 'Test')
 
     def calculatePoints(self):
         if not hasattr(self, 'font'):
