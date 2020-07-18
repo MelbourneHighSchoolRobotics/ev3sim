@@ -38,6 +38,7 @@ class World:
             for obj2 in self.objects[i+1:]:
                 res = obj.collider.getCollisionInfo(obj2.collider)
                 if res['collision']:
+                    # TODO: Include angular velocity in collision calculations.
                     restitution = obj.restitution_coefficient * obj2.restitution_coefficient
                     # STEP 1: Resolve collision by moving objects away relative to their momentum.
                     obj_velocity = np.dot(obj.velocity, res['collision_vector']) * res['collision_vector'] / magnitude_sq(res['collision_vector'])

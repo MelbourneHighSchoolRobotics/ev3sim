@@ -10,7 +10,10 @@ class IInteractor:
 
     # tick returns a boolean, which is true if the script should end.
     def tick(self, tick) -> bool:
-        raise NotImplementedError(f"Interactor Interface {self.__cls__} doesn't implement method tick")
+        return False
+
+    def afterPhysics(self):
+        pass
 
     def tearDown(self):
         pass

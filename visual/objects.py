@@ -4,7 +4,7 @@ import pygame.freetype
 from typing import Optional, Tuple
 
 from visual.manager import ScreenObjectManager
-from visual.utils import hex_to_pycolor, worldspace_to_screenspace
+import visual.utils as utils
 from objects.utils import local_space_to_world_space
 from objects.colliders import colliderFactory
 
@@ -19,6 +19,8 @@ class IVisualElement:
     _rotation: float
     # zPosition handles sorting order of visual objects - higher values appear above lower values.
     zPos: float
+    # Whether this visual object should be visible from a color sensor.
+    sensorVisible: bool
 
     def __init__(self, **kwargs):
         self.initFromKwargs(**kwargs)
@@ -27,6 +29,7 @@ class IVisualElement:
         self.position = kwargs.get('position', [0, 0])
         self.rotation = kwargs.get('rotation', 0)
         self.zPos = kwargs.get('zPos', 0)
+        self.sensorVisible = kwargs.get('sensorVisible', False)
 
     @property
     def position(self) -> np.ndarray:
@@ -76,7 +79,11 @@ class Colorable(IVisualElement):
     @fill.setter
     def fill(self, value):
         if isinstance(value, str):
-            self._fill = hex_to_pycolor(value)
+            if value in utils.GLOBAL_COLOURS:
+                value = utils.GLOBAL_COLOURS[value]
+            if value.startswith('#'):
+                value = value[1:]
+            self._fill = utils.hex_to_pycolor(value)
         else:
             self._fill = value
 
@@ -87,9 +94,43 @@ class Colorable(IVisualElement):
     @stroke.setter
     def stroke(self, value):
         if isinstance(value, str):
-            self._stroke = hex_to_pycolor(value)
+            if value in utils.GLOBAL_COLOURS:
+                value = utils.GLOBAL_COLOURS[value]
+            if value.startswith('#'):
+                value = value[1:]
+            self._stroke = utils.hex_to_pycolor(value)
         else:
             self._stroke = value
+
+class Line(Colorable):
+
+    # THESE DON'T HAVE A LOCAL POSITION
+
+    def initFromKwargs(self, **kwargs):
+        self.start = kwargs.get('start')
+        self.end = kwargs.get('end')
+        super().initFromKwargs(**kwargs)
+
+    def calculatePoints(self):
+        return
+
+    def applyToScreen(self):
+        if self.fill:
+            pygame.draw.line(
+                ScreenObjectManager.instance.screen, 
+                self.fill, 
+                utils.worldspace_to_screenspace(self.start),
+                utils.worldspace_to_screenspace(self.end),
+                1,
+            )
+        if self.stroke:
+            pygame.draw.line(
+                ScreenObjectManager.instance.screen, 
+                self.fill, 
+                utils.worldspace_to_screenspace(self.start),
+                utils.worldspace_to_screenspace(self.end),
+                max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)),
+            )
 
 class Polygon(Colorable):
 
@@ -106,13 +147,13 @@ class Polygon(Colorable):
         except:
             return
         for i, v in enumerate(self.verts):
-            self.points[i] = worldspace_to_screenspace(local_space_to_world_space(v, self.rotation, self.position))
+            self.points[i] = utils.worldspace_to_screenspace(local_space_to_world_space(v, self.rotation, self.position))
 
     def applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke:
-            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
+            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
     def generateCollider(self, physObj):
         return colliderFactory(physObj, **{
@@ -149,14 +190,14 @@ class Circle(Colorable):
             tmp = self.radius
         except:
             return
-        self.point = worldspace_to_screenspace(self.position)
+        self.point = utils.worldspace_to_screenspace(self.position)
         self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
 
     def applyToScreen(self):
         if self.fill:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
         if self.stroke:
-            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width))
+            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
     def generateCollider(self, physObj):
         return colliderFactory(physObj, **{
@@ -164,25 +205,27 @@ class Circle(Colorable):
             'radius': self.radius
         })
 
-class Text(IVisualElement):
+class Text(Colorable):
 
     font_style: str
     font_size: int
     text: str
 
     def initFromKwargs(self, **kwargs):
+        super().initFromKwargs(**kwargs)
         self.font_style = kwargs.get('font_style', pygame.font.get_default_font())
         self.font_size = kwargs.get('font_size', 30)
         self.font = pygame.freetype.SysFont(self.font_style, self.font_size)
         self.text = kwargs.get('text', 'Test')
-        self.fill = hex_to_pycolor(kwargs.get('fill', '#ffffff'))
         self.hAlignment = kwargs.get('hAlignment', 'l')
         self.vAlignment = kwargs.get('vAlignment', 't')
-        super().initFromKwargs(**kwargs)
+        self.calculatePoints()
 
     def calculatePoints(self):
+        if not hasattr(self, 'font'):
+            return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
-        self.anchor = worldspace_to_screenspace(self.position)
+        self.anchor = utils.worldspace_to_screenspace(self.position)
         if self.hAlignment == 'l':
             pass
         elif self.hAlignment == 'm':

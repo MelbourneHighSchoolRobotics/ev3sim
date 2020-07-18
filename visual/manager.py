@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 from typing import Dict, List, Tuple
 
-from visual.utils import hex_to_pycolor
+import visual.utils as utils
 
 class ScreenObjectManager:
 
@@ -38,13 +38,21 @@ class ScreenObjectManager:
     @background_color.setter
     def background_color(self, value):
         if isinstance(value, str):
-            self._background_color = hex_to_pycolor(value)
+            if value in utils.GLOBAL_COLOURS:
+                value = utils.GLOBAL_COLOURS[value]
+            if value.startswith('#'):
+                value = value[1:]
+            self._background_color = utils.hex_to_pycolor(value)
         else:
             self._background_color = value
 
     def startScreen(self):
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+        pygame.display.set_caption('MHS Robotics Club Simulator')
+        img = pygame.image.load('presets/Logo.png')
+        img.set_colorkey((255, 255, 255))
+        pygame.display.set_icon(img)
 
     def registerVisual(self, obj: 'visual.objects.IVisualElement', key) -> str: # noqa: F821
         assert key not in self.objects, f"Tried to register visual element to screen with key that is already in use: {key}"
@@ -76,8 +84,16 @@ class ScreenObjectManager:
     def applyToScreen(self):
         self.screen.fill(self.background_color)
         for key in self.sorting_order:
-            self.objects[key].applyToScreen()
+            if self.objects[key].sensorVisible:
+                self.objects[key].applyToScreen()
+        self.sensorScreen = self.screen.copy()
+        for key in self.sorting_order:
+            if not self.objects[key].sensorVisible:
+                self.objects[key].applyToScreen()
         pygame.display.update()
+
+    def colourAtPixel(self, screen_position):
+        return self.sensorScreen.get_at(screen_position)
 
     def handleEvents(self):
         for event in pygame.event.get():

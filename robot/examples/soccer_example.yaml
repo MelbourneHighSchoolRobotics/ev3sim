@@ -1,0 +1,37 @@
+robot_class: robot.examples.SoccerBot
+devices:
+- LargeMotor:
+    position: [-15, 0]
+    rotation: 90
+    port: outB
+- LargeMotor:
+    position: [15, 0]
+    rotation: 90
+    port: outC
+- ColorSensor:
+    position: [0, -25]
+    rotation: -90
+    port: in2
+- UltrasonicSensor:
+    position: [0, 25]
+    rotation: 90
+    port: in3
+base_plate:
+  collider: inherit
+  visual:
+    name: Polygon
+    verts:
+    - [30, 15]
+    - [0, 30]
+    - [-30, 15]
+    - [-30, -15]
+    - [0, -30]
+    - [30, -15]
+    fill: '#ff00ff'
+    stroke_width: 1
+    stroke: '#ffffff'
+  zPos: 2
+  mass: 300
+  restitution: 0.2
+  friction: 4
+  key: phys_obj
