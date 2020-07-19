@@ -1,24 +1,24 @@
 robot_class: robot.examples.SoccerBot
 devices:
 - LargeMotor:
-    position: [-5, 0]
-    rotation: 90
+    position: [0, 5]
+    rotation: 0
     port: outB
 - LargeMotor:
-    position: [5, 0]
-    rotation: 90
+    position: [0, -5]
+    rotation: 0
     port: outC
 - ColorSensor:
-    position: [0, -10]
-    rotation: -90
-    port: in2
-- UltrasonicSensor:
-    position: [0, 10]
-    rotation: 90
-    port: in3
-- InfraredSensor:
     position: [-10, 0]
     rotation: 180
+    port: in2
+- UltrasonicSensor:
+    position: [10, 0]
+    rotation: 0
+    port: in3
+- InfraredSensor:
+    position: [0, 10]
+    rotation: 90
     port: in1
 base_plate:
   collider: inherit
