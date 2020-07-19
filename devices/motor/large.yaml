@@ -7,10 +7,10 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 8
-        height: 8
+        width: 4
+        height: 4
         fill: 'LMOTOR_back_color'
-        stroke_width: 1
+        stroke_width: 0.1
         stroke: '#000000'
       position: [0, 0]
       zPos: 0.1
@@ -18,14 +18,14 @@ interactors:
     - visual:
         name: Polygon
         verts:
-        - [2.8, 0]
-        - [0.3, 2.5]
-        - [0.3, 1]
-        - [-2, 1]
-        - [-2, -1]
-        - [0.3, -1]
-        - [0.3, -2.5]
-        - [2.8, 0]
+        - [1.4, 0]
+        - [0.15, 1.25]
+        - [0.15, 0.5]
+        - [-1, 0.5]
+        - [-1, -0.5]
+        - [0.15, -0.5]
+        - [0.15, -1.25]
+        - [1.4, 0]
         fill: '#000000'
         stroke_width: 0
       position: [0, 0]

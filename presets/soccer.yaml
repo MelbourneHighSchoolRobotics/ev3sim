@@ -15,14 +15,14 @@ interactors:
     - [[90, 18], 180]
     goals:
     - name: Rectangle
-      width: 3
-      height: 60
-      position: [-121.5, -18]
+      width: 7.4
+      height: 45
+      position: [-95.2, -18]
       fill: goal_fill
     - name: Rectangle
-      width: 3
-      height: 60
-      position: [121.5, -18]
+      width: 7.4
+      height: 45
+      position: [95.2, -18]
       fill: goal_fill
 elements:
 - type: visual
@@ -93,8 +93,8 @@ elements:
   key: rightbar
 - type: visual
   name: Rectangle
-  width: 1
-  height: 133
+  width: 5
+  height: 132
   fill: 'strip_color'
   stroke_width: 0
   position: [94, -18]
@@ -103,8 +103,8 @@ elements:
   sensorVisible: true
 - type: visual
   name: Rectangle
-  width: 1
-  height: 133
+  width: 5
+  height: 132
   fill: 'strip_color'
   stroke_width: 0
   position: [-94, -18]
@@ -113,8 +113,8 @@ elements:
   sensorVisible: true
 - type: visual
   name: Rectangle
-  width: 188
-  height: 1
+  width: 193
+  height: 5
   fill: 'strip_color'
   stroke_width: 0
   position: [0, 48]
@@ -123,8 +123,8 @@ elements:
   sensorVisible: true
 - type: visual
   name: Rectangle
-  width: 188
-  height: 1
+  width: 193
+  height: 5
   fill: 'strip_color'
   stroke_width: 0
   position: [0, -84]
