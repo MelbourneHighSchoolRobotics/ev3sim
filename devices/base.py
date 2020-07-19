@@ -30,6 +30,7 @@ class IDeviceInteractor(IInteractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.device_class = kwargs.get('device')
+        self.device_class._interactor = self
         self.physical_object = kwargs.get('parent')
         self.relative_location = kwargs.get('relative_location')
         self.relative_rotation = kwargs.get('relative_rotation')
@@ -42,9 +43,11 @@ class IDeviceInteractor(IInteractor):
         return f'{self.physical_object.key}-{self.name}-{self.index}-'
 
     def startUp(self):
+        self.relative_positions = []
         for x in range(len(self.items)):
             self.items[x]["key"] = self.getPrefix() + self.items[x]["key"]
             self.items[x]["type"] = 'object'
+            self.relative_positions.append(self.items[x]['position'])
         self.generated = ScriptLoader.instance.loadElements(self.items)
         self.physical_object.children.extend(self.generated)
         for obj in self.physical_object.children:
@@ -52,8 +55,12 @@ class IDeviceInteractor(IInteractor):
                 obj.visual.zPos += self.physical_object.visual.zPos
     
     def afterPhysics(self):
-        for obj in self.generated:
-            obj.position = local_space_to_world_space(self.relative_location, self.physical_object.rotation, self.physical_object.position)
+        for i, obj in enumerate(self.generated):
+            obj.position = local_space_to_world_space(
+                self.relative_location + local_space_to_world_space(self.relative_positions[i], self.relative_rotation, np.array([0 ,0])), 
+                self.physical_object.rotation, 
+                self.physical_object.position,
+            )
             obj.rotation = self.physical_object.rotation + self.relative_rotation
 
 def initialise_device(deviceData, parentObj, index):

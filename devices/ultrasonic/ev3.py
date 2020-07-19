@@ -1,6 +1,7 @@
 import numpy as np
 from objects.base import objectFactory
 from devices.base import Device, IDeviceInteractor
+from objects.utils import local_space_to_world_space
 from devices.ultrasonic.base import UltrasonicSensorMixin
 from simulation.loader import ScriptLoader
 from visual.manager import ScreenObjectManager
@@ -37,7 +38,7 @@ class UltrasonicSensor(Device, UltrasonicSensorMixin):
         self._InitialiseRaycast()
 
     def calc(self):
-        self.saved = self._DistanceFromSensor(self.global_position, self.parent.rotation + self.relativeRot)
+        self.saved = self._DistanceFromSensor(ScriptLoader.instance.object_map[self._interactor.getPrefix() + 'light_up'].position, self.parent.rotation + self.relativeRot)
     
     @property
     def distance_centimeters(self):

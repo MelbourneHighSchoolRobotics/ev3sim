@@ -20,6 +20,6 @@ interactors:
         radius: 1.5
         fill: '#000000'
         stroke_width: 0
-      position: [0, 0]
+      position: [3.5, 0]
       zPos: 0.2
       key: light_up
