@@ -10,6 +10,7 @@ class SoccerInteractor(IInteractor):
         self.names = kwargs.get('names', ['Team 1', 'Team 2'])
         self.spawns = kwargs.get('spawns')
         self.goals = kwargs.get('goals')
+        self.show_goal_colliders = kwargs.get('show_goal_colliders', False)
     
     def startUp(self):
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(self.goals), "All player related arrays should be of equal size."
@@ -26,7 +27,8 @@ class SoccerInteractor(IInteractor):
                 'position': pos
             }
             self.goal_colliders.append(objectFactory(**obj))
-            ScreenObjectManager.instance.registerVisual(self.goal_colliders[-1].visual, f'Soccer_DEBUG_collider-{len(self.goal_colliders)}')
+            if self.show_goal_colliders:
+                ScreenObjectManager.instance.registerVisual(self.goal_colliders[-1].visual, f'Soccer_DEBUG_collider-{len(self.goal_colliders)}')
             # Set up team scores
             self.team_scores.append(0)
             # Set up team name
