@@ -45,8 +45,8 @@ elements:
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
+    zPos: 5
   position: [0, 73.5]
-  zPos: 5
   static: true
   key: topbar
 - type: object
@@ -59,8 +59,8 @@ elements:
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
+    zPos: 5
   position: [0, -109.5]
-  zPos: 5
   static: true
   key: botbar
 - type: object
@@ -73,8 +73,8 @@ elements:
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
+    zPos: 5
   position: [-121.5, -18]
-  zPos: 5
   static: true
   key: leftbar
 - type: object
@@ -87,8 +87,8 @@ elements:
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
+    zPos: 5
   position: [121.5, -18]
-  zPos: 5
   static: true
   key: rightbar
 - type: visual
@@ -180,8 +180,8 @@ elements:
     fill: '#ff0000'
     stroke_width: 0.2
     stroke: '#ffffff'
+    zPos: 2
   position: [-100, -18]
-  zPos: 2
   key: IR_BALL
 loader:
   GAME_TICK_RATE: 60

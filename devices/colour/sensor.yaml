@@ -12,14 +12,14 @@ interactors:
         fill: 'COLOUR_back_color'
         stroke_width: 0.1
         stroke: '#000000'
+        zPos: 0.1
       position: [0, 0]
-      zPos: 0.1
       key: main_block
     - visual:
         name: Circle
         radius: 1
         fill: '#000000'
         stroke_width: 0
+        zPos: 0.2
       position: [0, 0]
-      zPos: 0.2
       key: light_up

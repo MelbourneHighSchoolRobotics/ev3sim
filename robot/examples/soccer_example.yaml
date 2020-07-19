@@ -28,7 +28,7 @@ base_plate:
     fill: '#ff00ff'
     stroke_width: 0.1
     stroke: '#ffffff'
-  zPos: 2
+    zPos: 2
   mass: 300
   restitution: 0.2
   friction: 4

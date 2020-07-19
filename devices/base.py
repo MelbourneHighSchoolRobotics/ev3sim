@@ -47,12 +47,11 @@ class IDeviceInteractor(IInteractor):
         for x in range(len(self.items)):
             self.items[x]["key"] = self.getPrefix() + self.items[x]["key"]
             self.items[x]["type"] = 'object'
+            if 'visual' in self.items[x]:
+                self.items[x]['visual']['zPos'] = self.items[x]['visual'].get('zPos', 0) + self.physical_object.visual.zPos
             self.relative_positions.append(self.items[x]['position'])
         self.generated = ScriptLoader.instance.loadElements(self.items)
         self.physical_object.children.extend(self.generated)
-        for obj in self.physical_object.children:
-            if hasattr(obj, 'visual') and hasattr(self.physical_object, 'visual'):
-                obj.visual.zPos += self.physical_object.visual.zPos
     
     def afterPhysics(self):
         for i, obj in enumerate(self.generated):

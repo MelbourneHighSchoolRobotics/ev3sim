@@ -63,6 +63,7 @@ class ScreenObjectManager:
         for x in range(len(self.sorting_order)):
             if self.objects[self.sorting_order[x]].zPos > obj.zPos:
                 self.sorting_order.insert(x, key)
+                break
         else:
             self.sorting_order.append(key)
         return key
