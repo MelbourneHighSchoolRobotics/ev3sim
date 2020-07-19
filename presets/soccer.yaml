@@ -176,9 +176,9 @@ elements:
   collider: inherit
   visual:
     name: Circle
-    radius: 5
+    radius: 3.4
     fill: '#ff0000'
-    stroke_width: 1
+    stroke_width: 0.2
     stroke: '#ffffff'
   position: [-100, -18]
   zPos: 2

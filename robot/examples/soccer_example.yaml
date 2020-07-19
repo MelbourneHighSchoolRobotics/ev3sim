@@ -26,7 +26,7 @@ base_plate:
     name: Circle
     radius: 11
     fill: '#ff00ff'
-    stroke_width: 1
+    stroke_width: 0.1
     stroke: '#ffffff'
   zPos: 2
   mass: 300
