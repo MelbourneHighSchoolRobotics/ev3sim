@@ -16,6 +16,10 @@ devices:
     position: [0, 25]
     rotation: 90
     port: in3
+- InfraredSensor:
+    position: [-30, 0]
+    rotation: 180
+    port: in1
 base_plate:
   collider: inherit
   visual:

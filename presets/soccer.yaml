@@ -177,12 +177,12 @@ elements:
   visual:
     name: Circle
     radius: 5
-    fill: '#00ff00'
+    fill: '#ff0000'
     stroke_width: 1
     stroke: '#ffffff'
-  position: [-2, -3]
+  position: [-100, -18]
   zPos: 2
-  key: soccer_ball
+  key: IR_BALL
 loader:
   GAME_TICK_RATE: 60
   VISUAL_TICK_RATE: 60
