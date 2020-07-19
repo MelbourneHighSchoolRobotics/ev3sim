@@ -17,7 +17,7 @@ class InfraredInteractor(IDeviceInteractor):
         sensor = ScriptLoader.instance.object_map[self.getPrefix() + 'light_up_2']
         distance = np.sqrt(magnitude_sq(ball_pos - sensor.position))
         vector = ball_pos - sensor.position
-        relative_bearing = np.arccos(vector[0]/np.sqrt(magnitude_sq(vector))) - sensor.rotation
+        relative_bearing = np.arctan2(vector[1], vector[0]) - sensor.rotation
         self.device_class.calc(relative_bearing, distance)
         for x in range(5):
             ScriptLoader.instance.object_map[self.getPrefix() + f'light_up_{x}'].visual.fill = (max(min(255 * self.device_class.value(x+1) / 9, 255), 0), 0, 0)
