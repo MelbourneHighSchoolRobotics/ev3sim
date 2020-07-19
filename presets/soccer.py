@@ -2,6 +2,7 @@ import numpy as np
 from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
 from objects.base import objectFactory
+from objects.colliders import colliderFactory
 from visual.manager import ScreenObjectManager
 
 class SoccerInteractor(IInteractor):
@@ -28,7 +29,8 @@ class SoccerInteractor(IInteractor):
             obj = {
                 'collider': 'inherit',
                 'visual': self.goals[x],
-                'position': pos
+                'position': pos,
+                'physics': True
             }
             self.goal_colliders.append(objectFactory(**obj))
             if self.show_goal_colliders:
@@ -61,8 +63,21 @@ class SoccerInteractor(IInteractor):
                 self.robots[team*self.BOTS_PER_TEAM + index].position = self.spawns[team][index][0]
                 self.robots[team*self.BOTS_PER_TEAM + index].rotation = self.spawns[team][index][1] * np.pi / 180
         ScriptLoader.instance.object_map['IR_BALL'].position = [0, -18]
+        ScriptLoader.instance.object_map['IR_BALL'].velocity = np.array([0., 0.])
 
     def tick(self, tick):
         super().tick(tick)
-        # TODO: Check ball for collisions with goal objects.
-        # TODO: If so, reset game, change team score value.
+        collider = objectFactory(**{
+            'physics': True,
+            'position': ScriptLoader.instance.object_map['IR_BALL'].position,
+            'collider': {
+                'name': 'Point'
+            }
+        }).collider
+        for i, goal in enumerate(self.goal_colliders):
+            if collider.getCollisionInfo(goal.collider)["collision"]:
+                # GOAL!
+                self.team_scores[1-i] += 1
+                self.updateScoreText()
+                self.resetPositions()
+                break

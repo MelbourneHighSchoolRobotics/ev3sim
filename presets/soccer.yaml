@@ -12,8 +12,8 @@ interactors:
     - Unicorns
     - Stah...schaft
     spawns:
-    - [[[-80, -18], 0], [[-50, -18], 0]]
-    - [[[80, -18], 180], [[50, -18], 180]]
+    - [[[-80, -18], -15], [[-50, -18], -15]]
+    - [[[80, -18], 90], [[50, -18], 90]]
     goals:
     - name: Rectangle
       width: 7.4
@@ -25,6 +25,7 @@ interactors:
       height: 45
       position: [95.2, -18]
       fill: goal_fill
+    show_goal_colliders: true
 elements:
 - type: visual
   name: Rectangle

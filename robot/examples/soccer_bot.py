@@ -10,7 +10,8 @@ class SoccerBot(Robot):
         self.ultrasonic : UltrasonicSensor = self.getDevice('in3')
     
     def validateSpeed(self, speed):
-        return max(min(speed, 100), -100)
+        return 100
+        # return max(min(speed, 100), -100)
 
     def tick(self, _):
         self.leftMotor.on(self.validateSpeed(10*(self.ultrasonic.distance_centimeters - 60)))
