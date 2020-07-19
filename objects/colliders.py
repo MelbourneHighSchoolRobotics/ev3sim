@@ -17,6 +17,58 @@ class Collider:
     def initFromKwargs(self, **kwargs):
         pass
 
+class Point(Collider):
+
+    def generateExtraPhysicsAttributes(self):
+        self.physicsObject.inertia = 0
+
+    def getCollisionInfo(self, other: Collider):
+        if isinstance(other, Point):
+            return {
+                'collision': False
+            }
+        if isinstance(other, Circle):
+            displacement_vector = other.physicsObject.position - self.physicsObject.position
+            distance = np.sqrt(magnitude_sq(displacement_vector))
+            if distance < other.radius:
+                return {
+                    'collision': True,
+                    'world_space_position': self.physicsObject.position,
+                    'collision_vector': displacement_vector
+                }
+            return {
+                'collision': False
+            }
+        if isinstance(other, ConvexPolygon):
+            # Check the point is on the inside of each edge in the polygon.
+            results = []
+            world_pos = self.physicsObject.position
+            for a, b in zip(other.verts[:-1], other.verts[1:]):
+                # Vector from a to b, now in worldspace
+                ws_b = local_space_to_world_space(b, other.physicsObject.rotation, other.physicsObject.position)
+                ws_a = local_space_to_world_space(a, other.physicsObject.rotation, other.physicsObject.position)
+                line_a = -(ws_b[1] - ws_a[1])
+                line_b = ws_b[0] - ws_a[0]
+                line_c = -(line_a * ws_a[0] + line_b * ws_a[1])
+                results.append(line_a * world_pos[0] + line_b * world_pos[1] + line_c)
+            all_pos = True
+            all_neg = True
+            for r in results:
+                if r > 0:
+                    all_neg = False
+                if r < 0:
+                    all_pos = False
+            if all_pos or all_neg:
+                return {
+                    'collision': True,
+                    'world_space_position': world_pos,
+                    'collision_vector': '???'
+                }
+            return {
+                'collision': False
+            }
+        raise ValueError(f"Collision not handled: Point to {str(other)}")
+
 class Circle(Collider):
 
     radius: float
@@ -243,7 +295,7 @@ class ConvexPolygon(Collider):
 def colliderFactory(physObj, **options):
     if 'name' not in options:
         raise ValueError("Tried to generate collider, but no 'name' field was supplied.")
-    for klass in (Circle, ConvexPolygon):
+    for klass in (Point, Circle, ConvexPolygon):
         if options['name'] == klass.__name__:
             r = klass(physObj)
             r.initFromKwargs(**options)

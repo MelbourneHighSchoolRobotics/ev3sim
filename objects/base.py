@@ -52,7 +52,7 @@ class BaseObject:
         # This function assumes that the parent position and rotation are correct, and that a visual exists,
         # as otherwise each of these calls will have to go all the way up the parent tree.
         # In future this change could be made to support parts with no visual object.
-        if self.visual is not None:
+        if hasattr(self, 'visual'):
             if self.parent is None:
                 self.visual.position = self.position
                 self.visual.rotation = self.rotation
