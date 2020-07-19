@@ -48,7 +48,7 @@ class SoccerInteractor(IInteractor):
                 if len(possible_keys) == 0:
                     raise ValueError(f"No Robot-{self.BOTS_PER_TEAM*x+y} for simulation, quitting.")
                 possible_keys.sort(key=len)
-            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+                self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
         self.updateScoreText()
         self.resetPositions()
 
