@@ -105,7 +105,7 @@ class PhysicsObject(BaseObject):
     def updatePhysics(self, dt):
         # Create a friction force based on previous velocity
         self.apply_force(-self.mass * self.velocity * self.friction_coefficient)
-        self.apply_torque(-self.mass * self.angular_velocity * self.friction_coefficient * 1000)
+        self.apply_torque(-self.mass * self.angular_velocity * self.friction_coefficient * 100)
 
         # Acceleration is set to 0 each update - no leakage.
         acceleration = self._force / self.mass
