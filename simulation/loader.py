@@ -14,6 +14,9 @@ class ScriptLoader:
     active_scripts: List[IInteractor]
     VISUAL_TICK_RATE = 30
     GAME_TICK_RATE = 60
+    TIME_SCALE = 1
+    # TIME_SCALE simply affects the speed at which the simulation runs 
+    # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
     instance: 'ScriptLoader' = None
 
@@ -70,7 +73,7 @@ class ScriptLoader:
         last_game_update = time.time() - 2 / self.GAME_TICK_RATE
         while self.active_scripts:
             new_time = time.time()
-            if new_time - last_game_update > 1 / self.GAME_TICK_RATE:
+            if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
                 last_game_update = new_time
                 to_remove = []
                 for i, interactor in enumerate(self.active_scripts):

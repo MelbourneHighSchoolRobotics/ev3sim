@@ -357,7 +357,7 @@ elements:
   position: [-100, -18]
   key: IR_BALL
 loader:
-  GAME_TICK_RATE: 60
+  GAME_TICK_RATE: 30
   VISUAL_TICK_RATE: 60
 screen:
   screen_width: 1280
