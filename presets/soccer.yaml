@@ -358,7 +358,7 @@ elements:
   key: IR_BALL
 loader:
   GAME_TICK_RATE: 30
-  VISUAL_TICK_RATE: 60
+  VISUAL_TICK_RATE: 30
 screen:
   screen_width: 1280
   screen_height: 960

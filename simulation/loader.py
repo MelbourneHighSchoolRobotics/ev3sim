@@ -69,11 +69,16 @@ class ScriptLoader:
             interactor.constants = self.getSimulationConstants()
             interactor.startUp()
         tick = 0
-        last_vis_update = time.time() - 2 / self.VISUAL_TICK_RATE
-        last_game_update = time.time() - 2 / self.GAME_TICK_RATE
+        last_vis_update = time.time() - 1.1 / self.VISUAL_TICK_RATE
+        last_game_update = time.time() - 1.1 / self.GAME_TICK_RATE / self.TIME_SCALE
+        total_lag_ticks = 0
+        lag_printed = False
         while self.active_scripts:
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
+                # First of all, check the script can handle the current settings.
+                if new_time - last_game_update > 2 / self.GAME_TICK_RATE / self.TIME_SCALE:
+                    total_lag_ticks += 1
                 last_game_update = new_time
                 to_remove = []
                 for i, interactor in enumerate(self.active_scripts):
@@ -86,6 +91,9 @@ class ScriptLoader:
                 for interactor in self.active_scripts:
                     interactor.afterPhysics()
                 tick += 1
+                if (tick > 10 and total_lag_ticks / tick > 0.5) and not lag_printed:
+                    lag_printed = True
+                    print("The simulation is currently lagging, you may want to turn down the game tick rate.")
             if new_time - last_vis_update > 1 / self.VISUAL_TICK_RATE:
                 last_vis_update = new_time
                 ScreenObjectManager.instance.applyToScreen()
