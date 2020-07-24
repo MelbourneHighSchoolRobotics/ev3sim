@@ -86,12 +86,15 @@ class SoccerInteractor(IInteractor):
         for i, goal in enumerate(self.goal_colliders):
             if collider.getCollisionInfo(goal.collider)["collision"]:
                 # GOAL!
-                self.team_scores[1-i] += 1
-                self.updateScoreText()
-                self.resetPositions()
+                self.goalScoredIn(i)
                 break
         if self.ball_grabbed:
             ScriptLoader.instance.object_map['IR_BALL'].position = self.ball_rel_pos + self.ball_m_pos
+
+    def goalScoredIn(self, teamIndex):
+        self.team_scores[1-teamIndex] += 1
+        self.updateScoreText()
+        self.resetPositions()
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
