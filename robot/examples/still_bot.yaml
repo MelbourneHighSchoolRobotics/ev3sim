@@ -1,4 +1,4 @@
-robot_class: robot.examples.SoccerBot
+robot_class: robot.robot.Robot
 devices:
 - LargeMotor:
     position: [0, 5]
