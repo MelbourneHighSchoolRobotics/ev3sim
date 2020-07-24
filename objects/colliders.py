@@ -77,6 +77,11 @@ class Circle(Collider):
         self.physicsObject.inertia = 0.5 * self.physicsObject.mass * self.radius * self.radius
 
     def getCollisionInfo(self, other: Collider):
+        if isinstance(other, Point):
+            res = other.getCollisionInfo(self)
+            if res['collision']:
+                res['collision_vector'] = -res['collision_vector']
+            return res
         if isinstance(other, Circle):
             displacement_vector = other.physicsObject.position - self.physicsObject.position
             distance = np.sqrt(magnitude_sq(displacement_vector))
