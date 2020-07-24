@@ -70,6 +70,7 @@ class SoccerInteractor(IInteractor):
             for index in range(self.BOTS_PER_TEAM):
                 self.robots[team*self.BOTS_PER_TEAM + index].position = self.spawns[team][index][0]
                 self.robots[team*self.BOTS_PER_TEAM + index].rotation = self.spawns[team][index][1] * np.pi / 180
+                self.robots[team*self.BOTS_PER_TEAM + index].velocity = np.array([0.0, 0.0])
         ScriptLoader.instance.object_map['IR_BALL'].position = [0, -18]
         ScriptLoader.instance.object_map['IR_BALL'].velocity = np.array([0., 0.])
 
