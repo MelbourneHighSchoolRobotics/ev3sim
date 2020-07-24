@@ -20,6 +20,12 @@ class World:
         else:
             self.objects.append(obj)
     
+    def unregisterObject(self, obj: PhysicsObject):
+        if obj.static:
+            self.static_objects.remove(obj)
+        else:
+            self.objects.remove(obj)
+    
     def tick(self, dt):
         for obj in self.objects:
             obj.updatePhysics(dt)
