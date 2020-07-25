@@ -30,7 +30,7 @@ class InfraredSensor(Device, InfraredSensorMixin):
     
     def value(self, index):
         if index == 0:
-            return self._predict()
+            return self._predict(self._values)
         if 1 <= index <= 5:
             return self._values[index-1]
         if index == 6:
