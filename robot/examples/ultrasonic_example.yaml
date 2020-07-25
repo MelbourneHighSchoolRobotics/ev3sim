@@ -20,6 +20,9 @@ devices:
     position: [0, 10]
     rotation: 90
     port: in1
+- CompassSensor:
+    position: [0, 0]
+    port: in4
 base_plate:
   collider: inherit
   visual:
