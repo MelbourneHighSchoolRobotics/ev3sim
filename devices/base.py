@@ -22,6 +22,10 @@ class Device:
             self.relativePos[0] * np.cos(self.parent.rotation) - self.relativePos[1] * np.sin(self.parent.rotation),
             self.relativePos[1] * np.cos(self.parent.rotation) + self.relativePos[0] * np.sin(self.parent.rotation)
         ])
+    
+    @property
+    def global_rotation(self):
+        return self.parent.rotation + self.relativeRot
 
 class IDeviceInteractor(IInteractor):
 
