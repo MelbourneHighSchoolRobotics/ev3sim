@@ -26,8 +26,8 @@ class MotorInteractor(IDeviceInteractor):
 
 class LargeMotor(Device, MotorMixin):
 
-    MAX_FORCE = 100000
+    MAX_FORCE = 60000
 
 class MediumMotor(Device, MotorMixin):
 
-    MAX_FORCE = 50000
+    MAX_FORCE = 30000
