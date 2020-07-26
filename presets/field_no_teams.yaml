@@ -6,6 +6,7 @@ colours:
   goal_fill: '#e63946'
   strip_dark_color: '#000000'
 interactors:
+- class_path: presets.pick_up_interactor.PickUpInteractor
 - class_path: presets.soccer_no_teams.SoccerInteractor
   kwargs:
     spawns: [[[-80, -18], 0], [[-50, -18], 0], [[80, -18], 180], [[50, -18], 180]]

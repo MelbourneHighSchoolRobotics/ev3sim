@@ -1,4 +1,3 @@
-import pygame
 import numpy as np
 from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
@@ -6,16 +5,10 @@ from simulation.world import World
 from objects.base import objectFactory
 from objects.colliders import colliderFactory
 from visual.manager import ScreenObjectManager
-from visual.utils import screenspace_to_worldspace
 
 class SoccerInteractor(IInteractor):
 
     BOTS_PER_TEAM = 1
-
-    # Constants for grabbing the ball
-    ball_grabbed = False
-    ball_rel_pos = None
-    ball_m_pos = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -88,34 +81,8 @@ class SoccerInteractor(IInteractor):
                 # GOAL!
                 self.goalScoredIn(i)
                 break
-        if self.ball_grabbed:
-            ScriptLoader.instance.object_map['IR_BALL'].position = self.ball_rel_pos + self.ball_m_pos
 
     def goalScoredIn(self, teamIndex):
         self.team_scores[1-teamIndex] += 1
         self.updateScoreText()
         self.resetPositions()
-
-    def handleEvent(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            m_pos = screenspace_to_worldspace(event.pos)
-            collider = objectFactory(**{
-                'physics': True,
-                'position': m_pos,
-                'collider': {
-                    'name': 'Point'
-                }
-            }).collider
-            ball = ScriptLoader.instance.object_map['IR_BALL']
-            if ball.collider.getCollisionInfo(collider)["collision"]:
-                # Grab the ball!
-                ball.velocity = np.array([0.0, 0.0])
-                World.instance.unregisterObject(ball)
-                self.ball_grabbed = True
-                self.ball_rel_pos = ball.position - m_pos
-                self.ball_m_pos = m_pos
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.ball_grabbed:
-            self.ball_grabbed = False
-            World.instance.registerObject(ScriptLoader.instance.object_map['IR_BALL'])
-        if event.type == pygame.MOUSEMOTION and self.ball_grabbed:
-            self.ball_m_pos = screenspace_to_worldspace(event.pos)
