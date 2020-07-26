@@ -1,0 +1,35 @@
+robot_class: robot.examples.controllable.ControllableBot
+devices:
+- LargeMotor:
+    position: [0, 5]
+    rotation: 0
+    port: outB
+- LargeMotor:
+    position: [0, -5]
+    rotation: 0
+    port: outC
+- LargeMotor:
+    position: [5, 0]
+    rotation: 90
+    port: outA
+- LargeMotor:
+    position: [-5, 0]
+    rotation: 90
+    port: outD
+- CompassSensor:
+    position: [0, 0]
+    rotation: 0
+    port: in4
+base_plate:
+  collider: inherit
+  visual:
+    name: Circle
+    radius: 11
+    fill: '#ff00ff'
+    stroke_width: 0.1
+    stroke: '#ffffff'
+    zPos: 2
+  mass: 300
+  restitution: 0.2
+  friction: 4
+  key: phys_obj

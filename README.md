@@ -16,6 +16,10 @@ For more information try running `python run.py --help`
 
 If you want to try a few demos of what the simulation is capable of, then try the following:
 
+    python .\run.py --preset=presets/field_no_teams.yaml robot/examples/controllable.yaml
+
+Use Arrow keys to control the above bot.
+
     python run.py --preset=presets/field_no_teams.yaml robot/examples/motor_example.yaml
 
     python run.py --preset=presets/field_no_teams.yaml robot/examples/ultrasonic_example.yaml    

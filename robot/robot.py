@@ -65,6 +65,9 @@ class RobotInteractor(IInteractor):
     def tick(self, tick):
         self.robot_class.tick(tick)
         return False
+    
+    def handleEvent(self, event):
+        self.robot_class.handleEvent(event)
 
 class Robot:
 
@@ -78,4 +81,7 @@ class Robot:
         pass
     
     def tick(self, tick):
+        pass
+
+    def handleEvent(self, event):
         pass
