@@ -9,6 +9,9 @@ class World:
 
     instance: 'World' = None
 
+    # Allow objects to collide 5mm before 
+    COLLISION_LENIENCY = 0.5
+
     def __init__(self):
         World.instance = self
         self.objects = []
@@ -52,12 +55,52 @@ class World:
                     obj2_velocity = np.dot(begin_velocity[j], res['collision_vector']) * res['collision_vector'] / magnitude_sq(res['collision_vector'])
                     m_obj = np.sqrt(magnitude_sq(obj_velocity)) * obj.mass
                     m_obj2 = np.sqrt(magnitude_sq(obj2_velocity)) * obj2.mass
-
-                    # Change velocity based on restitution (https://en.wikipedia.org/wiki/Coefficient_of_restitution)
-                    accum_velocity[i] -= obj_velocity
-                    accum_velocity[i] += (obj.mass * obj_velocity + obj2.mass * obj2_velocity + obj2.mass * restitution * (obj2_velocity - obj_velocity)) / (obj.mass + obj2.mass)
-                    accum_velocity[j] -= obj2_velocity
-                    accum_velocity[j] += (obj.mass * obj_velocity + obj2.mass * obj2_velocity + obj.mass * restitution * (obj_velocity - obj2_velocity)) / (obj.mass + obj2.mass)
+                    res_i = (obj.mass * obj_velocity + obj2.mass * obj2_velocity + obj2.mass * restitution * (obj2_velocity - obj_velocity)) / (obj.mass + obj2.mass) - obj_velocity
+                    res_j = (obj.mass * obj_velocity + obj2.mass * obj2_velocity + obj.mass * restitution * (obj_velocity - obj2_velocity)) / (obj.mass + obj2.mass) - obj2_velocity
+                    if obj.mass > obj2.mass:
+                        if obj2.immovable_directions:
+                            # We need to ensure that we don't move opposite this immovable direction.
+                            orig_j = res_j
+                            for direction in obj2.immovable_directions:
+                                aligned = np.dot(direction, res_j)
+                                if aligned < 0:
+                                    res_j -= aligned * direction                            
+                            accum_velocity[i] += res_i + orig_j - res_j
+                            accum_velocity[j] += res_j
+                        elif obj.immovable_directions:
+                            # We need to ensure that we don't move opposite this immovable direction.
+                            orig_i = res_i
+                            for direction in obj.immovable_directions:
+                                aligned = np.dot(direction, res_i)
+                                if aligned < 0:
+                                    res_i -= aligned * direction
+                            accum_velocity[i] += res_i
+                            accum_velocity[j] += res_j + orig_i - res_i
+                        else:
+                            accum_velocity[i] += res_i
+                            accum_velocity[j] += res_j
+                    else:
+                        if obj.immovable_directions:
+                            # We need to ensure that we don't move opposite this immovable direction.
+                            orig_i = res_i
+                            for direction in obj.immovable_directions:
+                                aligned = np.dot(direction, res_i)
+                                if aligned < 0:
+                                    res_i -= aligned * direction
+                            accum_velocity[i] += res_i
+                            accum_velocity[j] += res_j + orig_i - res_i
+                        elif obj2.immovable_directions:
+                            # We need to ensure that we don't move opposite this immovable direction.
+                            orig_j = res_j
+                            for direction in obj2.immovable_directions:
+                                aligned = np.dot(direction, res_j)
+                                if aligned < 0:
+                                    res_j -= aligned * direction                            
+                            accum_velocity[i] += res_i + orig_j - res_j
+                            accum_velocity[j] += res_j
+                        else:
+                            accum_velocity[i] += res_i
+                            accum_velocity[j] += res_j                
 
         # Apply velocities
         for i, obj in enumerate(self.objects):
@@ -73,36 +116,63 @@ class World:
                 for s_obj in self.static_objects:
                     res = obj.collider.getCollisionInfo(s_obj.collider)
                     if res['collision']:
+                        leniency_factor = max(0, 1 - self.COLLISION_LENIENCY / np.sqrt(magnitude_sq(res['collision_vector'])))
                         # STEP 1: Resolve collision by moving non-static object away.
-                        accum_position[i] += res['collision_vector'] * strength
+                        accum_position[i] += res['collision_vector'] * strength * leniency_factor
             for i, obj in enumerate(self.objects):
                 for k, obj2 in enumerate(self.objects[i+1:]):
                     j = i + k + 1
                     res = obj.collider.getCollisionInfo(obj2.collider)
                     if res['collision']:
+                        leniency_factor = max(0, 1 - self.COLLISION_LENIENCY / np.sqrt(magnitude_sq(res['collision_vector'])))
                         # It is assumed only one object has immovable directions which affect the calculations.
                         # Collision positions are resolved in an unweighted way (Assumes masses are equal)
                         # Otherwise this results in some cases where bots move forward where they cannot.
-                        if obj.immovable_directions:
-                            # We need to ensure that we don't move opposite this immovable direction.
-                            result = res['collision_vector'].copy()
-                            for direction in obj.immovable_directions:
-                                aligned = np.dot(direction, result)
-                                if aligned < 0:
-                                    result -= aligned * direction
-                            accum_position[i] += result * 0.5 * strength
-                            accum_position[j] -= (res['collision_vector'] - result) + result * 0.5 * strength
-                        elif obj2.immovable_directions:
-                            # We need to ensure that we don't move opposite this immovable direction.
-                            result = res['collision_vector'].copy()
-                            for direction in obj2.immovable_directions:
-                                aligned = np.dot(direction, result)
-                                if aligned < 0:
-                                    result -= aligned * direction
-                            accum_position[i] += (res['collision_vector'] - result) + result * 0.5 * strength
-                            accum_position[j] -= result * 0.5 * strength
+                        # Handle the smaller mass immovable object first.
+                        # Lot of repeated code here, and very hacky :(
+                        if obj.mass > obj2.mass:
+                            if obj2.immovable_directions:
+                                # We need to ensure that we don't move opposite this immovable direction.
+                                result = res['collision_vector'].copy()
+                                for direction in obj2.immovable_directions:
+                                    aligned = np.dot(direction, result)
+                                    if aligned < 0:
+                                        result -= aligned * direction
+                                accum_position[i] += (res['collision_vector'] - result) + result * 0.5 * strength * leniency_factor
+                                accum_position[j] -= result * 0.5 * strength * leniency_factor
+                            elif obj.immovable_directions:
+                                # We need to ensure that we don't move opposite this immovable direction.
+                                result = res['collision_vector'].copy()
+                                for direction in obj.immovable_directions:
+                                    aligned = np.dot(direction, result)
+                                    if aligned < 0:
+                                        result -= aligned * direction
+                                accum_position[i] += result * 0.5 * strength * leniency_factor
+                                accum_position[j] -= (res['collision_vector'] - result) + result * 0.5 * strength * leniency_factor
+                            else:
+                                accum_position[i] += res['collision_vector'] * 0.5 * strength * leniency_factor
+                                accum_position[j] -= res['collision_vector'] * 0.5 * strength * leniency_factor
                         else:
-                            accum_position[i] += res['collision_vector'] * 0.5 * strength
-                            accum_position[j] -= res['collision_vector'] * 0.5 * strength
+                            if obj.immovable_directions:
+                                # We need to ensure that we don't move opposite this immovable direction.
+                                result = res['collision_vector'].copy()
+                                for direction in obj.immovable_directions:
+                                    aligned = np.dot(direction, result)
+                                    if aligned < 0:
+                                        result -= aligned * direction
+                                accum_position[i] += result * 0.5 * strength * leniency_factor
+                                accum_position[j] -= (res['collision_vector'] - result) + result * 0.5 * strength * leniency_factor
+                            elif obj2.immovable_directions:
+                                # We need to ensure that we don't move opposite this immovable direction.
+                                result = res['collision_vector'].copy()
+                                for direction in obj2.immovable_directions:
+                                    aligned = np.dot(direction, result)
+                                    if aligned < 0:
+                                        result -= aligned * direction
+                                accum_position[i] += (res['collision_vector'] - result) + result * 0.5 * strength * leniency_factor
+                                accum_position[j] -= result * 0.5 * strength * leniency_factor
+                            else:
+                                accum_position[i] += res['collision_vector'] * 0.5 * strength * leniency_factor
+                                accum_position[j] -= res['collision_vector'] * 0.5 * strength * leniency_factor
             for i, obj in enumerate(self.objects):
                 obj.position += accum_position[i]
