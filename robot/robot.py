@@ -1,5 +1,6 @@
 from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
+from simulation.world import stop_on_pause
 
 def add_devices(parent, device_info):
     devices = []
@@ -63,6 +64,7 @@ class RobotInteractor(IInteractor):
     def startUp(self):
         self.robot_class.startUp()
 
+    @stop_on_pause
     def tick(self, tick):
         self.robot_class.tick(tick)
         return False
