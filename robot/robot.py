@@ -58,6 +58,7 @@ class RobotInteractor(IInteractor):
         self.devices = {}
         for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
             self.devices[interactor.port] = interactor.device_class
+        ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
     def startUp(self):
         self.robot_class.startUp()
@@ -80,6 +81,9 @@ class Robot:
     def startUp(self):
         pass
     
+    def onSpawn(self):
+        pass
+
     def tick(self, tick):
         pass
 
