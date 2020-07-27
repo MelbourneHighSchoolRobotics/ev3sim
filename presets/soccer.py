@@ -52,7 +52,7 @@ class SoccerInteractor(IInteractor):
                 self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
         self.updateScoreText()
         self.resetPositions()
-        for robot in self.robots():
+        for robot in self.robots:
             robot.robot_class.onSpawn()
 
     def updateScoreText(self):
