@@ -31,3 +31,6 @@ class CompassSensor(Device, CompassSensorMixin):
 
     def value(self):
         return self._value
+
+    def calibrate(self):
+        self._setRelative()
