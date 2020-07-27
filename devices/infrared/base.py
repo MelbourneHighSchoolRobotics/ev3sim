@@ -21,13 +21,13 @@ class InfraredSensorMixin:
     MAX_STRENGTH = 9
 
     def _sensorStrength(self, relativeBearing, distance):
-        while relativeBearing > 2*np.pi:
+        while relativeBearing > np.pi:
             relativeBearing -= 2*np.pi
-        while relativeBearing < -2*np.pi:
+        while relativeBearing < -np.pi:
             relativeBearing += 2*np.pi
         if distance > self.MAX_SENSOR_RANGE:
             return 0
-        if abs(relativeBearing) > self.SENSOR_BEARING_DROPOFF_MAX :
+        if abs(relativeBearing) > self.SENSOR_BEARING_DROPOFF_MAX:
             return 0
         # At halfway to the sensor, this value is 1/4.
         sq_dist = pow(distance / self.MAX_SENSOR_RANGE, 2)
