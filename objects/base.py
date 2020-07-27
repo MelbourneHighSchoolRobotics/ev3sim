@@ -3,6 +3,7 @@ from typing import List
 
 from visual.objects import IVisualElement, visualFactory
 from objects.colliders import Collider, colliderFactory
+from simulation.world import stop_on_pause
 
 class BaseObject:
 
@@ -121,12 +122,14 @@ class PhysicsObject(BaseObject):
         self._force = np.array([0., 0.])
         self._torque = 0
 
+    @stop_on_pause
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
         self._force += f
         if pos is not None:
             self.apply_torque(np.cross(pos, f))
     
+    @stop_on_pause
     def apply_torque(self, t):
         self._torque += t
 

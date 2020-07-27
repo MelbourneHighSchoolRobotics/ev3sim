@@ -7,6 +7,7 @@ colours:
   strip_dark_color: '#000000'
 interactors:
 - class_path: presets.pick_up_interactor.PickUpInteractor
+- class_path: presets.pause_interactor.PauseInteractor
 - class_path: presets.soccer.SoccerInteractor
   kwargs:
     names:

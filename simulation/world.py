@@ -1,9 +1,16 @@
 import pygame
 import numpy as np
-from objects.base import PhysicsObject
 from objects.utils import magnitude_sq
 from visual.manager import ScreenObjectManager
 from visual.utils import worldspace_to_screenspace
+
+def stop_on_pause(f):
+    def new_f(*args, **kwargs):
+        if World.instance.paused:
+            return
+        else:
+            return f(*args, **kwargs)
+    return new_f
 
 class World:
 
@@ -12,23 +19,26 @@ class World:
     # Allow objects to collide 5mm before 
     COLLISION_LENIENCY = 0.5
 
+    paused = False
+
     def __init__(self):
         World.instance = self
         self.objects = []
         self.static_objects = []
     
-    def registerObject(self, obj: PhysicsObject):
+    def registerObject(self, obj):
         if obj.static:
             self.static_objects.append(obj)
         else:
             self.objects.append(obj)
     
-    def unregisterObject(self, obj: PhysicsObject):
+    def unregisterObject(self, obj):
         if obj.static:
             self.static_objects.remove(obj)
         else:
             self.objects.remove(obj)
     
+    @stop_on_pause
     def tick(self, dt):
         for obj in self.objects:
             obj.updatePhysics(dt)
