@@ -142,7 +142,7 @@ class Line(Colorable):
                 utils.worldspace_to_screenspace(self.end),
                 1,
             )
-        if self.stroke:
+        if self.stroke and self.stroke_width:
             pygame.draw.line(
                 ScreenObjectManager.instance.screen, 
                 self.fill, 
@@ -171,7 +171,7 @@ class Polygon(Colorable):
     def applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
-        if self.stroke:
+        if self.stroke and self.stroke_width:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
     def generateCollider(self, physObj):
@@ -215,7 +215,7 @@ class Circle(Colorable):
     def applyToScreen(self):
         if self.fill:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
-        if self.stroke:
+        if self.stroke and self.stroke_width:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
     def generateCollider(self, physObj):
