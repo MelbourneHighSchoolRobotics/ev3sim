@@ -7,8 +7,8 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 4
-        height: 4
+        width: 3
+        height: 3
         fill: 'US_back_color'
         stroke_width: 0.1
         stroke: '#000000'
@@ -21,5 +21,5 @@ interactors:
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [1.75, 0]
+      position: [1.45, 0]
       key: light_up

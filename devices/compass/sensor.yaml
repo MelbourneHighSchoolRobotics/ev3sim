@@ -7,9 +7,9 @@ interactors:
     elements:
     - visual:
         name: Circle
-        radius: 3
+        radius: 2
         fill: 'COMPASS_back_color'
-        stroke_width: 0.1
+        stroke_width: 0
         stroke: '#000000'
         zPos: 0.1
       position: [0, 0]
@@ -17,14 +17,14 @@ interactors:
     - visual:
         name: Polygon
         verts:
-        - [1.4, 0]
-        - [0.15, 1.25]
-        - [0.15, 0.5]
-        - [-1, 0.5]
-        - [-1, -0.5]
-        - [0.15, -0.5]
-        - [0.15, -1.25]
-        - [1.4, 0]
+        - [0.98, 0]
+        - [0.105, 0.875]
+        - [0.105, 0.25]
+        - [-0.7, 0.25]
+        - [-0.7, -0.25]
+        - [0.105, -0.25]
+        - [0.105, -0.875]
+        - [0.98, 0]
         fill: '#0000ff'
         stroke_width: 0
         zPos: 0.2

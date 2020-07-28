@@ -7,8 +7,8 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 4
-        height: 4
+        width: 3
+        height: 3
         fill: 'COLOUR_back_color'
         stroke_width: 0.1
         stroke: '#000000'
