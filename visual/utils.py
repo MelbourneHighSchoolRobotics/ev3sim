@@ -11,6 +11,24 @@ def hex_to_pycolor(hex_str: str) -> Tuple[int]:
         int(hex_str[4:], 16)
     )
 
+def hsl_to_rgb(h, s, l):
+    # Here, h is measured in degrees (0-360), s, l are between 0 and 1.
+    c = (1 - abs(2*l-1)) * s
+    r = ((h / 60) % 2) - 1
+    x = c * (1 - abs(r))
+    m = l - c/2
+    if 0 <= h < 60:
+        return c+m, x+m, m
+    if h < 120:
+        return x+m, c+m, m
+    if h < 180:
+        return m, c+m, x+m
+    if h < 240:
+        return m, x+m, c+m
+    if h < 300:
+        return x+m, m, c+m
+    return c+m, m, x+m
+
 def worldspace_to_screenspace(point):
     from visual.manager import ScreenObjectManager
     return (
