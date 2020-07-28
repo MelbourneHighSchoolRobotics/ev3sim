@@ -16,6 +16,8 @@ class ControllableBot(Robot):
                 self.direction[0] -= 1
             elif event.key == pygame.K_RIGHT:
                 self.direction[0] += 1
+            elif event.key == pygame.K_r:
+                self.rotate = True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
                 self.direction[1] -= 1
@@ -25,9 +27,12 @@ class ControllableBot(Robot):
                 self.direction[0] += 1
             elif event.key == pygame.K_RIGHT:
                 self.direction[0] -= 1
+            elif event.key == pygame.K_r:
+                self.rotate = False
 
     def startUp(self):
         self.direction = np.array([0.0, 0.0])
+        self.rotate = False
         self.leftMotor : LargeMotor = self.getDevice('outB')
         self.rightMotor : LargeMotor = self.getDevice('outC')
         self.topMotor : LargeMotor = self.getDevice('outA')
@@ -35,11 +40,20 @@ class ControllableBot(Robot):
         self.compass : CompassSensor = self.getDevice('in4')
 
     def tick(self, tick):
+        if self.rotate:
+            self.rotate_anticlockwise()
+            return
         if self.direction[0] == self.direction[1] and self.direction[0] == 0:
             self.move_global_rotation(0, speed=0)
         else:
             rot = np.arctan2(self.direction[1], self.direction[0])
             self.move_global_rotation(rot)
+
+    def rotate_anticlockwise(self, speed=100):
+        self.leftMotor.on(-speed)
+        self.rightMotor.on(speed)
+        self.topMotor.on(speed)
+        self.botMotor.on(-speed)
 
     def move_relative_rotation(self, bearing, speed=100):
         hMotorScale = np.sin(bearing)
