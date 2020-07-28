@@ -28,11 +28,19 @@ base_plate:
   visual:
     name: Circle
     radius: 11
-    fill: '#ff00ff'
+    fill: '#878E88'
     stroke_width: 0.1
     stroke: '#ffffff'
     zPos: 2
   mass: 300
   restitution: 0.2
   friction: 4
+  children:
+  - physics: false
+    type: object
+    visual:
+      name: Image
+      image_path: 'presets/LogoTransparent.png'
+      zPos: 2.05
+    position: [4.5, 4.5]
   key: phys_obj

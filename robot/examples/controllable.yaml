@@ -38,6 +38,6 @@ base_plate:
     visual:
       name: Image
       image_path: 'presets/LogoTransparent.png'
-      zPos: 10
-    position: [5, 5]
+      zPos: 2.05
+    position: [4.5, 4.5]
   key: phys_obj
