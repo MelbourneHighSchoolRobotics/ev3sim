@@ -346,6 +346,15 @@ elements:
   position: [146.65, 110]
   zPos: 5
   key: name2Text
+- type: visual
+  name: Text
+  text: '05:00'
+  fill: 'text_color'
+  font_size: 72
+  hAlignment: m
+  vAlignment: b
+  position: [0, 81]
+  key: TimerText
 - type: object
   physics: true
   collider: inherit

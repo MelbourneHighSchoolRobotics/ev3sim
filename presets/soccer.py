@@ -1,7 +1,8 @@
+import datetime
 import numpy as np
 from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
-from simulation.world import World
+from simulation.world import World, stop_on_pause
 from objects.base import objectFactory
 from objects.colliders import colliderFactory
 from visual.manager import ScreenObjectManager
@@ -11,6 +12,7 @@ class SoccerInteractor(IInteractor):
     BOTS_PER_TEAM = 1
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
+    START_TIME = datetime.timedelta(minutes=5)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,6 +21,7 @@ class SoccerInteractor(IInteractor):
         self.goals = kwargs.get('goals')
         self.show_goal_colliders = kwargs.get('show_goal_colliders', False)
         self.current_goal_score_tick = -1
+        self.time_tick = 0
     
     def startUp(self):
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(self.goals), "All player related arrays should be of equal size."
@@ -77,6 +80,7 @@ class SoccerInteractor(IInteractor):
         if self.current_goal_score_tick != -1 and (tick - self.current_goal_score_tick) > self.GOAL_SCORE_PAUSE_DELAY * ScriptLoader.instance.GAME_TICK_RATE:
             self.current_goal_score_tick = -1
             World.instance.paused = False
+        self.update_time()
         collider = objectFactory(**{
             'physics': True,
             'position': ScriptLoader.instance.object_map['IR_BALL'].position,
@@ -89,6 +93,16 @@ class SoccerInteractor(IInteractor):
                 # GOAL!
                 self.goalScoredIn(i, tick)
                 break
+
+    @stop_on_pause
+    def update_time(self):
+        self.time_tick += 1
+        elapsed = datetime.timedelta(seconds=self.time_tick / ScriptLoader.instance.GAME_TICK_RATE)
+        show = self.START_TIME - elapsed
+        seconds = show.seconds
+        minutes = seconds // 60
+        seconds = seconds - minutes * 60
+        ScriptLoader.instance.object_map['TimerText'].text = '{:02d}:{:02d}'.format(minutes, seconds)
 
     def goalScoredIn(self, teamIndex, tick):
         self.team_scores[1-teamIndex] += 1
