@@ -3,6 +3,7 @@ from objects.base import objectFactory
 from objects.colliders import colliderFactory
 from presets.soccer import SoccerInteractor as BaseInteractor
 from simulation.loader import ScriptLoader
+from simulation.world import World
 from visual.manager import ScreenObjectManager
 
 class SoccerInteractor(BaseInteractor):
@@ -42,5 +43,8 @@ class SoccerInteractor(BaseInteractor):
         ScriptLoader.instance.object_map['IR_BALL'].position = [0, -18]
         ScriptLoader.instance.object_map['IR_BALL'].velocity = np.array([0., 0.])
 
-    def goalScoredIn(self, teamIndex):
+    def goalScoredIn(self, teamIndex, tick):
         self.resetPositions()
+        # Pause the game temporarily
+        World.instance.paused = True
+        self.current_goal_score_tick = tick

@@ -9,6 +9,8 @@ from visual.manager import ScreenObjectManager
 class SoccerInteractor(IInteractor):
 
     BOTS_PER_TEAM = 1
+    # Wait for 1 second after goal score.
+    GOAL_SCORE_PAUSE_DELAY = 1
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,6 +18,7 @@ class SoccerInteractor(IInteractor):
         self.spawns = kwargs.get('spawns')
         self.goals = kwargs.get('goals')
         self.show_goal_colliders = kwargs.get('show_goal_colliders', False)
+        self.current_goal_score_tick = -1
     
     def startUp(self):
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(self.goals), "All player related arrays should be of equal size."
@@ -71,6 +74,9 @@ class SoccerInteractor(IInteractor):
 
     def tick(self, tick):
         super().tick(tick)
+        if self.current_goal_score_tick != -1 and (tick - self.current_goal_score_tick) > self.GOAL_SCORE_PAUSE_DELAY * ScriptLoader.instance.GAME_TICK_RATE:
+            self.current_goal_score_tick = -1
+            World.instance.paused = False
         collider = objectFactory(**{
             'physics': True,
             'position': ScriptLoader.instance.object_map['IR_BALL'].position,
@@ -81,10 +87,13 @@ class SoccerInteractor(IInteractor):
         for i, goal in enumerate(self.goal_colliders):
             if collider.getCollisionInfo(goal.collider)["collision"]:
                 # GOAL!
-                self.goalScoredIn(i)
+                self.goalScoredIn(i, tick)
                 break
 
-    def goalScoredIn(self, teamIndex):
+    def goalScoredIn(self, teamIndex, tick):
         self.team_scores[1-teamIndex] += 1
         self.updateScoreText()
         self.resetPositions()
+        # Pause the game temporarily
+        World.instance.paused = True
+        self.current_goal_score_tick = tick
