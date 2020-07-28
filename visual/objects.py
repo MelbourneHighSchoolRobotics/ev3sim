@@ -102,6 +102,25 @@ class Colorable(IVisualElement):
         else:
             self._stroke = value
 
+class Image(Colorable):
+
+    def initFromKwargs(self, **kwargs):
+        super().initFromKwargs(**kwargs)
+        image_path = kwargs.get('image_path')
+        self.image = pygame.image.load(image_path)
+        self.fill = kwargs.get('fill', (0, 0, 0, 0))
+    
+    def calculatePoints(self):
+        pass
+
+    def applyToScreen(self):
+        rotated = pygame.transform.rotate(self.image, self.rotation * 180 / np.pi)
+        rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
+        screen_location = utils.worldspace_to_screenspace(self.position)
+        w, h = rotated.get_size()
+        screen_location = (int(screen_location[0] - w / 2), int(screen_location[1] - h / 2))
+        ScreenObjectManager.instance.screen.blit(rotated, screen_location)
+
 class Line(Colorable):
 
     # THESE DON'T HAVE A LOCAL POSITION
@@ -259,7 +278,7 @@ class Text(Colorable):
 def visualFactory(**options):
     if 'name' not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
-    for klass in (Polygon, Rectangle, Circle, Text):
+    for klass in (Polygon, Rectangle, Circle, Text, Image):
         if options['name'] == klass.__name__:
             r = klass(**options)
             return r
