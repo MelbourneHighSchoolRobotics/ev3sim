@@ -33,6 +33,8 @@ class PickUpInteractor(IInteractor):
             self.positions[(self.position_index + self.position_length) % self.TOTAL_POSITIONS] = self.obj_m_pos
             self.position_length = min(self.position_length+1, 10)
             self.position_index = (idx - self.position_length + 1 + self.TOTAL_POSITIONS) % self.TOTAL_POSITIONS
+            # Ensure tick specific forces are still reset. Thanks Angus :D
+            self.obj._force = np.array([0.0, 0.0])
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
