@@ -34,6 +34,8 @@ class SoccerInteractor(BaseInteractor):
             possible_keys.sort(key=len)
             self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
         self.resetPositions()
+        for robot in self.robots:
+            robot.robot_class.onSpawn()
     
     def resetPositions(self):
         for x in range(len(self.robots)):
