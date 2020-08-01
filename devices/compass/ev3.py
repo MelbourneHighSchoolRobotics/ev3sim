@@ -9,7 +9,7 @@ class CompassInteractor(IDeviceInteractor):
     name = 'COMPASS'
 
     def tick(self, tick):
-        self.device_class.calc()
+        self.device_class._calc()
         self.do_rotation = self.device_class.value() * np.pi / 180
     
     def afterPhysics(self):
@@ -25,12 +25,41 @@ class CompassInteractor(IDeviceInteractor):
                 obj.rotation = self.physical_object.rotation + self.relative_rotation
 
 class CompassSensor(Device, CompassSensorMixin):
+    """
+    EV3 Compass Sensor, calculates the bearing of the device relative to some direction (which can be specified).
 
-    def calc(self):
+    To get this bearing, use `value`.
+
+    To set the relative heading of the sensor, use `calibrate`.
+    """
+
+    def _calc(self):
         self._value = self._getValue()
 
     def value(self):
+        """
+        Get the compass value.
+
+        :returns: Value from 0 to 360, which is the relative bearing (measured anticlockwise from the true bearing).
+
+        Example usage:
+        ```
+        >>> print(compass.value())
+        48.2
+        ```
+        """
         return self._value
 
     def calibrate(self):
+        """
+        Set the sensor so the current bearing is interpreted as 0.
+
+        Example usage:
+        ```
+        >>> compass.calibrate()
+        >>> # Rotates 10 degrees to the left
+        >>> compass.value()
+        10
+        ```
+        """
         self._setRelative()
