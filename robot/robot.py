@@ -73,21 +73,56 @@ class RobotInteractor(IInteractor):
         self.robot_class.handleEvent(event)
 
 class Robot:
+    """
+    A robot is as you'd expect in the physical sense - a collection of devices on a base board,
+    with it's own internal logic and events.
+
+    This class however does not contain the physical definition of the robot though, just the brains.
+
+    All robot 'definitions' (see `robot/examples/controllable.yaml`) must reference the class path of some object implementing the below methods.
+    """
 
     def getDevice(self, port):
+        """
+        Returns an instance of the device on the port specified.
+        
+        Example usage:
+        ```
+        >>> leftMotor = self.getDevice('outB')
+        ```
+        """
         try:
             return self._interactor.devices[port]
         except:
             raise ValueError(f"No device on port {port} found.")
 
     def startUp(self):
+        """
+        Override with code to be executed whenever the robot is instantiated.
+        """
         pass
     
     def onSpawn(self):
+        """
+        Since soccer and possibly other games require the placement and rotation of bots, a method separate to `startUp`
+        exists for code to execute once this placement is complete.
+
+        As an example, calibrating the compass sensors should be done `onSpawn`, rather than on `startUp`.
+        """
         pass
 
     def tick(self, tick):
+        """
+        Override with code to be executed once every simulation tick.
+
+        :param int tick: The tick since beginning of simulation.
+        """
         pass
 
     def handleEvent(self, event):
+        """
+        Override with code to be executed for every `pygame.event.EventType` (https://www.pygame.org/docs/ref/event.html).
+
+        Shouldn't be required for normal bots.
+        """
         pass
