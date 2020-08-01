@@ -10,7 +10,8 @@ class SoccerInteractor(BaseInteractor):
 
     def startUp(self):
         self.goal_colliders = []
-        self.robots = []
+        self.locateBots()
+
         for x in range(len(self.goals)):
             pos = self.goals[x]['position']
             del self.goals[x]['position']
@@ -23,16 +24,6 @@ class SoccerInteractor(BaseInteractor):
             self.goal_colliders.append(objectFactory(**obj))
             if self.show_goal_colliders:
                 ScreenObjectManager.instance.registerVisual(self.goal_colliders[-1].visual, f'Soccer_DEBUG_collider-{len(self.goal_colliders)}')
-        for x in range(len(self.spawns)):
-            possible_keys = []
-            for key in ScriptLoader.instance.object_map.keys():
-                if key.startswith(f'Robot-{x}'):
-                    possible_keys.append(key)
-            if len(possible_keys) == 0:
-                # Just spawn as many as you can.
-                continue
-            possible_keys.sort(key=len)
-            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
         self.resetPositions()
         for robot in self.robots:
             robot.robot_class.onSpawn()

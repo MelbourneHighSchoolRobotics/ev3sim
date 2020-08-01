@@ -9,7 +9,6 @@ from visual.manager import ScreenObjectManager
 
 class SoccerInteractor(IInteractor):
 
-    BOTS_PER_TEAM = 1
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
     START_TIME = datetime.timedelta(minutes=5)
@@ -23,12 +22,34 @@ class SoccerInteractor(IInteractor):
         self.current_goal_score_tick = -1
         self.time_tick = 0
     
+    def locateBots(self):
+        self.robots = []
+        bot_index = 0
+        while True:
+            # Find the next robot.
+            possible_keys = []
+            for key in ScriptLoader.instance.object_map.keys():
+                if key.startswith(f'Robot-{bot_index}'):
+                    possible_keys.append(key)
+            if len(possible_keys) == 0:
+                break
+            possible_keys.sort(key=len)
+            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+            bot_index += 1
+
+        if len(self.robots) == 0:
+            raise ValueError("No robots loaded.")
+        if len(self.robots) % len(self.names) != 0:
+            raise ValueError(f"Not an equal amount of robots per teams ({len(self.robots)} Robots, {len(self.names)} Teams)")
+        self.BOTS_PER_TEAM = len(self.robots) // len(self.names)
+
     def startUp(self):
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(self.goals), "All player related arrays should be of equal size."
         # Initialise the goal colliders.
         self.goal_colliders = []
         self.team_scores = []
-        self.robots = []
+        self.locateBots()
+
         for x in range(len(self.names)):
             # Set up goal collider.
             pos = self.goals[x]['position']
@@ -46,16 +67,6 @@ class SoccerInteractor(IInteractor):
             self.team_scores.append(0)
             # Set up team name
             ScriptLoader.instance.object_map[f'name{x+1}Text'].text = self.names[x]
-            for y in range(self.BOTS_PER_TEAM):
-                # Find the BOTS_PER_TEAM*x+yth robot.
-                possible_keys = []
-                for key in ScriptLoader.instance.object_map.keys():
-                    if key.startswith(f'Robot-{self.BOTS_PER_TEAM*x+y}'):
-                        possible_keys.append(key)
-                if len(possible_keys) == 0:
-                    raise ValueError(f"No Robot-{self.BOTS_PER_TEAM*x+y} for simulation, quitting.")
-                possible_keys.sort(key=len)
-                self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
         self.updateScoreText()
         self.resetPositions()
         for robot in self.robots:
