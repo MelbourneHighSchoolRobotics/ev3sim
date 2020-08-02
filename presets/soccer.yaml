@@ -365,6 +365,8 @@ elements:
     stroke_width: 0.2
     stroke: '#ffffff'
     zPos: 2
+  friction: 1
+  mass: 0.1
   position: [-100, -18]
   key: IR_BALL
 loader:
