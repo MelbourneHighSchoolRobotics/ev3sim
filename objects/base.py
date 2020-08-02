@@ -84,11 +84,16 @@ class PhysicsObject(BaseObject):
         self.friction_coefficient = kwargs.get('friction', 1)
         self.restitution_coefficient = kwargs.get('restitution', 0.7)
         self.body, self.shape = self.visual.generateBodyAndShape(self)
+        self.shape.obj = self
         self.body.position = self.position
 
     def update(self):
         self.position = self.body.position
         self.rotation = self.body.angle
+        self.update_velocities()
+
+    @stop_on_pause
+    def update_velocities(self):
         # No angular friction or air resistance/velocity dampening, so do this.
         self.body.angular_velocity *= self.friction_coefficient
         self.body.velocity *= self.friction_coefficient

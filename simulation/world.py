@@ -38,7 +38,10 @@ class World:
         self.space.remove(obj.body, obj.shape)
     
     @stop_on_pause
-    def tick(self, dt):
+    def physics_tick(self, dt):
         self.space.step(dt)
+
+    def tick(self, dt):
+        self.physics_tick(dt)
         for obj in self.objects:
             obj.update()
