@@ -1,8 +1,8 @@
 import numpy as np
+import pymunk
 from typing import List
 
 from visual.objects import IVisualElement, visualFactory
-from objects.colliders import Collider, colliderFactory
 from simulation.world import stop_on_pause
 
 class BaseObject:
@@ -68,70 +68,37 @@ class BaseObject:
 
 class PhysicsObject(BaseObject):
 
-    # TODO: Use these
-    velocity: np.ndarray
-    angular_velocity: float
-
-    _force: np.ndarray
-    _torque: float
-
     mass: float
-    inertia: float
 
     friction_coefficient: float
     restitution_coefficient: float
 
-    collider: Collider
+    shape: pymunk.Shape
 
     static: bool
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        if 'collider' not in kwargs:
-            raise ValueError("Collider not defined.")
-        if kwargs['collider'] == 'inherit':
-            self.collider = self.visual.generateCollider(self)
-        else:
-            self.collider = colliderFactory(self, **kwargs['collider'])
         self.mass = kwargs.get('mass', 1)
         self.static = kwargs.get('static', False)
-        self.friction_coefficient = kwargs.get('friction', 0.1)
+        self.friction_coefficient = kwargs.get('friction', 1)
         self.restitution_coefficient = kwargs.get('restitution', 0.7)
-        self.collider.generateExtraPhysicsAttributes()
-        self._force = np.array([.0, .0])
-        self.velocity = np.array([.0, .0])
-        self._torque = 0
-        self.angular_velocity = 0
+        self.body, self.shape = self.visual.generateBodyAndShape(self)
+        self.body.position = self.position
 
-    def updatePhysics(self, dt):
-        # Create a friction force based on previous velocity
-        self.apply_force(-self.mass * self.velocity * self.friction_coefficient)
-        self.apply_torque(-self.mass * self.angular_velocity * self.friction_coefficient * 100)
-
-        # Acceleration is set to 0 each update - no leakage.
-        acceleration = self._force / self.mass
-        self.velocity += acceleration * dt
-        self.position += self.velocity * dt
-
-        # Same with angular acceleration
-        angular_acceleration = self._torque / self.inertia
-        self.angular_velocity += angular_acceleration * dt
-        self.rotation += self.angular_velocity * dt
-
-        # Clear forces for next update.
-        self._force = np.array([0., 0.])
-        self._torque = 0
+    def update(self):
+        self.position = self.body.position
+        self.rotation = self.body.angle
+        # No angular friction or air resistance/velocity dampening, so do this.
+        self.body.angular_velocity *= self.friction_coefficient
+        self.body.velocity *= self.friction_coefficient
 
     @stop_on_pause
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
-        self._force += f
-        if pos is not None:
-            self.apply_torque(np.cross(pos, f))
-    
-    @stop_on_pause
-    def apply_torque(self, t):
-        self._torque += t
+        if pos is None:
+            pos = np.array([0.0, 0.0])
+        self.shape.body.apply_force_at_local_point(f, pos)
 
 def objectFactory(**options):
     if options.get('physics', False):

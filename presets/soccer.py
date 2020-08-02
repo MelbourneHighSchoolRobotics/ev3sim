@@ -4,7 +4,6 @@ from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
 from simulation.world import World, stop_on_pause
 from objects.base import objectFactory
-from objects.colliders import colliderFactory
 from visual.manager import ScreenObjectManager
 
 class SoccerInteractor(IInteractor):
@@ -80,11 +79,12 @@ class SoccerInteractor(IInteractor):
         # It is assumed that 2 robots to each team, with indexes increasing as we go across teams.
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
-                self.robots[team*self.BOTS_PER_TEAM + index].position = self.spawns[team][index][0]
-                self.robots[team*self.BOTS_PER_TEAM + index].rotation = self.spawns[team][index][1] * np.pi / 180
-                self.robots[team*self.BOTS_PER_TEAM + index].velocity = np.array([0.0, 0.0])
-        ScriptLoader.instance.object_map['IR_BALL'].position = [0, -18]
-        ScriptLoader.instance.object_map['IR_BALL'].velocity = np.array([0., 0.])
+                self.robots[team*self.BOTS_PER_TEAM + index].body.position = self.spawns[team][index][0]
+                self.robots[team*self.BOTS_PER_TEAM + index].body.angle = self.spawns[team][index][1] * np.pi / 180
+                self.robots[team*self.BOTS_PER_TEAM + index].body.velocity = np.array([0.0, 0.0])
+                self.robots[team*self.BOTS_PER_TEAM + index].body.angular_velocity = 0
+        ScriptLoader.instance.object_map['IR_BALL'].body.position = np.array([0, -18])
+        ScriptLoader.instance.object_map['IR_BALL'].body.velocity = np.array([0., 0.])
 
     def tick(self, tick):
         super().tick(tick)
@@ -92,7 +92,8 @@ class SoccerInteractor(IInteractor):
             self.current_goal_score_tick = -1
             World.instance.paused = False
         self.update_time()
-        collider = objectFactory(**{
+        # TODO: Fix goal detection.
+        """collider = objectFactory(**{
             'physics': True,
             'position': ScriptLoader.instance.object_map['IR_BALL'].position,
             'collider': {
@@ -103,7 +104,7 @@ class SoccerInteractor(IInteractor):
             if collider.getCollisionInfo(goal.collider)["collision"]:
                 # GOAL!
                 self.goalScoredIn(i, tick)
-                break
+                break"""
 
     @stop_on_pause
     def update_time(self):
