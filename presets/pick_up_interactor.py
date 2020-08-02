@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import pymunk
 from simulation.interactor import IInteractor
 from simulation.world import World
 from objects.base import objectFactory
@@ -28,44 +29,30 @@ class PickUpInteractor(IInteractor):
         if not self.obj_grabbed:
             self.position_length = 0
         if self.obj_grabbed:
-            self.obj.position = self.obj_rel_pos + self.obj_m_pos
+            self.obj.body.position = self.obj_rel_pos + self.obj_m_pos
             idx = (self.position_index + self.position_length) % self.TOTAL_POSITIONS
             self.positions[(self.position_index + self.position_length) % self.TOTAL_POSITIONS] = self.obj_m_pos
             self.position_length = min(self.position_length+1, 10)
             self.position_index = (idx - self.position_length + 1 + self.TOTAL_POSITIONS) % self.TOTAL_POSITIONS
-            # Ensure tick specific forces are still reset. Thanks Angus :D
-            self.obj._force = np.array([0.0, 0.0])
-            self.obj._torque = 0
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            collider = objectFactory(**{
-                'physics': True,
-                'position': m_pos,
-                'collider': {
-                    'name': 'Point'
-                }
-            }).collider
-            for obj in World.instance.objects:
-                if obj.collider.getCollisionInfo(collider)["collision"]:
-                    # Grab the object!
-                    obj.velocity = np.array([0.0, 0.0])
-                    World.instance.unregisterObject(obj)
-                    self.obj = obj
-                    self.obj_grabbed = True
-                    self.obj_rel_pos = obj.position - m_pos
-                    self.obj_m_pos = m_pos
-                    break
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS))
+            if len(shapes) > 0:
+                self.obj = shapes[0].shape.obj
+                self.obj.body.velocity = np.array([0.0, 0.0])
+                self.obj_grabbed = True
+                self.obj_rel_pos = self.obj.position - m_pos
+                self.obj_m_pos = m_pos
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.obj_grabbed:
             self.obj_grabbed = False
-            World.instance.registerObject(self.obj)
             # Give velocity based on previous mouse positions.
             if self.position_length != 0:
                 differences = sum(
                     (x+1) / self.position_length * (self.positions[(self.position_index + x+1) % self.TOTAL_POSITIONS] - self.positions[(self.position_index + x) % self.TOTAL_POSITIONS])
                     for x in range(self.position_length-1)
                 )
-                self.obj.velocity = self.VELOCITY_MULT * differences
+                self.obj.body.velocity = self.VELOCITY_MULT * differences
         if event.type == pygame.MOUSEMOTION and self.obj_grabbed:
             self.obj_m_pos = screenspace_to_worldspace(event.pos)
