@@ -38,9 +38,6 @@ class SoccerInteractor(IInteractor):
 
         if len(self.robots) == 0:
             raise ValueError("No robots loaded.")
-        if len(self.robots) % len(self.names) != 0:
-            raise ValueError(f"Not an equal amount of robots per teams ({len(self.robots)} Robots, {len(self.names)} Teams)")
-        self.BOTS_PER_TEAM = len(self.robots) // len(self.names)
 
     def startUp(self):
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(self.goals), "All player related arrays should be of equal size."
@@ -48,6 +45,9 @@ class SoccerInteractor(IInteractor):
         self.goal_colliders = []
         self.team_scores = []
         self.locateBots()
+        if len(self.robots) % len(self.names) != 0:
+            raise ValueError(f"Not an equal amount of robots per teams ({len(self.robots)} Robots, {len(self.names)} Teams)")
+        self.BOTS_PER_TEAM = len(self.robots) // len(self.names)
 
         for x in range(len(self.names)):
             # Set up goal collider.

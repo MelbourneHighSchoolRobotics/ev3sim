@@ -1,6 +1,5 @@
 import numpy as np
 from objects.base import objectFactory
-from objects.colliders import colliderFactory
 from presets.soccer import SoccerInteractor as BaseInteractor
 from simulation.loader import ScriptLoader
 from simulation.world import World
@@ -30,11 +29,11 @@ class SoccerInteractor(BaseInteractor):
     
     def resetPositions(self):
         for x in range(len(self.robots)):
-            self.robots[x].position = self.spawns[x][0]
-            self.robots[x].rotation = self.spawns[x][1] * np.pi / 180
-            self.robots[x].velocity = np.array([0., 0.])
-        ScriptLoader.instance.object_map['IR_BALL'].position = [0, -18]
-        ScriptLoader.instance.object_map['IR_BALL'].velocity = np.array([0., 0.])
+            self.robots[x].body.position = self.spawns[x][0]
+            self.robots[x].body.angle = self.spawns[x][1] * np.pi / 180
+            self.robots[x].body.velocity = np.array([0., 0.])
+        ScriptLoader.instance.object_map['IR_BALL'].body.position = [0, -18]
+        ScriptLoader.instance.object_map['IR_BALL'].body.velocity = np.array([0., 0.])
 
     def goalScoredIn(self, teamIndex, tick):
         self.resetPositions()
