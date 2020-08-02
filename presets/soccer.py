@@ -12,6 +12,9 @@ class SoccerInteractor(IInteractor):
     GOAL_SCORE_PAUSE_DELAY = 1
     START_TIME = datetime.timedelta(minutes=5)
 
+    BALL_COLLISION_TYPE = 3
+    GOAL_COLLISION_TYPE = 4
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.names = kwargs.get('names', ['Team 1', 'Team 2'])
@@ -49,6 +52,30 @@ class SoccerInteractor(IInteractor):
             raise ValueError(f"Not an equal amount of robots per teams ({len(self.robots)} Robots, {len(self.names)} Teams)")
         self.BOTS_PER_TEAM = len(self.robots) // len(self.names)
 
+        self.ball_centre = objectFactory(**{
+            'collider': 'inherit',
+            'visual': {
+                'name': 'Circle',
+                'radius': 0.1
+            },
+            'physics': True
+        })
+        self.ball_centre.shape.sensor = True
+        self.ball_centre.shape.collision_type = self.BALL_COLLISION_TYPE
+        World.instance.registerObject(self.ball_centre)
+
+        handler = World.instance.space.add_collision_handler(self.BALL_COLLISION_TYPE, self.GOAL_COLLISION_TYPE)
+        def handle_collide(arbiter, space, data):
+            a, b = arbiter.shapes
+            if hasattr(a, 'goal_index'):
+                self.goalScoredIn(a.goal_index)
+            elif hasattr(b, 'goal_index'):
+                self.goalScoredIn(b.goal_index)
+            else:
+                raise ValueError("Two objects with collision types used by soccer don't have a goal index.")
+            return False
+        handler.begin = handle_collide
+
         for x in range(len(self.names)):
             # Set up goal collider.
             pos = self.goals[x]['position']
@@ -60,6 +87,10 @@ class SoccerInteractor(IInteractor):
                 'physics': True
             }
             self.goal_colliders.append(objectFactory(**obj))
+            self.goal_colliders[-1].shape.sensor = True
+            self.goal_colliders[-1].shape.collision_type = self.GOAL_COLLISION_TYPE
+            self.goal_colliders[-1].shape.goal_index = x
+            World.instance.registerObject(self.goal_colliders[-1])
             if self.show_goal_colliders:
                 ScreenObjectManager.instance.registerVisual(self.goal_colliders[-1].visual, f'Soccer_DEBUG_collider-{len(self.goal_colliders)}')
             # Set up team scores
@@ -88,23 +119,12 @@ class SoccerInteractor(IInteractor):
 
     def tick(self, tick):
         super().tick(tick)
+        self.cur_tick = tick
+        self.ball_centre.body.position = ScriptLoader.instance.object_map['IR_BALL'].body.position
         if self.current_goal_score_tick != -1 and (tick - self.current_goal_score_tick) > self.GOAL_SCORE_PAUSE_DELAY * ScriptLoader.instance.GAME_TICK_RATE:
             self.current_goal_score_tick = -1
             World.instance.paused = False
         self.update_time()
-        # TODO: Fix goal detection.
-        """collider = objectFactory(**{
-            'physics': True,
-            'position': ScriptLoader.instance.object_map['IR_BALL'].position,
-            'collider': {
-                'name': 'Point'
-            }
-        }).collider
-        for i, goal in enumerate(self.goal_colliders):
-            if collider.getCollisionInfo(goal.collider)["collision"]:
-                # GOAL!
-                self.goalScoredIn(i, tick)
-                break"""
 
     @stop_on_pause
     def update_time(self):
@@ -116,10 +136,10 @@ class SoccerInteractor(IInteractor):
         seconds = seconds - minutes * 60
         ScriptLoader.instance.object_map['TimerText'].text = '{:02d}:{:02d}'.format(minutes, seconds)
 
-    def goalScoredIn(self, teamIndex, tick):
+    def goalScoredIn(self, teamIndex):
         self.team_scores[1-teamIndex] += 1
         self.updateScoreText()
         self.resetPositions()
         # Pause the game temporarily
         World.instance.paused = True
-        self.current_goal_score_tick = tick
+        self.current_goal_score_tick = self.cur_tick
