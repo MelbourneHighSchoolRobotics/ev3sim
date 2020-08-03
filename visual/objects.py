@@ -1,12 +1,12 @@
 import numpy as np
 import pygame
 import pygame.freetype
+import pymunk
 from typing import Optional, Tuple
 
 from visual.manager import ScreenObjectManager
 import visual.utils as utils
 from objects.utils import local_space_to_world_space
-from objects.colliders import colliderFactory
 
 
 class IVisualElement:
@@ -30,6 +30,7 @@ class IVisualElement:
         self.rotation = kwargs.get('rotation', 0)
         self.zPos = kwargs.get('zPos', 0)
         self.sensorVisible = kwargs.get('sensorVisible', False)
+        self.visible = kwargs.get('visible', True)
 
     @property
     def position(self) -> np.ndarray:
@@ -58,8 +59,8 @@ class IVisualElement:
     def calculatePoints(self):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
 
-    def generateCollider(self, physObj):
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateCollider`")
+    def generateBodyAndShape(self, physObj):
+        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`")
 
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
@@ -174,11 +175,14 @@ class Polygon(Colorable):
         if self.stroke and self.stroke_width:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
-    def generateCollider(self, physObj):
-        return colliderFactory(physObj, **{
-            'name': 'ConvexPolygon',
-            'verts': self.verts + [self.verts[0]]
-        })
+    def generateBodyAndShape(self, physObj):
+        moment = pymunk.moment_for_poly(physObj.mass, self.verts)
+        body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+        shape = pymunk.Poly(body, self.verts)
+        shape.friction = physObj.friction_coefficient
+        shape.elasticity = physObj.restitution_coefficient
+        shape.collision_type = 1
+        return body, shape
 
 class Rectangle(Polygon):
 
@@ -218,11 +222,14 @@ class Circle(Colorable):
         if self.stroke and self.stroke_width:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
-    def generateCollider(self, physObj):
-        return colliderFactory(physObj, **{
-            'name': 'Circle',
-            'radius': self.radius
-        })
+    def generateBodyAndShape(self, physObj):
+        moment = pymunk.moment_for_circle(physObj.mass, 0, self.radius)
+        body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+        shape = pymunk.Circle(body, self.radius)
+        shape.friction = physObj.friction_coefficient
+        shape.elasticity = physObj.restitution_coefficient
+        shape.collision_type = 1
+        return body, shape
 
 class Text(Colorable):
 

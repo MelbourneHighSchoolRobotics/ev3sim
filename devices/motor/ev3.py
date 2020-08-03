@@ -21,13 +21,13 @@ class MotorInteractor(IDeviceInteractor):
             ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (0, 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0)
         else:
             ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (- 255 * self.device_class.applied_force / self.device_class.MAX_FORCE, 0, 0)
-        self.device_class._applyMotors(self.physical_object, local_space_to_world_space(self.relative_location, self.physical_object.rotation, np.array([0, 0])), self.relative_rotation + self.physical_object.rotation)
+        self.device_class._applyMotors(self.physical_object, self.relative_location, self.relative_rotation)
         return False
 
 class LargeMotor(Device, MotorMixin):
 
-    MAX_FORCE = 60000
+    MAX_FORCE = 1000
 
 class MediumMotor(Device, MotorMixin):
 
-    MAX_FORCE = 30000
+    MAX_FORCE = 500

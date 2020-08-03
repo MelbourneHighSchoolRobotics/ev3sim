@@ -41,6 +41,9 @@ class ControllableBot(Robot):
         self.botMotor : LargeMotor = self.getDevice('outD')
         self.compass : CompassSensor = self.getDevice('in4')
 
+    def onSpawn(self):
+        self.compass.calibrate()
+
     def tick(self, tick):
         hue = (tick % 120) * 3
         r, g, b = hsl_to_rgb(hue, 1, 0.5)

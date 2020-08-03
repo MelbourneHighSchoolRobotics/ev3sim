@@ -9,14 +9,6 @@ from visual.manager import ScreenObjectManager
 class UltrasonicInteractor(IDeviceInteractor):
 
     UPDATE_PER_SECOND = 5
-    DRAW_RAYCAST = False
-
-    def startUp(self):
-        super().startUp()
-        if self.DRAW_RAYCAST:
-            key = self.getPrefix() + '_US_RAYCAST'
-            ScreenObjectManager.instance.registerVisual(self.device_class.raycast.visual, key)
-
 
     def tick(self, tick):
         if tick % (ScriptLoader.instance.GAME_TICK_RATE // self.UPDATE_PER_SECOND) == 0:
@@ -40,7 +32,6 @@ class UltrasonicSensor(Device, UltrasonicSensorMixin):
     def __init__(self, parent, relativePos, relativeRot, **kwargs):
         super().__init__(parent, relativePos, relativeRot, **kwargs)
         self._SetIgnoredObjects([parent])
-        self._InitialiseRaycast()
 
     def _calc(self):
         self.saved = self._DistanceFromSensor(ScriptLoader.instance.object_map[self._interactor.getPrefix() + 'light_up'].position, self.parent.rotation + self.relativeRot)
