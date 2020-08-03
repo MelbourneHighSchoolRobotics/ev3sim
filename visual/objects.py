@@ -180,6 +180,7 @@ class Polygon(Colorable):
         body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
         shape = pymunk.Poly(body, self.verts)
         shape.friction = physObj.friction_coefficient
+        shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
         return body, shape
 
@@ -226,6 +227,7 @@ class Circle(Colorable):
         body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
         shape = pymunk.Circle(body, self.radius)
         shape.friction = physObj.friction_coefficient
+        shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
         return body, shape
 
