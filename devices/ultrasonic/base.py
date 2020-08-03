@@ -1,64 +1,32 @@
 import numpy as np
+import pymunk
 from objects.base import objectFactory
 from simulation.world import World
 
 class UltrasonicSensorMixin:
 
-    RAYCAST_WIDTH = 2
+    RAYCAST_RADIUS = 2
     # The max distance to look
     MAX_RAYCAST = 120
     # The maximum level of discrepancy to reality
     ACCEPTANCE_LEVEL = 1
 
-    def _InitialiseRaycast(self):
-        self.raycast = objectFactory(**{
-            'visual': {
-                'name': 'Rectangle',
-                'height': self.RAYCAST_WIDTH / 2,
-                'width': 10,
-                'fill': '#ff0000',
-                'stroke': None,
-            },
-            'collider': 'inherit',
-            'physics': True,
-            'position': [0, 0]
-        })
-
     def _SetIgnoredObjects(self, objs):
-        self.ignore_objects = list(map(lambda x: x.key, objs))
+        self.ignore_objects = objs
 
-    def _GenerateRaycast(self, centrePosition, centreRotation, distance):
-        self.raycast.visual.initFromKwargs(**{
-            'height': self.RAYCAST_WIDTH / 2,
-            'width': distance,
-            'fill': '#ff0000',
-            'stroke': None,
-        })
-        self.raycast.rotation = centreRotation
-        self.raycast.position = centrePosition + distance / 2 * np.array([np.cos(centreRotation), np.sin(centreRotation)])
-        self.raycast.collider = self.raycast.visual.generateCollider(self.raycast)
-        return self.raycast
+    def _DistanceFromSensor(self, startPosition, centreRotation):
+        top_length = self.MAX_RAYCAST
+        while top_length > 0:
+            endPosition = startPosition + top_length * np.array([np.cos(centreRotation), np.sin(centreRotation)])
+            # Ignore all ignored objects by setting the category on them.
+            for obj in self.ignore_objects:
+                obj.shape.filter = pymunk.ShapeFilter(categories=0b1)
+            raycast = World.instance.space.segment_query_first(startPosition, endPosition, self.RAYCAST_RADIUS, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0b1))
+            for obj in self.ignore_objects:
+                # TODO: Change me.
+                obj.shape.filter = pymunk.ShapeFilter(categories=pymunk.ShapeFilter.ALL_CATEGORIES)
 
-    def _DistanceFromSensor(self, centrePosition, centreRotation):
-        # We raycast max length, continuously move back to intersection point.
-        length = self.MAX_RAYCAST + 0.01
-        while True:
-            rect = self._GenerateRaycast(centrePosition, centreRotation, length)
-            # Look for collisions
-            collided = False
-            shortest_collision_length = length + self.ACCEPTANCE_LEVEL
-            for obj in World.instance.objects + World.instance.static_objects:
-                if obj.key in self.ignore_objects: continue
-                info = obj.collider.getCollisionInfo(rect.collider)
-                if info['collision']:
-                    collided = True
-                    test = np.dot(info['world_space_position'] - centrePosition, np.array([np.cos(centreRotation), np.sin(centreRotation)]))
-                    if test > 0:
-                        shortest_collision_length = min(test, shortest_collision_length)
-            if collided:
-                if shortest_collision_length - length > self.ACCEPTANCE_LEVEL * 0.5: break
-                length = shortest_collision_length - self.ACCEPTANCE_LEVEL
-            else:
-                break
-        return length
-                
+            if raycast == None:
+                return top_length
+            top_length = raycast.alpha * top_length - self.ACCEPTANCE_LEVEL
+        return 0                

@@ -32,9 +32,9 @@ base_plate:
     stroke_width: 0.1
     stroke: '#ffffff'
     zPos: 2
-  mass: 300
+  mass: 5
   restitution: 0.2
-  friction: 4
+  friction: 0.8
   children:
   - physics: false
     type: object
