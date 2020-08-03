@@ -1,10 +1,16 @@
 colours:
-  text_color: '#e63946'
-  wall_color: '#2a9d8f'
-  strip_color: '#f1faee'
-  grass_color: '#55a630'
-  goal_fill: '#e63946'
-  strip_dark_color: '#000000'
+  wall_color: "#2a9d8f"
+  strip_color: "#f1faee"
+  grass_color: "#55a630"
+  goal_fill: "#e63946"
+  strip_dark_color: "#000000"
+  UI_bg: "#efedee"
+  UI_bg_2: "#dddedf"
+  UI_fg: "#efedee"
+  UI_fg_2: "1f1f1f"
+  team_1: "#3235a9"
+  team_2: "#ba3333"
+
 interactors:
 - class_path: presets.pick_up_interactor.PickUpInteractor
 - class_path: presets.pause_interactor.PauseInteractor
@@ -306,54 +312,108 @@ elements:
   zPos: 5
   key: botstrip 
   sensorVisible: true
+# UI Elements
 - type: visual
-  name: Text
-  text: '0'
-  fill: 'text_color'
-  font_size: 72
+  name: Rectangle
+  width: 100
+  height: 30
+  fill: "team_1"
+  stroke_width: 0
+  position: [-90, 110]
   hAlignment: r
   vAlignment: t
-  position: [-10, 110]
+  zPos: 5
+  key: team1UI
+- type: visual
+  name: Rectangle
+  width: 100
+  height: 30
+  fill: "team_2"
+  stroke_width: 0
+  position: [90, 110]
+  hAlignment: l
+  vAlignment: t
+  zPos: 5
+  key: team2UI
+- type: visual
+  name: Rectangle
+  width: 15
+  height: 30
+  fill: "UI_bg"
+  stroke_width: 0
+  position: [-50, 110]
+  hAlignment: r
+  vAlignment: t
+  zPos: 5
+  key: score1UI 
+- type: visual
+  name: Rectangle
+  width: 15
+  height: 30
+  fill: "UI_bg"
+  stroke_width: 0
+  position: [50, 110]
+  hAlignment: l
+  vAlignment: t
+  zPos: 5
+  key: score2UI
+- type: visual
+  name: Text
+  text: "0"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [-50, 110]
+  hAlignment: m
+  vAlignment: t
   zPos: 5
   key: score1Text
 - type: visual
   name: Text
-  text: '0'
-  fill: 'text_color'
-  font_size: 72
-  hAlignment: l
-  vAlignment: t
-  position: [10, 110]
+  text: "0"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [50, 110]
+  hAlignment: m
+  vAlignment: t 
   zPos: 5
   key: score2Text
 - type: visual
   name: Text
-  text: 'Team 1'
-  fill: 'text_color'
-  font_size: 72
-  hAlignment: l
-  vAlignment: t
-  position: [-146.65, 110]
+  fill: "UI_fg"
+  font_size: 34  
+  position: [-60, 105]
+  hAlignment: r
+  vAlignment: m
   zPos: 5
   key: name1Text
-- type: visual
+  type: visual
   name: Text
-  text: 'Team 2'
-  fill: 'text_color'
-  font_size: 72
-  hAlignment: r
-  vAlignment: t
-  position: [146.65, 110]
+  fill: "UI_fg"
+  font_size: 34
+  position: [60, 105]
+  hAlignment: l
+  vAlignment: m
   zPos: 5
   key: name2Text
 - type: visual
-  name: Text
-  text: '05:00'
-  fill: 'text_color'
-  font_size: 72
+  name: Rectangle
+  fill: "UI_bg_2"
+  width: 60
+  height: 30
+  position: [0,110]
   hAlignment: m
-  vAlignment: b
-  position: [0, 81]
+  vAlignment: t
+  zPos: 5
+  key: TimerUI
+- type: visual
+  name: Text
+  text: "05:00"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [0, 110]
+  hAlignment: m
+  vAlignment: t
+  zPos: 5
   key: TimerText
 - type: object
   physics: true
