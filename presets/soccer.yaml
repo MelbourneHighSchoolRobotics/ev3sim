@@ -386,7 +386,7 @@ elements:
   vAlignment: m
   zPos: 5
   key: name1Text
-  type: visual
+- type: visual
   name: Text
   fill: "UI_fg"
   font_size: 34
