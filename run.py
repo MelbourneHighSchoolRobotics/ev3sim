@@ -1,5 +1,6 @@
 import argparse
 import sys
+from collections import deque
 
 parser = argparse.ArgumentParser(description='Run the simulation, include some robots and base it on a preset.')
 parser.add_argument('--preset', type=str, help='Path of preset file to load.', default='presets/soccer.yaml', dest='preset')
@@ -15,4 +16,20 @@ with open(args.preset, 'r') as f:
 
 config['robots'] = config.get('robots', []) + args.robots
 
-runFromConfig(config)
+shared_data = {
+    'tick': 0,
+    'stack': deque(),
+    'robots': {},
+}
+
+from threading import Thread
+from simulation.communication import start_server_with_shared_data
+
+def run(shared_data):
+    runFromConfig(config, shared_data)
+
+comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data,))
+sim_thread = Thread(target=run, args=(shared_data,))
+
+comm_thread.start()
+sim_thread.start()

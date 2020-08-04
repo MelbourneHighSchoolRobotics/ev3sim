@@ -22,8 +22,12 @@ class ScriptLoader:
 
     def __init__(self, **kwargs):
         ScriptLoader.instance = self
+        self.robots = {}
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def setSharedData(self, data):
+        self.data = data
 
     def startUp(self, **kwargs):
         man = ScreenObjectManager(**kwargs)
@@ -76,6 +80,15 @@ class ScriptLoader:
         while self.active_scripts:
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
+                # Handle any writes
+                while self.data['stack']:
+                    rob_id, attribute_path, value = self.data['stack'].pop()
+                    print(f"Changing {rob_id}/{attribute_path} to {value}.")
+                # Send all the data (Update tick)
+                self.data['tick'] = tick + 1
+                for key, robot in self.robots.items():
+                    self.data['robots'][key.rstrip('phys_obj')] = robot._interactor.collectDeviceData()
+                # Handle simulation.
                 # First of all, check the script can handle the current settings.
                 if new_time - last_game_update > 2 / self.GAME_TICK_RATE / self.TIME_SCALE:
                     total_lag_ticks += 1
@@ -106,9 +119,10 @@ class ScriptLoader:
             ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE
         }
 
-def runFromConfig(config):
+def runFromConfig(config, shared):
     from robot import initialise_bot, RobotInteractor
     sl = ScriptLoader(**config.get('loader', {}))
+    sl.setSharedData(shared)
     sl.active_scripts = []
     visual.utils.GLOBAL_COLOURS = config.get('colours', {})
     for index, robot in enumerate(config.get('robots', [])):

@@ -44,6 +44,7 @@ def initialise_bot(topLevelConfig, filename, prefix):
                 'robot': robot,
                 'base_key': bot_config['key']
             }))
+            ScriptLoader.instance.robots[bot_config['key']] = robot
         except yaml.YAMLError as exc:
             print(f"An error occured while loading robot preset {filename}. Exited with error: {exc}")
 
@@ -71,6 +72,17 @@ class RobotInteractor(IInteractor):
     
     def handleEvent(self, event):
         self.robot_class.handleEvent(event)
+
+    def collectDeviceData(self):
+        res = {}
+        for port, device in self.devices.items():
+            if device.device_type not in res:
+                res[device.device_type] = {}
+            try:
+                res[device.device_type][device._getObjName(port)] = device.toObject()
+            except:
+                res[device.device_type][device._getObjName(port)] = 'NO DATA'
+        return res
 
 class Robot:
     """

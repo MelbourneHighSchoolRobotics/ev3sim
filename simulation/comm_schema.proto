@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package serverComm;
+
+service SimulationDealer {
+    rpc RequestTickUpdates(RobotRequest) returns (stream RobotData) {}
+    rpc SendWriteInfo(RobotWrite) returns (WriteResult) {}
+}
+
+message RobotRequest {
+    string robot_id = 1;
+}
+
+message RobotData {
+    int32 tick = 1;
+    string content = 2;
+}
+
+message RobotWrite {
+    string robot_id = 1;
+    string attribute_path = 2;
+    string value = 3;
+}
+
+message WriteResult {
+    bool result = 1;
+}

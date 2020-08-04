@@ -8,6 +8,11 @@ class MotorMixin:
 
     applied_force = 0
 
+    device_type = 'tacho-motor'
+    command = 'None'
+    state = 'running'
+    stop_action = 'hold'
+
     def _updateTime(self, tick):
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
@@ -66,4 +71,19 @@ class MotorMixin:
         self.applied_force = 0
         self.time_wait = -1
 
-    
+    def toObject(self):
+        # TODO: Change some of these magic numbers to something reasonable.
+        return {
+            'address': self._interactor.port,
+            'command': self.command,
+            'count_per_rot': 3,
+            'driver_name': self.driver_name,
+            'max_speed': 100,
+            'speed_sp': self.applied_force / self.MAX_FORCE * 100,
+            'state': self.state,
+            'stop_action': self.stop_action,
+            'time_sp': 0,
+        }
+
+    def applyWrite(self, attribute, value):
+        print(f"Attempting to change {attribute} to {value}.")

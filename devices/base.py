@@ -9,6 +9,8 @@ import visual.utils as utils
 
 class Device:
 
+    device_type = 'CHANGE_ME'
+
     def __init__(self, parent, relativePos, relativeRot):
         # parent is the physics object containing this device.
         # visual is the object representing the device
@@ -26,6 +28,15 @@ class Device:
     @property
     def global_rotation(self):
         return self.parent.rotation + self.relativeRot
+
+    def toObject(self):
+        raise NotImplementedError("Implement the toObject method.")
+
+    def applyWrite(self, attribute, value):
+        raise NotImplementedError("Implement the applyWrite method.")
+
+    def _getObjName(self, port):
+        return port
 
 class IDeviceInteractor(IInteractor):
 
