@@ -2,3 +2,4 @@ numpy==1.19.0
 pygame==1.9.6
 PyYAML==3.13
 noise==1.2.2
+pymunk==5.6.0
