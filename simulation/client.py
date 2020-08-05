@@ -1,15 +1,124 @@
+import sys
 import logging
 import grpc
 import simulation.comm_schema_pb2
 import simulation.comm_schema_pb2_grpc
+import json
+from unittest import mock
+from queue import Queue
 
-def run():
+robot_id = sys.argv[2]
+
+def comms(data):
+    logging.basicConfig()
+    first_message = True
     with grpc.insecure_channel('localhost:50051') as channel:
-        print("Starting")
+        print("Connection initialised.")
         stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-        response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id='Robot-0'))
+        response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
         for r in response:
+            data['tick'] = r.tick
+            data['tick_rate'] = r.tick_rate
+            data['current_data'] = json.loads(r.content)
+            if first_message:
+                first_message = False
+                data['start_robot_queue'].put(True)
+
+def robot(filename, data):
+
+    from ev3dev2 import Device, DeviceNotFound
+
+    class MockedFile:
+        def __init__(self, data_path):
+            self.k2, self.k3, self.k4 = data_path
+            self.seek_point = 0
+        
+        def read(self):
+            if isinstance(data['current_data'][self.k2][self.k3][self.k4], int):
+                res = str(data['current_data'][self.k2][self.k3][self.k4])
+            if isinstance(data['current_data'][self.k2][self.k3][self.k4], str):
+                if self.seek_point == 0:
+                    res = data['current_data'][self.k2][self.k3][self.k4]
+                else:
+                    res = data['current_data'][self.k2][self.k3][self.k4][self.seek_point:]
+            return res.encode('utf-8')
+        
+        def seek(self, i):
+            self.seek_point = i
+        
+        def write(self, value):
+            # TODO: Change
+            print("Wrote", value)
+        
+        def flush(self):
             pass
 
-logging.basicConfig()
-run()
+    def device__init__(self, class_name, name_pattern='*', name_exact=False, **kwargs):
+        print("Initialising device!")
+        self._path = [class_name]
+        self.kwargs = kwargs
+        self._attr_cache = {}
+
+        def get_index(file):
+            match = Device._DEVICE_INDEX.match(file)
+            if match:
+                return int(match.group(1))
+            else:
+                return None
+        
+        if name_exact:
+            self._path.append(name_pattern)
+            self._device_index = get_index(name_pattern)
+        else:
+            for name in data['current_data'][self._path[0]].keys():
+                for k in kwargs:
+                    if k not in data['current_data'][self._path[0]][name]:
+                        break
+                    if isinstance(kwargs[k], list):
+                        if data['current_data'][self._path[0]][name][k] not in kwargs[k]:
+                            break
+                    else:
+                        if data['current_data'][self._path[0]][name][k] != kwargs[k]:
+                            break
+                else:
+                    self._path.append(name)
+                    self._device_index = get_index(name)
+                    break
+            else:
+                self._device_index = None
+
+                raise DeviceNotFound("%s is not connected." % self)
+
+    def _attribute_file_open(self, name):
+        return MockedFile((self._path[0], self._path[1], name))
+
+    def get_time():
+        return data['tick'] / data['tick_rate']
+
+    @mock.patch('time.time', mock.MagicMock(side_effect=get_time))
+    @mock.patch('ev3dev2.Device.__init__', device__init__)
+    @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
+    def run_script(fname):
+        from importlib.machinery import SourceFileLoader
+        module = SourceFileLoader('__main__', fname).load_module()
+    
+    assert data['start_robot_queue'].get(), "Something went wrong..."
+    run_script(filename)
+
+shared_data = {
+    'tick': 0,
+    'tickrate': 1,
+    'current_data': {},
+    'actions_queue': Queue(maxsize=0),
+    'start_robot_queue': Queue(maxsize=0),
+}
+
+from threading import Thread
+
+comm_thread = Thread(target=comms, args=(shared_data,), daemon=True)
+robot_thread = Thread(target=robot, args=(sys.argv[1], shared_data,))
+
+comm_thread.start()
+robot_thread.start()
+
+robot_thread.join()
