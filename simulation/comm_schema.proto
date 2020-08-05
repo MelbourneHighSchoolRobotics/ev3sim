@@ -13,7 +13,8 @@ message RobotRequest {
 
 message RobotData {
     int32 tick = 1;
-    string content = 2;
+    int32 tick_rate = 2;
+    string content = 3;
 }
 
 message RobotWrite {

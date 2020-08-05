@@ -7,6 +7,7 @@ import simulation.comm_schema_pb2
 import simulation.comm_schema_pb2_grpc
 import collections
 import json
+from simulation.loader import ScriptLoader
 
 def start_server_with_shared_data(data):
 
@@ -19,7 +20,7 @@ def start_server_with_shared_data(data):
             while True:
                 res = data['data_queue'].get()
                 tick = data['tick']
-                yield simulation.comm_schema_pb2.RobotData(tick=tick, content=json.dumps(res[rob_id]))
+                yield simulation.comm_schema_pb2.RobotData(tick=tick, tick_rate=ScriptLoader.instance.GAME_TICK_RATE, content=json.dumps(res[rob_id]))
         
         def SendWriteInfo(self, request, context):
             rob_id = request.robot_id
