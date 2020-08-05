@@ -35,9 +35,7 @@ jobs:
         name: Documentation
         path: docs2/_build/latex/pdfexample.pdf
     # Publish built docs to gh-pages branch.
-    # ===============================
-     
     - uses: peaceiris/actions-gh-pages@v3
-        with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./docs/_build/html
+    with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
