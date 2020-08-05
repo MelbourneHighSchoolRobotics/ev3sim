@@ -12,6 +12,8 @@ class MotorMixin:
     command = 'None'
     state = 'running'
     stop_action = 'hold'
+    time_sp = 0
+    speed_sp = 0
 
     def _updateTime(self, tick):
         if self.time_wait > 0:
@@ -79,11 +81,21 @@ class MotorMixin:
             'count_per_rot': 3,
             'driver_name': self.driver_name,
             'max_speed': 100,
-            'speed_sp': self.applied_force / self.MAX_FORCE * 100,
+            'speed_sp': self.speed_sp,
             'state': self.state,
             'stop_action': self.stop_action,
-            'time_sp': 0,
+            'time_sp': self.time_sp,
         }
 
     def applyWrite(self, attribute, value):
+        if attribute == 'time_sp':
+            self.time_sp = int(value)
+        elif attribute == 'speed_sp':
+            self.speed_sp = float(value)
+        elif attribute == 'stop_action':
+            self.stop_action = value
+        elif attribute == 'command':
+            if value == 'run-timed':
+                self.on_for_seconds(self.speed_sp, self.time_sp / 1000, stop_action=self.stop_action)
+
         print(f"Attempting to change {attribute} to {value}.")
