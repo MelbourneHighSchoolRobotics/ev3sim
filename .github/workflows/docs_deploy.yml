@@ -4,7 +4,7 @@ name: Docs github pages deploy
 on:
   push:
     branches:    
-      - docs
+      - main
 
 jobs:
   build:
