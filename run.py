@@ -29,8 +29,14 @@ from simulation.communication import start_server_with_shared_data
 def run(shared_data):
     runFromConfig(config, shared_data)
 
-comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data,))
+comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data,), daemon=True)
 sim_thread = Thread(target=run, args=(shared_data,))
 
 comm_thread.start()
 sim_thread.start()
+
+try:
+    # Just wait for sim to close.
+    sim_thread.join()
+except KeyboardInterrupt:
+    pass
