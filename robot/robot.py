@@ -44,7 +44,7 @@ def initialise_bot(topLevelConfig, filename, prefix):
                 'robot': robot,
                 'base_key': bot_config['key']
             }))
-            ScriptLoader.instance.robots[bot_config['key']] = robot
+            ScriptLoader.instance.robots[prefix] = robot
         except yaml.YAMLError as exc:
             print(f"An error occured while loading robot preset {filename}. Exited with error: {exc}")
 
@@ -107,6 +107,12 @@ class Robot:
             return self._interactor.devices[port]
         except:
             raise ValueError(f"No device on port {port} found.")
+
+    def getDeviceFromPath(self, device_class, device_name):
+        for port, dev in self._interactor.devices.items():
+            if dev.device_type == device_class and dev._getObjName(port) == device_name:
+                return dev
+        raise ValueError(f"No device found with path {device_class} {device_name}")
 
     def startUp(self):
         """

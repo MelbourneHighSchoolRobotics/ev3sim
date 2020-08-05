@@ -82,13 +82,15 @@ class ScriptLoader:
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
                 # Handle any writes
                 while self.data['write_stack']:
-                    rob_id, attribute_path, value = self.data['write_stack'].pop()
+                    rob_id, attribute_path, value = self.data['write_stack'].popleft()
+                    sensor_type, specific_sensor, attribute = attribute_path.split()
                     print(f"Changing {rob_id}/{attribute_path} to {value}.")
+                    self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
                 # Send all the data (Update tick)
                 self.data['tick'] = tick + 1
                 result = {}
                 for key, robot in self.robots.items():
-                    result[key.rstrip('phys_obj')] = robot._interactor.collectDeviceData()
+                    result[key] = robot._interactor.collectDeviceData()
                 self.data['data_queue'].put(result)
                 # Handle simulation.
                 # First of all, check the script can handle the current settings.
