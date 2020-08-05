@@ -11,6 +11,18 @@ class SoccerInteractor(BaseInteractor):
         self.goal_colliders = []
         self.locateBots()
 
+        self.ball_centre = objectFactory(**{
+            'collider': 'inherit',
+            'visual': {
+                'name': 'Circle',
+                'radius': 0.1
+            },
+            'physics': True
+        })
+        self.ball_centre.shape.sensor = True
+        self.ball_centre.shape.collision_type = self.BALL_COLLISION_TYPE
+        World.instance.registerObject(self.ball_centre)
+
         for x in range(len(self.goals)):
             pos = self.goals[x]['position']
             del self.goals[x]['position']
