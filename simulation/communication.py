@@ -17,16 +17,15 @@ def start_server_with_shared_data(data):
             rob_id = request.robot_id
             print(rob_id, " connected!")
             while True:
-                if tick < data['tick']:
-                    tick = data['tick']
-                    # Change me to grab the shared data.
-                    yield simulation.comm_schema_pb2.RobotData(tick=tick, content=json.dumps(data['robots'][rob_id]))
+                res = data['data_queue'].get()
+                tick = data['tick']
+                yield simulation.comm_schema_pb2.RobotData(tick=tick, content=json.dumps(res[rob_id]))
         
         def SendWriteInfo(self, request, context):
             rob_id = request.robot_id
             attribute_path = request.attribute_path
             value = request.value
-            data['stack'].appendleft((rob_id, attribute_path, value))
+            data['write_stack'].append((rob_id, attribute_path, value))
             return simulation.comm_schema_pb2.WriteResult(result=True)
 
     def serve():
