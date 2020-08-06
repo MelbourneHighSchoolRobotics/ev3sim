@@ -4,6 +4,7 @@ import grpc
 import simulation.comm_schema_pb2
 import simulation.comm_schema_pb2_grpc
 import json
+import time
 from unittest import mock
 from queue import Queue
 
@@ -152,3 +153,4 @@ write_thread.start()
 robot_thread.start()
 
 robot_thread.join()
+time.sleep(1)

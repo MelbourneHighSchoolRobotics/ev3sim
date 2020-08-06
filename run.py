@@ -1,6 +1,5 @@
 import argparse
 import sys
-from queue import Queue
 from collections import deque
 
 parser = argparse.ArgumentParser(description='Run the simulation, include some robots and base it on a preset.')
@@ -20,7 +19,7 @@ config['robots'] = config.get('robots', []) + args.robots
 shared_data = {
     'tick': 0,
     'write_stack': deque(),
-    'data_queue': Queue(maxsize=0)
+    'data_queue': {}
 }
 
 from threading import Thread
