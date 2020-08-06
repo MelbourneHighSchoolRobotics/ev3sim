@@ -134,10 +134,14 @@ def robot(filename, data, result):
         def get_time():
             return data['tick'] / data['tick_rate']
 
+        def raiseEV3Error(*args, **kwargs):
+            raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
+
         @mock.patch('time.time', mock.MagicMock(side_effect=get_time))
         @mock.patch('ev3dev2.motor.Motor.wait', wait)
         @mock.patch('ev3dev2.Device.__init__', device__init__)
         @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
+        @mock.patch('ev3dev.core.Device.__init__', raiseEV3Error)
         def run_script(fname):
             from importlib.machinery import SourceFileLoader
             module = SourceFileLoader('__main__', fname).load_module()
