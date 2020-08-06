@@ -20,7 +20,8 @@ config['robots'] = config.get('robots', []) + args.robots
 shared_data = {
     'tick': 0,
     'write_stack': deque(),
-    'data_queue': {}
+    'data_queue': {},
+    'active_count': {},
 }
 
 result_bucket = Queue(maxsize=1)
@@ -37,7 +38,7 @@ def run(shared_data, result):
     result.put(True)
 
 comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data,), daemon=True)
-sim_thread = Thread(target=run, args=(shared_data,result_bucket))
+sim_thread = Thread(target=run, args=(shared_data, result_bucket))
 
 comm_thread.start()
 sim_thread.start()

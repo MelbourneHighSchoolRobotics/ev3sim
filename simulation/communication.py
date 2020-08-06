@@ -15,13 +15,20 @@ def start_server_with_shared_data(data):
     class SimulationDealer(simulation.comm_schema_pb2_grpc.SimulationDealerServicer):
 
         def RequestTickUpdates(self, request, context):
-            tick = 0
             rob_id = request.robot_id
+            if rob_id not in data['active_count']:
+                data['active_count'][rob_id] = 0
+            data['active_count'][rob_id] += 1
+            c = data['active_count'][rob_id]
             data['data_queue'][rob_id] = Queue(maxsize=0)
-            print(rob_id, " connected!")
             while True:
+                if data['active_count'][rob_id] != c:
+                    return
                 # if no data is added for a second, then simulation has hung. Die.
-                res = data['data_queue'][rob_id].get(timeout=1)
+                try:
+                    res = data['data_queue'][rob_id].get(timeout=1)
+                except:
+                    return
                 tick = data['tick']
                 yield simulation.comm_schema_pb2.RobotData(tick=tick, tick_rate=ScriptLoader.instance.GAME_TICK_RATE, content=json.dumps(res))
 

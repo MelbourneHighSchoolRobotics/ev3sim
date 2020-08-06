@@ -66,7 +66,6 @@ def robot(filename, data, result):
             
             def write(self, value):
                 data['actions_queue'].put((f'{self.k2} {self.k3} {self.k4}', value.decode()))
-                print(f"Wrote {self.k2} {self.k3} {self.k4} {value}")
             
             def flush(self):
                 pass
