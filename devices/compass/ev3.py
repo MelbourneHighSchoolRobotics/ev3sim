@@ -24,7 +24,7 @@ class CompassInteractor(IDeviceInteractor):
             else:
                 obj.rotation = self.physical_object.rotation + self.relative_rotation
 
-class CompassSensor(Device, CompassSensorMixin):
+class CompassSensor(CompassSensorMixin, Device):
     """
     EV3 Compass Sensor, calculates the bearing of the device relative to some direction (which can be specified).
 
@@ -34,7 +34,7 @@ class CompassSensor(Device, CompassSensorMixin):
     """
 
     def _calc(self):
-        self._value = self._getValue()
+        self._value = int(self._getValue())
 
     def value(self):
         """
