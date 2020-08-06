@@ -78,7 +78,6 @@ class MotorMixin:
         self.state = 'holding'
 
     def toObject(self):
-        # TODO: Change some of these magic numbers to something reasonable.
         return {
             'address': self._interactor.port,
             'command': self.command,
