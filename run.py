@@ -33,11 +33,11 @@ def run(shared_data, result):
     try:
         runFromConfig(config, shared_data)
     except Exception as e:
-        result.put(e)
+        result.put(('Simulation', e))
         return
     result.put(True)
 
-comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data,), daemon=True)
+comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket), daemon=True)
 sim_thread = Thread(target=run, args=(shared_data, result_bucket))
 
 comm_thread.start()
@@ -46,6 +46,8 @@ sim_thread.start()
 try:
     r = result_bucket.get()
     if r is not True:
-        raise r
+        print(f"An error occured in the {r[0]} thread. Raising an error now...")
+        time.sleep(1)
+        raise r[1]
 except KeyboardInterrupt:
     pass
