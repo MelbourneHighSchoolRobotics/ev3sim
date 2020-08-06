@@ -100,9 +100,15 @@ class MotorMixin:
         elif attribute == 'stop_action':
             self.stop_action = value
         elif attribute == 'command':
-            if value == 'run-timed':
+            if value == 'run-forever':
+                self.on(self.speed_sp, stop_action=self.stop_action)
+            elif value == 'run-timed':
                 self.on_for_seconds(self.speed_sp, self.time_sp / 1000, stop_action=self.stop_action)
-            if value == 'stop':
-                self.off()
-            if value == 'run-to-rel-pos':
+            elif value == 'run-to-rel-pos':
                 self.on_for_rotations(self.speed_sp, self.position_sp / self.counts_per_rot, stop_action=self.stop_action)
+            elif value == 'stop':
+                self.off()
+            else:
+                raise ValueError(f'Unhandled write! {attribute} {value}')
+        else:
+            raise ValueError(f'Unhandled write! {attribute} {value}')
