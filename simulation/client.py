@@ -97,6 +97,7 @@ def robot(filename, data):
                     self._device_index = get_index(name)
                     break
             else:
+                print(kwargs)
                 self._device_index = None
 
                 raise DeviceNotFound("%s is not connected." % self)
