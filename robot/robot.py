@@ -78,10 +78,7 @@ class RobotInteractor(IInteractor):
         for port, device in self.devices.items():
             if device.device_type not in res:
                 res[device.device_type] = {}
-            try:
-                res[device.device_type][device._getObjName(port)] = device.toObject()
-            except:
-                res[device.device_type][device._getObjName(port)] = 'NO DATA'
+            res[device.device_type][device._getObjName(port)] = device.toObject()
         return res
 
 class Robot:
