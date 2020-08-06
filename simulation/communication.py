@@ -20,10 +20,11 @@ def start_server_with_shared_data(data):
             data['data_queue'][rob_id] = Queue(maxsize=0)
             print(rob_id, " connected!")
             while True:
-                res = data['data_queue'][rob_id].get()
+                # if no data is added for a second, then simulation has hung. Die.
+                res = data['data_queue'][rob_id].get(timeout=1)
                 tick = data['tick']
                 yield simulation.comm_schema_pb2.RobotData(tick=tick, tick_rate=ScriptLoader.instance.GAME_TICK_RATE, content=json.dumps(res))
-        
+
         def SendWriteInfo(self, request, context):
             rob_id = request.robot_id
             attribute_path = request.attribute_path
