@@ -10,10 +10,12 @@ class MotorMixin:
 
     device_type = 'tacho-motor'
     command = 'None'
-    state = 'running'
+    state = 'holding'
     stop_action = 'hold'
     time_sp = 0
     speed_sp = 0
+    position_sp = 0
+    counts_per_rot = 3
 
     def _updateTime(self, tick):
         if self.time_wait > 0:
@@ -34,6 +36,7 @@ class MotorMixin:
         self.applied_force = speed * self.MAX_FORCE / 100
         # Ensure this overwrites further 
         self.time_wait = -1
+        self.state = 'running'
 
     def on_for_seconds(self, speed, seconds, **kwargs):
         """
@@ -72,13 +75,14 @@ class MotorMixin:
         """
         self.applied_force = 0
         self.time_wait = -1
+        self.state = 'holding'
 
     def toObject(self):
         # TODO: Change some of these magic numbers to something reasonable.
         return {
             'address': self._interactor.port,
             'command': self.command,
-            'count_per_rot': 3,
+            'count_per_rot': self.counts_per_rot,
             'driver_name': self.driver_name,
             'max_speed': 100,
             'speed_sp': self.speed_sp,
@@ -92,10 +96,14 @@ class MotorMixin:
             self.time_sp = int(value)
         elif attribute == 'speed_sp':
             self.speed_sp = float(value)
+        elif attribute == 'position_sp':
+            self.position_sp = float(value)
         elif attribute == 'stop_action':
             self.stop_action = value
         elif attribute == 'command':
             if value == 'run-timed':
                 self.on_for_seconds(self.speed_sp, self.time_sp / 1000, stop_action=self.stop_action)
-
-        print(f"Attempting to change {attribute} to {value}.")
+            if value == 'stop':
+                self.off()
+            if value == 'run-to-rel-pos':
+                self.on_for_rotations(self.speed_sp, self.position_sp / self.counts_per_rot, stop_action=self.stop_action)
