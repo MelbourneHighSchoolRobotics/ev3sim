@@ -10,31 +10,37 @@ from queue import Queue
 
 robot_id = sys.argv[2]
 
-def comms(data):
+def comms(data, result):
     logging.basicConfig()
     first_message = True
     with grpc.insecure_channel('localhost:50051') as channel:
-        print("Read connection initialised.")
-        stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-        response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
-        for r in response:
-            data['tick'] = r.tick
-            data['tick_rate'] = r.tick_rate
-            data['current_data'] = json.loads(r.content)
-            if first_message:
-                first_message = False
-                data['start_robot_queue'].put(True)
-            for key in data['active_data_handlers']:
-                data['active_data_handlers'][key].put(True)
+        try:
+            stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+            response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+            for r in response:
+                data['tick'] = r.tick
+                data['tick_rate'] = r.tick_rate
+                data['current_data'] = json.loads(r.content)
+                if first_message:
+                    print("Connection initialised.")
+                    print("-----------------------")
+                    first_message = False
+                    data['start_robot_queue'].put(True)
+                for key in data['active_data_handlers']:
+                    data['active_data_handlers'][key].put(True)
+        except Exception as e:
+            result.put(('Communications', e))
 
-def write(data):
+def write(data, result):
     with grpc.insecure_channel('localhost:50051') as channel:
-        print("Write connection initialised.")
-        stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-        while True:
-            path, value = data['actions_queue'].get()
-            stub.SendWriteInfo(simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
-        response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+        try:
+            stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+            while True:
+                path, value = data['actions_queue'].get()
+                stub.SendWriteInfo(simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
+            response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+        except Exception as e:
+            result.put(('Communications', e))
 
 def robot(filename, data, result):
     try:
@@ -134,7 +140,7 @@ def robot(filename, data, result):
         assert data['start_robot_queue'].get(), "Something went wrong..."
         run_script(filename)
     except Exception as e:
-        result.put(e)
+        result.put(('Robots', e))
         return
     result.put(True)
 
@@ -151,9 +157,9 @@ result_bucket = Queue(maxsize=1)
 
 from threading import Thread
 
-comm_thread = Thread(target=comms, args=(shared_data,), daemon=True)
+comm_thread = Thread(target=comms, args=(shared_data, result_bucket,), daemon=True)
 robot_thread = Thread(target=robot, args=(sys.argv[1], shared_data, result_bucket,), daemon=True)
-write_thread = Thread(target=write, args=(shared_data,), daemon=True)
+write_thread = Thread(target=write, args=(shared_data, result_bucket,), daemon=True)
 
 comm_thread.start()
 write_thread.start()
@@ -165,7 +171,9 @@ try:
             result_bucket.not_empty.wait(1)
     r = result_bucket.get()
     if r is not True:
-        raise r
+        print(f"An error occured in the {r[0]} thread. Raising an error now...")
+        time.sleep(1)
+        raise r[1]
     # This sleep is simply required for any final writes to be made on the communication thread.
     time.sleep(0.2)
 except KeyboardInterrupt as e:
