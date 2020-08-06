@@ -2,6 +2,7 @@ import argparse
 import sys
 from collections import deque
 from queue import Queue
+import time
 
 parser = argparse.ArgumentParser(description='Run the simulation, include some robots and base it on a preset.')
 parser.add_argument('--preset', type=str, help='Path of preset file to load.', default='presets/soccer.yaml', dest='preset')
