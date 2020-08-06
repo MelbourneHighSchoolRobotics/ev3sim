@@ -5,10 +5,17 @@ import simulation.comm_schema_pb2
 import simulation.comm_schema_pb2_grpc
 import json
 import time
+import argparse
 from unittest import mock
 from queue import Queue
 
-robot_id = sys.argv[2]
+parser = argparse.ArgumentParser(description='Attach a valid ev3dev2 script to the simulation.')
+parser.add_argument('filename', type=str, help='The relative or absolute path of the script you want to run')
+parser.add_argument('robot_id', nargs='?', type=str, help="The ID of the robot you wish to attach to. Right click a robot to copy it's ID to the clipboard. Defaults to the first robot spawned if unspecified.", default='Robot-0')
+
+args = parser.parse_args()
+
+robot_id = args.robot_id
 
 def comms(data, result):
     logging.basicConfig()
@@ -156,7 +163,7 @@ result_bucket = Queue(maxsize=1)
 from threading import Thread
 
 comm_thread = Thread(target=comms, args=(shared_data, result_bucket,), daemon=True)
-robot_thread = Thread(target=robot, args=(sys.argv[1], shared_data, result_bucket,), daemon=True)
+robot_thread = Thread(target=robot, args=(args.filename, shared_data, result_bucket,), daemon=True)
 write_thread = Thread(target=write, args=(shared_data, result_bucket,), daemon=True)
 
 comm_thread.start()
