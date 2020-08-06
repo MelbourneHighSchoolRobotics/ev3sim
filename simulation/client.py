@@ -152,7 +152,7 @@ result_bucket = Queue(maxsize=1)
 from threading import Thread
 
 comm_thread = Thread(target=comms, args=(shared_data,), daemon=True)
-robot_thread = Thread(target=robot, args=(sys.argv[1], shared_data, result_bucket,))
+robot_thread = Thread(target=robot, args=(sys.argv[1], shared_data, result_bucket,), daemon=True)
 write_thread = Thread(target=write, args=(shared_data,), daemon=True)
 
 comm_thread.start()
@@ -160,9 +160,13 @@ write_thread.start()
 robot_thread.start()
 
 try:
+    with result_bucket.not_empty:
+        while not result_bucket._qsize():
+            result_bucket.not_empty.wait(1)
     r = result_bucket.get()
     if r is not True:
         raise r
-    time.sleep(1)
-except KeyboardInterrupt:
-    pass
+    # This sleep is simply required for any final writes to be made on the communication thread.
+    time.sleep(0.2)
+except KeyboardInterrupt as e:
+    raise KeyboardInterrupt()
