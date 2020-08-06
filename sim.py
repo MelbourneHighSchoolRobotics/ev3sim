@@ -46,7 +46,7 @@ sim_thread.start()
 try:
     with result_bucket.not_empty:
         while not result_bucket._qsize():
-            result_bucket.not_empty.wait(1)
+            result_bucket.not_empty.wait(0.1)
     r = result_bucket.get()
     if r is not True:
         print(f"An error occured in the {r[0]} thread. Raising an error now...")
