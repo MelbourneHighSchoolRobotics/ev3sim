@@ -72,7 +72,6 @@ def robot(filename, data, result):
                 pass
 
         def device__init__(self, class_name, name_pattern='*', name_exact=False, **kwargs):
-            print("Initialising device!")
             self._path = [class_name]
             self.kwargs = kwargs
             self._attr_cache = {}
