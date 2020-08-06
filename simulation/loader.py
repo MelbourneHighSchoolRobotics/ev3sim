@@ -19,6 +19,7 @@ class ScriptLoader:
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
     instance: 'ScriptLoader' = None
+    running = True
 
     def __init__(self, **kwargs):
         ScriptLoader.instance = self
@@ -78,6 +79,8 @@ class ScriptLoader:
         total_lag_ticks = 0
         lag_printed = False
         while self.active_scripts:
+            if not self.running:
+                return
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
                 # Handle any writes

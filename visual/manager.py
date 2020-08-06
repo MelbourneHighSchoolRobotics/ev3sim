@@ -99,7 +99,7 @@ class ScreenObjectManager:
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                from simulation.loader import ScriptLoader
                 pygame.quit()
-                import sys
-                sys.exit()
+                ScriptLoader.instance.running = False
             yield event
