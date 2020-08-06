@@ -45,9 +45,9 @@ class ControllableBot(Robot):
         self.compass.calibrate()
 
     def tick(self, tick):
-        hue = (tick % 120) * 3
-        r, g, b = hsl_to_rgb(hue, 1, 0.5)
-        ScriptLoader.instance.object_map[self._interactor.robot_key].children[0].visual.fill = (r*255, g*255, b*255, 0.1)
+        # hue = (tick % 120) * 3
+        # r, g, b = hsl_to_rgb(hue, 1, 0.5)
+        # ScriptLoader.instance.object_map[self._interactor.robot_key].children[0].visual.fill = (r*255, g*255, b*255, 0.1)
         if self.rotate:
             self.rotate_anticlockwise()
             return
