@@ -4,9 +4,9 @@ from collections import deque
 from queue import Queue
 import time
 
-parser = argparse.ArgumentParser(description='Run the simulation, include some robots and base it on a preset.')
-parser.add_argument('--preset', type=str, help='Path of preset file to load.', default='presets/soccer.yaml', dest='preset')
-parser.add_argument('robots', nargs='*', help='Path of robots to load.')
+parser = argparse.ArgumentParser(description='Run the simulation, include some robots.')
+parser.add_argument('--preset', type=str, help="Path of preset file to load. (You shouldn't need to change this, by default it is presets/soccer.yaml)", default='presets/soccer.yaml', dest='preset')
+parser.add_argument('robots', nargs='*', help='Path of robots to load. Separate each robot path by a space.')
 
 args = parser.parse_args(sys.argv[1:])
 
