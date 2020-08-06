@@ -17,7 +17,7 @@ class ColorInteractor(IDeviceInteractor):
             pass
         return False
 
-class ColorSensor(Device, ColourSensorMixin):
+class ColorSensor(ColourSensorMixin, Device):
     """
     EV3 Color Sensor.
     
@@ -51,9 +51,9 @@ class ColorSensor(Device, ColourSensorMixin):
         res = self._SenseValueAboutPosition(self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos)))
         # These are 0-255. RAW is meant to be 0-1020 but actually more like 0-300.
         self.saved_raw = [
-            res[0] * self.__r_bias, 
-            res[1] * self.__g_bias, 
-            res[2] * self.__b_bias,
+            int(res[0] * self.__r_bias), 
+            int(res[1] * self.__g_bias), 
+            int(res[2] * self.__b_bias),
         ]
     
     def calibrate_white(self):
