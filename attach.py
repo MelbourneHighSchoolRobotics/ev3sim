@@ -141,11 +141,16 @@ def robot(filename, data, result):
         @mock.patch('ev3dev2.motor.Motor.wait', wait)
         @mock.patch('ev3dev2.Device.__init__', device__init__)
         @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
-        @mock.patch('ev3dev.core.Device.__init__', raiseEV3Error)
         def run_script(fname):
             from importlib.machinery import SourceFileLoader
             module = SourceFileLoader('__main__', fname).load_module()
         
+        try:
+            import ev3dev
+            run_script = mock.patch('ev3dev.core.Device.__init__', raiseEV3Error)(run_script)
+        except:
+            pass
+
         assert data['start_robot_queue'].get(), "Something went wrong..."
         run_script(filename)
     except Exception as e:
