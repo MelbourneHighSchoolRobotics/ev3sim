@@ -44,6 +44,7 @@ def initialise_bot(topLevelConfig, filename, prefix):
                 'robot': robot,
                 'base_key': bot_config['key']
             }))
+            robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
         except yaml.YAMLError as exc:
             print(f"An error occured while loading robot preset {filename}. Exited with error: {exc}")

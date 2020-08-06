@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 import pymunk
+import pyperclip
 from simulation.interactor import IInteractor
 from simulation.world import World
 from objects.base import objectFactory
@@ -45,6 +46,13 @@ class PickUpInteractor(IInteractor):
                 self.obj_grabbed = True
                 self.obj_rel_pos = self.obj.position - m_pos
                 self.obj_m_pos = m_pos
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            # If a robot is right click, copy it's ID for use in the attach script.
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS))
+            if len(shapes) > 0:
+                self.obj = shapes[0].shape.obj
+                pyperclip.copy(self.obj.robot_class.ID)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.obj_grabbed:
             self.obj_grabbed = False
             # Give velocity based on previous mouse positions.
