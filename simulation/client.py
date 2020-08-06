@@ -175,4 +175,4 @@ try:
     # This sleep is simply required for any final writes to be made on the communication thread.
     time.sleep(0.2)
 except KeyboardInterrupt as e:
-    raise KeyboardInterrupt()
+    pass

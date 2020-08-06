@@ -38,12 +38,15 @@ def run(shared_data, result):
     result.put(True)
 
 comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket), daemon=True)
-sim_thread = Thread(target=run, args=(shared_data, result_bucket))
+sim_thread = Thread(target=run, args=(shared_data, result_bucket), daemon=True)
 
 comm_thread.start()
 sim_thread.start()
 
 try:
+    with result_bucket.not_empty:
+        while not result_bucket._qsize():
+            result_bucket.not_empty.wait(1)
     r = result_bucket.get()
     if r is not True:
         print(f"An error occured in the {r[0]} thread. Raising an error now...")
