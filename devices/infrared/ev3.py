@@ -23,7 +23,7 @@ class InfraredInteractor(IDeviceInteractor):
             ScriptLoader.instance.object_map[self.getPrefix() + f'light_up_{x}'].visual.fill = (max(min(255 * self.device_class.value(x+1) / 9, 255), 0), 0, 0)
         return False
 
-class InfraredSensor(Device, InfraredSensorMixin):
+class InfraredSensor(InfraredSensorMixin, Device):
     """
     Infrared Sensor can detect the soccer ball in a cone of vision, and has 5 small sensors which aggregate to localise the ball.
     (More generally, it can detect any physical object with tag 'IR_BALL')
@@ -67,5 +67,5 @@ class InfraredSensor(Device, InfraredSensorMixin):
         if 1 <= index <= 5:
             return self._values[index-1]
         if index == 6:
-            return sum(self._values) / len(self._values)
+            return int(sum(self._values) / len(self._values))
         raise ValueError(f"Unknown value index {index}, should be an integer from 0-6.")

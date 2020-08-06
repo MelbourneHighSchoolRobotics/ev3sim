@@ -5,6 +5,13 @@ from simulation.world import World
 
 class InfraredSensorMixin:
 
+    device_type = 'lego-sensor'
+
+    ALL_VALUES = 'AC-ALL'
+    DIRECTION = 'AC'
+
+    mode = ALL_VALUES
+
     # Left to Right, bearing relative to middle.
     SENSOR_BEARINGS = [
         np.pi/3,
@@ -33,8 +40,8 @@ class InfraredSensorMixin:
         sq_dist = pow(distance / self.MAX_SENSOR_RANGE, 2)
         exclude_bearing = (1 - sq_dist) * 9
         bearing_mult = 1 - abs(relativeBearing) / self.SENSOR_BEARING_DROPOFF_MAX
-        return math.floor(exclude_bearing * bearing_mult + 0.5)
-    
+        return int(math.floor(exclude_bearing * bearing_mult + 0.5))
+
     def _sensorValues(self, relativeBearing, distance):
         return [
             self._sensorStrength(relativeBearing-b, distance)
@@ -50,5 +57,28 @@ class InfraredSensorMixin:
             for i, v in enumerate(sensorValues)
         ])
         # weighted is between 0 and len(sensorValues)-1.
-        return max(min(1 + math.floor(weighted / (len(sensorValues)-1) * 9), 9), 1)
+        return int(max(min(1 + math.floor(weighted / (len(sensorValues)-1) * 9), 9), 1))
 
+    def _getObjName(self, port):
+        return 'sensor' + port
+
+    def applyWrite(self, attribute, value):
+        if attribute == 'mode':
+            self.mode = value
+        else:
+            raise ValueError(f'Unhandled write! {attribute} {value}')
+
+    def toObject(self):
+        data = {
+            'address': self._interactor.port,
+            'driver_name': 'ht-nxt-ir-seek-v2',
+            'mode': self.mode,
+        }
+        if self.mode == self.ALL_VALUES:
+            for x in range(7):
+                data[f'value{x}'] = self.value(x)
+        elif self.mode == self.DIRECTION:
+            data['value0'] = self.value(0)
+        else:
+            raise ValueError(f'Unhandled mode {self.mode}')
+        return data
