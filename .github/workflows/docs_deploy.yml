@@ -1,0 +1,31 @@
+ 
+name: Docs github pages deploy
+
+on:
+  push:
+    branches:    
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    #checkout repo
+    - uses: actions/checkout@v1
+    # build docs
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+
+    # Create an artifact of the html output.
+    - uses: actions/upload-artifact@v1
+      with:
+        name: DocumentationHTML
+        path: docs/_build/html/
+
+    # Publish built docs to gh-pages branch.
+    - uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
