@@ -1,5 +1,5 @@
 # DEV_NOTE: If you want to change the data types in comm_schema.proto, then you need to regenerate the two pb2 files.
-# To do this, you need to pip instal grpcio-tools (Same version as grpcio in requirements), and run
+# To do this, run
 # python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. simulation/comm_schema.proto
 
 from concurrent import futures
