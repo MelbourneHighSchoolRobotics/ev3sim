@@ -14,3 +14,4 @@ Welcome to Robocup Simulator's documentation!
    ev3_extensions
    customisation
    modification
+   system
