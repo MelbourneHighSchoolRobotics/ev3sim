@@ -3,6 +3,7 @@ colours:
   floor_color: "#dddedf"
   turn_color: "#00ff00"
   strip_dark_color: "#000000"
+  rescue_outline_color: "#ffffff"
   UI_bg: "#efedee"
   UI_bg_2: "#dddedf"
   UI_fg: "#efedee"

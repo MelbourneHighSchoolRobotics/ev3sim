@@ -21,16 +21,32 @@ class RescueInteractor(IInteractor):
             import yaml
             with open(tile['path'], 'r') as f:
                 t = yaml.safe_load(f)
+            maxZpos = 0
+            base_pos = np.array(tile.get('position', [0, 0]))
+            # Transfer to rescue space.
+            base_pos = [base_pos[0] * self.TILE_LENGTH, base_pos[1] * self.TILE_LENGTH]
             for obj in t:
                 rel_pos = np.array(obj.get('position', [0, 0]))
-                base_pos = np.array(tile.get('position', [0, 0]))
-                # Transfer to rescue space.
-                base_pos = [base_pos[0] * self.TILE_LENGTH, base_pos[1] * self.TILE_LENGTH]
                 obj['rotation'] = (obj.get('rotation', 0) + tile.get('rotation', 0)) * np.pi / 180
                 obj['position'] = local_space_to_world_space(rel_pos, tile.get('rotation', 0) * np.pi / 180, base_pos)
                 obj['sensorVisible'] = True
                 k = obj['key']
                 obj['key'] = f'Tile-{i}-{k}'
+                maxZpos = max(maxZpos, obj.get('zPos', 0))
+            t.append({
+                'position': local_space_to_world_space(np.array([0, 0]), tile.get('rotation', 0) * np.pi / 180, base_pos),
+                'rotation': tile.get('rotation', 0) * np.pi / 180,
+                'type': 'visual',
+                'name': 'Rectangle',
+                'width': self.TILE_LENGTH,
+                'height': self.TILE_LENGTH,
+                'fill': None,
+                'stroke_width': 0.1,
+                'stroke': 'rescue_outline_color',
+                'zPos': maxZpos + 0.1,
+                'key': f'Tile-{i}-{k}-outline',
+                'sensorVisible': False,
+            })
             ScriptLoader.instance.loadElements(t)
             
 
