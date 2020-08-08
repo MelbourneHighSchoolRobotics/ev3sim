@@ -11,7 +11,10 @@ class InfraredInteractor(IDeviceInteractor):
 
     def startUp(self):
         super().startUp()
-        self.tracking_ball = ScriptLoader.instance.object_map["IR_BALL"]
+        try:
+            self.tracking_ball = ScriptLoader.instance.object_map["IR_BALL"]
+        except:
+            raise ValueError("IR sensors should not be used in presets with no IR ball!")
 
     def tick(self, tick):
         ball_pos = self.tracking_ball.position
