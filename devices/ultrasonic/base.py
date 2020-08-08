@@ -25,11 +25,12 @@ class UltrasonicSensorMixin:
             endPosition = startPosition + top_length * np.array([np.cos(centreRotation), np.sin(centreRotation)])
             # Ignore all ignored objects by setting the category on them.
             for obj in self.ignore_objects:
-                obj.shape.filter = pymunk.ShapeFilter(categories=0b1)
+                for shape in obj.shapes:
+                    shape.filter = pymunk.ShapeFilter(categories=0b1)
             raycast = World.instance.space.segment_query_first(startPosition, endPosition, self.RAYCAST_RADIUS, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0b1))
             for obj in self.ignore_objects:
-                # TODO: Change me.
-                obj.shape.filter = pymunk.ShapeFilter(categories=pymunk.ShapeFilter.ALL_CATEGORIES)
+                for shape in obj.shapes:
+                    shape.filter = pymunk.ShapeFilter(categories=pymunk.ShapeFilter.ALL_CATEGORIES)
 
             if raycast == None:
                 return top_length
