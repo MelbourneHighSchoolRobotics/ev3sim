@@ -3,6 +3,11 @@ import numpy as np
 
 class ColourSensorMixin:
 
+    RGB_RAW = 'RGB-RAW'
+
+    device_type = 'lego-sensor'
+    mode = RGB_RAW
+
     SENSOR_RADIUS = 1
     SENSOR_POINTS = 100
 
@@ -23,3 +28,24 @@ class ColourSensorMixin:
             total += points[x]
         return total / len(points)
 
+    def _getObjName(self, port):
+        return 'sensor' + port
+
+    def applyWrite(self, attribute, value):
+        if attribute == 'mode':
+            self.mode = value
+        else:
+            raise ValueError(f'Unhandled write! {attribute} {value}')
+
+    def toObject(self):
+        res = self.raw()
+        data = {
+            'address': self._interactor.port,
+            'driver_name': 'lego-ev3-color',
+            'mode': self.mode,
+        }
+        if self.mode == self.RGB_RAW:
+            data['value0'], data['value1'], data['value2'] = res
+        else:
+            raise ValueError(f'Unhandled mode {self.mode}')
+        return data

@@ -20,7 +20,7 @@ class UltrasonicInteractor(IDeviceInteractor):
             )
         return False
 
-class UltrasonicSensor(Device, UltrasonicSensorMixin):
+class UltrasonicSensor(UltrasonicSensorMixin, Device):
     """
     Ultrasonic sensor, reads the distance between the sensor and the closest physics object (directly in front of the sensor).
 
@@ -41,11 +41,11 @@ class UltrasonicSensor(Device, UltrasonicSensorMixin):
         """
         Get the distance between the ultrasonic sensor and the object, in centimeters.
         """
-        return self.saved
+        return int(self.saved)
     
     @property
     def distance_inches(self):
         """
         Get the distance between the ultrasonic sensor and the object, in inches.
         """
-        return self.distance_centimeters * 0.3937008
+        return int(self.distance_centimeters * 0.3937008)

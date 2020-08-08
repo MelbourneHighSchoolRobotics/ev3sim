@@ -2,7 +2,7 @@ import time
 from typing import List
 from objects.base import objectFactory
 from simulation.interactor import IInteractor, fromOptions
-from simulation.world import World
+from simulation.world import World, stop_on_pause
 from visual import ScreenObjectManager
 from visual.objects import visualFactory
 import visual.utils
@@ -19,11 +19,16 @@ class ScriptLoader:
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
     instance: 'ScriptLoader' = None
+    running = True
 
     def __init__(self, **kwargs):
         ScriptLoader.instance = self
+        self.robots = {}
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def setSharedData(self, data):
+        self.data = data
 
     def startUp(self, **kwargs):
         man = ScreenObjectManager(**kwargs)
@@ -64,18 +69,35 @@ class ScriptLoader:
                 elements.append(obj)
         return elements
 
+    @stop_on_pause
+    def incrementPhysicsTick(self):
+        self.physics_tick += 1
+        self.data['tick'] = self.physics_tick
+
     def simulate(self):
         for interactor in self.active_scripts:
             interactor.constants = self.getSimulationConstants()
             interactor.startUp()
+        self.physics_tick = 0
         tick = 0
         last_vis_update = time.time() - 1.1 / self.VISUAL_TICK_RATE
         last_game_update = time.time() - 1.1 / self.GAME_TICK_RATE / self.TIME_SCALE
         total_lag_ticks = 0
         lag_printed = False
         while self.active_scripts:
+            if not self.running:
+                return
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
+                # Handle any writes
+                while self.data['write_stack']:
+                    rob_id, attribute_path, value = self.data['write_stack'].popleft()
+                    sensor_type, specific_sensor, attribute = attribute_path.split()
+                    self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
+                for key, robot in self.robots.items():
+                    if key in self.data['data_queue']:
+                        self.data['data_queue'][key].put(robot._interactor.collectDeviceData())
+                # Handle simulation.
                 # First of all, check the script can handle the current settings.
                 if new_time - last_game_update > 2 / self.GAME_TICK_RATE / self.TIME_SCALE:
                     total_lag_ticks += 1
@@ -91,6 +113,7 @@ class ScriptLoader:
                 for interactor in self.active_scripts:
                     interactor.afterPhysics()
                 tick += 1
+                self.incrementPhysicsTick()
                 if (tick > 10 and total_lag_ticks / tick > 0.5) and not lag_printed:
                     lag_printed = True
                     print("The simulation is currently lagging, you may want to turn down the game tick rate.")
@@ -106,9 +129,10 @@ class ScriptLoader:
             ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE
         }
 
-def runFromConfig(config):
+def runFromConfig(config, shared):
     from robot import initialise_bot, RobotInteractor
     sl = ScriptLoader(**config.get('loader', {}))
+    sl.setSharedData(shared)
     sl.active_scripts = []
     visual.utils.GLOBAL_COLOURS = config.get('colours', {})
     for index, robot in enumerate(config.get('robots', [])):

@@ -24,10 +24,14 @@ class MotorInteractor(IDeviceInteractor):
         self.device_class._applyMotors(self.physical_object, self.relative_location, self.relative_rotation)
         return False
 
-class LargeMotor(Device, MotorMixin):
+class LargeMotor(MotorMixin, Device):
 
+    driver_name = 'lego-ev3-l-motor'
     MAX_FORCE = 1000
+    ROTATIONS_PER_SECOND_AT_MAX = 10
 
-class MediumMotor(Device, MotorMixin):
+class MediumMotor(MotorMixin, Device):
 
+    driver_name = 'lego-ev3-m-motor'
     MAX_FORCE = 500
+    ROTATIONS_PER_SECOND_AT_MAX = 5

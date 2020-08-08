@@ -2,7 +2,10 @@ import numpy as np
 
 class CompassSensorMixin:
 
+    device_type = 'lego-sensor'
+
     relative = 0
+    mode = 'COMPASS'
 
     def _setRelative(self):
         self.relative = self.global_rotation
@@ -14,3 +17,21 @@ class CompassSensorMixin:
         while r >= 360:
             r -= 360
         return r
+
+    def _getObjName(self, port):
+        return 'sensor' + port
+
+    def applyWrite(self, attribute, value):
+        if attribute == 'mode':
+            self.mode = value
+        else:
+            raise ValueError(f'Unhandled write! {attribute} {value}')
+
+    def toObject(self):
+        return {
+            'address': self._interactor.port,
+            'driver_name': 'ht-nxt-compass',
+            'mode': self.mode,
+            'value0': self.value(),
+            'decimals': 0,
+        }

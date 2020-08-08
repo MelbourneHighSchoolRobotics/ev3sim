@@ -44,6 +44,8 @@ def initialise_bot(topLevelConfig, filename, prefix):
                 'robot': robot,
                 'base_key': bot_config['key']
             }))
+            robot.ID = prefix
+            ScriptLoader.instance.robots[prefix] = robot
         except yaml.YAMLError as exc:
             print(f"An error occured while loading robot preset {filename}. Exited with error: {exc}")
 
@@ -72,6 +74,14 @@ class RobotInteractor(IInteractor):
     def handleEvent(self, event):
         self.robot_class.handleEvent(event)
 
+    def collectDeviceData(self):
+        res = {}
+        for port, device in self.devices.items():
+            if device.device_type not in res:
+                res[device.device_type] = {}
+            res[device.device_type][device._getObjName(port)] = device.toObject()
+        return res
+
 class Robot:
     """
     A robot is as you'd expect in the physical sense - a collection of devices on a base board,
@@ -95,6 +105,12 @@ class Robot:
             return self._interactor.devices[port]
         except:
             raise ValueError(f"No device on port {port} found.")
+
+    def getDeviceFromPath(self, device_class, device_name):
+        for port, dev in self._interactor.devices.items():
+            if dev.device_type == device_class and dev._getObjName(port) == device_name:
+                return dev
+        raise ValueError(f"No device found with path {device_class} {device_name}")
 
     def startUp(self):
         """

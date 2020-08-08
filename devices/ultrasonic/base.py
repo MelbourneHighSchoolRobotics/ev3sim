@@ -5,6 +5,11 @@ from simulation.world import World
 
 class UltrasonicSensorMixin:
 
+    MODE_DIST_CM = 'US-DIST-CM'
+
+    device_type = 'lego-sensor'
+    mode = MODE_DIST_CM
+
     RAYCAST_RADIUS = 2
     # The max distance to look
     MAX_RAYCAST = 120
@@ -30,3 +35,21 @@ class UltrasonicSensorMixin:
                 return top_length
             top_length = raycast.alpha * top_length - self.ACCEPTANCE_LEVEL
         return 0                
+
+    def _getObjName(self, port):
+        return 'sensor' + port
+
+    def applyWrite(self, attribute, value):
+        if attribute == 'mode':
+            self.mode = value
+        else:
+            raise ValueError(f'Unhandled write! {attribute} {value}')
+
+    def toObject(self):
+        return {
+            'address': self._interactor.port,
+            'driver_name': 'lego-ev3-us',
+            'mode': self.mode,
+            'value0': self.distance_centimeters if self.mode == self.MODE_DIST_CM else self.distance_inches,
+            'decimals': 0,
+        }
