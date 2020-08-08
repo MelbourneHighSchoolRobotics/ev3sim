@@ -90,6 +90,7 @@ class PhysicsObject(BaseObject):
         for child in self.children:
             if isinstance(child, PhysicsObject):
                 child.body, child.shape = child.visual.generateBodyAndShape(child, body=self.body, rel_pos=child.position)
+                child.shape.obj = self
                 self.shapes.append(child.shape)
 
     def update(self):
