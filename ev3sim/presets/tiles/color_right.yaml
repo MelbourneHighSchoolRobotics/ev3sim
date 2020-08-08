@@ -1,0 +1,32 @@
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 16
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: lineenter
+  position: [-7, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 16
+  fill: line_color
+  zPos: 0.1
+  key: lineexit
+  position: [0, 7]
+- type: visual
+  name: Rectangle
+  width: 4
+  height: 4
+  fill: turn_color
+  zPos: 0.1
+  key: turn
+  position: [-3, 3]

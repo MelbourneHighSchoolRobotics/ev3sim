@@ -1,6 +1,7 @@
 colours:
   line_color: "#1f1f1f"
   floor_color: "#dddedf"
+  turn_color: "#00ff00"
   strip_dark_color: "#000000"
   UI_bg: "#efedee"
   UI_bg_2: "#dddedf"
@@ -17,6 +18,11 @@ interactors:
     tiles:
     - path: presets/tiles/straight.yaml
       position: [0, 0]
+    - path: presets/tiles/right_angle.yaml
+      position: [1, 0]
+    - path: presets/tiles/color_right.yaml
+      position: [1, 1]
+      rotation: 180
 
 elements:
 - type: visual
