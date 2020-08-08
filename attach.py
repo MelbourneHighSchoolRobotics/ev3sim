@@ -35,6 +35,8 @@ def comms(data, result):
                     data['start_robot_queue'].put(True)
                 for key in data['active_data_handlers']:
                     data['active_data_handlers'][key].put(True)
+                with data['condition_updating']:
+                    data['condition_updated'].notify()
         except Exception as e:
             result.put(('Communications', e))
 
@@ -134,10 +136,21 @@ def robot(filename, data, result):
         def get_time():
             return data['tick'] / data['tick_rate']
 
+        def sleep(seconds):
+            from time import time
+            cur = time()
+            with data['condition_updated']:
+                while True:
+                    elapsed = time() - cur
+                    if elapsed >= seconds:
+                        return
+                    data['condition_updated'].wait(0.1)
+
         def raiseEV3Error(*args, **kwargs):
             raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
 
-        @mock.patch('time.time', mock.MagicMock(side_effect=get_time))
+        @mock.patch('time.time', get_time)
+        @mock.patch('time.sleep', sleep)
         @mock.patch('ev3dev2.motor.Motor.wait', wait)
         @mock.patch('ev3dev2.Device.__init__', device__init__)
         @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
@@ -158,6 +171,8 @@ def robot(filename, data, result):
         return
     result.put(True)
 
+import threading
+
 shared_data = {
     'tick': 0,
     'tickrate': 1,
@@ -165,7 +180,10 @@ shared_data = {
     'actions_queue': Queue(maxsize=0),
     'start_robot_queue': Queue(maxsize=0),
     'active_data_handlers': {},
+    'update_lock': threading.Lock(),
 }
+shared_data['condition_updated'] = threading.Condition(shared_data['update_lock'])
+shared_data['condition_updating'] = threading.Condition(shared_data['update_lock'])
 
 result_bucket = Queue(maxsize=1)
 
