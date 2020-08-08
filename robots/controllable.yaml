@@ -1,4 +1,4 @@
-robot_class: robot.examples.controllable.ControllableBot
+robot_class: robots.scripts.controllable.ControllableBot
 devices:
 - LargeMotor:
     position: [0, 5]

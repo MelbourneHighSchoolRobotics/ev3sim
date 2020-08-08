@@ -27,9 +27,7 @@ def initialise_bot(topLevelConfig, filename, prefix):
     with open(filename, 'r') as f:
         try:
             config = yaml.safe_load(f)
-            if 'robot_class' not in config:
-                raise ValueError("Your robot preset has no 'robot_class' or 'filename' entry (Or the file you reference has no 'robot_class' entry')")
-            mname, cname = config['robot_class'].rsplit('.', 1)
+            mname, cname = config.get('robot_class', 'robot.Robot').rsplit('.', 1)
             import importlib
             klass = getattr(importlib.import_module(mname), cname)
             bot_config = config['base_plate']
