@@ -1,0 +1,24 @@
+- type: visual
+  name: Rectangle
+  width: 20
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg1
+  position: [5, 0]
+- type: visual
+  name: Rectangle
+  width: 10
+  height: 30
+  fill: turn_color
+  zPos: 0
+  key: bg2
+  position: [-10, 0]
+- type: visual
+  name: Rectangle
+  width: 20
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line
+  position: [5, 0]

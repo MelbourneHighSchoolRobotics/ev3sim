@@ -14,8 +14,10 @@ interactors:
 - class_path: presets.rescue.RescueInteractor
   kwargs:
     spawns:
-    - [[0, 0], 0]
+    - [[-1, 0], 0]
     tiles:
+    - path: presets/tiles/city_limits.yaml
+      position: [-1, 0]
     - path: presets/tiles/straight.yaml
       position: [0, 0]
     - path: presets/tiles/right_angle.yaml
