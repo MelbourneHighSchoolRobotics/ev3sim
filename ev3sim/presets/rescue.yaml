@@ -1,6 +1,6 @@
 colours:
-  line_color: "#2a9d8f"
-  floor_color: "#ffffff"
+  line_color: "#1f1f1f"
+  floor_color: "#dddedf"
   strip_dark_color: "#000000"
   UI_bg: "#efedee"
   UI_bg_2: "#dddedf"
@@ -14,6 +14,9 @@ interactors:
   kwargs:
     spawns:
     - [[0, 0], 0]
+    tiles:
+    - path: presets/tiles/straight.yaml
+      position: [0, 0]
 
 elements:
 - type: visual

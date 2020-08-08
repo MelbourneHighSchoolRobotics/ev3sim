@@ -5,7 +5,7 @@ from simulation.interactor import IInteractor
 from simulation.loader import ScriptLoader
 from simulation.world import World, stop_on_pause
 from objects.base import objectFactory
-from visual.manager import ScreenObjectManager
+from objects.utils import local_space_to_world_space
 
 class RescueInteractor(IInteractor):
 
@@ -15,7 +15,21 @@ class RescueInteractor(IInteractor):
         super().__init__(*args, **kwargs)
         self.spawns = kwargs.get('spawns')
         self.time_tick = 0
-    
+        for i, tile in enumerate(kwargs['tiles']):
+            import yaml
+            with open(tile['path'], 'r') as f:
+                t = yaml.safe_load(f)
+            for obj in t:
+                rel_pos = np.array(obj.get('position', [0, 0]))
+                base_pos = np.array(tile.get('position', [0, 0]))
+                obj['rotation'] = obj.get('rotation', 0) + tile.get('rotation', 0)
+                obj['position'] = local_space_to_world_space(rel_pos, tile.get('rotation', 0), base_pos)
+                obj['sensorVisible'] = True
+                k = obj['key']
+                obj['key'] = f'Tile-{i}-{k}'
+            ScriptLoader.instance.loadElements(t)
+            
+
     def locateBots(self):
         self.robots = []
         bot_index = 0
