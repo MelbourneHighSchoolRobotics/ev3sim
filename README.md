@@ -17,11 +17,11 @@ If this gives errors with pygame, you can check this: https://www.pygame.org/wik
 
 To run the simulation, use the command:
 
-    python sim.py robot/examples/bot.yaml
+    python sim.py robots/bot.yaml
 
-This should load up the soccer field with a bot that does nothing. If you want to have a play around you can instead use `robot/examples/controllable.yaml`. Use the arrow keys to move, and press 'r' to rotate. (The controllable example will NOT work with ev3 scripts that control the motors!)
+This should load up the soccer field with a bot that does nothing. If you want to have a play around you can instead use `robots/controllable.yaml`. Use the arrow keys to move, and press 'r' to rotate. (The controllable example will NOT work with ev3 scripts that control the motors!)
 
-You can also load up multiple robots by simply specifying the paths of each bot (separated by spaces). If you want to change the sensor locations/colour and what not, try making your own bot based on `robot/examples/bot.yaml`.
+You can also load up multiple robots by simply specifying the paths of each bot (separated by spaces). If you want to change the sensor locations/colour and what not, try making your own bot based on `robots/bot.yaml`.
 
 ### EV3 Scripts
 
