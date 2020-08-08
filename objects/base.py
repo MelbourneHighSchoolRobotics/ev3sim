@@ -84,8 +84,13 @@ class PhysicsObject(BaseObject):
         self.friction_coefficient = kwargs.get('friction', 1)
         self.restitution_coefficient = kwargs.get('restitution', 0.7)
         self.body, self.shape = self.visual.generateBodyAndShape(self)
+        self.shapes = [self.shape]
         self.shape.obj = self
         self.body.position = self.position
+        for child in self.children:
+            if isinstance(child, PhysicsObject):
+                child.body, child.shape = child.visual.generateBodyAndShape(child, body=self.body, rel_pos=child.position)
+                self.shapes.append(child.shape)
 
     def update(self):
         self.position = self.body.position
