@@ -2,7 +2,7 @@ import time
 from typing import List
 from objects.base import objectFactory
 from simulation.interactor import IInteractor, fromOptions
-from simulation.world import World
+from simulation.world import World, stop_on_pause
 from visual import ScreenObjectManager
 from visual.objects import visualFactory
 import visual.utils
@@ -69,10 +69,16 @@ class ScriptLoader:
                 elements.append(obj)
         return elements
 
+    @stop_on_pause
+    def incrementPhysicsTick(self):
+        self.physics_tick += 1
+        self.data['tick'] = self.physics_tick
+
     def simulate(self):
         for interactor in self.active_scripts:
             interactor.constants = self.getSimulationConstants()
             interactor.startUp()
+        self.physics_tick = 0
         tick = 0
         last_vis_update = time.time() - 1.1 / self.VISUAL_TICK_RATE
         last_game_update = time.time() - 1.1 / self.GAME_TICK_RATE / self.TIME_SCALE
@@ -87,10 +93,7 @@ class ScriptLoader:
                 while self.data['write_stack']:
                     rob_id, attribute_path, value = self.data['write_stack'].popleft()
                     sensor_type, specific_sensor, attribute = attribute_path.split()
-                    print(f"Changing {rob_id}/{attribute_path} to {value}.")
                     self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
-                # Send all the data (Update tick)
-                self.data['tick'] = tick + 1
                 for key, robot in self.robots.items():
                     if key in self.data['data_queue']:
                         self.data['data_queue'][key].put(robot._interactor.collectDeviceData())
@@ -110,6 +113,7 @@ class ScriptLoader:
                 for interactor in self.active_scripts:
                     interactor.afterPhysics()
                 tick += 1
+                self.incrementPhysicsTick()
                 if (tick > 10 and total_lag_ticks / tick > 0.5) and not lag_printed:
                     lag_printed = True
                     print("The simulation is currently lagging, you may want to turn down the game tick rate.")
