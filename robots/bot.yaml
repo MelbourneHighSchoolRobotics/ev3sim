@@ -1,4 +1,4 @@
-robot_class: robot.robot.Robot
+robot_class: robot.Robot
 devices:
 - LargeMotor:
     position: [0, 5]
