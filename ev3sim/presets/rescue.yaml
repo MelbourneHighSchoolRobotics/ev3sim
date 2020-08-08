@@ -1,0 +1,49 @@
+colours:
+  line_color: "#2a9d8f"
+  floor_color: "#ffffff"
+  strip_dark_color: "#000000"
+  UI_bg: "#efedee"
+  UI_bg_2: "#dddedf"
+  UI_fg: "#efedee"
+  UI_fg_2: "1f1f1f"
+
+interactors:
+- class_path: presets.pick_up_interactor.PickUpInteractor
+- class_path: presets.pause_interactor.PauseInteractor
+- class_path: presets.rescue.RescueInteractor
+  kwargs:
+    spawns:
+    - [[0, 0], 0]
+
+elements:
+- type: visual
+  name: Rectangle
+  fill: "UI_bg_2"
+  width: 60
+  height: 30
+  position: [0,110]
+  hAlignment: m
+  vAlignment: t
+  zPos: 5
+  key: TimerUI
+- type: visual
+  name: Text
+  text: "05:00"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [0, 110]
+  hAlignment: m
+  vAlignment: t
+  zPos: 5
+  key: TimerText
+
+loader:
+  GAME_TICK_RATE: 30
+  VISUAL_TICK_RATE: 30
+
+screen:
+  screen_width: 1280
+  screen_height: 960
+  map_width: 293.3
+  map_height: 220
+  background_color: '#264653'
