@@ -42,4 +42,42 @@ base_plate:
       image_path: 'presets/LogoTransparent.png'
       zPos: 2.05
     position: [4.5, 4.5]
+  - physics: true
+    type: object
+    collider: inherit
+    visual:
+      name: Rectangle
+      width: 1
+      height: 6
+      fill: '#878E88'
+      zPos: 2.07
+    position: [11, 0]
+    restitution: 0.2
+    friction: 0.8
+  - physics: true
+    type: object
+    collider: inherit
+    visual:
+      name: Rectangle
+      width: 4
+      height: 1
+      fill: '#878E88'
+      zPos: 2.07
+    position: [12, 4]
+    rotation: 60
+    restitution: 0.2
+    friction: 0.8
+  - physics: true
+    type: object
+    collider: inherit
+    visual:
+      name: Rectangle
+      width: 4
+      height: 1
+      fill: '#878E88'
+      zPos: 2.07
+    position: [12, -4]
+    rotation: -60
+    restitution: 0.2
+    friction: 0.8
   key: phys_obj
