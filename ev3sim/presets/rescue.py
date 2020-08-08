@@ -22,8 +22,10 @@ class RescueInteractor(IInteractor):
             for obj in t:
                 rel_pos = np.array(obj.get('position', [0, 0]))
                 base_pos = np.array(tile.get('position', [0, 0]))
-                obj['rotation'] = obj.get('rotation', 0) + tile.get('rotation', 0)
-                obj['position'] = local_space_to_world_space(rel_pos, tile.get('rotation', 0), base_pos)
+                # Transfer to rescue space.
+                base_pos = [base_pos[0] * 30, base_pos[1] * 30]
+                obj['rotation'] = (obj.get('rotation', 0) + tile.get('rotation', 0)) * np.pi / 180
+                obj['position'] = local_space_to_world_space(rel_pos, tile.get('rotation', 0) * np.pi / 180, base_pos)
                 obj['sensorVisible'] = True
                 k = obj['key']
                 obj['key'] = f'Tile-{i}-{k}'
