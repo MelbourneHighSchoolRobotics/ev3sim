@@ -11,6 +11,8 @@ class RescueInteractor(IInteractor):
 
     START_TIME = datetime.timedelta(minutes=5)
 
+    TILE_LENGTH = 30
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.spawns = kwargs.get('spawns')
@@ -23,7 +25,7 @@ class RescueInteractor(IInteractor):
                 rel_pos = np.array(obj.get('position', [0, 0]))
                 base_pos = np.array(tile.get('position', [0, 0]))
                 # Transfer to rescue space.
-                base_pos = [base_pos[0] * 30, base_pos[1] * 30]
+                base_pos = [base_pos[0] * self.TILE_LENGTH, base_pos[1] * self.TILE_LENGTH]
                 obj['rotation'] = (obj.get('rotation', 0) + tile.get('rotation', 0)) * np.pi / 180
                 obj['position'] = local_space_to_world_space(rel_pos, tile.get('rotation', 0) * np.pi / 180, base_pos)
                 obj['sensorVisible'] = True
@@ -62,7 +64,7 @@ class RescueInteractor(IInteractor):
 
     def resetPositions(self):
         for i, robot in enumerate(self.robots):
-            robot.body.position = self.spawns[i][0]
+            robot.body.position = [self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]
             robot.body.angle = self.spawns[i][1] * np.pi / 180
             robot.body.velocity = np.array([0.0, 0.0])
             robot.body.angular_velocity = 0
