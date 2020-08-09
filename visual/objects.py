@@ -59,7 +59,7 @@ class IVisualElement:
     def calculatePoints(self):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
 
-    def generateBodyAndShape(self, physObj):
+    def generateBodyAndShape(self, physObj, body=None, rel_pos=None):
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`")
 
 class Colorable(IVisualElement):
@@ -175,10 +175,18 @@ class Polygon(Colorable):
         if self.stroke and self.stroke_width:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
-    def generateBodyAndShape(self, physObj):
-        moment = pymunk.moment_for_poly(physObj.mass, self.verts)
-        body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
-        shape = pymunk.Poly(body, self.verts)
+    def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
+        if body is None:
+            moment = pymunk.moment_for_poly(physObj.mass, self.verts)
+            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+        shape = pymunk.Poly(body, self.verts, transform=pymunk.Transform(
+            a=np.cos(physObj.rotation), 
+            b=np.sin(physObj.rotation), 
+            c=-np.sin(physObj.rotation), 
+            d=np.cos(physObj.rotation), 
+            tx=rel_pos[0],
+            ty=rel_pos[1],
+        ))
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
@@ -222,10 +230,11 @@ class Circle(Colorable):
         if self.stroke and self.stroke_width:
             pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
-    def generateBodyAndShape(self, physObj):
-        moment = pymunk.moment_for_circle(physObj.mass, 0, self.radius)
-        body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
-        shape = pymunk.Circle(body, self.radius)
+    def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
+        if body is None:
+            moment = pymunk.moment_for_circle(physObj.mass, 0, self.radius)
+            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+        shape = pymunk.Circle(body, self.radius, offset=rel_pos)
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1

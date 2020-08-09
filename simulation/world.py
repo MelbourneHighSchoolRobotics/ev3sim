@@ -31,11 +31,11 @@ class World:
     
     def registerObject(self, obj):
         self.objects.append(obj)
-        self.space.add(obj.body, obj.shape)
+        self.space.add(obj.body, *obj.shapes)
     
     def unregisterObject(self, obj):
         self.objects.remove(obj)
-        self.space.remove(obj.body, obj.shape)
+        self.space.remove(obj.body, *obj.shapes)
     
     @stop_on_pause
     def physics_tick(self, dt):
