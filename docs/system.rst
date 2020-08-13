@@ -8,3 +8,4 @@ Information on system mechanics
    visual
    robot
    devices
+   interactor

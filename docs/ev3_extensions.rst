@@ -18,6 +18,6 @@ As an example, the simulator currently does not implement the Led functionality 
     if is_sim:
         print("Hello from the sim! Sadly I can't do lights at the moment :(")
 
-Importing this means you need to transfer ``ev3sim/code_helper.py`` onto the brick for this to run (Just create a folder and place `code_helper.py`_ the file in there).
+Importing this means you need to transfer ``ev3sim/code_helper.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helper.py`_ in there).
 
 .. _code_helper.py: https://github.com/MelbourneHighSchool/RoboCup_Simulator/tree/main/ev3sim/code_helper.yaml
