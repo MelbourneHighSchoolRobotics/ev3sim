@@ -10,22 +10,22 @@ from ev3sim.objects.utils import local_space_to_world_space
 
 
 class IVisualElement:
+    """
+    A visual element defines some object which can be drawn to the screen, but also can generate a physics object if necessary.
+    """
 
-    # Position of a visual element is a x/y vector.
-    # x/y has 0,0 at the centre of the screen, and x grows horizontally to the right, while y grows vertically upwards.
-    # By convention, please let this position be the **centre** of your object.
     _position: np.ndarray
-    # Rotation of a visual element is float, which should in theory range from 0 to 2pi, but should still work outside of those bounds.
     _rotation: float
-    # zPosition handles sorting order of visual objects - higher values appear above lower values.
     zPos: float
-    # Whether this visual object should be visible from a color sensor.
+    """The z Position of the element (higher values for z will be drawn on top of other elements with lower z values)"""
     sensorVisible: bool
+    """Specifies whether the visual object should affect the colour sensor readings."""
 
     def __init__(self, **kwargs):
         self.initFromKwargs(**kwargs)
 
     def initFromKwargs(self, **kwargs):
+        """Initialise the visual object given some extra named arguments (normally provided in the ``.yaml`` files)."""
         self.position = kwargs.get('position', [0, 0])
         self.rotation = kwargs.get('rotation', 0)
         self.zPos = kwargs.get('zPos', 0)
@@ -34,10 +34,19 @@ class IVisualElement:
 
     @property
     def position(self) -> np.ndarray:
+        """
+        The global position of the visual object - **Do not** set this when specifying local position of an object! Set the parent object position!
+        
+        :math:`0,0` is the default as centre of the screen, x increasing to the right and y increasing upwards.
+        By convention, please let this position be the **centre** of your object.
+        """
         return self._position
 
     @property
     def rotation(self) -> float:
+        """
+        Rotation of a visual element is float, which should in theory range from :math:`0` to :math:`2\pi`, but should still work outside of those bounds.
+        """
         return self._rotation
 
     @position.setter
@@ -54,12 +63,27 @@ class IVisualElement:
         self.calculatePoints()
 
     def applyToScreen(self):
+        """
+        A method that all visual elements must implement.
+        When invoked, should apply themselves to the screen.
+        """
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `applyToScreen`")
 
     def calculatePoints(self):
+        """
+        Called whenever the position or rotation of the object is changed, allowing for any calculation needed to be made.
+        """
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=None):
+        """
+        Generates the physics object for this particular visual element. See other implementations of this method for examples.
+
+        :param ev3sim.objects.base.PhysicsObject physObj: The physics object requesting this body and shape.
+        :param pymunk.Body body: If you don't want a new body generated, supply one.
+        :param tuple rel_pos: If an existing body was specified, then this is the relative position of the shape on the body.
+        :returns (pymunk.Body, pymunk.Shape): The generated objects.
+        """
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`")
 
 class Colorable(IVisualElement):
