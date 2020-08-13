@@ -1,4 +1,4 @@
-Information on system mechanics
+Simulation Objects
 ===============================
 
 .. toctree::
