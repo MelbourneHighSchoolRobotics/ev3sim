@@ -37,7 +37,7 @@ base_plate:
     type: object
     visual:
       name: Image
-      image_path: 'presets/LogoTransparent.png'
+      image_path: 'assets/LogoTransparent.png'
       zPos: 2.05
     position: [4.5, 4.5]
   key: phys_obj

@@ -51,7 +51,7 @@ class ScreenObjectManager:
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
         pygame.display.set_caption('MHS Robotics Club Simulator')
-        img_path = find_abs('presets/Logo.png', allowed_areas=['package'])
+        img_path = find_abs('assets/Logo.png', allowed_areas=['package'])
         img = pygame.image.load(img_path)
         img.set_colorkey((255, 255, 255))
         pygame.display.set_icon(img)

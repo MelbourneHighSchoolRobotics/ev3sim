@@ -314,49 +314,21 @@ elements:
   sensorVisible: true
 # UI Elements
 - type: visual
-  name: Rectangle
-  width: 100
-  height: 30
-  fill: "team_1"
-  stroke_width: 0
-  position: [-90, 110]
+  name: Image
+  image_path: 'assets/ui/left_bg.png'
+  position: [-90, 97]
   hAlignment: r
   vAlignment: t
   zPos: 5
   key: team1UI
 - type: visual
-  name: Rectangle
-  width: 100
-  height: 30
-  fill: "team_2"
-  stroke_width: 0
-  position: [90, 110]
-  hAlignment: l
-  vAlignment: t
-  zPos: 5
-  key: team2UI
-- type: visual
-  name: Rectangle
-  width: 15
-  height: 30
-  fill: "UI_bg"
-  stroke_width: 0
-  position: [-50, 110]
+  name: Image
+  image_path: 'assets/ui/right_bg.png'
+  position: [90, 97]
   hAlignment: r
   vAlignment: t
   zPos: 5
-  key: score1UI 
-- type: visual
-  name: Rectangle
-  width: 15
-  height: 30
-  fill: "UI_bg"
-  stroke_width: 0
-  position: [50, 110]
-  hAlignment: l
-  vAlignment: t
-  zPos: 5
-  key: score2UI
+  key: team2UI
 - type: visual
   name: Text
   text: "0"
@@ -381,7 +353,7 @@ elements:
   name: Text
   fill: "UI_fg"
   font_size: 34  
-  position: [-60, 105]
+  position: [-75, 105]
   hAlignment: r
   vAlignment: m
   zPos: 5
@@ -390,21 +362,47 @@ elements:
   name: Text
   fill: "UI_fg"
   font_size: 34
-  position: [60, 105]
+  position: [75, 105]
   hAlignment: l
   vAlignment: m
   zPos: 5
   key: name2Text
 - type: visual
-  name: Rectangle
-  fill: "UI_bg_2"
-  width: 60
-  height: 30
-  position: [0,110]
+  name: Image
+  image_path: 'assets/ui/controls_play.png'
+  position: [0,89]
   hAlignment: m
   vAlignment: t
-  zPos: 5
-  key: TimerUI
+  vPos: 4
+  key: controls
+- type: visual
+  name: Image
+  image_path: 'assets/ui/timer_bg.png'
+  position: [0,102]
+  hAlignment: m
+  vAlignment: t
+  vPos: 5
+  key: timer_bg
+- type: visual
+  name: Text
+  text: ""
+  fill: "UI_fg"
+  font_size: 24
+  hAlighment: l
+  vAlignment: t
+  position: [-127,93]
+  zPos: 6
+  key: temp_1
+- type: visual
+  name: Text
+  text: ""
+  fill: "UI_fg"
+  font_size: 24
+  hAlighment: r
+  vAlignment: t
+  position: [103,93]
+  zPos: 6
+  key: temp_2
 - type: visual
   name: Text
   text: "05:00"
@@ -438,4 +436,4 @@ screen:
   screen_height: 960
   map_width: 293.3
   map_height: 220
-  background_color: '#264653'
+  background_color: '#1f1f1f'
