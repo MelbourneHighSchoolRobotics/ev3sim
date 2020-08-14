@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 from ev3sim.robot import Robot
 from ev3sim.devices.motor.ev3 import LargeMotor
-from ev3sim.devices.ultrasonic.ev3 import UltrasonicSensor
+from ev3sim.devices.compass.ev3 import CompassSensor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.visual.utils import hsl_to_rgb
 
