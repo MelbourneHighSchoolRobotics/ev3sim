@@ -1,8 +1,8 @@
-class: devices.motor.ev3.MediumMotor
+class: ev3sim.devices.motor.ev3.MediumMotor
 colours:
   MMOTOR_back_color: '#f1faee'
 interactors:
-- class_path: devices.motor.ev3.MotorInteractor
+- class_path: ev3sim.devices.motor.ev3.MotorInteractor
   kwargs:
     elements:
     - visual:

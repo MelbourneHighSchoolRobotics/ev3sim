@@ -39,7 +39,7 @@ base_plate:
     type: object
     visual:
       name: Image
-      image_path: 'presets/LogoTransparent.png'
+      image_path: 'ev3sim/presets/LogoTransparent.png'
       zPos: 2.05
     position: [4.5, 4.5]
   - physics: true

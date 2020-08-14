@@ -1,11 +1,11 @@
 import pygame
 import numpy as np
-from devices.base import Device, IDeviceInteractor
-from devices.motor.base import MotorMixin
-from objects.utils import local_space_to_world_space
-from simulation.loader import ScriptLoader
-from visual.manager import ScreenObjectManager
-from visual.objects import visualFactory
+from ev3sim.devices.base import Device, IDeviceInteractor
+from ev3sim.devices.motor.base import MotorMixin
+from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.visual.objects import visualFactory
 
 class MotorInteractor(IDeviceInteractor):
 

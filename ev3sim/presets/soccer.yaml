@@ -12,9 +12,9 @@ colours:
   team_2: "#ba3333"
 
 interactors:
-- class_path: presets.pick_up_interactor.PickUpInteractor
-- class_path: presets.pause_interactor.PauseInteractor
-- class_path: presets.soccer.SoccerInteractor
+- class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
+- class_path: ev3sim.presets.pause_interactor.PauseInteractor
+- class_path: ev3sim.presets.soccer.SoccerInteractor
   kwargs:
     names:
     - Unicorns

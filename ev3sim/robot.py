@@ -1,6 +1,6 @@
-from simulation.interactor import IInteractor
-from simulation.loader import ScriptLoader
-from simulation.world import stop_on_pause
+from ev3sim.simulation.interactor import IInteractor
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.world import stop_on_pause
 
 def add_devices(parent, device_info):
     devices = []
@@ -27,7 +27,7 @@ def initialise_bot(topLevelConfig, filename, prefix):
     with open(filename, 'r') as f:
         try:
             config = yaml.safe_load(f)
-            mname, cname = config.get('robot_class', 'robot.Robot').rsplit('.', 1)
+            mname, cname = config.get('robot_class', 'ev3sim.robot.Robot').rsplit('.', 1)
             import importlib
             klass = getattr(importlib.import_module(mname), cname)
             bot_config = config['base_plate']

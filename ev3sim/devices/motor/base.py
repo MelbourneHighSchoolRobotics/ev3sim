@@ -1,5 +1,5 @@
 import numpy as np
-from simulation.loader import ScriptLoader
+from ev3sim.simulation.loader import ScriptLoader
 
 class MotorMixin:
 

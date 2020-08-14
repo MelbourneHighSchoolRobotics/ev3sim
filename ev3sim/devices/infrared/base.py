@@ -1,7 +1,7 @@
 import math
 import numpy as np
-from objects.base import objectFactory
-from simulation.world import World
+from ev3sim.objects.base import objectFactory
+from ev3sim.simulation.world import World
 
 class InfraredSensorMixin:
 

@@ -2,7 +2,7 @@ import pygame
 import pygame.freetype
 from typing import Dict, List, Tuple
 
-import visual.utils as utils
+import ev3sim.visual.utils as utils
 
 class ScreenObjectManager:
 
@@ -50,7 +50,7 @@ class ScreenObjectManager:
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
         pygame.display.set_caption('MHS Robotics Club Simulator')
-        img = pygame.image.load('presets/Logo.png')
+        img = pygame.image.load('ev3sim/presets/Logo.png')
         img.set_colorkey((255, 255, 255))
         pygame.display.set_icon(img)
 
@@ -99,7 +99,7 @@ class ScreenObjectManager:
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                from simulation.loader import ScriptLoader
+                from ev3sim.simulation.loader import ScriptLoader
                 pygame.quit()
                 ScriptLoader.instance.running = False
             yield event

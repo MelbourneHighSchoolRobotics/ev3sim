@@ -1,8 +1,8 @@
-class: devices.ultrasonic.ev3.UltrasonicSensor
+class: ev3sim.devices.ultrasonic.ev3.UltrasonicSensor
 colours:
   US_back_color: '#f1faee'
 interactors:
-- class_path: devices.ultrasonic.ev3.UltrasonicInteractor
+- class_path: ev3sim.devices.ultrasonic.ev3.UltrasonicInteractor
   kwargs:
     elements:
     - visual:

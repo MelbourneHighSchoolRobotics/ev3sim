@@ -30,14 +30,14 @@ def hsl_to_rgb(h, s, l):
     return c+m, m, x+m
 
 def worldspace_to_screenspace(point):
-    from visual.manager import ScreenObjectManager
+    from ev3sim.visual.manager import ScreenObjectManager
     return (
         int(point[0] * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width + ScreenObjectManager.instance.screen_width / 2),
         int(-point[1] * ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height + ScreenObjectManager.instance.screen_height / 2),
     )
 
 def screenspace_to_worldspace(point):
-    from visual.manager import ScreenObjectManager
+    from ev3sim.visual.manager import ScreenObjectManager
     return np.array([
         float((point[0] - ScreenObjectManager.instance.screen_width / 2) / ScreenObjectManager.instance.screen_width * ScreenObjectManager.instance.map_width),
         float(-(point[1] - ScreenObjectManager.instance.screen_height / 2) / ScreenObjectManager.instance.screen_height * ScreenObjectManager.instance.map_height),

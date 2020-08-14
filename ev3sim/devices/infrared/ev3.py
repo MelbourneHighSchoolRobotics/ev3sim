@@ -1,8 +1,8 @@
 import numpy as np
-from objects.utils import magnitude_sq
-from devices.base import IDeviceInteractor, Device
-from devices.infrared.base import InfraredSensorMixin
-from simulation.loader import ScriptLoader
+from ev3sim.objects.utils import magnitude_sq
+from ev3sim.devices.base import IDeviceInteractor, Device
+from ev3sim.devices.infrared.base import InfraredSensorMixin
+from ev3sim.simulation.loader import ScriptLoader
 
 class InfraredInteractor(IDeviceInteractor):
 

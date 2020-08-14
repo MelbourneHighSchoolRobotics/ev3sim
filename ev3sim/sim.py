@@ -11,7 +11,7 @@ parser.add_argument('robots', nargs='*', help='Path of robots to load. Separate 
 args = parser.parse_args(sys.argv[1:])
 
 import yaml
-from simulation.loader import runFromConfig
+from ev3sim.simulation.loader import runFromConfig
 
 with open(args.preset, 'r') as f:
     config = yaml.safe_load(f)
@@ -28,7 +28,7 @@ shared_data = {
 result_bucket = Queue(maxsize=1)
 
 from threading import Thread
-from simulation.communication import start_server_with_shared_data
+from ev3sim.simulation.communication import start_server_with_shared_data
 
 def run(shared_data, result):
     try:

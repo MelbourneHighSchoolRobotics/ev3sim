@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from simulation import comm_schema_pb2 as simulation_dot_comm__schema__pb2
+from ev3sim.simulation import comm_schema_pb2 as simulation_dot_comm__schema__pb2
 
 
 class SimulationDealerStub(object):

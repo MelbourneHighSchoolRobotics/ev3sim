@@ -1,7 +1,7 @@
 import numpy as np
 import pymunk
-from objects.base import objectFactory
-from simulation.world import World
+from ev3sim.objects.base import objectFactory
+from ev3sim.simulation.world import World
 
 class UltrasonicSensorMixin:
 

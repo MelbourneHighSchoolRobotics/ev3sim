@@ -4,9 +4,9 @@ import pygame.freetype
 import pymunk
 from typing import Optional, Tuple
 
-from visual.manager import ScreenObjectManager
-import visual.utils as utils
-from objects.utils import local_space_to_world_space
+from ev3sim.visual.manager import ScreenObjectManager
+import ev3sim.visual.utils as utils
+from ev3sim.objects.utils import local_space_to_world_space
 
 
 class IVisualElement:

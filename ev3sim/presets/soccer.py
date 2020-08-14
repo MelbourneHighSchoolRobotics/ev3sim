@@ -1,11 +1,11 @@
 import datetime
 import numpy as np
 import math
-from simulation.interactor import IInteractor
-from simulation.loader import ScriptLoader
-from simulation.world import World, stop_on_pause
-from objects.base import objectFactory
-from visual.manager import ScreenObjectManager
+from ev3sim.simulation.interactor import IInteractor
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.world import World, stop_on_pause
+from ev3sim.objects.base import objectFactory
+from ev3sim.visual.manager import ScreenObjectManager
 
 class SoccerInteractor(IInteractor):
 

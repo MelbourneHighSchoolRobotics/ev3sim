@@ -1,6 +1,6 @@
 import pygame
-from simulation.interactor import IInteractor
-from simulation.world import World
+from ev3sim.simulation.interactor import IInteractor
+from ev3sim.simulation.world import World
 
 class PauseInteractor(IInteractor):
     def handleEvent(self, event):

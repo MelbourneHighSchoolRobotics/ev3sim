@@ -1,8 +1,8 @@
-class: devices.motor.ev3.LargeMotor
+class: ev3sim.devices.motor.ev3.LargeMotor
 colours:
   LMOTOR_back_color: '#f1faee'
 interactors:
-- class_path: devices.motor.ev3.MotorInteractor
+- class_path: ev3sim.devices.motor.ev3.MotorInteractor
   kwargs:
     elements:
     - visual:

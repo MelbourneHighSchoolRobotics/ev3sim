@@ -1,8 +1,8 @@
 import numpy as np
-from devices.base import IDeviceInteractor, Device
-from devices.compass.base import CompassSensorMixin
-from objects.utils import local_space_to_world_space
-from simulation.loader import ScriptLoader
+from ev3sim.devices.base import IDeviceInteractor, Device
+from ev3sim.devices.compass.base import CompassSensorMixin
+from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.simulation.loader import ScriptLoader
 
 class CompassInteractor(IDeviceInteractor):
 

@@ -1,11 +1,11 @@
 import time
 from typing import List
-from objects.base import objectFactory
-from simulation.interactor import IInteractor, fromOptions
-from simulation.world import World, stop_on_pause
-from visual import ScreenObjectManager
-from visual.objects import visualFactory
-import visual.utils
+from ev3sim.objects.base import objectFactory
+from ev3sim.simulation.interactor import IInteractor, fromOptions
+from ev3sim.simulation.world import World, stop_on_pause
+from ev3sim.visual import ScreenObjectManager
+from ev3sim.visual.objects import visualFactory
+import ev3sim.visual.utils
 
 class ScriptLoader:
 
@@ -39,7 +39,7 @@ class ScriptLoader:
     def loadElements(self, items):
         # Handle any programmatic color references.
         elements = []
-        from devices.base import initialise_device
+        from ev3sim.devices.base import initialise_device
         for item in items:
             assert 'key' in item and 'type' in item, f"Each item requires a key and type. {item}"
             if item['type'] == 'visual':
@@ -130,11 +130,11 @@ class ScriptLoader:
         }
 
 def runFromConfig(config, shared):
-    from robot import initialise_bot, RobotInteractor
+    from ev3sim.robot import initialise_bot, RobotInteractor
     sl = ScriptLoader(**config.get('loader', {}))
     sl.setSharedData(shared)
     sl.active_scripts = []
-    visual.utils.GLOBAL_COLOURS = config.get('colours', {})
+    ev3sim.visual.utils.GLOBAL_COLOURS = config.get('colours', {})
     for index, robot in enumerate(config.get('robots', [])):
         initialise_bot(config, robot, f'Robot-{index}')
     for opt in config.get('interactors', []):

@@ -1,8 +1,8 @@
-class: devices.colour.ev3.ColorSensor
+class: ev3sim.devices.colour.ev3.ColorSensor
 colours:
   COLOUR_back_color: '#f1faee'
 interactors:
-- class_path: devices.colour.ev3.ColorInteractor
+- class_path: ev3sim.devices.colour.ev3.ColorInteractor
   kwargs:
     elements:
     - visual:

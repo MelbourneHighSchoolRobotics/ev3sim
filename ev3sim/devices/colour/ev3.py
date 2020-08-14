@@ -1,9 +1,9 @@
 import random
-from devices.base import Device, IDeviceInteractor
-from devices.colour.base import ColourSensorMixin
-from simulation.loader import ScriptLoader
-from visual.manager import ScreenObjectManager
-from visual.utils import worldspace_to_screenspace
+from ev3sim.devices.base import Device, IDeviceInteractor
+from ev3sim.devices.colour.base import ColourSensorMixin
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.visual.utils import worldspace_to_screenspace
 
 class ColorInteractor(IDeviceInteractor):
     

@@ -1,8 +1,8 @@
 import sys
 import logging
 import grpc
-import simulation.comm_schema_pb2
-import simulation.comm_schema_pb2_grpc
+import ev3sim.simulation.comm_schema_pb2
+import ev3sim.simulation.comm_schema_pb2_grpc
 import json
 import time
 import argparse

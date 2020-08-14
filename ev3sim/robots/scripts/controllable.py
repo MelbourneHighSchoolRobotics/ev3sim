@@ -1,10 +1,10 @@
 import pygame
 import numpy as np
-from robot import Robot
-from devices.motor.ev3 import LargeMotor
-from devices.ultrasonic.ev3 import UltrasonicSensor
-from simulation.loader import ScriptLoader
-from visual.utils import hsl_to_rgb
+from ev3sim.robot import Robot
+from ev3sim.devices.motor.ev3 import LargeMotor
+from ev3sim.devices.ultrasonic.ev3 import UltrasonicSensor
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.visual.utils import hsl_to_rgb
 
 class ControllableBot(Robot):
 

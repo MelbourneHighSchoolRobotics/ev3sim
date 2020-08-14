@@ -2,8 +2,8 @@ import numpy as np
 import pymunk
 from typing import List
 
-from visual.objects import IVisualElement, visualFactory
-from simulation.world import stop_on_pause
+from ev3sim.visual.objects import IVisualElement, visualFactory
+from ev3sim.simulation.world import stop_on_pause
 
 class BaseObject:
 
