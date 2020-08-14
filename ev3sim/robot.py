@@ -87,13 +87,15 @@ class Robot:
 
     This class however does not contain the physical definition of the robot though, just the brains.
 
-    All robot 'definitions' (see `robot/examples/controllable.yaml`) must reference the class path of some object implementing the below methods.
+    All robot 'definitions' (see `robots/controllable.yaml`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
     """
 
     def getDevice(self, port):
         """
         Returns an instance of the device on the port specified.
         
+        :param string port: The port of the device to retrieve.
+
         Example usage:
         ```
         >>> leftMotor = self.getDevice('outB')
@@ -118,10 +120,10 @@ class Robot:
     
     def onSpawn(self):
         """
-        Since soccer and possibly other games require the placement and rotation of bots, a method separate to `startUp`
+        Since soccer and possibly other games require the placement and rotation of bots, a method separate to ``startUp``
         exists for code to execute once this placement is complete.
 
-        As an example, calibrating the compass sensors should be done `onSpawn`, rather than on `startUp`.
+        As an example, calibrating the compass sensors should be done ``onSpawn``, rather than on ``startUp``.
         """
         pass
 
@@ -136,6 +138,8 @@ class Robot:
     def handleEvent(self, event):
         """
         Override with code to be executed for every `pygame.event.EventType` (https://www.pygame.org/docs/ref/event.html).
+
+        :param pygame.event.Event event: The pygame event registered.
 
         Shouldn't be required for normal bots.
         """

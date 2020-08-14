@@ -10,11 +10,7 @@ Welcome to Robocup Simulator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   setup
+   ev3_extensions
+   customisation
+   system
