@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Robocup Simulator  documentation</title>
+  <title>Extensions to normal EV3 Code &mdash; Robocup Simulator  documentation</title>
   
 
   
@@ -34,8 +34,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Customising Bots and Maps" href="customisation.html" />
+    <link rel="prev" title="Setting up and Running EV3Sim" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,9 +83,12 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
@@ -132,12 +137,14 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Index</li>
+      <li>Extensions to normal EV3 Code</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
+            <a href="_sources/ev3_extensions.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -149,11 +156,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
+  <div class="section" id="extensions-to-normal-ev3-code">
+<h1>Extensions to normal EV3 Code<a class="headerlink" href="#extensions-to-normal-ev3-code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simulation-testing">
+<h2>Simulation testing<a class="headerlink" href="#simulation-testing" title="Permalink to this headline">¶</a></h2>
+<p>Since you should be able to use the same code on simulator as on your physical bot, some changes need to be made so the script can detect whether it is running in a simulated environment.
+As an example, the simulator currently does not implement the <code class="docutils literal notranslate"><span class="pre">Led</span></code> functionality from ev3dev2, and so we need to ensure we are not in the simulator when calling <code class="docutils literal notranslate"><span class="pre">Led</span></code> functions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3dev2.led</span> <span class="kn">import</span> <span class="n">Leds</span>
+<span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">is_ev3</span><span class="p">,</span> <span class="n">is_sim</span>
 
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- 
+<span class="k">if</span> <span class="n">is_ev3</span><span class="p">:</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">Leds</span><span class="p">()</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s1">&#39;LEFT&#39;</span><span class="p">,</span> <span class="s1">&#39;AMBER&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">is_sim</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from the sim! Sadly I can&#39;t do lights at the moment :(&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchool/RoboCup_Simulator/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
 </div>
 
 
@@ -161,6 +181,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="customisation.html" class="btn btn-neutral float-right" title="Customising Bots and Maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setting up and Running EV3Sim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
