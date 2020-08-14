@@ -1,0 +1,25 @@
+class: ev3sim.devices.colour.ev3.ColorSensor
+colours:
+  COLOUR_back_color: '#f1faee'
+interactors:
+- class_path: ev3sim.devices.colour.ev3.ColorInteractor
+  kwargs:
+    elements:
+    - visual:
+        name: Rectangle
+        width: 3
+        height: 3
+        fill: 'COLOUR_back_color'
+        stroke_width: 0.1
+        stroke: '#000000'
+        zPos: 0.1
+      position: [0, 0]
+      key: main_block
+    - visual:
+        name: Circle
+        radius: 1
+        fill: '#000000'
+        stroke_width: 0
+        zPos: 0.2
+      position: [0, 0]
+      key: light_up

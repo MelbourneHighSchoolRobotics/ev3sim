@@ -1,0 +1,32 @@
+class: ev3sim.devices.compass.ev3.CompassSensor
+colours:
+  COMPASS_back_color: '#f1faee'
+interactors:
+- class_path: ev3sim.devices.compass.ev3.CompassInteractor
+  kwargs:
+    elements:
+    - visual:
+        name: Circle
+        radius: 2
+        fill: 'COMPASS_back_color'
+        stroke_width: 0
+        stroke: '#000000'
+        zPos: 0.1
+      position: [0, 0]
+      key: main_block
+    - visual:
+        name: Polygon
+        verts:
+        - [0.98, 0]
+        - [0.105, 0.875]
+        - [0.105, 0.25]
+        - [-0.7, 0.25]
+        - [-0.7, -0.25]
+        - [0.105, -0.25]
+        - [0.105, -0.875]
+        - [0.98, 0]
+        fill: '#0000ff'
+        stroke_width: 0
+        zPos: 0.2
+      position: [0, 0]
+      key: relative_north

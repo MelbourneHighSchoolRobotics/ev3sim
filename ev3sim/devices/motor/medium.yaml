@@ -1,0 +1,33 @@
+class: ev3sim.devices.motor.ev3.MediumMotor
+colours:
+  MMOTOR_back_color: '#f1faee'
+interactors:
+- class_path: ev3sim.devices.motor.ev3.MotorInteractor
+  kwargs:
+    elements:
+    - visual:
+        name: Rectangle
+        width: 3
+        height: 3
+        fill: 'MMOTOR_back_color'
+        stroke_width: 0.1
+        stroke: '#000000'
+        zPos: 0.1
+      position: [0, 0]
+      key: main_block
+    - visual:
+        name: Polygon
+        verts:
+        - [0.98, 0]
+        - [0.105, 0.875]
+        - [0.105, 0.25]
+        - [-0.7, 0.25]
+        - [-0.7, -0.25]
+        - [0.105, -0.25]
+        - [0.105, -0.875]
+        - [0.98, 0]
+        fill: '#000000'
+        stroke_width: 0
+        zPos: 0.2
+      position: [0, 0]
+      key: light_up

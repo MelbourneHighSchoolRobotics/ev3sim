@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
-from simulation.interactor import IInteractor
-from simulation.loader import ScriptLoader
+from ev3sim.simulation.interactor import IInteractor
+from ev3sim.simulation.loader import ScriptLoader
 
 class ControllablePhysics(IInteractor):
 
