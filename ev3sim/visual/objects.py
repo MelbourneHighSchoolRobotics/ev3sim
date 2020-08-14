@@ -107,7 +107,8 @@ class Image(Colorable):
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        image_path = kwargs.get('image_path')
+        from ev3sim.file_helper import find_abs
+        image_path = find_abs(kwargs.get('image_path'), allowed_areas=['local', 'local/assets/', 'package', 'package/assets/'])
         self.image = pygame.image.load(image_path)
         self.fill = kwargs.get('fill', (0, 0, 0, 0))
     

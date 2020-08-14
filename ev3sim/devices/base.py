@@ -1,11 +1,12 @@
 import yaml
 import numpy as np
+import ev3sim.visual.utils as utils
 from ev3sim.simulation.interactor import IInteractor, fromOptions
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.objects.base import objectFactory
 from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.visual.manager import ScreenObjectManager
-import ev3sim.visual.utils as utils
+from ev3sim.file_helper import find_abs
 
 class Device:
 
@@ -78,11 +79,13 @@ class IDeviceInteractor(IInteractor):
             obj.rotation = self.physical_object.rotation + self.relative_rotation
 
 def initialise_device(deviceData, parentObj, index):
-    devices = yaml.safe_load(open('ev3sim/devices/classes.yaml', 'r'))
+    classes = find_abs('devices/classes.yaml')
+    devices = yaml.safe_load(open(classes, 'r'))
     name = deviceData['name']
     if name not in devices:
         raise ValueError(f"Unknown device type {name}")
-    with open('ev3sim/devices/'+devices[name], 'r') as f:
+    fname = find_abs(devices[name], allowed_areas=['local/devices/', 'package/devices/'])
+    with open(fname, 'r') as f:
         try:
             config = yaml.safe_load(f)
             utils.GLOBAL_COLOURS.update(config.get('colours', {}))

@@ -25,7 +25,9 @@ class IInteractor:
 def fromOptions(options):
     if 'filename' in options:
         import yaml
-        with open(options['filename'], 'r') as f:
+        from ev3sim.file_helper import find_abs
+        fname = find_abs(options['filename'])
+        with open(fname, 'r') as f:
             config = yaml.safe_load(f)
             return fromOptions(config)
     if 'class_path' not in options:

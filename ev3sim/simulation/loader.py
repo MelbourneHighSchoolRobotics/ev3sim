@@ -131,12 +131,14 @@ class ScriptLoader:
 
 def runFromConfig(config, shared):
     from ev3sim.robot import initialise_bot, RobotInteractor
+    from ev3sim.file_helper import find_abs
     sl = ScriptLoader(**config.get('loader', {}))
     sl.setSharedData(shared)
     sl.active_scripts = []
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get('colours', {})
     for index, robot in enumerate(config.get('robots', [])):
-        initialise_bot(config, robot, f'Robot-{index}')
+        robot_path = find_abs(robot, allowed_areas=['local', 'local/robots/', 'package', 'package/robots/'])
+        initialise_bot(config, robot_path, f'Robot-{index}')
     for opt in config.get('interactors', []):
         try:
             sl.active_scripts.append(fromOptions(opt))
@@ -151,9 +153,3 @@ def runFromConfig(config, shared):
         sl.simulate()
     else:
         print("No interactors succesfully loaded. Quitting...")
-
-def runFromFile(filename):
-    import yaml
-    with open(filename, 'r') as f:
-        config = yaml.safe_load(f)
-    runFromConfig(config)
