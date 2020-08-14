@@ -4,9 +4,9 @@
 name: Build and deploy to PyPi 
 
 on:
-  push:
-    branches: [ package-deploy ]
-
+  create:
+    tags:
+      - v*
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,16 +36,8 @@ jobs:
     - name: Build dist
       run: python setup.py sdist bdist_wheel
 
-    - name: Publish distribution 📦 to Test PyPI
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.test_pypi_password }}
-        repository_url: https://test.pypi.org/legacy/
-
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@master
-      if: startsWith(github.ref, 'refs/tags')
       with:
         user: __token__
         password: ${{ secrets.pypi_password }} 
