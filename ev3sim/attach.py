@@ -23,8 +23,8 @@ def main():
         first_message = True
         with grpc.insecure_channel('localhost:50051') as channel:
             try:
-                stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-                response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+                stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+                response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
                 for r in response:
                     data['tick'] = r.tick
                     data['tick_rate'] = r.tick_rate
@@ -44,11 +44,11 @@ def main():
     def write(data, result):
         with grpc.insecure_channel('localhost:50051') as channel:
             try:
-                stub = simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+                stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 while True:
                     path, value = data['actions_queue'].get()
-                    stub.SendWriteInfo(simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
-                response = stub.RequestTickUpdates(simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+                    stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
+                response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
             except Exception as e:
                 result.put(('Communications', e))
 
