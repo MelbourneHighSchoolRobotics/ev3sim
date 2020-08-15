@@ -7,6 +7,9 @@ on:
   create:
     tags:
       - v*
+    branches:
+      - main
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
