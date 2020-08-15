@@ -108,7 +108,7 @@ All of the logic running the soccer simulation in particular is defined in a **p
 
 A full example of the soccer preset can be found `here`_.
 
-.. _here: https://github.com/MelbourneHighSchool/RoboCup_Simulator/tree/main/ev3sim/presets/soccer.yaml
+.. _here: https://github.com/MelbourneHighSchoolRobotics/RoboCup_Simulator/tree/main/ev3sim/presets/soccer.yaml
 
 After saving this to ``preset.yaml`` for example, you can run the simulation with this preset by running
 
