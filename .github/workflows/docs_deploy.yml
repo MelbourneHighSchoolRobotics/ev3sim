@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  build:
+  deploy-docs:
     runs-on: ubuntu-latest
 
     steps:
