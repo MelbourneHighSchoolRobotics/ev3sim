@@ -5,17 +5,17 @@ name: Python package
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches-ignore: gh-pages
+  pull_request_target:
+    branches-ignore: gh-pages
 
 jobs:
-  build:
+  test-package:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.7, 3.8, 3.x]
 
     steps:
     - uses: actions/checkout@v2
