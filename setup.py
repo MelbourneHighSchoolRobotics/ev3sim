@@ -22,7 +22,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     python_requires=REQUIRES_PYTHON,
-    url="https://github.com/MelbourneHighSchool/RoboCup_Simulator",
+    url="https://github.com/MelbourneHighSchool/ev3sim",
     author="Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew",
     author_email="jgoerner@outlook.com, jtbui20@gmail.com, me@huangrichard.com, contact@angus.ws, peter@pdrew.com",
     license="BSD-3-Clause",
