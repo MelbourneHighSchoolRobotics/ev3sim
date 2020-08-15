@@ -35,4 +35,4 @@ Which, provided a simulation is already running, attaches some demo code to that
 
 More information on the use of these commands can be given with ``ev3sim -h`` or ``ev3attach -h``.
 
-.. _bot.yaml: https://github.com/MelbourneHighSchool/RoboCup_Simulator/tree/main/ev3sim/robots/bot.yaml
+.. _bot.yaml: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/bot.yaml

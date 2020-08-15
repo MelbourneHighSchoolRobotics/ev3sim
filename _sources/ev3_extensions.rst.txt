@@ -20,4 +20,4 @@ As an example, the simulator currently does not implement the ``Led`` functional
 
 Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
-.. _code_helpers.py: https://github.com/MelbourneHighSchool/RoboCup_Simulator/tree/main/ev3sim/code_helpers.py
+.. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
