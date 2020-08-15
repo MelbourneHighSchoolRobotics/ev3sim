@@ -4,7 +4,7 @@
 
 ## Getting started
 
-To get up and running with the simulator, check the docs: https://melbournehighschoolrobotics.github.io/ev3sim/
+To get up and running with the simulator, check the docs: https://ev3sim.mhscsr.club
 
 ## Problems
 
