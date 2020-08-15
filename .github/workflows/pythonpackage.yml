@@ -5,9 +5,9 @@ name: Python package
 
 on:
   push:
-    branches: [ main ]
+    branches-ignore: gh-pages
   pull_request_target:
-    branches: [ main ]
+    branches-ignore: gh-pages
 
 jobs:
   build:
