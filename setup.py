@@ -17,12 +17,12 @@ with open(os.path.join(HERE, "requirements.txt")) as fid:
 
 setup(
     name="ev3sim",
-    version="1.0.7",
+    version="1.0.8",
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",
     python_requires=REQUIRES_PYTHON,
-    url="https://github.com/MelbourneHighSchool/RoboCup_Simulator",
+    url="https://github.com/MelbourneHighSchool/ev3sim",
     author="Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew",
     author_email="jgoerner@outlook.com, jtbui20@gmail.com, me@huangrichard.com, contact@angus.ws, peter@pdrew.com",
     license="BSD-3-Clause",
