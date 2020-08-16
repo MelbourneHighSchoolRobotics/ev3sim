@@ -9,6 +9,10 @@ on:
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.x]
+
 
     steps:
     #checkout repo
