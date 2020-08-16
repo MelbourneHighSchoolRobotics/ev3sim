@@ -64,6 +64,20 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
+    width: 300
+    height: 100
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, 122]
+  static: true
+  key: topbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
     width: 246
     height: 3
     fill: 'wall_color'
@@ -73,6 +87,20 @@ elements:
   position: [0, -109.5]
   static: true
   key: botbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 300
+    height: 100
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, -158]
+  static: true
+  key: botbarExtended
 - type: object
   physics: true
   collider: inherit
@@ -92,6 +120,20 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
+    width: 100
+    height: 300
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [-170, -18]
+  static: true
+  key: leftbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
     width: 3
     height: 183
     fill: 'wall_color'
@@ -101,6 +143,20 @@ elements:
   position: [121.5, -18]
   static: true
   key: rightbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 100
+    height: 300
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [170, -18]
+  static: true
+  key: rightbarExtended
 - type: object
   physics: true
   collider: inherit
@@ -367,13 +423,17 @@ elements:
   vAlignment: m
   zPos: 5
   key: name2Text
-- type: visual
-  name: Image
-  image_path: 'assets/ui/controls_play.png'
-  position: [0,89]
-  hAlignment: m
-  vAlignment: t
-  vPos: 4
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 89]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_play.png'
+    hAlignment: m
+    vAlignment: t
+    vPos: 5
   key: controls
 - type: visual
   name: Image
