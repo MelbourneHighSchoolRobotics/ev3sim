@@ -33,7 +33,7 @@ jobs:
     - name: Build docs
       run: |
         make html
-      working-drectory: ./docs
+      working-directory: ./docs
         
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v1
