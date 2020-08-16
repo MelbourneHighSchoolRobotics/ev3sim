@@ -30,6 +30,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,6 +174,70 @@
             
   <div class="section" id="medium-motor">
 <h1>Medium Motor<a class="headerlink" href="#medium-motor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.devices.motor.ev3.</code><code class="sig-name descname">MediumMotor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">relativePos</span></em>, <em class="sig-param"><span class="n">relativeRot</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor.off">
+<code class="sig-name descname">off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor.off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns the motors off indefinitely, until further calls are made.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor.on">
+<code class="sig-name descname">on</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor.on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the motors on indefinitely at a certain speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>speed</strong> (<em>float</em>) – Any number from -100 to 100. Negative values turn the motors the opposite direction.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor.on_for_degrees">
+<code class="sig-name descname">on_for_degrees</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span></em>, <em class="sig-param"><span class="n">degrees</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor.on_for_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the motors on for a certain amount of degrees. Note that further calls to motors may interrupt this behaviour.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>speed</strong> (<em>float</em>) – Any number from -100 to 100. Negative values turn the motors the opposite direction.</p></li>
+<li><p><strong>degrees</strong> (<em>float</em>) – Any number, amount of degrees to rotate, Negative values will turn the motors the opposite direction.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor.on_for_rotations">
+<code class="sig-name descname">on_for_rotations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span></em>, <em class="sig-param"><span class="n">rotations</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor.on_for_rotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the motors on for a certain amount of rotations. Note that further calls to motors may interrupt this behaviour.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>speed</strong> (<em>float</em>) – Any number from -100 to 100. Negative values turn the motors the opposite direction.</p></li>
+<li><p><strong>rotations</strong> (<em>float</em>) – Any number, amount of rotations to complete, Negative values will turn the motors the opposite direction.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.motor.ev3.MediumMotor.on_for_seconds">
+<code class="sig-name descname">on_for_seconds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span></em>, <em class="sig-param"><span class="n">seconds</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.motor.ev3.MediumMotor.on_for_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the motors on for a certain amount of time. Note that further calls to motors may interrupt this behaviour.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>speed</strong> (<em>float</em>) – Any number from -100 to 100. Negative values turn the motors the opposite direction.</p></li>
+<li><p><strong>seconds</strong> (<em>float</em>) – Any positive number. Seconds the motors will stay this speed for.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

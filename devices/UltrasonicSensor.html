@@ -30,6 +30,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,6 +174,25 @@
             
   <div class="section" id="ultrasonic-sensor">
 <h1>Ultrasonic Sensor<a class="headerlink" href="#ultrasonic-sensor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.devices.ultrasonic.ev3.UltrasonicSensor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.devices.ultrasonic.ev3.</code><code class="sig-name descname">UltrasonicSensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">relativePos</span></em>, <em class="sig-param"><span class="n">relativeRot</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.ultrasonic.ev3.UltrasonicSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ultrasonic sensor, reads the distance between the sensor and the closest physics object (directly in front of the sensor).</p>
+<p>This measurement is done from the light on the sensor, so a reading of 5cm means the closest object is 5cm away from the light.</p>
+<dl class="py method">
+<dt id="ev3sim.devices.ultrasonic.ev3.UltrasonicSensor.distance_centimeters">
+<em class="property">property </em><code class="sig-name descname">distance_centimeters</code><a class="headerlink" href="#ev3sim.devices.ultrasonic.ev3.UltrasonicSensor.distance_centimeters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the distance between the ultrasonic sensor and the object, in centimeters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.ultrasonic.ev3.UltrasonicSensor.distance_inches">
+<em class="property">property </em><code class="sig-name descname">distance_inches</code><a class="headerlink" href="#ev3sim.devices.ultrasonic.ev3.UltrasonicSensor.distance_inches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the distance between the ultrasonic sensor and the object, in inches.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

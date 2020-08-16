@@ -30,6 +30,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,6 +174,52 @@
             
   <div class="section" id="color-sensor">
 <h1>Color Sensor<a class="headerlink" href="#color-sensor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.devices.colour.ev3.ColorSensor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.devices.colour.ev3.</code><code class="sig-name descname">ColorSensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.colour.ev3.ColorSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>EV3 Color Sensor.</p>
+<p>Makes available the red green and blue values viewed under the sensor.
+Note that this isn’t exactly what’s seen, you will likely get more 
+reasonable and reproduceable values by using the <cite>calibrate_white</cite> method.</p>
+<dl class="py method">
+<dt id="ev3sim.devices.colour.ev3.ColorSensor.calibrate_white">
+<code class="sig-name descname">calibrate_white</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.colour.ev3.ColorSensor.calibrate_white" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrates the current sensor reading to be the colour white.</p>
+<p>For example, if this is over a gray patch, then all new readings in rgb will be lighter than in actuality,
+and anything more ‘white’ than that gray spot will be RGB 255, 255, 255.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.colour.ev3.ColorSensor.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.colour.ev3.ColorSensor.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw sensor values.</p>
+<p>In order to scale these to what the sensor thinks is White, use <cite>calibrate_white</cite> and <cite>rgb</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>R, G, B values in a tuple (0-400ish)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.colour.ev3.ColorSensor.reflected_light_intensity">
+<code class="sig-name descname">reflected_light_intensity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.colour.ev3.ColorSensor.reflected_light_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.colour.ev3.ColorSensor.rgb">
+<code class="sig-name descname">rgb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.colour.ev3.ColorSensor.rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the scaled to bias RGB values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>R, G, B values in a tuple (0 - 255).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

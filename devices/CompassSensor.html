@@ -30,6 +30,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,6 +174,43 @@
             
   <div class="section" id="compass-sensor">
 <h1>Compass Sensor<a class="headerlink" href="#compass-sensor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.devices.compass.ev3.CompassSensor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.devices.compass.ev3.</code><code class="sig-name descname">CompassSensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">relativePos</span></em>, <em class="sig-param"><span class="n">relativeRot</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.compass.ev3.CompassSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>EV3 Compass Sensor, calculates the bearing of the device relative to some direction (which can be specified).</p>
+<p>To get this bearing, use <cite>value</cite>.</p>
+<p>To set the relative heading of the sensor, use <cite>calibrate</cite>.</p>
+<dl class="py method">
+<dt id="ev3sim.devices.compass.ev3.CompassSensor.calibrate">
+<code class="sig-name descname">calibrate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.compass.ev3.CompassSensor.calibrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the sensor so the current bearing is interpreted as 0.</p>
+<p>Example usage:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">compass.calibrate()</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">#</span> <span class="pre">Rotates</span> <span class="pre">10</span> <span class="pre">degrees</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">left</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">compass.value()</span>
+<span class="pre">10</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.devices.compass.ev3.CompassSensor.value">
+<code class="sig-name descname">value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.compass.ev3.CompassSensor.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the compass value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value from 0 to 360, which is the relative bearing (measured anticlockwise from the true bearing).</p>
+</dd>
+</dl>
+<p>Example usage:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">print(compass.value())</span>
+<span class="pre">48.2</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

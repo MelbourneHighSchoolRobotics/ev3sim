@@ -30,6 +30,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,6 +174,44 @@
             
   <div class="section" id="infrared-sensor">
 <h1>Infrared Sensor<a class="headerlink" href="#infrared-sensor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.devices.infrared.ev3.InfraredSensor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.devices.infrared.ev3.</code><code class="sig-name descname">InfraredSensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">relativePos</span></em>, <em class="sig-param"><span class="n">relativeRot</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.infrared.ev3.InfraredSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infrared Sensor can detect the soccer ball in a cone of vision, and has 5 small sensors which aggregate to localise the ball.
+(More generally, it can detect any physical object with tag ‘IR_BALL’)</p>
+<p>It has one method, <cite>value</cite>, whose input can be 0-6, returning different sensor data.</p>
+<dl class="py method">
+<dt id="ev3sim.devices.infrared.ev3.InfraredSensor.value">
+<code class="sig-name descname">value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.devices.infrared.ev3.InfraredSensor.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get sensor data.</p>
+<dl class="simple">
+<dt>index=0:</dt><dd><p>Get a crude direction prediction from the sensor.
+return 0: Ball lost
+return 1-9: Ball is (1: Far left) (…) (5: Centred) (…) (9: Far right)</p>
+</dd>
+<dt>index=1-5:</dt><dd><p>Get the sensor value on subsensor 1-5. Has a value ranging from 0-9.
+Sensor 1: Far left
+Sensor 2: Left
+Sensor 3: Middle
+Sensor 4: Right
+Sensor 5: Far right</p>
+</dd>
+<dt>index=6:</dt><dd><p>Get the average sensor value.</p>
+</dd>
+</dl>
+<p>Example usage:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">print([ir.value(x)</span> <span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">range(1,</span> <span class="pre">6)])</span>
+<span class="pre">[0,</span> <span class="pre">4,</span> <span class="pre">8,</span> <span class="pre">4,</span> <span class="pre">0]</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">print(ir.value(0))</span>
+<span class="pre">5</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">print(ir.value(6))</span>
+<span class="pre">3.2</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

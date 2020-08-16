@@ -30,6 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -163,6 +164,67 @@
             
   <div class="section" id="robot">
 <h1>Robot<a class="headerlink" href="#robot" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.robot.Robot">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.robot.</code><code class="sig-name descname">Robot</code><a class="headerlink" href="#ev3sim.robot.Robot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A robot is as you’d expect in the physical sense - a collection of devices on a base board,
+with it’s own internal logic and events.</p>
+<p>This class however does not contain the physical definition of the robot though, just the brains.</p>
+<p>All robot ‘definitions’ (see <cite>robots/controllable.yaml</cite>) reference a <cite>class_path</cite> (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:</p>
+<dl class="py method">
+<dt id="ev3sim.robot.Robot.getDevice">
+<code class="sig-name descname">getDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.getDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the device on the port specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>port</strong> (<em>string</em>) – The port of the device to retrieve.</p>
+</dd>
+</dl>
+<p>Example usage:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">&gt;&gt;&gt;</span> <span class="pre">leftMotor</span> <span class="pre">=</span> <span class="pre">self.getDevice('outB')</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.robot.Robot.handleEvent">
+<code class="sig-name descname">handleEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.handleEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override with code to be executed for every <cite>pygame.event.EventType</cite> (<a class="reference external" href="https://www.pygame.org/docs/ref/event.html">https://www.pygame.org/docs/ref/event.html</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event</strong> (<em>pygame.event.Event</em>) – The pygame event registered.</p>
+</dd>
+</dl>
+<p>Shouldn’t be required for normal bots.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.robot.Robot.onSpawn">
+<code class="sig-name descname">onSpawn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.onSpawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since soccer and possibly other games require the placement and rotation of bots, a method separate to <code class="docutils literal notranslate"><span class="pre">startUp</span></code>
+exists for code to execute once this placement is complete.</p>
+<p>As an example, calibrating the compass sensors should be done <code class="docutils literal notranslate"><span class="pre">onSpawn</span></code>, rather than on <code class="docutils literal notranslate"><span class="pre">startUp</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.robot.Robot.startUp">
+<code class="sig-name descname">startUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.startUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override with code to be executed whenever the robot is instantiated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.robot.Robot.tick">
+<code class="sig-name descname">tick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tick</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override with code to be executed once every simulation tick.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tick</strong> (<em>int</em>) – The tick since beginning of simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

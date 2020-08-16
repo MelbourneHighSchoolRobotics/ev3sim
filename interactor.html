@@ -30,6 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -162,6 +163,56 @@
             
   <div class="section" id="interactors">
 <h1>Interactors<a class="headerlink" href="#interactors" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ev3sim.simulation.interactor.IInteractor">
+<em class="property">class </em><code class="sig-prename descclassname">ev3sim.simulation.interactor.</code><code class="sig-name descname">IInteractor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>An interactor can be thought of as a robot in the simulation which has much more access to the inner workings of the system, and no physical presence.</p>
+<p>Any actions or dynamic elements in the soccer simulation is due to <cite>interactors</cite>. You can find the location of these interactors in <cite>presets/soccer.yaml</cite>.</p>
+<dl class="py method">
+<dt id="ev3sim.simulation.interactor.IInteractor.afterPhysics">
+<code class="sig-name descname">afterPhysics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor.afterPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once every tick in the simulation, <em>after</em> physics has been applied.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.simulation.interactor.IInteractor.handleEvent">
+<code class="sig-name descname">handleEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor.handleEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override with code to be executed for every <cite>pygame.event.EventType</cite> (<a class="reference external" href="https://www.pygame.org/docs/ref/event.html">https://www.pygame.org/docs/ref/event.html</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event</strong> (<em>pygame.event.Event</em>) – The pygame event registered.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.simulation.interactor.IInteractor.startUp">
+<code class="sig-name descname">startUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor.startUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the interactor is instantiated (After elements are spawned in, but before any ticks are done).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.simulation.interactor.IInteractor.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before the interactor is killed, so that it can do any cleanup necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ev3sim.simulation.interactor.IInteractor.tick">
+<code class="sig-name descname">tick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tick</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#ev3sim.simulation.interactor.IInteractor.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once every tick in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tick</strong> (<em>int</em>) – The number of ticks since epoch.</p>
+</dd>
+<dt class="field-even">Returns bool</dt>
+<dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> is returned, this interactor is assumed to be complete, and will be killed off at the end of the tick.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
