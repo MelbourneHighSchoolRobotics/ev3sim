@@ -373,7 +373,7 @@ elements:
   position: [0,89]
   hAlignment: m
   vAlignment: t
-  vPos: 4
+  vPos: 5
   key: controls
 - type: visual
   name: Image
