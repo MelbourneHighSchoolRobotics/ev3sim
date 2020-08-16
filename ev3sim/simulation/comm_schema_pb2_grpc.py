@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from ev3sim.simulation import comm_schema_pb2 as simulation_dot_comm__schema__pb2
+from ev3sim.simulation import comm_schema_pb2 as ev3sim_dot_simulation_dot_comm__schema__pb2
 
 
 class SimulationDealerStub(object):
@@ -16,13 +16,33 @@ class SimulationDealerStub(object):
         """
         self.RequestTickUpdates = channel.unary_stream(
                 '/serverComm.SimulationDealer/RequestTickUpdates',
-                request_serializer=simulation_dot_comm__schema__pb2.RobotRequest.SerializeToString,
-                response_deserializer=simulation_dot_comm__schema__pb2.RobotData.FromString,
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotData.FromString,
                 )
         self.SendWriteInfo = channel.unary_unary(
                 '/serverComm.SimulationDealer/SendWriteInfo',
-                request_serializer=simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
-                response_deserializer=simulation_dot_comm__schema__pb2.WriteResult.FromString,
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.FromString,
+                )
+        self.RequestServer = channel.unary_unary(
+                '/serverComm.SimulationDealer/RequestServer',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerResult.FromString,
+                )
+        self.RequestConnect = channel.unary_unary(
+                '/serverComm.SimulationDealer/RequestConnect',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ClientRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ClientResult.FromString,
+                )
+        self.RequestSend = channel.unary_unary(
+                '/serverComm.SimulationDealer/RequestSend',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.SendRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.SendResult.FromString,
+                )
+        self.RequestRecv = channel.unary_unary(
+                '/serverComm.SimulationDealer/RequestRecv',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.FromString,
                 )
 
 
@@ -41,18 +61,62 @@ class SimulationDealerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RequestServer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RequestConnect(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RequestSend(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RequestRecv(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SimulationDealerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RequestTickUpdates': grpc.unary_stream_rpc_method_handler(
                     servicer.RequestTickUpdates,
-                    request_deserializer=simulation_dot_comm__schema__pb2.RobotRequest.FromString,
-                    response_serializer=simulation_dot_comm__schema__pb2.RobotData.SerializeToString,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotData.SerializeToString,
             ),
             'SendWriteInfo': grpc.unary_unary_rpc_method_handler(
                     servicer.SendWriteInfo,
-                    request_deserializer=simulation_dot_comm__schema__pb2.RobotWrite.FromString,
-                    response_serializer=simulation_dot_comm__schema__pb2.WriteResult.SerializeToString,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.SerializeToString,
+            ),
+            'RequestServer': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestServer,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerResult.SerializeToString,
+            ),
+            'RequestConnect': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestConnect,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ClientRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ClientResult.SerializeToString,
+            ),
+            'RequestSend': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestSend,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.SendRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.SendResult.SerializeToString,
+            ),
+            'RequestRecv': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestRecv,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -75,8 +139,8 @@ class SimulationDealer(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/serverComm.SimulationDealer/RequestTickUpdates',
-            simulation_dot_comm__schema__pb2.RobotRequest.SerializeToString,
-            simulation_dot_comm__schema__pb2.RobotData.FromString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RobotRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RobotData.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -91,7 +155,71 @@ class SimulationDealer(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/SendWriteInfo',
-            simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
-            simulation_dot_comm__schema__pb2.WriteResult.FromString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RequestServer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestServer',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.ServerResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RequestConnect(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestConnect',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.ClientRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.ClientResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RequestSend(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestSend',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.SendRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.SendResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RequestRecv(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestRecv',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
