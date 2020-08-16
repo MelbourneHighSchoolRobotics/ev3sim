@@ -55,12 +55,20 @@ class IVisualElement:
             self._position = np.array(value)
         else:
             self._position = value
-        self.calculatePoints()
+        try:
+            # Don't worry if some stuff isn't ready yet.
+            self.calculatePoints()
+        except AttributeError:
+            pass
 
     @rotation.setter
     def rotation(self, value):
         self._rotation = value
-        self.calculatePoints()
+        try:
+            # Don't worry if some stuff isn't ready yet.
+            self.calculatePoints()
+        except AttributeError:
+            pass
 
     def applyToScreen(self):
         """
@@ -131,9 +139,10 @@ class Image(Colorable):
 
     def initFromKwargs(self, **kwargs):
         self._image_path = ''
-        super().initFromKwargs(**kwargs)
         self.image_path = kwargs.get('image_path')
+        super().initFromKwargs(**kwargs)
         self.fill = kwargs.get('fill', (0, 0, 0, 0))
+        self.calculatePoints()
 
     @property
     def image_path(self):
@@ -146,15 +155,39 @@ class Image(Colorable):
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
-        pass
+        self.rotated = pygame.transform.rotate(self.image, self.rotation * 180 / np.pi)
+        self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
+        self.screen_location = utils.worldspace_to_screenspace(self.position)
+        self.screen_size = self.rotated.get_size()
+        self.screen_location = (int(self.screen_location[0] - self.screen_size[0] / 2), int(self.screen_location[1] - self.screen_size[1] / 2))
+        from ev3sim.visual.utils import screenspace_to_worldspace
+        pos_loc = screenspace_to_worldspace(self.screen_location)
+        self.verts = [
+            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1] / 2]),
+            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 - self.screen_size[1] / 2]),
+            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 - self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 - self.screen_size[1] / 2]),
+            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 - self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1] / 2]),
+        ]
 
     def applyToScreen(self):
-        rotated = pygame.transform.rotate(self.image, self.rotation * 180 / np.pi)
-        rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
-        screen_location = utils.worldspace_to_screenspace(self.position)
-        w, h = rotated.get_size()
-        screen_location = (int(screen_location[0] - w / 2), int(screen_location[1] - h / 2))
-        ScreenObjectManager.instance.screen.blit(rotated, screen_location)
+        ScreenObjectManager.instance.screen.blit(self.rotated, self.screen_location)
+
+    def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
+        if body is None:
+            moment = pymunk.moment_for_poly(physObj.mass, self.verts)
+            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+        shape = pymunk.Poly(body, self.verts, transform=pymunk.Transform(
+            a=np.cos(physObj.rotation), 
+            b=np.sin(physObj.rotation), 
+            c=-np.sin(physObj.rotation), 
+            d=np.cos(physObj.rotation), 
+            tx=rel_pos[0],
+            ty=rel_pos[1],
+        ))
+        shape.friction = physObj.friction_coefficient
+        shape.elasticity = physObj.restitution_coefficient
+        shape.collision_type = 1
+        return body, shape
 
 class Line(Colorable):
 
