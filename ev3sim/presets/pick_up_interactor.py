@@ -41,6 +41,8 @@ class PickUpInteractor(IInteractor):
             m_pos = screenspace_to_worldspace(event.pos)
             shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS))
             if len(shapes) > 0:
+                if shapes[0].shape.obj.key == 'controls':
+                    return
                 self.obj = shapes[0].shape.obj
                 self.obj.body.velocity = np.array([0.0, 0.0])
                 self.obj_grabbed = True
