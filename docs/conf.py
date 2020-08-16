@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Robocup Simulator'
+project = 'ev3sim'
 copyright = '2020, Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew'
 author = 'Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew'
 
