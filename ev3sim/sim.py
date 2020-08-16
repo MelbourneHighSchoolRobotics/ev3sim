@@ -27,6 +27,8 @@ def main():
         'write_stack': deque(),
         'data_queue': {},
         'active_count': {},
+        'bot_locks': {},
+        'bot_communications_data': {},
     }
 
     result_bucket = Queue(maxsize=1)
