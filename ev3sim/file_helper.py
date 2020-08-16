@@ -40,7 +40,7 @@ def find_abs(filepath, allowed_areas=None):
         elif area == 'local':
             path = filepath
         elif area.startswith('local'):
-            path = os.path.join(ROOT, area[6:], *fnames)
+            path = os.path.join(area[6:], *fnames)
         else:
             raise ValueError(f'Unknown file area {area}')
         if os.path.isdir(path) or os.path.isfile(path):

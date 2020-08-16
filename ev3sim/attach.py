@@ -155,8 +155,8 @@ def main():
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
             @mock.patch('ev3dev2.Device.__init__', device__init__)
             @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
-            @mock.patch('code_helpers.is_ev3', False)
-            @mock.patch('code_helpers.is_sim', True)
+            @mock.patch('ev3sim.code_helpers.is_ev3', False)
+            @mock.patch('ev3sim.code_helpers.is_sim', True)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
                 module = SourceFileLoader('__main__', fname).load_module()
@@ -191,9 +191,10 @@ def main():
     result_bucket = Queue(maxsize=1)
 
     from threading import Thread
+    from ev3sim.file_helper import find_abs
 
     comm_thread = Thread(target=comms, args=(shared_data, result_bucket,), daemon=True)
-    robot_thread = Thread(target=robot, args=(args.filename, shared_data, result_bucket,), daemon=True)
+    robot_thread = Thread(target=robot, args=(find_abs(args.filename, allowed_areas=['local', 'local/robots/', 'package', 'package/robots/']), shared_data, result_bucket,), daemon=True)
     write_thread = Thread(target=write, args=(shared_data, result_bucket,), daemon=True)
 
     comm_thread.start()
