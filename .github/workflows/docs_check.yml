@@ -31,10 +31,9 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Build docs
-      working-drectory: ./docs
       run: |
         make html
-
+      working-drectory: ./docs
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v1
       with:
