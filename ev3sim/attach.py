@@ -46,8 +46,20 @@ def main():
             try:
                 stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 while True:
-                    path, value = data['actions_queue'].get()
-                    stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
+                    action_type, info = data['actions_queue'].get()
+                    if action_type == 'write':
+                        path, value = info
+                        stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
+                    elif action_type == 'begin_server':
+                        data['write_results'].put(stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info)))
+                    elif action_type == 'connect':
+                        data['write_results'].put(stub.RequestConnect(ev3sim.simulation.comm_schema_pb2.ClientRequest(**info)))
+                    elif action_type == 'accept_client':
+                        data['write_results'].put(stub.RequestGetClient(ev3sim.simulation.comm_schema_pb2.GetClientRequest(**info)))
+                    elif action_type == 'send_data':
+                        data['write_results'].put(stub.RequestSend(ev3sim.simulation.comm_schema_pb2.SendRequest(**info)))
+                    elif action_type == 'recv_data':
+                        data['write_results'].put(stub.RequestRecv(ev3sim.simulation.comm_schema_pb2.RecvRequest(**info)))
                 response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
             except Exception as e:
                 result.put(('Communications', e))
@@ -75,7 +87,7 @@ def main():
                     self.seek_point = i
                 
                 def write(self, value):
-                    data['actions_queue'].put((f'{self.k2} {self.k3} {self.k4}', value.decode()))
+                    data['actions_queue'].put(('write', (f'{self.k2} {self.k3} {self.k4}', value.decode())))
                 
                 def flush(self):
                     pass
@@ -150,6 +162,66 @@ def main():
             def raiseEV3Error(*args, **kwargs):
                 raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
 
+            class MockedCommSocket:
+                def __init__(self, hostaddr, port, sender_id):
+                    self.hostaddr = hostaddr
+                    self.port = str(port)
+                    self.sender_id = sender_id
+                
+                def send(self, d):
+                    data['actions_queue'].put(('send_data', {
+                        'robot_id': robot_id,
+                        'client_id': self.sender_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                        'data': d,
+                    }))
+                    # Wait for it to be handled
+                    result = data['write_results'].get()
+                
+                def recv(self, buffer):
+                    # At the moment the buffer is ignored.
+                    data['actions_queue'].put(('recv_data', {
+                        'robot_id': robot_id,
+                        'client_id': self.sender_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                    }))
+                    return data['write_results'].get().data
+
+            class MockedCommClient(MockedCommSocket):
+                def __init__(self, hostaddr, port):
+                    data['actions_queue'].put(('connect', {
+                        'robot_id': robot_id,
+                        'address': hostaddr,
+                        'port': str(port),
+                    }))
+                    sender_id = data['write_results'].get().host_robot_id
+                    super().__init__(hostaddr, port, sender_id)
+
+            class MockedCommServer:
+                def __init__(self, hostaddr, port):
+                    self.hostaddr = hostaddr
+                    self.port = str(port)
+                    data['actions_queue'].put(('begin_server', {
+                        'robot_id': robot_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                    }))
+                    result = data['write_results'].get()
+                
+                def accept_client(self):
+                    data['actions_queue'].put(('accept_client', {
+                        'robot_id': robot_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                    }))
+                    client = data['write_results'].get()
+                    return MockedCommSocket(self.hostaddr, self.port, client.client_id), (self.hostaddr, self.port)
+                
+                def close(self):
+                    pass
+
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
@@ -157,6 +229,8 @@ def main():
             @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
             @mock.patch('ev3sim.code_helpers.is_ev3', False)
             @mock.patch('ev3sim.code_helpers.is_sim', True)
+            @mock.patch('ev3sim.code_helpers.CommServer', MockedCommServer)
+            @mock.patch('ev3sim.code_helpers.CommClient', MockedCommClient)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
                 module = SourceFileLoader('__main__', fname).load_module()
@@ -184,6 +258,7 @@ def main():
         'start_robot_queue': Queue(maxsize=0),
         'active_data_handlers': {},
         'update_lock': threading.Lock(),
+        'write_results': Queue(maxsize=0),
     }
     shared_data['condition_updated'] = threading.Condition(shared_data['update_lock'])
     shared_data['condition_updating'] = threading.Condition(shared_data['update_lock'])
