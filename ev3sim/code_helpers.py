@@ -14,7 +14,7 @@ class CommServer:
         self.socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self.socket.bind((hostAddress, port))
         # Synchronous (1 Backlog)?
-        s.listen(1)
+        self.socket.listen(1)
         self.clients = []
 
     def accept_client(self):
@@ -24,8 +24,8 @@ class CommServer:
         If on ev3, this returns a bluetooth socket, as well as addr/port tuple.
         If on sim, this returns a mocked socket object, as well as addr/port tuple.
         """
-        clients.append(self.socket.accept())
-        return clients[-1]
+        self.clients.append(self.socket.accept())
+        return self.clients[-1]
     
     def close(self):
         for client in self.clients:
