@@ -283,10 +283,7 @@ def main():
         r = result_bucket.get()
         if r is not True:
             print(f"An error occured in the {r[0]} thread. Raising an error now...")
-            time.sleep(1)
             raise r[1]
-        # This sleep is simply required for any final writes to be made on the communication thread.
-        time.sleep(0.2)
     except KeyboardInterrupt as e:
         pass
 
