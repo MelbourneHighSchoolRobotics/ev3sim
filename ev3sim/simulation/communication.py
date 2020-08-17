@@ -56,6 +56,7 @@ def start_server_with_shared_data(data, result):
                 data['bot_communications_data'][key] = {
                     'server_id': rob_id,
                     'connections': {},
+                    'client_queue': Queue(),
                 }
                 for locks in data['bot_locks'].values():
                     with locks['condition_changing']:
@@ -72,8 +73,18 @@ def start_server_with_shared_data(data, result):
                                 'sends': Queue(0),
                                 'recvs': Queue(0),
                             }
+                            data['bot_communications_data'][key]['client_queue'].put(rob_id)
                             return ev3sim.simulation.comm_schema_pb2.ClientResult(host_robot_id=data['bot_communications_data'][key]['server_id'])
                         data['bot_locks'][rob_id]['condition_waiting'].wait(0.1)
+
+            def RequestGetClient(self, request, context):
+                rob_id = request.robot_id
+                key = f'{request.address}:{request.port}'
+                with data['bot_communications_data'][key]['client_queue'].not_empty:
+                    while not data['bot_communications_data'][key]['client_queue']._qsize():
+                        data['bot_communications_data'][key]['client_queue'].not_empty.wait(0.1)
+                c_id = data['bot_communications_data'][key]['client_queue'].get(block=False)
+                return ev3sim.simulation.comm_schema_pb2.GetClientResult(client_id=c_id)
 
             def RequestSend(self, request, context):
                 rob_id = request.robot_id
@@ -84,12 +95,13 @@ def start_server_with_shared_data(data, result):
                     data_keys = (client_id, 'recvs')
                 else:
                     data_keys = (rob_id, 'sends')
-                data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].push(d)
+                data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].put(d)
                 # Wait for the request to be consumed.
                 with data['bot_locks'][rob_id]['condition_waiting']:
-                    if len(data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]) == 0:
-                        return ev3sim.simulation.comm_schema_pb2.SendResult()
-                    data['bot_locks'][rob_id]['condition_waiting'].wait(0.1)
+                    while True:
+                        if not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
+                            return ev3sim.simulation.comm_schema_pb2.SendResult()
+                        data['bot_locks'][rob_id]['condition_waiting'].wait(0.1)
             
             def RequestRecv(self, request, context):
                 rob_id = request.robot_id
@@ -99,6 +111,9 @@ def start_server_with_shared_data(data, result):
                     data_keys = (client_id, 'sends')
                 else:
                     data_keys = (rob_id, 'recvs')
+                with data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty:
+                    while not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
+                        data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty.wait(0.1)
                 d = data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].get()
                 with data['bot_locks'][client_id]['condition_changing']:
                     data['bot_locks'][client_id]['condition_waiting'].notify()
