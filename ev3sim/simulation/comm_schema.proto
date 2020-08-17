@@ -41,6 +41,8 @@ message ServerRequest {
 }
 
 message ServerResult {
+    bool result = 1;
+    string msg = 2;
 }
 
 message ClientRequest {
@@ -51,6 +53,8 @@ message ClientRequest {
 
 message ClientResult {
     string host_robot_id = 1;
+    bool result = 2;
+    string msg = 3;
 }
 
 message SendRequest {
@@ -62,6 +66,8 @@ message SendRequest {
 }
 
 message SendResult {
+    bool result = 1;
+    string msg = 2;
 }
 
 message RecvRequest {
@@ -73,6 +79,8 @@ message RecvRequest {
 
 message RecvResult {
     string data = 1;
+    bool result = 2;
+    string msg = 3;
 }
 
 message GetClientRequest {
@@ -83,4 +91,6 @@ message GetClientRequest {
 
 message GetClientResult {
     string client_id = 1;
+    bool result = 2;
+    string msg = 3;
 }
