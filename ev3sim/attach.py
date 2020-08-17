@@ -18,6 +18,8 @@ def main():
 
     robot_id = args.robot_id
 
+    class CommunicationsError(Exception): pass
+
     def comms(data, result):
         logging.basicConfig()
         first_message = True
@@ -51,16 +53,30 @@ def main():
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
                     elif action_type == 'begin_server':
-                        data['write_results'].put(stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info)))
+                        d = stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
                     elif action_type == 'connect':
-                        data['write_results'].put(stub.RequestConnect(ev3sim.simulation.comm_schema_pb2.ClientRequest(**info)))
+                        d = stub.RequestConnect(ev3sim.simulation.comm_schema_pb2.ClientRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
                     elif action_type == 'accept_client':
-                        data['write_results'].put(stub.RequestGetClient(ev3sim.simulation.comm_schema_pb2.GetClientRequest(**info)))
+                        d = stub.RequestGetClient(ev3sim.simulation.comm_schema_pb2.GetClientRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
                     elif action_type == 'send_data':
-                        data['write_results'].put(stub.RequestSend(ev3sim.simulation.comm_schema_pb2.SendRequest(**info)))
+                        d = stub.RequestSend(ev3sim.simulation.comm_schema_pb2.SendRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
                     elif action_type == 'recv_data':
-                        data['write_results'].put(stub.RequestRecv(ev3sim.simulation.comm_schema_pb2.RecvRequest(**info)))
-                response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+                        d = stub.RequestRecv(ev3sim.simulation.comm_schema_pb2.RecvRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
             except Exception as e:
                 result.put(('Communications', e))
 
@@ -169,6 +185,7 @@ def main():
                     self.sender_id = sender_id
                 
                 def send(self, d):
+                    assert isinstance(d, str), "Can only send string data through simulator."
                     data['actions_queue'].put(('send_data', {
                         'robot_id': robot_id,
                         'client_id': self.sender_id,
