@@ -77,7 +77,7 @@ def start_server_with_shared_data(data, result):
                 with data['bot_locks'][rob_id]['condition_waiting']:
                     while True:
                         if key in data['bot_communications_data']:
-                            if rob_id in data['bot_communications_data'][key]['connections']:
+                            if rob_id in data['bot_communications_data'][key]['connections'] or data['bot_communications_data'][key]['server_id'] == rob_id:
                                 return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="This bot already has a connection to the server.")
                             data['bot_communications_data'][key]['connections'][rob_id] = {
                                 'sends': Queue(0),
