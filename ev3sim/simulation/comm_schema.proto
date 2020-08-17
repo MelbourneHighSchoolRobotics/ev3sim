@@ -9,6 +9,7 @@ service SimulationDealer {
     rpc RequestConnect(ClientRequest) returns (ClientResult) {}
     rpc RequestSend(SendRequest) returns (SendResult) {}
     rpc RequestRecv(RecvRequest) returns (RecvResult) {}
+    rpc RequestGetClient(GetClientRequest) returns (GetClientResult) {}
 }
 
 message RobotRequest {
@@ -72,4 +73,14 @@ message RecvRequest {
 
 message RecvResult {
     string data = 1;
+}
+
+message GetClientRequest {
+        string robot_id = 1;
+        string address = 2;
+        string port = 3;
+}
+
+message GetClientResult {
+    string client_id = 1;
 }

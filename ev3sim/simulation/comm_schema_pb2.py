@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n#ev3sim/simulation/comm_schema.proto\x12\nserverComm\" \n\x0cRobotRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\"=\n\tRobotData\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x11\n\ttick_rate\x18\x02 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\"E\n\nRobotWrite\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61ttribute_path\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\x1d\n\x0bWriteResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\"@\n\rServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"\x0e\n\x0cServerResult\"@\n\rClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"%\n\x0c\x43lientResult\x12\x15\n\rhost_robot_id\x18\x01 \x01(\t\"_\n\x0bSendRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12\x11\n\tclient_id\x18\x05 \x01(\t\"\x0c\n\nSendResult\"Q\n\x0bRecvRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tclient_id\x18\x04 \x01(\t\"\x1a\n\nRecvResult\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t2\xb6\x03\n\x10SimulationDealer\x12I\n\x12RequestTickUpdates\x12\x18.serverComm.RobotRequest\x1a\x15.serverComm.RobotData\"\x00\x30\x01\x12\x42\n\rSendWriteInfo\x12\x16.serverComm.RobotWrite\x1a\x17.serverComm.WriteResult\"\x00\x12\x46\n\rRequestServer\x12\x19.serverComm.ServerRequest\x1a\x18.serverComm.ServerResult\"\x00\x12G\n\x0eRequestConnect\x12\x19.serverComm.ClientRequest\x1a\x18.serverComm.ClientResult\"\x00\x12@\n\x0bRequestSend\x12\x17.serverComm.SendRequest\x1a\x16.serverComm.SendResult\"\x00\x12@\n\x0bRequestRecv\x12\x17.serverComm.RecvRequest\x1a\x16.serverComm.RecvResult\"\x00\x62\x06proto3'
+  serialized_pb=b'\n#ev3sim/simulation/comm_schema.proto\x12\nserverComm\" \n\x0cRobotRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\"=\n\tRobotData\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x11\n\ttick_rate\x18\x02 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\"E\n\nRobotWrite\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61ttribute_path\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\x1d\n\x0bWriteResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\"@\n\rServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"\x0e\n\x0cServerResult\"@\n\rClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"%\n\x0c\x43lientResult\x12\x15\n\rhost_robot_id\x18\x01 \x01(\t\"_\n\x0bSendRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12\x11\n\tclient_id\x18\x05 \x01(\t\"\x0c\n\nSendResult\"Q\n\x0bRecvRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tclient_id\x18\x04 \x01(\t\"\x1a\n\nRecvResult\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"C\n\x10GetClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"$\n\x0fGetClientResult\x12\x11\n\tclient_id\x18\x01 \x01(\t2\x87\x04\n\x10SimulationDealer\x12I\n\x12RequestTickUpdates\x12\x18.serverComm.RobotRequest\x1a\x15.serverComm.RobotData\"\x00\x30\x01\x12\x42\n\rSendWriteInfo\x12\x16.serverComm.RobotWrite\x1a\x17.serverComm.WriteResult\"\x00\x12\x46\n\rRequestServer\x12\x19.serverComm.ServerRequest\x1a\x18.serverComm.ServerResult\"\x00\x12G\n\x0eRequestConnect\x12\x19.serverComm.ClientRequest\x1a\x18.serverComm.ClientResult\"\x00\x12@\n\x0bRequestSend\x12\x17.serverComm.SendRequest\x1a\x16.serverComm.SendResult\"\x00\x12@\n\x0bRequestRecv\x12\x17.serverComm.RecvRequest\x1a\x16.serverComm.RecvResult\"\x00\x12O\n\x10RequestGetClient\x12\x1c.serverComm.GetClientRequest\x1a\x1b.serverComm.GetClientResult\"\x00\x62\x06proto3'
 )
 
 
@@ -499,6 +499,84 @@ _RECVRESULT = _descriptor.Descriptor(
   serialized_end=657,
 )
 
+
+_GETCLIENTREQUEST = _descriptor.Descriptor(
+  name='GetClientRequest',
+  full_name='serverComm.GetClientRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='robot_id', full_name='serverComm.GetClientRequest.robot_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='address', full_name='serverComm.GetClientRequest.address', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='port', full_name='serverComm.GetClientRequest.port', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=659,
+  serialized_end=726,
+)
+
+
+_GETCLIENTRESULT = _descriptor.Descriptor(
+  name='GetClientResult',
+  full_name='serverComm.GetClientResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='client_id', full_name='serverComm.GetClientResult.client_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=728,
+  serialized_end=764,
+)
+
 DESCRIPTOR.message_types_by_name['RobotRequest'] = _ROBOTREQUEST
 DESCRIPTOR.message_types_by_name['RobotData'] = _ROBOTDATA
 DESCRIPTOR.message_types_by_name['RobotWrite'] = _ROBOTWRITE
@@ -511,6 +589,8 @@ DESCRIPTOR.message_types_by_name['SendRequest'] = _SENDREQUEST
 DESCRIPTOR.message_types_by_name['SendResult'] = _SENDRESULT
 DESCRIPTOR.message_types_by_name['RecvRequest'] = _RECVREQUEST
 DESCRIPTOR.message_types_by_name['RecvResult'] = _RECVRESULT
+DESCRIPTOR.message_types_by_name['GetClientRequest'] = _GETCLIENTREQUEST
+DESCRIPTOR.message_types_by_name['GetClientResult'] = _GETCLIENTRESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 RobotRequest = _reflection.GeneratedProtocolMessageType('RobotRequest', (_message.Message,), {
@@ -597,6 +677,20 @@ RecvResult = _reflection.GeneratedProtocolMessageType('RecvResult', (_message.Me
   })
 _sym_db.RegisterMessage(RecvResult)
 
+GetClientRequest = _reflection.GeneratedProtocolMessageType('GetClientRequest', (_message.Message,), {
+  'DESCRIPTOR' : _GETCLIENTREQUEST,
+  '__module__' : 'ev3sim.simulation.comm_schema_pb2'
+  # @@protoc_insertion_point(class_scope:serverComm.GetClientRequest)
+  })
+_sym_db.RegisterMessage(GetClientRequest)
+
+GetClientResult = _reflection.GeneratedProtocolMessageType('GetClientResult', (_message.Message,), {
+  'DESCRIPTOR' : _GETCLIENTRESULT,
+  '__module__' : 'ev3sim.simulation.comm_schema_pb2'
+  # @@protoc_insertion_point(class_scope:serverComm.GetClientResult)
+  })
+_sym_db.RegisterMessage(GetClientResult)
+
 
 
 _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
@@ -606,8 +700,8 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=660,
-  serialized_end=1098,
+  serialized_start=767,
+  serialized_end=1286,
   methods=[
   _descriptor.MethodDescriptor(
     name='RequestTickUpdates',
@@ -666,6 +760,16 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_RECVREQUEST,
     output_type=_RECVRESULT,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='RequestGetClient',
+    full_name='serverComm.SimulationDealer.RequestGetClient',
+    index=6,
+    containing_service=None,
+    input_type=_GETCLIENTREQUEST,
+    output_type=_GETCLIENTRESULT,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

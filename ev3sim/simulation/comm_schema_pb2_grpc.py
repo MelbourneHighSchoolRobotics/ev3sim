@@ -44,6 +44,11 @@ class SimulationDealerStub(object):
                 request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.SerializeToString,
                 response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.FromString,
                 )
+        self.RequestGetClient = channel.unary_unary(
+                '/serverComm.SimulationDealer/RequestGetClient',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.FromString,
+                )
 
 
 class SimulationDealerServicer(object):
@@ -85,6 +90,12 @@ class SimulationDealerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RequestGetClient(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SimulationDealerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -117,6 +128,11 @@ def add_SimulationDealerServicer_to_server(servicer, server):
                     servicer.RequestRecv,
                     request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.FromString,
                     response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.SerializeToString,
+            ),
+            'RequestGetClient': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestGetClient,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -221,5 +237,21 @@ class SimulationDealer(object):
         return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestRecv',
             ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RequestGetClient(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestGetClient',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
