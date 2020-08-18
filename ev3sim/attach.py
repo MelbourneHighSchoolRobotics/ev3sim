@@ -260,8 +260,8 @@ def main():
                         'port': self.port,
                     }))
                     client = data['write_results'].get()
-                    self.sockets.append(MockedCommSocket(self.hostaddr, self.port, client.client_id), (self.hostaddr, self.port))
-                    return self.sockets[-1]
+                    self.sockets.append(MockedCommSocket(self.hostaddr, self.port, client.client_id))
+                    return self.sockets[-1], (self.hostaddr, self.port)
                 
                 def close(self):
                     # Close all clients, then close myself
@@ -344,6 +344,10 @@ def main():
     # Ensure all active connections are closed.
     for active_connection in shared_data['active_connections']:
         active_connection.close()
+
+    # time_ns is not mocked, so use this to wait :)
+    start_of_the_end = time.time_ns()
+    while time.time_ns() - start_of_the_end < 0.5: pass
 
 if __name__ == '__main__':
     main()
