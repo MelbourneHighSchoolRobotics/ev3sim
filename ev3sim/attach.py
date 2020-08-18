@@ -234,6 +234,11 @@ def main():
                     }))
                     sender_id = data['write_results'].get().host_robot_id
                     super().__init__(hostaddr, port, sender_id)
+                    data['active_connections'].append(self)
+
+                def close(self):
+                    super().close()
+                    data['active_connections'].remove(self)
 
             class MockedCommServer:
                 def __init__(self, hostaddr, port):
@@ -246,6 +251,7 @@ def main():
                     }))
                     result = data['write_results'].get()
                     self.sockets = []
+                    data['active_connections'].append(self)
                 
                 def accept_client(self):
                     data['actions_queue'].put(('accept_client', {
@@ -267,6 +273,7 @@ def main():
                         'port': self.port,
                     }))
                     info = data['write_results'].get()
+                    data['active_connections'].remove(self)
 
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
@@ -305,6 +312,7 @@ def main():
         'active_data_handlers': {},
         'update_lock': threading.Lock(),
         'write_results': Queue(maxsize=0),
+        'active_connections': [],
     }
     shared_data['condition_updated'] = threading.Condition(shared_data['update_lock'])
     shared_data['condition_updating'] = threading.Condition(shared_data['update_lock'])
@@ -332,6 +340,10 @@ def main():
             raise r[1]
     except KeyboardInterrupt as e:
         pass
+
+    # Ensure all active connections are closed.
+    for active_connection in shared_data['active_connections']:
+        active_connection.close()
 
 if __name__ == '__main__':
     main()
