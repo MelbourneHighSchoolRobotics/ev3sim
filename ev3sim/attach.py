@@ -335,19 +335,23 @@ def main():
             while not result_bucket._qsize():
                 result_bucket.not_empty.wait(0.1)
         r = result_bucket.get()
-        if r is not True:
-            print(f"An error occured in the {r[0]} thread. Raising an error now...")
-            raise r[1]
     except KeyboardInterrupt as e:
+        r = True
         pass
 
     # Ensure all active connections are closed.
     for active_connection in shared_data['active_connections']:
         active_connection.close()
 
-    # time_ns is not mocked, so use this to wait :)
-    start_of_the_end = time.time_ns()
-    while time.time_ns() - start_of_the_end < 0.5: pass
+    with shared_data['condition_updated']:
+        while shared_data['actions_queue']._qsize() > 0:
+            shared_data['condition_updated'].wait(0.1)
+
+        shared_data['condition_updated'].wait(0.5)
+
+    if r is not True:
+        print(f"An error occured in the {r[0]} thread. Raising an error now...")
+        raise r[1]
 
 if __name__ == '__main__':
     main()
