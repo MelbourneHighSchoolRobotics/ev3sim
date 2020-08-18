@@ -356,13 +356,17 @@ def main():
             while not result_bucket._qsize():
                 result_bucket.not_empty.wait(0.1)
         r = result_bucket.get()
+        if r is not True:
+            # Clear the actions queue.
+            shared_data['actions_queue'] = Queue()
     except KeyboardInterrupt as e:
         r = True
         pass
 
-    # Ensure all active connections are closed.
-    for active_connection in shared_data['active_connections']:
-        active_connection.close()
+    # Ensure all active connections are closed, provided the Communications thread is still running.
+    if r is True or r[0] != 'Communications':
+        for active_connection in shared_data['active_connections']:
+            active_connection.close()
 
     with shared_data['condition_updated']:
         while shared_data['actions_queue']._qsize() > 0:
