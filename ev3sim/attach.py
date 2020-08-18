@@ -204,7 +204,10 @@ def main():
                         'data': d,
                     }))
                     # Wait for it to be handled
-                    result = data['write_results'].get()
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
+                    r = data['write_results'].get()
                 
                 def recv(self, buffer):
                     # At the moment the buffer is ignored.
@@ -214,6 +217,9 @@ def main():
                         'address': self.hostaddr,
                         'port': self.port,
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     return data['write_results'].get().data
 
                 def close(self):
@@ -223,6 +229,9 @@ def main():
                         'port': self.port,
                         'server_id': self.sender_id,
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     info = data['write_results'].get()
 
             class MockedCommClient(MockedCommSocket):
@@ -232,6 +241,9 @@ def main():
                         'address': hostaddr,
                         'port': str(port),
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     sender_id = data['write_results'].get().host_robot_id
                     super().__init__(hostaddr, port, sender_id)
                     data['active_connections'].append(self)
@@ -249,6 +261,9 @@ def main():
                         'address': self.hostaddr,
                         'port': self.port,
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     result = data['write_results'].get()
                     self.sockets = []
                     data['active_connections'].append(self)
@@ -259,6 +274,9 @@ def main():
                         'address': self.hostaddr,
                         'port': self.port,
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     client = data['write_results'].get()
                     self.sockets.append(MockedCommSocket(self.hostaddr, self.port, client.client_id))
                     return self.sockets[-1], (self.hostaddr, self.port)
@@ -272,6 +290,9 @@ def main():
                         'address': self.hostaddr,
                         'port': self.port,
                     }))
+                    with data['write_results'].not_empty:
+                        while not data['write_results']._qsize():
+                            data['write_results'].not_empty.wait(0.1)
                     info = data['write_results'].get()
                     data['active_connections'].remove(self)
 
