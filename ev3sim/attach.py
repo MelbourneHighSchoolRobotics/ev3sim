@@ -77,6 +77,16 @@ def main():
                         if not d.result:
                             raise CommunicationsError(d.msg)
                         data['write_results'].put(d)
+                    elif action_type == 'close_server':
+                        d = stub.CloseServerConnection(ev3sim.simulation.comm_schema_pb2.CloseServerRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
+                    elif action_type == 'close_client':
+                        d = stub.CloseClientConnection(ev3sim.simulation.comm_schema_pb2.CloseClientRequest(**info))
+                        if not d.result:
+                            raise CommunicationsError(d.msg)
+                        data['write_results'].put(d)
             except Exception as e:
                 result.put(('Communications', e))
 
@@ -206,6 +216,15 @@ def main():
                     }))
                     return data['write_results'].get().data
 
+                def close(self):
+                    data['actions_queue'].put(('close_client', {
+                        'robot_id': robot_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                        'server_id': self.sender_id,
+                    }))
+                    info = data['write_results'].get()
+
             class MockedCommClient(MockedCommSocket):
                 def __init__(self, hostaddr, port):
                     data['actions_queue'].put(('connect', {
@@ -226,6 +245,7 @@ def main():
                         'port': self.port,
                     }))
                     result = data['write_results'].get()
+                    self.sockets = []
                 
                 def accept_client(self):
                     data['actions_queue'].put(('accept_client', {
@@ -234,10 +254,19 @@ def main():
                         'port': self.port,
                     }))
                     client = data['write_results'].get()
-                    return MockedCommSocket(self.hostaddr, self.port, client.client_id), (self.hostaddr, self.port)
+                    self.sockets.append(MockedCommSocket(self.hostaddr, self.port, client.client_id), (self.hostaddr, self.port))
+                    return self.sockets[-1]
                 
                 def close(self):
-                    pass
+                    # Close all clients, then close myself
+                    for socket in self.sockets:
+                        socket.close()
+                    data['actions_queue'].put(('close_server', {
+                        'robot_id': robot_id,
+                        'address': self.hostaddr,
+                        'port': self.port,
+                    }))
+                    info = data['write_results'].get()
 
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
