@@ -10,6 +10,8 @@ service SimulationDealer {
     rpc RequestSend(SendRequest) returns (SendResult) {}
     rpc RequestRecv(RecvRequest) returns (RecvResult) {}
     rpc RequestGetClient(GetClientRequest) returns (GetClientResult) {}
+    rpc CloseServerConnection(CloseServerRequest) returns (CloseServerResult) {}
+    rpc CloseClientConnection(CloseClientRequest) returns (CloseClientResult) {}
 }
 
 message RobotRequest {
@@ -84,13 +86,36 @@ message RecvResult {
 }
 
 message GetClientRequest {
-        string robot_id = 1;
-        string address = 2;
-        string port = 3;
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
 }
 
 message GetClientResult {
     string client_id = 1;
     bool result = 2;
     string msg = 3;
+}
+
+message CloseServerRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+}
+
+message CloseServerResult {
+    bool result = 1;
+    string msg = 2;
+}
+
+message CloseClientRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+    string server_id = 4;
+}
+
+message CloseClientResult {
+    bool result = 1;
+    string msg = 2;
 }

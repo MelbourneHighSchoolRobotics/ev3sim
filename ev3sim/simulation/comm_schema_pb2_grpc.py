@@ -49,6 +49,16 @@ class SimulationDealerStub(object):
                 request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.SerializeToString,
                 response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.FromString,
                 )
+        self.CloseServerConnection = channel.unary_unary(
+                '/serverComm.SimulationDealer/CloseServerConnection',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerResult.FromString,
+                )
+        self.CloseClientConnection = channel.unary_unary(
+                '/serverComm.SimulationDealer/CloseClientConnection',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientResult.FromString,
+                )
 
 
 class SimulationDealerServicer(object):
@@ -96,6 +106,18 @@ class SimulationDealerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CloseServerConnection(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CloseClientConnection(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SimulationDealerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -133,6 +155,16 @@ def add_SimulationDealerServicer_to_server(servicer, server):
                     servicer.RequestGetClient,
                     request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.FromString,
                     response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.SerializeToString,
+            ),
+            'CloseServerConnection': grpc.unary_unary_rpc_method_handler(
+                    servicer.CloseServerConnection,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerResult.SerializeToString,
+            ),
+            'CloseClientConnection': grpc.unary_unary_rpc_method_handler(
+                    servicer.CloseClientConnection,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientResult.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -253,5 +285,37 @@ class SimulationDealer(object):
         return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/RequestGetClient',
             ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CloseServerConnection(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/CloseServerConnection',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerResult.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CloseClientConnection(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/CloseClientConnection',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientResult.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -180,6 +180,36 @@ def start_server_with_shared_data(data, result):
                 del data['tick_updates'][update_key]
                 return ev3sim.simulation.comm_schema_pb2.RecvResult(data=d, result=True, msg="")
 
+            def CloseServerConnection(self, request, context):
+                rob_id = request.robot_id
+                key = f'{request.address}:{request.port}'
+                if key not in data['bot_communications_data'] or data['bot_communications_data'][key]['server_id'] != rob_id:   
+                    return ev3sim.simulation.comm_schema_pb2.CloseServerResult(result=False, msg="Server is already closed, or you are not the host of it.")
+                del data['bot_communications_data'][key]
+                return ev3sim.simulation.comm_schema_pb2.CloseServerResult(result=True, msg="")
+            
+            def CloseClientConnection(self, request, context):
+                rob_id = request.robot_id
+                key = f'{request.address}:{request.port}'
+                server_id = request.server_id
+                if key not in data['bot_communications_data'] or data['bot_communications_data'][key]['server_id'] != server_id:
+                    # If the server is closed, this isn't considered an error.
+                    return ev3sim.simulation.comm_schema_pb2.CloseClientResult(result=True, msg="Server you are connecting to is already closed.")
+                if rob_id not in data['bot_communications_data'][key]['connections']:
+                    return ev3sim.simulation.comm_schema_pb2.CloseClientResult(result=False, msg="You don't have a connection with this server currently.")
+                # Delete send/receive data.
+                del data['bot_communications_data'][key]['connections'][rob_id]
+                # Delete client_queue elements.
+                objs = []
+                while data['bot_communications_data'][key]['client_queue']._qsize():
+                    try:
+                        objs.append(data['bot_communications_data'][key]['client_queue'].get(timeout=TICK_WAITING_TIMEOUT))
+                    except: pass
+                if rob_id in objs:
+                    objs.remove(rob_id)
+                for obj in objs:
+                    data['bot_communications_data'][key]['client_queue'].put(obj)
+                return ev3sim.simulation.comm_schema_pb2.CloseClientResult(result=True, msg="")
 
         def serve():
             server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
