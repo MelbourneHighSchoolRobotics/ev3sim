@@ -74,26 +74,31 @@ def start_server_with_shared_data(data, result):
                 last_tick = time.time()
                 update_key = f'{rob_id}:RC'
                 data['tick_updates'][update_key] = Queue(0)
-                with data['bot_locks'][rob_id]['condition_waiting']:
-                    while True:
-                        if key in data['bot_communications_data']:
-                            if rob_id in data['bot_communications_data'][key]['connections'] or data['bot_communications_data'][key]['server_id'] == rob_id:
-                                return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="This bot already has a connection to the server.")
-                            data['bot_communications_data'][key]['connections'][rob_id] = {
-                                'sends': Queue(0),
-                                'recvs': Queue(0),
-                            }
-                            data['bot_communications_data'][key]['client_queue'].put(rob_id)
-                            del data['tick_updates'][update_key]
-                            return ev3sim.simulation.comm_schema_pb2.ClientResult(result=True, host_robot_id=data['bot_communications_data'][key]['server_id'], msg="")
-                        data['bot_locks'][rob_id]['condition_waiting'].wait(TICK_WAITING_TIMEOUT)
-                        try:
-                            data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
-                            last_tick = time.time()
-                        except:
-                            pass
-                        if time.time() - last_tick > SIM_DIED_TIME:
-                            return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="Simulation died.")
+                try:
+                    with data['bot_locks'][rob_id]['condition_waiting']:
+                        while True:
+                            if key in data['bot_communications_data']:
+                                if rob_id in data['bot_communications_data'][key]['connections'] or data['bot_communications_data'][key]['server_id'] == rob_id:
+                                    return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="This bot already has a connection to the server.")
+                                data['bot_communications_data'][key]['connections'][rob_id] = {
+                                    'sends': Queue(0),
+                                    'recvs': Queue(0),
+                                }
+                                data['bot_communications_data'][key]['client_queue'].put(rob_id)
+                                del data['tick_updates'][update_key]
+                                return ev3sim.simulation.comm_schema_pb2.ClientResult(result=True, host_robot_id=data['bot_communications_data'][key]['server_id'], msg="")
+                            data['bot_locks'][rob_id]['condition_waiting'].wait(TICK_WAITING_TIMEOUT)
+                            try:
+                                data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
+                                last_tick = time.time()
+                            except:
+                                pass
+                            if time.time() - last_tick > SIM_DIED_TIME:
+                                return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="Simulation died.")
+                except KeyError:
+                    if update_key in data['tick_updates']:
+                        del data['tick_updates'][update_key]
+                    return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="Your connection was closed.")
 
             def RequestGetClient(self, request, context):
                 rob_id = request.robot_id
@@ -103,82 +108,99 @@ def start_server_with_shared_data(data, result):
                 last_tick = time.time()
                 update_key = f'{rob_id}:RGC'
                 data['tick_updates'][update_key] = Queue(0)
-                with data['bot_communications_data'][key]['client_queue'].not_empty:
-                    while not data['bot_communications_data'][key]['client_queue']._qsize():
-                        data['bot_communications_data'][key]['client_queue'].not_empty.wait(TICK_WAITING_TIMEOUT)
-                        try:
-                            data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
-                            last_tick = time.time()
-                        except:
-                            pass
-                        if time.time() - last_tick > SIM_DIED_TIME:
-                            return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=False, client_id='N/A', msg="Simulation died.")    
-                c_id = data['bot_communications_data'][key]['client_queue'].get(block=False)
-                del data['tick_updates'][update_key]
-                return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=True, client_id=c_id, msg="")
+                try:
+                    with data['bot_communications_data'][key]['client_queue'].not_empty:
+                        while not data['bot_communications_data'][key]['client_queue']._qsize():
+                            data['bot_communications_data'][key]['client_queue'].not_empty.wait(TICK_WAITING_TIMEOUT)
+                            try:
+                                data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
+                                last_tick = time.time()
+                            except:
+                                pass
+                            if time.time() - last_tick > SIM_DIED_TIME:
+                                return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=False, client_id='N/A', msg="Simulation died.")    
+                    c_id = data['bot_communications_data'][key]['client_queue'].get(block=False)
+                    del data['tick_updates'][update_key]
+                    return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=True, client_id=c_id, msg="")
+                except KeyError:
+                    if update_key in data['tick_updates']:
+                        del data['tick_updates'][update_key]
+                    return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=False, client_id='N/A', msg="Your connection was closed.")
 
             def RequestSend(self, request, context):
                 rob_id = request.robot_id
                 key = f'{request.address}:{request.port}'
                 client_id = request.client_id
                 d = request.data
-                if key not in data['bot_communications_data'] or (data['bot_communications_data'][key]['server_id'] not in (rob_id, client_id)):
-                    return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Server on address does not exist, or the incorrect Robot ID was specified.")
-                if rob_id == data['bot_communications_data'][key]['server_id']:
-                    data_keys = (client_id, 'recvs')
-                else:
-                    data_keys = (rob_id, 'sends')
-                if data_keys[0] not in data['bot_communications_data'][key]['connections']:
-                    return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Server on address does not exist, or the incorrect Robot ID was specified.")
-                data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].put(d)
-                # Wait for the request to be consumed.
-                last_tick = time.time()
                 update_key = f'{rob_id}:RS'
-                data['tick_updates'][update_key] = Queue(0)
-                with data['bot_locks'][rob_id]['condition_waiting']:
-                    while True:
-                        if not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
-                            del data['tick_updates'][update_key]
-                            return ev3sim.simulation.comm_schema_pb2.SendResult(result=True, msg="")
-                        data['bot_locks'][rob_id]['condition_waiting'].wait(TICK_WAITING_TIMEOUT)
-                        try:
-                            data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
-                            last_tick = time.time()
-                        except:
-                            pass
-                        if time.time() - last_tick > SIM_DIED_TIME:
-                            return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Simulation died.")
+                try:
+                    if key not in data['bot_communications_data'] or (data['bot_communications_data'][key]['server_id'] not in (rob_id, client_id)):
+                        return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Server on address does not exist, or the incorrect Robot ID was specified.")
+                    if rob_id == data['bot_communications_data'][key]['server_id']:
+                        data_keys = (client_id, 'recvs')
+                    else:
+                        data_keys = (rob_id, 'sends')
+                    if data_keys[0] not in data['bot_communications_data'][key]['connections']:
+                        return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Server on address does not exist, or the incorrect Robot ID was specified.")
+                    data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].put(d)
+                    # Wait for the request to be consumed.
+                    last_tick = time.time()
+                    data['tick_updates'][update_key] = Queue(0)
+                    with data['bot_locks'][rob_id]['condition_waiting']:
+                        while True:
+                            if not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
+                                del data['tick_updates'][update_key]
+                                return ev3sim.simulation.comm_schema_pb2.SendResult(result=True, msg="")
+                            data['bot_locks'][rob_id]['condition_waiting'].wait(TICK_WAITING_TIMEOUT)
+                            try:
+                                data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
+                                last_tick = time.time()
+                            except:
+                                pass
+                            if time.time() - last_tick > SIM_DIED_TIME:
+                                return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Simulation died.")
+                except KeyError:
+                    if update_key in data['tick_updates']:
+                        del data['tick_updates'][update_key]
+                    print('Y')
+                    return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Your connection was closed.")
             
             def RequestRecv(self, request, context):
                 rob_id = request.robot_id
                 key = f'{request.address}:{request.port}'
                 client_id = request.client_id
-                if key not in data['bot_communications_data'] or (data['bot_communications_data'][key]['server_id'] not in (rob_id, client_id)):
-                    return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Server on address does not exist, or the incorrect Sender ID was specified.")
-                if rob_id == data['bot_communications_data'][key]['server_id']:
-                    data_keys = (client_id, 'sends')
-                else:
-                    data_keys = (rob_id, 'recvs')
-                if data_keys[0] not in data['bot_communications_data'][key]['connections']:
-                    return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Server on address does not exist, or the incorrect Sender ID was specified.")
-                last_tick = time.time()
                 update_key = f'{rob_id}:RR'
-                data['tick_updates'][update_key] = Queue(0)
-                with data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty:
-                    while not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
-                        data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty.wait(TICK_WAITING_TIMEOUT)
-                        try:
-                            data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
-                            last_tick = time.time()
-                        except:
-                            pass
-                        if time.time() - last_tick > SIM_DIED_TIME:
-                            return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Simulation died.")
-                d = data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].get()
-                with data['bot_locks'][client_id]['condition_changing']:
-                    data['bot_locks'][client_id]['condition_waiting'].notify()
-                del data['tick_updates'][update_key]
-                return ev3sim.simulation.comm_schema_pb2.RecvResult(data=d, result=True, msg="")
+                try:
+                    if key not in data['bot_communications_data'] or (data['bot_communications_data'][key]['server_id'] not in (rob_id, client_id)):
+                        return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Server on address does not exist, or the incorrect Sender ID was specified.")
+                    if rob_id == data['bot_communications_data'][key]['server_id']:
+                        data_keys = (client_id, 'sends')
+                    else:
+                        data_keys = (rob_id, 'recvs')
+                    if data_keys[0] not in data['bot_communications_data'][key]['connections']:
+                        return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Server on address does not exist, or the incorrect Sender ID was specified.")
+                    last_tick = time.time()
+                    data['tick_updates'][update_key] = Queue(0)
+                    with data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty:
+                        while not data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]]._qsize():
+                            data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].not_empty.wait(TICK_WAITING_TIMEOUT)
+                            try:
+                                data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
+                                last_tick = time.time()
+                            except:
+                                pass
+                            if time.time() - last_tick > SIM_DIED_TIME:
+                                return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Simulation died.")
+                    d = data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].get()
+                    with data['bot_locks'][client_id]['condition_changing']:
+                        data['bot_locks'][client_id]['condition_waiting'].notify()
+                    del data['tick_updates'][update_key]
+                    return ev3sim.simulation.comm_schema_pb2.RecvResult(data=d, result=True, msg="")
+                except KeyError:
+                    if update_key in data['tick_updates']:
+                        del data['tick_updates'][update_key]
+                    print('Y')
+                    return ev3sim.simulation.comm_schema_pb2.RecvResult(data='', result=False, msg="Your connection was closed.")
 
             def CloseServerConnection(self, request, context):
                 rob_id = request.robot_id
