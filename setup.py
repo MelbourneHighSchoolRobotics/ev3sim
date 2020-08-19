@@ -17,7 +17,7 @@ with open(os.path.join(HERE, "requirements.txt")) as fid:
 
 setup(
     name="ev3sim",
-    version="1.0.9",
+    version="1.1.0",
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",
