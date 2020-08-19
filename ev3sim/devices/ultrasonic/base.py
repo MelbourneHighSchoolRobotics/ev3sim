@@ -5,6 +5,7 @@ from ev3sim.simulation.world import World
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 
+from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
 
 class UltrasonicSensorMixin:
 
@@ -50,7 +51,7 @@ class UltrasonicSensorMixin:
                 startPosition,
                 endPosition,
                 self.RAYCAST_RADIUS,
-                pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0b1),
+                pymunk.ShapeFilter(mask=STATIC_CATEGORY & DYNAMIC_CATEGORY),
             )
             i = 0
             for obj in self.ignore_objects:
