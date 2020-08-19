@@ -1,3 +1,7 @@
+follow_points:
+- [-15, 0]
+- [0, 15]
+elements:
 - type: visual
   name: Image
   image_path: 'tiles/example_image_tile.png'
