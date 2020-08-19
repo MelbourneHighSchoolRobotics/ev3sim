@@ -29,15 +29,13 @@ interactors:
 
 elements:
 - type: visual
-  name: Rectangle
-  fill: "UI_bg_2"
-  width: 60
-  height: 30
-  position: [0,110]
+  name: Image
+  image_path: 'assets/ui/timer_bg.png'
+  position: [0,102]
   hAlignment: m
   vAlignment: t
   zPos: 5
-  key: TimerUI
+  key: timer_bg
 - type: visual
   name: Text
   text: "05:00"
@@ -48,6 +46,18 @@ elements:
   vAlignment: t
   zPos: 5
   key: TimerText
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 89]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_play.png'
+    hAlignment: m
+    vAlignment: t
+    zPos: 4.9
+  key: controls
 
 loader:
   GAME_TICK_RATE: 30
