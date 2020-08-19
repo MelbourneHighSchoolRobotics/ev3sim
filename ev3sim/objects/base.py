@@ -5,6 +5,9 @@ from typing import List
 from ev3sim.visual.objects import IVisualElement, visualFactory
 from ev3sim.simulation.world import stop_on_pause
 
+DYNAMIC_CATEGORY = 0b10
+STATIC_CATEGORY = 0b100
+
 class BaseObject:
 
     parent: 'BaseObject'
@@ -23,9 +26,11 @@ class BaseObject:
             self.visual = visualFactory(**kwargs['visual'])
         self.position = kwargs.get('position', (0.5, 0.5))
         self.rotation = kwargs.get('rotation', 0)
-        for child in kwargs.get('children', []):
+        for i, child in enumerate(kwargs.get('children', [])):
+            child['key'] = kwargs['key'] + f'-child-{i}'
             self.children.append(objectFactory(**child))
             self.children[-1].parent = self
+        self.key = kwargs['key']
         self.updateVisualProperties()
 
     @property
