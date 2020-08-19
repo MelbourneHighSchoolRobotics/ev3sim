@@ -1,0 +1,6 @@
+- type: visual
+  name: Image
+  image_path: 'tiles/example_image_tile.png'
+  zPos: 0.1
+  key: tile
+  position: [0, 0]

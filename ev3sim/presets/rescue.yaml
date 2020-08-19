@@ -26,6 +26,9 @@ interactors:
     - path: tiles/color_right.yaml
       position: [1, 1]
       rotation: 180
+    - path: tiles/left_circle_green.yaml
+      position: [2, 1]
+      rotation: 0
 
 elements:
 - type: visual
