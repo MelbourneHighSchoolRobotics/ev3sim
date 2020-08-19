@@ -236,6 +236,8 @@ def main():
 
             class MockedCommClient(MockedCommSocket):
                 def __init__(self, hostaddr, port):
+                    if hostaddr == 'aa:bb:cc:dd:ee:ff':
+                        print(f"While this example will work, for competition bots please change the host address from {hostaddr} so competing bots can communicate separately.")
                     data['actions_queue'].put(('connect', {
                         'robot_id': robot_id,
                         'address': hostaddr,
@@ -254,6 +256,8 @@ def main():
 
             class MockedCommServer:
                 def __init__(self, hostaddr, port):
+                    if hostaddr == 'aa:bb:cc:dd:ee:ff':
+                        print(f"While this example will work, for competition bots please change the host address from {hostaddr} so competing bots can communicate separately.")
                     self.hostaddr = hostaddr
                     self.port = str(port)
                     data['actions_queue'].put(('begin_server', {
