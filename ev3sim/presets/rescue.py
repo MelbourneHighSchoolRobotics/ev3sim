@@ -1,11 +1,12 @@
 import datetime
 import numpy as np
 import math
-from simulation.interactor import IInteractor
-from simulation.loader import ScriptLoader
-from simulation.world import World, stop_on_pause
-from objects.base import objectFactory
-from objects.utils import local_space_to_world_space
+from ev3sim.simulation.interactor import IInteractor
+from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.world import World, stop_on_pause
+from ev3sim.objects.base import objectFactory
+from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.file_helper import find_abs
 
 class RescueInteractor(IInteractor):
 
@@ -19,7 +20,8 @@ class RescueInteractor(IInteractor):
         self.time_tick = 0
         for i, tile in enumerate(kwargs['tiles']):
             import yaml
-            with open(tile['path'], 'r') as f:
+            path = find_abs(tile['path'], allowed_areas=['local/presets/', 'local', 'package/presets/', 'package'])
+            with open(path, 'r') as f:
                 t = yaml.safe_load(f)
             maxZpos = 0
             base_pos = np.array(tile.get('position', [0, 0]))

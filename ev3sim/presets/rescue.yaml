@@ -10,20 +10,20 @@ colours:
   UI_fg_2: "1f1f1f"
 
 interactors:
-- class_path: presets.pick_up_interactor.PickUpInteractor
-- class_path: presets.pause_interactor.PauseInteractor
-- class_path: presets.rescue.RescueInteractor
+- class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
+- class_path: ev3sim.presets.pause_interactor.PauseInteractor
+- class_path: ev3sim.presets.rescue.RescueInteractor
   kwargs:
     spawns:
     - [[-1, 0], 0]
     tiles:
-    - path: presets/tiles/city_limits.yaml
+    - path: tiles/city_limits.yaml
       position: [-1, 0]
-    - path: presets/tiles/straight.yaml
+    - path: tiles/straight.yaml
       position: [0, 0]
-    - path: presets/tiles/right_angle.yaml
+    - path: tiles/right_angle.yaml
       position: [1, 0]
-    - path: presets/tiles/color_right.yaml
+    - path: tiles/color_right.yaml
       position: [1, 1]
       rotation: 180
 
