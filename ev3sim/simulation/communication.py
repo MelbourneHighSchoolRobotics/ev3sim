@@ -162,7 +162,6 @@ def start_server_with_shared_data(data, result):
                 except KeyError:
                     if update_key in data['tick_updates']:
                         del data['tick_updates'][update_key]
-                    print('Y')
                     return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Your connection was closed.")
             
             def RequestRecv(self, request, context):
@@ -199,7 +198,6 @@ def start_server_with_shared_data(data, result):
                 except KeyError:
                     if update_key in data['tick_updates']:
                         del data['tick_updates'][update_key]
-                    print('Y')
                     return ev3sim.simulation.comm_schema_pb2.RecvResult(data='', result=False, msg="Your connection was closed.")
 
             def CloseServerConnection(self, request, context):
