@@ -10,13 +10,15 @@ You can install this package using pip as follows:
 
 .. code-block:: bash
 
-    python -m pip install ev3sim
+    python -m pip install -U ev3sim
 
 After this, any new command prompt or terminal opened should have access to two new commands, ``ev3sim`` and ``ev3attach``.
 
 You can check this is the case by opening command prompt and typing ``ev3sim -h``. You should get some explanation of the use of this program.
 
 If it works, great! You should be ready to go. If not, there are some platform specific instructions further down. If that also doesn't work, contact one of the Melbourne High Robotics Mentors (or optionally, raise an issue on github! https://github.com/MelbourneHighSchoolRobotics/ev3sim)
+
+Occasionally, you may need to run this command again to update the simulator.
 
 Running EV3Sim
 --------------
