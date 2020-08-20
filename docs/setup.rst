@@ -21,13 +21,27 @@ If it works, great! You should be ready to go. If not, there are some platform s
 Running EV3Sim
 --------------
 
-Running the simulator is as simple as
+Running the simulator is as simple running the following command in the command line: 
 
 .. code-block:: bash
 
     ev3sim bot.yaml
 
-Which runs a simple soccer simulation, with 1 bot. You can define your own bots, by creating a ``.yaml`` file (Base this on `bot.yaml`_)
+This runs a simple soccer simulation, with 1 bot. bot.yaml is a pre-made bot included with the package, for demonstration purposes.
+
+This should open a new pygame window with the simulation, as follows:
+
+.. image:: images/sim.jpg
+  :width: 600
+  :alt: The pygame window for the simulator
+
+You can define and run your own bots, by creating a ``.yaml`` file (Base this on `bot.yaml`_). Navigate to your yaml file in the command line (either by opening the command line window in the appropriate directory, or using ``cd`` (change directory) and ``dir/ls`` (list directory)
+
+If you want to run the simulation with multiple bots, you can simply add more yaml files to the command.
+
+.. code-block:: bash
+
+    ev3sim bot.yaml bot.yaml bot.yaml bot.yaml
 
 Attaching some code to bots in the simulation is then done running the following in a new command prompt
 
@@ -35,9 +49,10 @@ Attaching some code to bots in the simulation is then done running the following
 
     ev3attach demo.py Robot-0
 
-Which, provided a simulation is already running, attaches some demo code to that robot. You can use your own ev3dev2 code instead of ``demo.py``, and right clicking a robot in the simulation will copy it's ID to the clipboard, so you can specify which robot to attach to, rather than ``Robot-0``.
+Which, provided a simulation is already running, attaches some demo code to that robot. Each robot has a unique ID that you can use to attach your own code to, starting from 0. You can right click on a robot in the simulation to copy it's ID to the clipboard, so you can specify which robot to attach to, rahter than ``Robot-0``.
 
-More information on the use of these commands can be given with ``ev3sim -h`` or ``ev3attach -h``.
+
+This is much the same as the previous command, where you need to be in the appropriate directory. You can use your own ev3dev2 code instead of ``demo.py``
 
 .. _bot.yaml: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/bot.yaml
 
@@ -60,16 +75,16 @@ Make sure you install python with the "Add python to PATH" option selected. This
 
 
 Ev3sim runs, but no pygame window is created
-"""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
 This is a known issue with pygame. A possible cause is not having the English (US) Language pack in windows installed. This should install itself after a few minutes, once you've installed the package, but if that doesn't occur, you may wish to try manually installing it.
 
 Unix
-^^^^^^
+^^^^^
 
 
 Dependancy or binary package errors
-"""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""
 
 Pygame requires binary dependencies that aren't always installed by default.
 
