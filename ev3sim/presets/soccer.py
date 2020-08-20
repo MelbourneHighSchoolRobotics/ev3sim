@@ -57,7 +57,8 @@ class SoccerInteractor(IInteractor):
                 'name': 'Circle',
                 'radius': 0.1
             },
-            'physics': True
+            'physics': True,
+            'key': 'IR-BALL',
         })
         self.ball_centre.shape.sensor = True
         self.ball_centre.shape.collision_type = self.BALL_COLLISION_TYPE
@@ -83,7 +84,9 @@ class SoccerInteractor(IInteractor):
                 'collider': 'inherit',
                 'visual': self.goals[x],
                 'position': pos,
-                'physics': True
+                'physics': True,
+                'static': True,
+                'key':  f'Goal-{x}',
             }
             self.goal_colliders.append(objectFactory(**obj))
             self.goal_colliders[-1].shape.sensor = True

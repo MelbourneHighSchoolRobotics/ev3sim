@@ -433,7 +433,7 @@ elements:
     image_path: 'assets/ui/controls_play.png'
     hAlignment: m
     vAlignment: t
-    vPos: 5
+    zPos: 5
   key: controls
 - type: visual
   name: Image
@@ -441,7 +441,7 @@ elements:
   position: [0,102]
   hAlignment: m
   vAlignment: t
-  vPos: 5
+  zPos: 5
   key: timer_bg
 - type: visual
   name: Text
