@@ -19,6 +19,10 @@ class RescueInteractor(IInteractor):
     ROBOT_CENTRE_COLLISION_TYPE = 6
     ROBOT_CENTRE_RADIUS = 3
     FOLLOW_POINT_RADIUS = 1
+    # You need 2/3 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
+    FOLLOW_POINT_START_END = 3
+    FOLLOW_POINT_AMOUNT_REQUIRED = 2
+    FOLLOW_POINT_PERCENT = 0.8
 
     START_TIME = datetime.timedelta(minutes=5)
 
@@ -67,8 +71,31 @@ class RescueInteractor(IInteractor):
             ScriptLoader.instance.loadElements(t['elements'])
 
     def collidedFollowPoint(self, follow_indexes):
-        # TODO: Implement
+        if self.follow_completed[follow_indexes[0]][follow_indexes[1]]:
+            return
+        self.follow_completed[follow_indexes[0]][follow_indexes[1]] = True
         self.tiles[follow_indexes[0]]['follow_colliders'][follow_indexes[1]].visual.fill = '#00ff00'
+        if self.tiles_completed[follow_indexes[0]]:
+            return
+        # Check if this tile should be completed.
+        total_complete = 0
+        total_start = 0
+        total_end = 0
+        for x in range(len(self.follow_completed[follow_indexes[0]])):
+            if self.follow_completed[follow_indexes[0]][x]:
+                total_complete += 1
+                if x < self.FOLLOW_POINT_START_END:
+                    total_start += 1
+                if len(self.follow_completed[follow_indexes[0]]) - x - 1 < self.FOLLOW_POINT_START_END:
+                    total_end += 1
+        if (
+            total_complete >= self.FOLLOW_POINT_PERCENT * len(self.follow_completed[follow_indexes[0]]) and
+            total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED and
+            total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+        ):
+            self.tiles_completed[follow_indexes[0]] = True
+            print(f"Completed tile {follow_indexes[0]}")
+
 
     def spawnFollowPointPhysics(self):
         for i, tile in enumerate(self.tiles):
@@ -148,6 +175,17 @@ class RescueInteractor(IInteractor):
         for i in range(len(self.robots)):
             self.bot_follows[i].body.position = self.robots[i].body.position
         self.addCollisionHandler()
+
+        self.current_follow = None
+        self.follow_completed = [
+            [
+                False for x in y['follows']
+            ]
+            for y in self.tiles
+        ]
+        self.tiles_completed = [
+            False for y in self.tiles
+        ]
 
         for robot in self.robots:
             robot.robot_class.onSpawn()
