@@ -6,7 +6,7 @@ from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.objects.base import objectFactory
-from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.objects.utils import local_space_to_world_space, magnitude_sq
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.manager import ScreenObjectManager
 
@@ -23,6 +23,8 @@ class RescueInteractor(IInteractor):
     FOLLOW_POINT_START_END = 3
     FOLLOW_POINT_AMOUNT_REQUIRED = 2
     FOLLOW_POINT_PERCENT = 0.8
+    # You can be at most this far from the previous follow point before lack of progress is called.
+    MAX_FOLLOW_DIST = 8
 
     START_TIME = datetime.timedelta(minutes=5)
 
@@ -73,6 +75,7 @@ class RescueInteractor(IInteractor):
     def collidedFollowPoint(self, follow_indexes):
         if self.follow_completed[follow_indexes[0]][follow_indexes[1]]:
             return
+        self.current_follow = follow_indexes
         self.follow_completed[follow_indexes[0]][follow_indexes[1]] = True
         self.tiles[follow_indexes[0]]['follow_colliders'][follow_indexes[1]].visual.fill = '#00ff00'
         if self.tiles_completed[follow_indexes[0]]:
@@ -217,6 +220,12 @@ class RescueInteractor(IInteractor):
             self.bot_follows[i].body.position = self.robots[i].body.position
             # Ensure visual is not 1 frame behind.
             self.bot_follows[i].position = self.robots[i].body.position
+        if self.current_follow is not None and not World.instance.paused:
+            distance = magnitude_sq(self.bot_follows[i].position - self.tiles[self.current_follow[0]]['follows'][self.current_follow[1]])
+            if distance > self.MAX_FOLLOW_DIST * self.MAX_FOLLOW_DIST:
+                print("Lack of Progress!")
+                World.instance.paused = True
+                self.current_follow = None
         self.update_time()
 
     @stop_on_pause
