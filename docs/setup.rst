@@ -56,6 +56,8 @@ Which, provided a simulation is already running, attaches some demo code to that
 
 This is much the same as the previous command, where you need to be in the appropriate directory. You can use your own ev3dev2 code instead of ``demo.py``
 
+More information on the use of these commands can be given with ``ev3sim -h`` or ``ev3attach -h``.	
+
 .. _bot.yaml: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/bot.yaml
 
 
