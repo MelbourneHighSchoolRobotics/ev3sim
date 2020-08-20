@@ -4,6 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to ev3sim's documentation!
+ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms using ev3dev2 in python. EV3sim targets the Robocup Junior Australia Soccer competition, however can be adapted for use in many different environments. 
 ==================================
 
 .. toctree::
