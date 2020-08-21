@@ -184,7 +184,7 @@ class Image(Colorable):
         else:
             raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
         self.verts = [
             (physics_size[0]/2, physics_size[1]/2),
             (physics_size[0]/2, -physics_size[1]/2),
@@ -217,7 +217,7 @@ class Image(Colorable):
     def getPositionAnchorOffset(self):
         res = np.array([.0, .0])
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
         if self.hAlignment == 'l':
             res += np.array([physics_size[0] / 2, 0.0])
         elif self.hAlignment == 'm':
@@ -411,7 +411,7 @@ class Text(Colorable):
     def getPositionAnchorOffset(self):
         res = np.array([.0, .0])
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
         if self.hAlignment == 'l':
             res += np.array([physics_size[0] / 2, 0.0])
         elif self.hAlignment == 'm':
