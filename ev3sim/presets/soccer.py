@@ -20,6 +20,8 @@ class SoccerInteractor(IInteractor):
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
 
+    _pressed = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.names = kwargs.get('names', ['Team 1', 'Team 2'])
@@ -139,6 +141,12 @@ class SoccerInteractor(IInteractor):
         if self.current_goal_score_tick != -1 and (tick - self.current_goal_score_tick) > self.GOAL_SCORE_PAUSE_DELAY * ScriptLoader.instance.GAME_TICK_RATE:
             self.current_goal_score_tick = -1
             World.instance.paused = False
+
+        # UI Tick
+        if self._pressed:
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = 'assets/ui/controls_reset_pressed.png'
+        else:
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = 'assets/ui/controls_reset_released.png'
         self.update_time()
 
     @stop_on_pause
@@ -170,9 +178,17 @@ class SoccerInteractor(IInteractor):
                         if action == 'Plus':
                             self.team_scores[team] += 1
                         elif action == 'Minus':
-                            self.team_scores[team] -= 1
+                            if self.team_scores[team] > 0: self.team_scores[team] -= 1
                         else:
                             raise ValueError(f"Unknown team action {action}")
                         self.updateScoreText()
                 if shape.shape.obj.key == "controlsReset":
+                    self._pressed = True
+
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for shape in shapes:
+                if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()
+                self._pressed = False

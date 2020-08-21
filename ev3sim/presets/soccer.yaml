@@ -413,10 +413,10 @@ elements:
     name: Image
     image_path: "assets/ui/goal_plus.png"
     hAlignment: r
-    vAlignment: b
-    scale: 0.15
+    vAlignment: t
+    scale: 0.5
     zPos: 7
-  position: [-17, 102.5]
+  position: [-38, 107]
   key: score1Plus
 - type: object
   collider: inherit
@@ -427,9 +427,9 @@ elements:
     image_path: "assets/ui/goal_minus.png"
     hAlignment: r
     vAlignment: t
-    scale: 0.15
+    scale: 0.5
     zPos: 7
-  position: [-17, 101.5]
+  position: [-38, 101]
   key: score1Minus
 - type: object
   collider: inherit
@@ -439,10 +439,10 @@ elements:
     name: Image
     image_path: "assets/ui/goal_plus.png"
     hAlignment: l
-    vAlignment: b
-    scale: 0.15
+    vAlignment: t
+    scale: 0.5
     zPos: 7
-  position: [17, 102.5]
+  position: [38, 107]
   key: score2Plus
 - type: object
   collider: inherit
@@ -453,16 +453,16 @@ elements:
     image_path: "assets/ui/goal_minus.png"
     hAlignment: l
     vAlignment: t
-    scale: 0.15
+    scale: 0.5
     zPos: 7
-  position: [17, 101.5]
+  position: [38, 101]
   key: score2Minus
 - type: visual
   name: Text
   fill: "UI_fg"
   font_size: 34  
-  position: [-75, 105]
-  hAlignment: r
+  position: [-130, 105]
+  hAlignment: l
   vAlignment: m
   zPos: 5
   key: name1Text
@@ -470,8 +470,8 @@ elements:
   name: Text
   fill: "UI_fg"
   font_size: 34
-  position: [75, 105]
-  hAlignment: l
+  position: [130, 105]
+  hAlignment: r
   vAlignment: m
   zPos: 5
   key: name2Text
@@ -494,7 +494,7 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_reset.png'
+    image_path: 'assets/ui/controls_reset_released.png'
     hAlignment: l
     vAlignment: t
     zPos: 5
