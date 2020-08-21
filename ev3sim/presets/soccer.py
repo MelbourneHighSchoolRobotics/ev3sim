@@ -112,6 +112,12 @@ class SoccerInteractor(IInteractor):
         for x in range(len(self.names)):
             ScriptLoader.instance.object_map[f'score{x+1}Text'].text = str(self.team_scores[x])
 
+    def reset(self):
+        self.team_scores = [0 for x in self.names]
+        self.updateScoreText()
+        self.resetPositions()
+        self.time_tick = 0
+
     def resetPositions(self):
         # It is assumed that 2 robots to each team, with indexes increasing as we go across teams.
         for team in range(len(self.names)):
@@ -168,3 +174,5 @@ class SoccerInteractor(IInteractor):
                         else:
                             raise ValueError(f"Unknown team action {action}")
                         self.updateScoreText()
+                if shape.shape.obj.key == "controlsReset":
+                    self.reset()
