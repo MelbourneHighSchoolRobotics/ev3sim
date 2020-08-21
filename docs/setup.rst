@@ -37,6 +37,12 @@ This should open a new pygame window with the simulation, as follows:
   :width: 600
   :alt: The pygame window for the simulator
 
+You can also run the simulator with a robot that is contrlled by the keyboard: 
+
+.. code-block:: bash
+
+    ev3sim controllable.yaml
+
 You can define and run your own bots, by creating a ``.yaml`` file (Base this on `bot.yaml`_). Navigate to your yaml file in the command line (either by opening the command line window in the appropriate directory, or using ``cd`` (change directory) and ``dir/ls`` (list directory)
 
 If you want to run the simulation with multiple bots, you can simply add more yaml files to the command.
@@ -103,4 +109,4 @@ Redhat/CentOS
 
 Arch 
 
-``sudo pacman install python-pygame``
+``sudo pacman -S python-pygame``
