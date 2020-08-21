@@ -1,11 +1,15 @@
 import datetime
+import pygame
 import numpy as np
 import math
+import pymunk
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.objects.base import objectFactory
 from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.visual.utils import screenspace_to_worldspace
+from ev3sim.objects.base import STATIC_CATEGORY
 
 class SoccerInteractor(IInteractor):
 
@@ -148,3 +152,19 @@ class SoccerInteractor(IInteractor):
         # Pause the game temporarily
         World.instance.paused = True
         self.current_goal_score_tick = self.cur_tick
+
+    def handleEvent(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for shape in shapes:
+                for team in range(len(self.names)):
+                    if shape.shape.obj.key.startswith(f'score{team+1}'):
+                        action = shape.shape.obj.key.split(str(team+1))[1]
+                        if action == 'Plus':
+                            self.team_scores[team] += 1
+                        elif action == 'Minus':
+                            self.team_scores[team] -= 1
+                        else:
+                            raise ValueError(f"Unknown team action {action}")
+                        self.updateScoreText()

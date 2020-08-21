@@ -405,41 +405,57 @@ elements:
   vAlignment: t 
   zPos: 5
   key: score2Text
-- type: visual
-  name: Image
-  image_path: "assets/ui/goal_plus.png"
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: r
+    vAlignment: b
+    scale: 0.15
+    zPos: 7
   position: [-17, 102.5]
-  hAlignment: r
-  vAlignment: b
-  scale: 0.15
-  zPos: 7
   key: score1Plus
-- type: visual
-  name: Image
-  image_path: "assets/ui/goal_minus.png"
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: r
+    vAlignment: t
+    scale: 0.15
+    zPos: 7
   position: [-17, 101.5]
-  hAlignment: r
-  vAlignment: t
-  scale: 0.15
-  zPos: 7
   key: score1Minus
-- type: visual
-  name: Image
-  image_path: "assets/ui/goal_plus.png"
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: l
+    vAlignment: b
+    scale: 0.15
+    zPos: 7
   position: [17, 102.5]
-  hAlignment: l
-  vAlignment: b
-  scale: 0.15
-  zPos: 7
   key: score2Plus
-- type: visual
-  name: Image
-  image_path: "assets/ui/goal_minus.png"
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: l
+    vAlignment: t
+    scale: 0.15
+    zPos: 7
   position: [17, 101.5]
-  hAlignment: l
-  vAlignment: t
-  scale: 0.15
-  zPos: 7
   key: score2Minus
 - type: visual
   name: Text
