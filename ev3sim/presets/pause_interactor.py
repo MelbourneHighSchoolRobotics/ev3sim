@@ -15,12 +15,12 @@ class PauseInteractor(IInteractor):
             m_pos = screenspace_to_worldspace(event.pos)
             shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ DYNAMIC_CATEGORY))
             for shape in shapes:
-                if shape.shape.obj.key == 'controls':
+                if shape.shape.obj.key == 'controlsPause':
                     # Toggle pause state.
                     World.instance.paused = not World.instance.paused
     
     def tick(self, tick):
         if World.instance.paused:
-            ScriptLoader.instance.object_map["controls"].visual.image_path = 'assets/ui/controls_pause.png'
+            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = 'assets/ui/controls_pause_pressed.png'
         else: 
-            ScriptLoader.instance.object_map["controls"].visual.image_path = 'assets/ui/controls_play.png'
+            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = 'assets/ui/controls_pause_released.png'

@@ -430,11 +430,23 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_play.png'
-    hAlignment: m
+    image_path: 'assets/ui/controls_pause_released.png'
+    hAlignment: r
     vAlignment: t
     zPos: 5
-  key: controls
+  key: controlsPause
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_reset.png'
+    hAlignment: l
+    vAlignment: t
+    zPos: 5
+  key: controlsReset
 - type: visual
   name: Image
   image_path: 'assets/ui/timer_bg.png'
