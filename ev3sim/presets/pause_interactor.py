@@ -27,6 +27,7 @@ class PauseInteractor(IInteractor):
                     # Toggle pause state.
                     World.instance.paused = not World.instance.paused
                 self._pressed = False
+            if len(shapes) == 0: self._pressed = False
                     
     
     def tick(self, tick):

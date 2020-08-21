@@ -192,3 +192,4 @@ class SoccerInteractor(IInteractor):
                 if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()
                 self._pressed = False
+            if len(shapes) == 0: self._pressed = False
