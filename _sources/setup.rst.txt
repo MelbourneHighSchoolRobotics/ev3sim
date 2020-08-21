@@ -103,4 +103,4 @@ Redhat/CentOS
 
 Arch 
 
-``sudo pacman install python-pygame``
+``sudo pacman -S python-pygame``
