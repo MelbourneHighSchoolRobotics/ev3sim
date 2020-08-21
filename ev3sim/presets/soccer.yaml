@@ -372,15 +372,15 @@ elements:
 - type: visual
   name: Image
   image_path: 'assets/ui/left_bg.png'
-  position: [-90, 97]
-  hAlignment: r
+  position: [-145, 110]
+  hAlignment: l
   vAlignment: t
   zPos: 5
   key: team1UI
 - type: visual
   name: Image
   image_path: 'assets/ui/right_bg.png'
-  position: [90, 97]
+  position: [145, 110]
   hAlignment: r
   vAlignment: t
   zPos: 5
@@ -390,7 +390,7 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-50, 110]
+  position: [-55, 110]
   hAlignment: m
   vAlignment: t
   zPos: 5
@@ -400,7 +400,7 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [50, 110]
+  position: [55, 110]
   hAlignment: m
   vAlignment: t 
   zPos: 5
@@ -427,7 +427,7 @@ elements:
   collider: inherit
   physics: true
   static: true
-  position: [0, 89]
+  position: [0, 96]
   visual:
     name: Image
     image_path: 'assets/ui/controls_play.png'
@@ -438,7 +438,7 @@ elements:
 - type: visual
   name: Image
   image_path: 'assets/ui/timer_bg.png'
-  position: [0,102]
+  position: [0,110]
   hAlignment: m
   vAlignment: t
   zPos: 5
@@ -448,9 +448,9 @@ elements:
   text: ""
   fill: "UI_fg"
   font_size: 24
-  hAlighment: l
-  vAlignment: t
-  position: [-127,93]
+  hAlignment: l
+  vAlignment: m
+  position: [-132,91]
   zPos: 6
   key: temp_1
 - type: visual
@@ -458,9 +458,9 @@ elements:
   text: ""
   fill: "UI_fg"
   font_size: 24
-  hAlighment: r
-  vAlignment: t
-  position: [103,93]
+  hAlignment: r
+  vAlignment: m
+  position: [132,91]
   zPos: 6
   key: temp_2
 - type: visual
