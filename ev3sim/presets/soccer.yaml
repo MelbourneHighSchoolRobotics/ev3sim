@@ -390,8 +390,8 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-55, 110]
-  hAlignment: m
+  position: [-50, 110]
+  hAlignment: r
   vAlignment: t
   zPos: 5
   key: score1Text
@@ -400,11 +400,47 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [55, 110]
-  hAlignment: m
+  position: [50, 110]
+  hAlignment: l
   vAlignment: t 
   zPos: 5
   key: score2Text
+- type: visual
+  name: Image
+  image_path: "assets/ui/goal_plus.png"
+  position: [-17, 102.5]
+  hAlignment: r
+  vAlignment: b
+  scale: 0.15
+  zPos: 7
+  key: score1Plus
+- type: visual
+  name: Image
+  image_path: "assets/ui/goal_minus.png"
+  position: [-17, 101.5]
+  hAlignment: r
+  vAlignment: t
+  scale: 0.15
+  zPos: 7
+  key: score1Minus
+- type: visual
+  name: Image
+  image_path: "assets/ui/goal_plus.png"
+  position: [17, 102.5]
+  hAlignment: l
+  vAlignment: b
+  scale: 0.15
+  zPos: 7
+  key: score2Plus
+- type: visual
+  name: Image
+  image_path: "assets/ui/goal_minus.png"
+  position: [17, 101.5]
+  hAlignment: l
+  vAlignment: t
+  scale: 0.15
+  zPos: 7
+  key: score2Minus
 - type: visual
   name: Text
   fill: "UI_fg"
