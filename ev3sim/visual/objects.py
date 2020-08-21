@@ -147,6 +147,7 @@ class Image(Colorable):
         self.fill = kwargs.get('fill', (0, 0, 0, 0))
         self.hAlignment = kwargs.get('hAlignment', 'm')
         self.vAlignment = kwargs.get('vAlignment', 'm')
+        self.scale = kwargs.get('scale', 1)
         self.calculatePoints()
 
     @property
@@ -160,7 +161,9 @@ class Image(Colorable):
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
-        self.rotated = pygame.transform.rotate(self.image, self.rotation * 180 / np.pi)
+        new_size = [int(self.image.get_size()[0] * self.scale), int(self.image.get_size()[1] * self.scale)]
+        scaled = pygame.transform.scale(self.image, new_size)
+        self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
         self.screen_location = utils.worldspace_to_screenspace(self.position)
         self.screen_size = self.rotated.get_size()
