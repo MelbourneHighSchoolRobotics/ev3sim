@@ -390,7 +390,7 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-50, 97]
+  position: [-50, 98.5]
   hAlignment: r
   vAlignment: baseline
   zPos: 5
@@ -400,7 +400,7 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [50, 97]
+  position: [50, 98.5]
   hAlignment: l
   vAlignment: baseline 
   zPos: 5
@@ -532,7 +532,7 @@ elements:
   text: "05:00"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-13.6, 97.5]
+  position: [-13.6, 98.5]
   hAlignment: l
   vAlignment: baseline
   zPos: 5
