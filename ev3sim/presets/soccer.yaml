@@ -17,8 +17,8 @@ interactors:
 - class_path: ev3sim.presets.soccer.SoccerInteractor
   kwargs:
     names:
-    - Unicorns
-    - Stah...schaft
+    - Short name
+    - Long name
     spawns:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
@@ -390,9 +390,9 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-50, 110]
+  position: [-50, 97]
   hAlignment: r
-  vAlignment: t
+  vAlignment: baseline
   zPos: 5
   key: score1Text
 - type: visual
@@ -400,9 +400,9 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [50, 110]
+  position: [50, 97]
   hAlignment: l
-  vAlignment: t 
+  vAlignment: baseline 
   zPos: 5
   key: score2Text
 - type: object
@@ -461,18 +461,18 @@ elements:
   name: Text
   fill: "UI_fg"
   font_size: 34  
-  position: [-130, 105]
+  position: [-130, 100]
   hAlignment: l
-  vAlignment: m
+  vAlignment: baseline
   zPos: 5
   key: name1Text
 - type: visual
   name: Text
   fill: "UI_fg"
   font_size: 34
-  position: [130, 105]
+  position: [130, 100]
   hAlignment: r
-  vAlignment: m
+  vAlignment: baseline
   zPos: 5
   key: name2Text
 - type: object
@@ -513,8 +513,8 @@ elements:
   fill: "UI_fg"
   font_size: 24
   hAlignment: l
-  vAlignment: m
-  position: [-132,91]
+  vAlignment: baseline
+  position: [-132,87]
   zPos: 6
   key: temp_1
 - type: visual
@@ -523,8 +523,8 @@ elements:
   fill: "UI_fg"
   font_size: 24
   hAlignment: r
-  vAlignment: m
-  position: [132,91]
+  vAlignment: baseline
+  position: [132,87]
   zPos: 6
   key: temp_2
 - type: visual
@@ -532,9 +532,9 @@ elements:
   text: "05:00"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-13.6, 110]
+  position: [-13.6, 97.5]
   hAlignment: l
-  vAlignment: t
+  vAlignment: baseline
   zPos: 5
   key: TimerText
 - type: object
