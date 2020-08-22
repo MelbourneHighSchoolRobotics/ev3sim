@@ -416,7 +416,7 @@ elements:
     vAlignment: t
     scale: 0.5
     zPos: 7
-  position: [-38, 107]
+  position: [-38, 107.5]
   key: score1Plus
 - type: object
   collider: inherit
@@ -429,7 +429,7 @@ elements:
     vAlignment: t
     scale: 0.5
     zPos: 7
-  position: [-38, 101]
+  position: [-38, 101.5]
   key: score1Minus
 - type: object
   collider: inherit
@@ -442,7 +442,7 @@ elements:
     vAlignment: t
     scale: 0.5
     zPos: 7
-  position: [38, 107]
+  position: [38, 107.5]
   key: score2Plus
 - type: object
   collider: inherit
@@ -455,7 +455,7 @@ elements:
     vAlignment: t
     scale: 0.5
     zPos: 7
-  position: [38, 101]
+  position: [38, 101.5]
   key: score2Minus
 - type: visual
   name: Text
