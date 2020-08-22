@@ -386,7 +386,7 @@ class Text(Colorable):
         if not hasattr(self, 'font'):
             return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
-        # pygame why do you do this. WHY?
+        baseline = np.array([self.rect.x, self.rect.y])
         self.rect.move_ip(-self.rect.x, -self.rect.y)
         self.anchor = utils.worldspace_to_screenspace(self.position)
         if self.hAlignment == 'l':
@@ -402,7 +402,7 @@ class Text(Colorable):
         elif self.vAlignment == 'm':
             self.anchor -= np.array([0.0, self.font.get_rect(self.text).height / 2])
         elif self.vAlignment == 'baseline':
-            self.anchor -= np.array([0.0, self.font.get_sized_ascender() + self.font.get_sized_descender()])
+            self.anchor -= np.array([0.0, baseline[1]])
         elif self.vAlignment == 'b':
             self.anchor -= np.array([0.0, self.font.get_rect(self.text).height])
         else:
