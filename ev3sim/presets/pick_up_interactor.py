@@ -63,6 +63,9 @@ class PickUpInteractor(IInteractor):
                     (x+1) / self.position_length * (self.positions[(self.position_index + x+1) % self.TOTAL_POSITIONS] - self.positions[(self.position_index + x) % self.TOTAL_POSITIONS])
                     for x in range(self.position_length-1)
                 )
+                # Sum will return 0 if position length is 0 - we need to handle this.
+                if isinstance(differences, int):
+                    differences = np.array([0, 0])
                 self.obj.body.velocity = self.VELOCITY_MULT * differences
         if event.type == pygame.MOUSEMOTION and self.obj_grabbed:
             self.obj_m_pos = screenspace_to_worldspace(event.pos)
