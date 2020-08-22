@@ -375,9 +375,9 @@ class Text(Colorable):
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        self.font_style = kwargs.get('font_style', pygame.font.get_default_font())
+        self.font_style = kwargs.get('font_style', "ev3sim/assets/OpenSans-SemiBold.ttf")
         self.font_size = kwargs.get('font_size', 30)
-        self.font = pygame.freetype.SysFont(self.font_style, self.font_size)
+        self.font = pygame.freetype.Font(self.font_style, self.font_size)
         self.hAlignment = kwargs.get('hAlignment', 'l')
         self.vAlignment = kwargs.get('vAlignment', 't')
         self.text = kwargs.get('text', 'Test')
