@@ -91,7 +91,7 @@ class PhysicsObject(BaseObject):
         self.body, self.shape = self.visual.generateBodyAndShape(self)
         self.shapes = [self.shape]
         self.shape.obj = self
-        self.body.position = self.position
+        self.body.position = self.position + self.visual.getPositionAnchorOffset()
         for child in self.children:
             if isinstance(child, PhysicsObject):
                 child.body, child.shape = child.visual.generateBodyAndShape(child, body=self.body, rel_pos=child.position)
@@ -99,7 +99,7 @@ class PhysicsObject(BaseObject):
                 self.shapes.append(child.shape)
 
     def update(self):
-        self.position = self.body.position
+        self.position = self.body.position - self.visual.getPositionAnchorOffset()
         self.rotation = self.body.angle
         self.update_velocities()
 
