@@ -30,6 +30,7 @@ class SoccerInteractor(IInteractor):
         self.show_goal_colliders = kwargs.get('show_goal_colliders', False)
         self.current_goal_score_tick = -1
         self.time_tick = 0
+        self.update_time_text = True
     
     def locateBots(self):
         self.robots = []
@@ -119,6 +120,7 @@ class SoccerInteractor(IInteractor):
         self.updateScoreText()
         self.resetPositions()
         self.time_tick = 0
+        self.update_time_text = True
 
     def resetPositions(self):
         # It is assumed that 2 robots to each team, with indexes increasing as we go across teams.
@@ -152,11 +154,18 @@ class SoccerInteractor(IInteractor):
     @stop_on_pause
     def update_time(self):
         self.time_tick += 1
+        if not self.update_time_text:
+            return
         elapsed = datetime.timedelta(seconds=self.time_tick / ScriptLoader.instance.GAME_TICK_RATE)
         show = self.START_TIME - elapsed
         seconds = show.seconds
         minutes = seconds // 60
         seconds = seconds - minutes * 60
+        # This checks that the timer is completed, and on its final tick.
+        if minutes == 0 and seconds == 0 and (self.time_tick / ScriptLoader.instance.GAME_TICK_RATE == elapsed.seconds):
+            # Pause the game, and make it so that further tick increases don't update the timer text.
+            World.instance.paused = True
+            self.update_time_text = False
         ScriptLoader.instance.object_map['TimerText'].text = '{:02d}:{:02d}'.format(minutes, seconds)
 
     def goalScoredIn(self, teamIndex):
