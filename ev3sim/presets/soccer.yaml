@@ -532,8 +532,8 @@ elements:
   text: "05:00"
   fill: "UI_fg_2"
   font_size: 48
-  position: [0, 110]
-  hAlignment: m
+  position: [-13.6, 110]
+  hAlignment: l
   vAlignment: t
   zPos: 5
   key: TimerText
