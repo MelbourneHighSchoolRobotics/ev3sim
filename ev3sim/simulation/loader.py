@@ -89,6 +89,9 @@ class ScriptLoader:
                 return
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
+                # Send out static tick updates
+                for key in self.data['tick_updates']:
+                    self.data['tick_updates'][key].put(True)
                 # Handle any writes
                 while self.data['write_stack']:
                     rob_id, attribute_path, value = self.data['write_stack'].popleft()

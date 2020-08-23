@@ -5,6 +5,13 @@ package serverComm;
 service SimulationDealer {
     rpc RequestTickUpdates(RobotRequest) returns (stream RobotData) {}
     rpc SendWriteInfo(RobotWrite) returns (WriteResult) {}
+    rpc RequestServer(ServerRequest) returns (ServerResult) {}
+    rpc RequestConnect(ClientRequest) returns (ClientResult) {}
+    rpc RequestSend(SendRequest) returns (SendResult) {}
+    rpc RequestRecv(RecvRequest) returns (RecvResult) {}
+    rpc RequestGetClient(GetClientRequest) returns (GetClientResult) {}
+    rpc CloseServerConnection(CloseServerRequest) returns (CloseServerResult) {}
+    rpc CloseClientConnection(CloseClientRequest) returns (CloseClientResult) {}
 }
 
 message RobotRequest {
@@ -25,4 +32,90 @@ message RobotWrite {
 
 message WriteResult {
     bool result = 1;
+}
+
+// Communications Messages
+
+message ServerRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+}
+
+message ServerResult {
+    bool result = 1;
+    string msg = 2;
+}
+
+message ClientRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+}
+
+message ClientResult {
+    string host_robot_id = 1;
+    bool result = 2;
+    string msg = 3;
+}
+
+message SendRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+    string data = 4;
+    string client_id = 5;
+}
+
+message SendResult {
+    bool result = 1;
+    string msg = 2;
+}
+
+message RecvRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+    string client_id = 4;
+}
+
+message RecvResult {
+    string data = 1;
+    bool result = 2;
+    string msg = 3;
+}
+
+message GetClientRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+}
+
+message GetClientResult {
+    string client_id = 1;
+    bool result = 2;
+    string msg = 3;
+}
+
+message CloseServerRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+}
+
+message CloseServerResult {
+    bool result = 1;
+    string msg = 2;
+}
+
+message CloseClientRequest {
+    string robot_id = 1;
+    string address = 2;
+    string port = 3;
+    string server_id = 4;
+}
+
+message CloseClientResult {
+    bool result = 1;
+    string msg = 2;
 }
