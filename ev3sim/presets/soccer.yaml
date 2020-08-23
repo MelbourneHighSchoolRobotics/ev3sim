@@ -17,8 +17,8 @@ interactors:
 - class_path: ev3sim.presets.soccer.SoccerInteractor
   kwargs:
     names:
-    - Unicorns
-    - Stah...schaft
+    - Short name
+    - Long name
     spawns:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
@@ -372,15 +372,15 @@ elements:
 - type: visual
   name: Image
   image_path: 'assets/ui/left_bg.png'
-  position: [-90, 97]
-  hAlignment: r
+  position: [-145, 110]
+  hAlignment: l
   vAlignment: t
   zPos: 5
   key: team1UI
 - type: visual
   name: Image
   image_path: 'assets/ui/right_bg.png'
-  position: [90, 97]
+  position: [145, 110]
   hAlignment: r
   vAlignment: t
   zPos: 5
@@ -390,9 +390,9 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [-50, 110]
-  hAlignment: m
-  vAlignment: t
+  position: [-50, 98.5]
+  hAlignment: r
+  vAlignment: baseline
   zPos: 5
   key: score1Text
 - type: visual
@@ -400,45 +400,109 @@ elements:
   text: "0"
   fill: "UI_fg_2"
   font_size: 48
-  position: [50, 110]
-  hAlignment: m
-  vAlignment: t 
+  position: [50, 98.5]
+  hAlignment: l
+  vAlignment: baseline 
   zPos: 5
   key: score2Text
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: r
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [-38, 107.5]
+  key: score1Plus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: r
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [-38, 101.5]
+  key: score1Minus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: l
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [38, 107.5]
+  key: score2Plus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: l
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [38, 101.5]
+  key: score2Minus
 - type: visual
   name: Text
   fill: "UI_fg"
   font_size: 34  
-  position: [-75, 105]
-  hAlignment: r
-  vAlignment: m
+  position: [-130, 100]
+  hAlignment: l
+  vAlignment: baseline
   zPos: 5
   key: name1Text
 - type: visual
   name: Text
   fill: "UI_fg"
   font_size: 34
-  position: [75, 105]
-  hAlignment: l
-  vAlignment: m
+  position: [130, 100]
+  hAlignment: r
+  vAlignment: baseline
   zPos: 5
   key: name2Text
 - type: object
   collider: inherit
   physics: true
   static: true
-  position: [0, 89]
+  position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_play.png'
-    hAlignment: m
+    image_path: 'assets/ui/controls_pause_released.png'
+    hAlignment: r
     vAlignment: t
     zPos: 5
-  key: controls
+  key: controlsPause
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_reset_released.png'
+    hAlignment: l
+    vAlignment: t
+    zPos: 5
+  key: controlsReset
 - type: visual
   name: Image
   image_path: 'assets/ui/timer_bg.png'
-  position: [0,102]
+  position: [0,110]
   hAlignment: m
   vAlignment: t
   zPos: 5
@@ -448,9 +512,9 @@ elements:
   text: ""
   fill: "UI_fg"
   font_size: 24
-  hAlighment: l
-  vAlignment: t
-  position: [-127,93]
+  hAlignment: l
+  vAlignment: baseline
+  position: [-132,87]
   zPos: 6
   key: temp_1
 - type: visual
@@ -458,9 +522,9 @@ elements:
   text: ""
   fill: "UI_fg"
   font_size: 24
-  hAlighment: r
-  vAlignment: t
-  position: [103,93]
+  hAlignment: r
+  vAlignment: baseline
+  position: [132,87]
   zPos: 6
   key: temp_2
 - type: visual
@@ -468,9 +532,9 @@ elements:
   text: "05:00"
   fill: "UI_fg_2"
   font_size: 48
-  position: [0, 110]
-  hAlignment: m
-  vAlignment: t
+  position: [-13.6, 98.5]
+  hAlignment: l
+  vAlignment: baseline
   zPos: 5
   key: TimerText
 - type: object

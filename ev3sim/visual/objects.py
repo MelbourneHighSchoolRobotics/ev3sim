@@ -94,6 +94,9 @@ class IVisualElement:
         """
         raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`")
 
+    def getPositionAnchorOffset(self):
+        return np.array([0., 0.])
+
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
     _stroke: Optional[Tuple[int]]
@@ -142,6 +145,9 @@ class Image(Colorable):
         self.image_path = kwargs.get('image_path')
         super().initFromKwargs(**kwargs)
         self.fill = kwargs.get('fill', (0, 0, 0, 0))
+        self.hAlignment = kwargs.get('hAlignment', 'm')
+        self.vAlignment = kwargs.get('vAlignment', 'm')
+        self.scale = kwargs.get('scale', 1)
         self.calculatePoints()
 
     @property
@@ -155,18 +161,35 @@ class Image(Colorable):
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
-        self.rotated = pygame.transform.rotate(self.image, self.rotation * 180 / np.pi)
+        new_size = [int(self.image.get_size()[0] * self.scale), int(self.image.get_size()[1] * self.scale)]
+        scaled = pygame.transform.scale(self.image, new_size)
+        self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
         self.screen_location = utils.worldspace_to_screenspace(self.position)
         self.screen_size = self.rotated.get_size()
-        self.screen_location = (int(self.screen_location[0] - self.screen_size[0] / 2), int(self.screen_location[1] - self.screen_size[1] / 2))
+        if self.hAlignment == 'l':
+            pass
+        elif self.hAlignment == 'm':
+            self.screen_location -= np.array([self.screen_size[0] / 2, 0.0])
+        elif self.hAlignment == 'r':
+            self.screen_location -= np.array([self.screen_size[0], 0.0])
+        else:
+            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
+        if self.vAlignment == 't':
+            pass
+        elif self.vAlignment == 'm':
+            self.screen_location -= np.array([0.0, self.screen_size[1] / 2])
+        elif self.vAlignment == 'b':
+            self.screen_location -= np.array([0.0, self.screen_size[1]])
+        else:
+            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
         from ev3sim.visual.utils import screenspace_to_worldspace
-        pos_loc = screenspace_to_worldspace(self.screen_location)
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
         self.verts = [
-            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1] / 2]),
-            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 - self.screen_size[1] / 2]),
-            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 - self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 - self.screen_size[1] / 2]),
-            screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 - self.screen_size[0]/2, ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1] / 2]),
+            (physics_size[0]/2, physics_size[1]/2),
+            (physics_size[0]/2, -physics_size[1]/2),
+            (-physics_size[0]/2, -physics_size[1]/2),
+            (-physics_size[0]/2, physics_size[1]/2),
         ]
 
     def applyToScreen(self):
@@ -190,6 +213,28 @@ class Image(Colorable):
         from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
+
+    def getPositionAnchorOffset(self):
+        res = np.array([.0, .0])
+        from ev3sim.visual.utils import screenspace_to_worldspace
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+        if self.hAlignment == 'l':
+            res += np.array([physics_size[0] / 2, 0.0])
+        elif self.hAlignment == 'm':
+            pass
+        elif self.hAlignment == 'r':
+            res -= np.array([physics_size[0] / 2, 0.0])
+        else:
+            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
+        if self.vAlignment == 't':
+            res += np.array([0.0, physics_size[1] / 2])
+        elif self.vAlignment == 'm':
+            pass
+        elif self.vAlignment == 'b':
+            res -= np.array([0.0, physics_size[1] / 2])
+        else:
+            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+        return res
 
 class Line(Colorable):
 
@@ -330,9 +375,9 @@ class Text(Colorable):
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        self.font_style = kwargs.get('font_style', pygame.font.get_default_font())
+        self.font_style = kwargs.get('font_style', "ev3sim/assets/OpenSans-SemiBold.ttf")
         self.font_size = kwargs.get('font_size', 30)
-        self.font = pygame.freetype.SysFont(self.font_style, self.font_size)
+        self.font = pygame.freetype.Font(self.font_style, self.font_size)
         self.hAlignment = kwargs.get('hAlignment', 'l')
         self.vAlignment = kwargs.get('vAlignment', 't')
         self.text = kwargs.get('text', 'Test')
@@ -341,6 +386,8 @@ class Text(Colorable):
         if not hasattr(self, 'font'):
             return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
+        baseline = np.array([self.rect.x, self.rect.y])
+        self.rect.move_ip(-self.rect.x, -self.rect.y)
         self.anchor = utils.worldspace_to_screenspace(self.position)
         if self.hAlignment == 'l':
             pass
@@ -351,17 +398,41 @@ class Text(Colorable):
         else:
             raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
         if self.vAlignment == 't':
-            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height / 2.0])
+            self.anchor -= np.array([0.0, 0.0])
         elif self.vAlignment == 'm':
-            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height])
+            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height / 2])
+        elif self.vAlignment == 'baseline':
+            self.anchor -= np.array([0.0, baseline[1]])
         elif self.vAlignment == 'b':
-            self.anchor -= np.array([0.0, 3 * self.font.get_rect(self.text).height / 2.0])
+            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height])
         else:
             raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
         self.rect.move_ip(*self.anchor)
     
     def applyToScreen(self):
         ScreenObjectManager.instance.screen.blit(self.surface, self.rect)
+
+    def getPositionAnchorOffset(self):
+        res = np.array([.0, .0])
+        from ev3sim.visual.utils import screenspace_to_worldspace
+        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+        if self.hAlignment == 'l':
+            res += np.array([physics_size[0] / 2, 0.0])
+        elif self.hAlignment == 'm':
+            pass
+        elif self.hAlignment == 'r':
+            res -= np.array([physics_size[0] / 2, 0.0])
+        else:
+            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
+        if self.vAlignment == 't':
+            res += np.array([0.0, physics_size[1] / 2])
+        elif self.vAlignment == 'm':
+            pass
+        elif self.vAlignment == 'b':
+            res -= np.array([0.0, physics_size[1] / 2])
+        else:
+            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+        return res
 
 
 def visualFactory(**options):
