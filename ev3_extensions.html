@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robot-communications">Robot Communications</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
@@ -174,6 +175,43 @@ As an example, the simulator currently does not implement the <code class="docut
 </pre></div>
 </div>
 <p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
+<div class="section" id="robot-communications">
+<h2>Robot Communications<a class="headerlink" href="#robot-communications" title="Permalink to this headline">¶</a></h2>
+<p>As bluetooth communications are a popular option for complicated strategies with robots, there is also functionality to support bot communication on the simulator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Server code</span>
+<span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">CommServer</span>
+<span class="n">addr</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="s1">&#39;aa:bb:cc:dd:ee:ff&#39;</span><span class="p">,</span> <span class="mi">1234</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">CommServer</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="n">client</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">accept_client</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message from client: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Client code</span>
+<span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">CommClient</span>
+<span class="n">addr</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="s1">&#39;aa:bb:cc:dd:ee:ff&#39;</span><span class="p">,</span> <span class="mi">1234</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">CommClient</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello Server!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The communications are written in a client/server architecture, as with normal use of bluetooth comms.</p>
+<p>This should also work on the physical robots over bluetooth, provided that the MAC Address and port are correct (Follow the instructions for normal bluetooth connectivity). As with above importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+<p>For an example of robots communicating device data to each other (in this case through a server, but client/server messaging could also simply work between two robots) try this example (place all 4 commands in separate terminals):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml bot.yaml bot.yaml
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_client.py Robot-0
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_server.py Robot-1
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_client.py Robot-2
+</pre></div>
+</div>
+<p>Sources: <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_client.py">communication_client.py</a>, <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_server.py">communication_server.py</a></p>
 </div>
 </div>
 
