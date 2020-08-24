@@ -37,6 +37,8 @@ cs = ColorSensor(address='in2')
 us = UltrasonicSensor(address='in3')
 ir = Sensor(address='in1', driver_name='ht-nxt-ir-seek-v2')
 compass = Sensor(address='in4', driver_name='ht-nxt-compass')
+compass.command = 'BEGIN-CAL'
+compass.command = 'END-CAL'
 
 # This code moves in random directions, and stores the movements in a circular queue.
 movement_queue = deque([], maxlen=5)

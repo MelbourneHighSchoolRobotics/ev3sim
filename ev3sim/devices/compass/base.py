@@ -24,6 +24,13 @@ class CompassSensorMixin:
     def applyWrite(self, attribute, value):
         if attribute == 'mode':
             self.mode = value
+        elif attribute == 'command':
+            if value == 'BEGIN-CAL':
+                self._setRelative()
+            elif value == 'END-CAL':
+                pass
+            else:
+                raise ValueError(f'Unknown compass command {value}')
         else:
             raise ValueError(f'Unhandled write! {attribute} {value}')
 
