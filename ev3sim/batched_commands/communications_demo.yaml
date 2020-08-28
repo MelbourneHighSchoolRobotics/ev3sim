@@ -1,0 +1,11 @@
+preset_file: soccer.yaml
+bots:
+- name: bot.yaml
+  scripts:
+  - communication_server.py
+- name: bot.yaml
+  scripts:
+  - communication_client.py
+- name: bot.yaml
+  scripts:
+  - communication_client.py

@@ -1,0 +1,8 @@
+preset_file: soccer.yaml
+bots:
+- name: bot.yaml
+  scripts:
+  - demo.py
+- name: bot.yaml
+  scripts:
+  - demo.py
