@@ -24,6 +24,11 @@ class SimulationDealerStub(object):
                 request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
                 response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.FromString,
                 )
+        self.SendRobotLog = channel.unary_unary(
+                '/serverComm.SimulationDealer/SendRobotLog',
+                request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogRequest.SerializeToString,
+                response_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogResult.FromString,
+                )
         self.RequestServer = channel.unary_unary(
                 '/serverComm.SimulationDealer/RequestServer',
                 request_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.SerializeToString,
@@ -71,6 +76,12 @@ class SimulationDealerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def SendWriteInfo(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SendRobotLog(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -131,6 +142,11 @@ def add_SimulationDealerServicer_to_server(servicer, server):
                     request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.FromString,
                     response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.SerializeToString,
             ),
+            'SendRobotLog': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendRobotLog,
+                    request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogRequest.FromString,
+                    response_serializer=ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogResult.SerializeToString,
+            ),
             'RequestServer': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestServer,
                     request_deserializer=ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.FromString,
@@ -182,6 +198,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -190,7 +207,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.RobotRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.RobotData.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def SendWriteInfo(request,
@@ -198,6 +215,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -206,7 +224,24 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.RobotWrite.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.WriteResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def SendRobotLog(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/serverComm.SimulationDealer/SendRobotLog',
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogRequest.SerializeToString,
+            ev3sim_dot_simulation_dot_comm__schema__pb2.RobotLogResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def RequestServer(request,
@@ -214,6 +249,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -222,7 +258,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.ServerRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.ServerResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def RequestConnect(request,
@@ -230,6 +266,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -238,7 +275,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.ClientRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.ClientResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def RequestSend(request,
@@ -246,6 +283,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -254,7 +292,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.SendRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.SendResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def RequestRecv(request,
@@ -262,6 +300,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -270,7 +309,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.RecvRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.RecvResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def RequestGetClient(request,
@@ -278,6 +317,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -286,7 +326,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.GetClientResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def CloseServerConnection(request,
@@ -294,6 +334,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -302,7 +343,7 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.CloseServerResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def CloseClientConnection(request,
@@ -310,6 +351,7 @@ class SimulationDealer(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -318,4 +360,4 @@ class SimulationDealer(object):
             ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientRequest.SerializeToString,
             ev3sim_dot_simulation_dot_comm__schema__pb2.CloseClientResult.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n#ev3sim/simulation/comm_schema.proto\x12\nserverComm\" \n\x0cRobotRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\"=\n\tRobotData\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x11\n\ttick_rate\x18\x02 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\"E\n\nRobotWrite\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61ttribute_path\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\x1d\n\x0bWriteResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\"@\n\rServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"+\n\x0cServerResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"@\n\rClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"B\n\x0c\x43lientResult\x12\x15\n\rhost_robot_id\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"_\n\x0bSendRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12\x11\n\tclient_id\x18\x05 \x01(\t\")\n\nSendResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"Q\n\x0bRecvRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tclient_id\x18\x04 \x01(\t\"7\n\nRecvResult\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"C\n\x10GetClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"A\n\x0fGetClientResult\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"E\n\x12\x43loseServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"0\n\x11\x43loseServerResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"X\n\x12\x43loseClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tserver_id\x18\x04 \x01(\t\"0\n\x11\x43loseClientResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t2\xbb\x05\n\x10SimulationDealer\x12I\n\x12RequestTickUpdates\x12\x18.serverComm.RobotRequest\x1a\x15.serverComm.RobotData\"\x00\x30\x01\x12\x42\n\rSendWriteInfo\x12\x16.serverComm.RobotWrite\x1a\x17.serverComm.WriteResult\"\x00\x12\x46\n\rRequestServer\x12\x19.serverComm.ServerRequest\x1a\x18.serverComm.ServerResult\"\x00\x12G\n\x0eRequestConnect\x12\x19.serverComm.ClientRequest\x1a\x18.serverComm.ClientResult\"\x00\x12@\n\x0bRequestSend\x12\x17.serverComm.SendRequest\x1a\x16.serverComm.SendResult\"\x00\x12@\n\x0bRequestRecv\x12\x17.serverComm.RecvRequest\x1a\x16.serverComm.RecvResult\"\x00\x12O\n\x10RequestGetClient\x12\x1c.serverComm.GetClientRequest\x1a\x1b.serverComm.GetClientResult\"\x00\x12X\n\x15\x43loseServerConnection\x12\x1e.serverComm.CloseServerRequest\x1a\x1d.serverComm.CloseServerResult\"\x00\x12X\n\x15\x43loseClientConnection\x12\x1e.serverComm.CloseClientRequest\x1a\x1d.serverComm.CloseClientResult\"\x00\x62\x06proto3'
+  serialized_pb=b'\n#ev3sim/simulation/comm_schema.proto\x12\nserverComm\" \n\x0cRobotRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\"=\n\tRobotData\x12\x0c\n\x04tick\x18\x01 \x01(\x05\x12\x11\n\ttick_rate\x18\x02 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\"E\n\nRobotWrite\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61ttribute_path\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\x1d\n\x0bWriteResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\"2\n\x0fRobotLogRequest\x12\x12\n\nrobot_name\x18\x01 \x01(\t\x12\x0b\n\x03log\x18\x02 \x01(\t\" \n\x0eRobotLogResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\"@\n\rServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"+\n\x0cServerResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"@\n\rClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"B\n\x0c\x43lientResult\x12\x15\n\rhost_robot_id\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"_\n\x0bSendRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12\x11\n\tclient_id\x18\x05 \x01(\t\")\n\nSendResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"Q\n\x0bRecvRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tclient_id\x18\x04 \x01(\t\"7\n\nRecvResult\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"C\n\x10GetClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"A\n\x0fGetClientResult\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\x08\x12\x0b\n\x03msg\x18\x03 \x01(\t\"E\n\x12\x43loseServerRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\"0\n\x11\x43loseServerResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"X\n\x12\x43loseClientRequest\x12\x10\n\x08robot_id\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tserver_id\x18\x04 \x01(\t\"0\n\x11\x43loseClientResult\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t2\x86\x06\n\x10SimulationDealer\x12I\n\x12RequestTickUpdates\x12\x18.serverComm.RobotRequest\x1a\x15.serverComm.RobotData\"\x00\x30\x01\x12\x42\n\rSendWriteInfo\x12\x16.serverComm.RobotWrite\x1a\x17.serverComm.WriteResult\"\x00\x12I\n\x0cSendRobotLog\x12\x1b.serverComm.RobotLogRequest\x1a\x1a.serverComm.RobotLogResult\"\x00\x12\x46\n\rRequestServer\x12\x19.serverComm.ServerRequest\x1a\x18.serverComm.ServerResult\"\x00\x12G\n\x0eRequestConnect\x12\x19.serverComm.ClientRequest\x1a\x18.serverComm.ClientResult\"\x00\x12@\n\x0bRequestSend\x12\x17.serverComm.SendRequest\x1a\x16.serverComm.SendResult\"\x00\x12@\n\x0bRequestRecv\x12\x17.serverComm.RecvRequest\x1a\x16.serverComm.RecvResult\"\x00\x12O\n\x10RequestGetClient\x12\x1c.serverComm.GetClientRequest\x1a\x1b.serverComm.GetClientResult\"\x00\x12X\n\x15\x43loseServerConnection\x12\x1e.serverComm.CloseServerRequest\x1a\x1d.serverComm.CloseServerResult\"\x00\x12X\n\x15\x43loseClientConnection\x12\x1e.serverComm.CloseClientRequest\x1a\x1d.serverComm.CloseClientResult\"\x00\x62\x06proto3'
 )
 
 
@@ -181,6 +181,77 @@ _WRITERESULT = _descriptor.Descriptor(
 )
 
 
+_ROBOTLOGREQUEST = _descriptor.Descriptor(
+  name='RobotLogRequest',
+  full_name='serverComm.RobotLogRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='robot_name', full_name='serverComm.RobotLogRequest.robot_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='log', full_name='serverComm.RobotLogRequest.log', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=250,
+  serialized_end=300,
+)
+
+
+_ROBOTLOGRESULT = _descriptor.Descriptor(
+  name='RobotLogResult',
+  full_name='serverComm.RobotLogResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='result', full_name='serverComm.RobotLogResult.result', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=302,
+  serialized_end=334,
+)
+
+
 _SERVERREQUEST = _descriptor.Descriptor(
   name='ServerRequest',
   full_name='serverComm.ServerRequest',
@@ -222,8 +293,8 @@ _SERVERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=250,
-  serialized_end=314,
+  serialized_start=336,
+  serialized_end=400,
 )
 
 
@@ -261,8 +332,8 @@ _SERVERRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=316,
-  serialized_end=359,
+  serialized_start=402,
+  serialized_end=445,
 )
 
 
@@ -307,8 +378,8 @@ _CLIENTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=361,
-  serialized_end=425,
+  serialized_start=447,
+  serialized_end=511,
 )
 
 
@@ -353,8 +424,8 @@ _CLIENTRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=427,
-  serialized_end=493,
+  serialized_start=513,
+  serialized_end=579,
 )
 
 
@@ -413,8 +484,8 @@ _SENDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=495,
-  serialized_end=590,
+  serialized_start=581,
+  serialized_end=676,
 )
 
 
@@ -452,8 +523,8 @@ _SENDRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=592,
-  serialized_end=633,
+  serialized_start=678,
+  serialized_end=719,
 )
 
 
@@ -505,8 +576,8 @@ _RECVREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=635,
-  serialized_end=716,
+  serialized_start=721,
+  serialized_end=802,
 )
 
 
@@ -551,8 +622,8 @@ _RECVRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=718,
-  serialized_end=773,
+  serialized_start=804,
+  serialized_end=859,
 )
 
 
@@ -597,8 +668,8 @@ _GETCLIENTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=775,
-  serialized_end=842,
+  serialized_start=861,
+  serialized_end=928,
 )
 
 
@@ -643,8 +714,8 @@ _GETCLIENTRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=844,
-  serialized_end=909,
+  serialized_start=930,
+  serialized_end=995,
 )
 
 
@@ -689,8 +760,8 @@ _CLOSESERVERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=911,
-  serialized_end=980,
+  serialized_start=997,
+  serialized_end=1066,
 )
 
 
@@ -728,8 +799,8 @@ _CLOSESERVERRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=982,
-  serialized_end=1030,
+  serialized_start=1068,
+  serialized_end=1116,
 )
 
 
@@ -781,8 +852,8 @@ _CLOSECLIENTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1032,
-  serialized_end=1120,
+  serialized_start=1118,
+  serialized_end=1206,
 )
 
 
@@ -820,14 +891,16 @@ _CLOSECLIENTRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1122,
-  serialized_end=1170,
+  serialized_start=1208,
+  serialized_end=1256,
 )
 
 DESCRIPTOR.message_types_by_name['RobotRequest'] = _ROBOTREQUEST
 DESCRIPTOR.message_types_by_name['RobotData'] = _ROBOTDATA
 DESCRIPTOR.message_types_by_name['RobotWrite'] = _ROBOTWRITE
 DESCRIPTOR.message_types_by_name['WriteResult'] = _WRITERESULT
+DESCRIPTOR.message_types_by_name['RobotLogRequest'] = _ROBOTLOGREQUEST
+DESCRIPTOR.message_types_by_name['RobotLogResult'] = _ROBOTLOGRESULT
 DESCRIPTOR.message_types_by_name['ServerRequest'] = _SERVERREQUEST
 DESCRIPTOR.message_types_by_name['ServerResult'] = _SERVERRESULT
 DESCRIPTOR.message_types_by_name['ClientRequest'] = _CLIENTREQUEST
@@ -871,6 +944,20 @@ WriteResult = _reflection.GeneratedProtocolMessageType('WriteResult', (_message.
   # @@protoc_insertion_point(class_scope:serverComm.WriteResult)
   })
 _sym_db.RegisterMessage(WriteResult)
+
+RobotLogRequest = _reflection.GeneratedProtocolMessageType('RobotLogRequest', (_message.Message,), {
+  'DESCRIPTOR' : _ROBOTLOGREQUEST,
+  '__module__' : 'ev3sim.simulation.comm_schema_pb2'
+  # @@protoc_insertion_point(class_scope:serverComm.RobotLogRequest)
+  })
+_sym_db.RegisterMessage(RobotLogRequest)
+
+RobotLogResult = _reflection.GeneratedProtocolMessageType('RobotLogResult', (_message.Message,), {
+  'DESCRIPTOR' : _ROBOTLOGRESULT,
+  '__module__' : 'ev3sim.simulation.comm_schema_pb2'
+  # @@protoc_insertion_point(class_scope:serverComm.RobotLogResult)
+  })
+_sym_db.RegisterMessage(RobotLogResult)
 
 ServerRequest = _reflection.GeneratedProtocolMessageType('ServerRequest', (_message.Message,), {
   'DESCRIPTOR' : _SERVERREQUEST,
@@ -979,8 +1066,8 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1173,
-  serialized_end=1872,
+  serialized_start=1259,
+  serialized_end=2033,
   methods=[
   _descriptor.MethodDescriptor(
     name='RequestTickUpdates',
@@ -1003,9 +1090,19 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='SendRobotLog',
+    full_name='serverComm.SimulationDealer.SendRobotLog',
+    index=2,
+    containing_service=None,
+    input_type=_ROBOTLOGREQUEST,
+    output_type=_ROBOTLOGRESULT,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='RequestServer',
     full_name='serverComm.SimulationDealer.RequestServer',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_SERVERREQUEST,
     output_type=_SERVERRESULT,
@@ -1015,7 +1112,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestConnect',
     full_name='serverComm.SimulationDealer.RequestConnect',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_CLIENTREQUEST,
     output_type=_CLIENTRESULT,
@@ -1025,7 +1122,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestSend',
     full_name='serverComm.SimulationDealer.RequestSend',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_SENDREQUEST,
     output_type=_SENDRESULT,
@@ -1035,7 +1132,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestRecv',
     full_name='serverComm.SimulationDealer.RequestRecv',
-    index=5,
+    index=6,
     containing_service=None,
     input_type=_RECVREQUEST,
     output_type=_RECVRESULT,
@@ -1045,7 +1142,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestGetClient',
     full_name='serverComm.SimulationDealer.RequestGetClient',
-    index=6,
+    index=7,
     containing_service=None,
     input_type=_GETCLIENTREQUEST,
     output_type=_GETCLIENTRESULT,
@@ -1055,7 +1152,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='CloseServerConnection',
     full_name='serverComm.SimulationDealer.CloseServerConnection',
-    index=7,
+    index=8,
     containing_service=None,
     input_type=_CLOSESERVERREQUEST,
     output_type=_CLOSESERVERRESULT,
@@ -1065,7 +1162,7 @@ _SIMULATIONDEALER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='CloseClientConnection',
     full_name='serverComm.SimulationDealer.CloseClientConnection',
-    index=8,
+    index=9,
     containing_service=None,
     input_type=_CLOSECLIENTREQUEST,
     output_type=_CLOSECLIENTRESULT,

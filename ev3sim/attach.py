@@ -1,5 +1,6 @@
 import sys
 import logging
+import os
 import json
 import time
 import argparse
@@ -56,6 +57,10 @@ def main(passed_args = None):
                     if action_type == 'write':
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
+                    elif action_type == 'send_log':
+                        robot_name = os.path.basename(__file__)
+                        log = info
+                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_name=robot_name, log=log))
                     elif action_type == 'begin_server':
                         d = stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info))
                         if not d.result:
@@ -189,6 +194,18 @@ def main(passed_args = None):
                             return
                         data['condition_updated'].wait(0.1)
 
+            def conditional_decorator(decorator, condition: bool):
+                def dec(f):
+                    if condition:
+                        return decorator(f)
+                    return f
+                return dec
+
+            # Matches the signature of builtin `print` except `file` and `flush` are ignored
+            def send_log(*objects, sep=' ', end='\n'):
+                message = sep.join(str(obj) for obj in objects) + end
+                data['actions_queue'].put(('send_log', message))
+
             def raiseEV3Error(*args, **kwargs):
                 raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
 
@@ -306,6 +323,7 @@ def main(passed_args = None):
 
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
+            @conditional_decorator(mock.patch('builtins.print', send_log), args.send_logs)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
             @mock.patch('ev3dev2.Device.__init__', device__init__)
             @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)

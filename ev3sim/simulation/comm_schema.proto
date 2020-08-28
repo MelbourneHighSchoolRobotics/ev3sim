@@ -5,6 +5,7 @@ package serverComm;
 service SimulationDealer {
     rpc RequestTickUpdates(RobotRequest) returns (stream RobotData) {}
     rpc SendWriteInfo(RobotWrite) returns (WriteResult) {}
+    rpc SendRobotLog(RobotLogRequest) returns (RobotLogResult) {}
     rpc RequestServer(ServerRequest) returns (ServerResult) {}
     rpc RequestConnect(ClientRequest) returns (ClientResult) {}
     rpc RequestSend(SendRequest) returns (SendResult) {}
@@ -31,6 +32,15 @@ message RobotWrite {
 }
 
 message WriteResult {
+    bool result = 1;
+}
+
+message RobotLogRequest {
+    string robot_name = 1;
+    string log = 2;
+}
+
+message RobotLogResult {
     bool result = 1;
 }
 

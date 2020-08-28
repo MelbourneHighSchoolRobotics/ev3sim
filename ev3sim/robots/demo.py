@@ -46,6 +46,7 @@ last_step_time = time.time()
 last_print_time = time.time()
 current_step_wait = 0
 solving_white = False
+
 while True:
     if time.time() - last_step_time > current_step_wait:
         # Set some new motor speeds, and a wait time.
@@ -60,6 +61,7 @@ while True:
             'wait_time': current_step_wait,
         })
         solving_white = False
+
     if time.time() - last_print_time > PRINT_TIME:
         # Print sensor values.
         last_print_time = time.time()
@@ -74,6 +76,7 @@ while True:
         print("Compass")
         print(f"Bearing: {compass.value()}")
         print("=============")
+
     # If we hit the white line, then reverse this ongoing action
     # This white detection is bad, you should replace with something better (and more stable).
     if sum(cs.rgb) > 600 and not solving_white:
