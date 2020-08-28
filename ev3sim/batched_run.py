@@ -10,14 +10,14 @@ def batched_run(batch_file):
         config = yaml.safe_load(f)
 
     bot_paths = [x['name'] for x in config['bots']]
-    sim_args = ['python', '-m', 'ev3sim.sim', '--preset', config['preset_file']]
+    sim_args = ['ev3sim', '--preset', config['preset_file']]
     sim_args.extend(bot_paths)
 
     sim_popen = Popen(sim_args, stdout=PIPE)
     script_popens = []
     for i, bot in enumerate(config['bots']):
         for script in bot.get('scripts', []):
-            attach_args = ['python', '-m', 'ev3sim.attach', script, f"Robot-{i}"]
+            attach_args = ['ev3attach', script, f"Robot-{i}"]
             script_popens.append(Popen(attach_args, stdout=PIPE))
 
     class NoProblemError(Exception): pass
