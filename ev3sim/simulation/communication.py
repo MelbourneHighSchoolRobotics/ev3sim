@@ -54,7 +54,7 @@ def start_server_with_shared_data(data, result, bind_addr):
 
             def SendRobotLog(self, request, context):
                 # `end` is empty as \n is already added in the robot process
-                print(f'[{request.robot_name}] {request.log}', end='')
+                print(f'[{request.robot_id}] {request.log}', end='')
                 return ev3sim.simulation.comm_schema_pb2.RobotLogResult(result=True)
 
             def RequestServer(self, request, context):

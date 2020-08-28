@@ -58,9 +58,7 @@ def main(passed_args = None):
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
                     elif action_type == 'send_log':
-                        robot_name = robot_id
-                        log = info
-                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_name=robot_name, log=log))
+                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_name=robot_id, log=info))
                     elif action_type == 'begin_server':
                         d = stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info))
                         if not d.result:
