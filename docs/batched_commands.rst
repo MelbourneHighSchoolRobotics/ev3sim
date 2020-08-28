@@ -48,7 +48,5 @@ After this you can specify any boats to load, as well as scripts to attach to th
 Batched command problems
 ------------------------
 
-Batched commands don't properly pipe the output of scripts/simulator to the terminal, and so shouldn't be used if you need to use the ``print`` function.
-
-Additionally, if your computer is not powerful enough to run the number of bots specified with scripts attached, the command may just fail or hang. 
+If your computer is not powerful enough to run the number of bots specified with scripts attached, the command may just fail or hang. 
 This method of loading robots is only supplied for ease of use, and has its problems.
