@@ -1,67 +1,26 @@
-def main():
+import argparse
+import sys
+import time
+from ev3sim.file_helper import find_abs
 
-    import argparse
-    import sys
-    from collections import deque
-    from queue import Queue
-    import time
-    from ev3sim.file_helper import find_abs
+parser = argparse.ArgumentParser(description='Run the simulation, include some robots.')
+parser.add_argument('--preset', '-p', type=str, help="Path of preset file to load. (You shouldn't need to change this, by default it is presets/soccer.yaml)", default='soccer.yaml', dest='preset')
+parser.add_argument('robots', nargs='+', help='Path of robots to load. Separate each robot path by a space.')
+parser.add_argument('--batch', '-b', action='store_true', help='Whether to use a batched command to run this simulation.', dest='batched')
 
-    parser = argparse.ArgumentParser(description='Run the simulation, include some robots.')
-    parser.add_argument('--preset', type=str, help="Path of preset file to load. (You shouldn't need to change this, by default it is presets/soccer.yaml)", default='soccer.yaml', dest='preset')
-    parser.add_argument('robots', nargs='+', help='Path of robots to load. Separate each robot path by a space.')
+def main(passed_args = None):
+    if passed_args is None:
+        passed_args = sys.argv
 
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args(passed_args[1:])
 
-    import yaml
-    from ev3sim.simulation.loader import runFromConfig
-
-    preset_file = find_abs(args.preset, allowed_areas=['local', 'local/presets/', 'package', 'package/presets/'])
-    with open(preset_file, 'r') as f:
-        config = yaml.safe_load(f)
-
-    config['robots'] = config.get('robots', []) + args.robots
-
-    shared_data = {
-        'tick': 0,                      # Current tick
-        'write_stack': deque(),         # All write actions are processed through this
-        'data_queue': {},               # Simulation data for each bot
-        'active_count': {},             # Keeps track of which code connection each bot has.
-        'bot_locks': {},                # Threading Locks and Conditions for each bot to wait for connection actions
-        'bot_communications_data': {},  # Buffers and information for all bot communications
-        'tick_updates': {},             # Simply a dictionary where the simulation tick will push static data, so the other methods are aware of when the simulation has exited.
-    }
-
-    result_bucket = Queue(maxsize=1)
-
-    from threading import Thread
-    from ev3sim.simulation.communication import start_server_with_shared_data
-
-    def run(shared_data, result):
-        try:
-            runFromConfig(config, shared_data)
-        except Exception as e:
-            result.put(('Simulation', e))
-            return
-        result.put(True)
-
-    comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket), daemon=True)
-    sim_thread = Thread(target=run, args=(shared_data, result_bucket), daemon=True)
-
-    comm_thread.start()
-    sim_thread.start()
-
-    try:
-        with result_bucket.not_empty:
-            while not result_bucket._qsize():
-                result_bucket.not_empty.wait(0.1)
-        r = result_bucket.get()
-        if r is not True:
-            print(f"An error occured in the {r[0]} thread. Raising an error now...")
-            time.sleep(1)
-            raise r[1]
-    except KeyboardInterrupt:
-        pass
+    if args.batched:
+        from ev3sim.batched_run import batched_run
+        assert len(args.robots) == 1, "Exactly one batched command file should be provided."
+        batched_run(args.robots[0])
+    else:
+        from ev3sim.single_run import single_run
+        single_run(args.preset, args.robots)
 
 if __name__ == '__main__':
     main()
