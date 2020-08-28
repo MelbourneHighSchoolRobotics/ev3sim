@@ -61,6 +61,10 @@ class RobotInteractor(IInteractor):
             self.devices[interactor.port] = interactor.device_class
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
+    def sendDeviceInitTicks(self):
+        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+            interactor.tick(-1)
+
     def startUp(self):
         self.robot_class.startUp()
 
@@ -89,6 +93,8 @@ class Robot:
 
     All robot 'definitions' (see `robots/controllable.yaml`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
     """
+
+    spawned = False
 
     def getDevice(self, port):
         """
@@ -125,7 +131,8 @@ class Robot:
 
         As an example, calibrating the compass sensors should be done ``onSpawn``, rather than on ``startUp``.
         """
-        pass
+        self.spawned = True
+        self._interactor.sendDeviceInitTicks()
 
     def tick(self, tick):
         """

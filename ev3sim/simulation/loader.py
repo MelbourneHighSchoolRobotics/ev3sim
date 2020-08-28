@@ -98,7 +98,7 @@ class ScriptLoader:
                     sensor_type, specific_sensor, attribute = attribute_path.split()
                     self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
                 for key, robot in self.robots.items():
-                    if key in self.data['data_queue']:
+                    if robot.spawned and key in self.data['data_queue']:
                         self.data['data_queue'][key].put(robot._interactor.collectDeviceData())
                 # Handle simulation.
                 # First of all, check the script can handle the current settings.
