@@ -1,4 +1,4 @@
 global-include *.yaml
 global-include *.png
 global-include *.py
-graft ev3sim\assets
+graft ev3sim/assets
