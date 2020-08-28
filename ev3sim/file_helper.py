@@ -36,11 +36,11 @@ def find_abs(filepath, allowed_areas=None):
         if area == 'package':
             path = os.path.join(ROOT, *fnames)
         elif area.startswith('package'):
-            path = os.path.join(ROOT, area[8:], *fnames)
+            path = os.path.join(ROOT, *area[8:].replace('\\', '/').split('/'), *fnames)
         elif area == 'local':
             path = filepath
         elif area.startswith('local'):
-            path = os.path.join(area[6:], *fnames)
+            path = os.path.join(*area[6:].replace('\\', '/').split('/'), *fnames)
         else:
             raise ValueError(f'Unknown file area {area}')
         if os.path.isdir(path) or os.path.isfile(path):
