@@ -43,7 +43,7 @@ The batched command file looks like the following:
       - demo.py
 
 The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
-After this you can specify any boats to load, as well as scripts to attach to them.
+After this you can specify any bots to load, as well as scripts to attach to them.
 
 Batched command problems
 ------------------------
