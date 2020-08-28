@@ -1,6 +1,5 @@
 import sys
 import logging
-import os
 import json
 import time
 import argparse
@@ -18,6 +17,7 @@ def main(passed_args = None):
     parser.add_argument('filename', type=str, help='The relative or absolute path of the script you want to run')
     parser.add_argument('robot_id', nargs='?', type=str, help="The ID of the robot you wish to attach to. Right click a robot to copy it's ID to the clipboard. Defaults to the first robot spawned if unspecified.", default='Robot-0')
     parser.add_argument('--simulator_addr', default='localhost:50051', metavar='address:port', help="The IP address and port that the simulator is running on (you shouldn't need to change this). Default is localhost:50051.")
+    parser.add_argument('--send_logs', action='store_true', help="Send logs/`print` output to the simulator process")
 
     args = parser.parse_args(passed_args[1:])
 
@@ -58,7 +58,7 @@ def main(passed_args = None):
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
                     elif action_type == 'send_log':
-                        robot_name = os.path.basename(__file__)
+                        robot_name = robot_id
                         log = info
                         stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_name=robot_name, log=log))
                     elif action_type == 'begin_server':
@@ -195,11 +195,11 @@ def main(passed_args = None):
                         data['condition_updated'].wait(0.1)
 
             def conditional_decorator(decorator, condition: bool):
-                def dec(f):
+                def d(f):
                     if condition:
                         return decorator(f)
                     return f
-                return dec
+                return d
 
             # Matches the signature of builtin `print` except `file` and `flush` are ignored
             def send_log(*objects, sep=' ', end='\n'):
