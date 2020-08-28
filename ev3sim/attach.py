@@ -200,7 +200,7 @@ def main(passed_args = None):
                 return d
 
             # Matches the signature of builtin `print` except `file` and `flush` are ignored
-            def send_log(*objects, sep=' ', end='\n'):
+            def send_log(*objects, sep=' ', end='\n', **kwargs):
                 message = sep.join(str(obj) for obj in objects) + end
                 data['actions_queue'].put(('send_log', message))
 
