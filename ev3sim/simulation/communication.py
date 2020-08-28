@@ -19,10 +19,9 @@ from ev3sim.simulation.loader import ScriptLoader
 TICK_WAITING_TIMEOUT = 0.03
 SIM_DIED_TIME = 0.3
 
-def start_server_with_shared_data(data, result):
+def start_server_with_shared_data(data, result, bind_addr):
     try:
         class SimulationDealer(ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerServicer):
-
             def RequestTickUpdates(self, request, context):
                 rob_id = request.robot_id
                 if rob_id not in data['active_count']:
@@ -236,7 +235,7 @@ def start_server_with_shared_data(data, result):
         def serve():
             server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
             ev3sim.simulation.comm_schema_pb2_grpc.add_SimulationDealerServicer_to_server(SimulationDealer(), server)
-            server.add_insecure_port('[::]:50051')
+            server.add_insecure_port(bind_addr)
             server.start()
             server.wait_for_termination()
 

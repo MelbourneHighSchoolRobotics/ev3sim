@@ -1,11 +1,11 @@
 import sys
 import logging
-import grpc
-import ev3sim.simulation.comm_schema_pb2
-import ev3sim.simulation.comm_schema_pb2_grpc
 import json
 import time
 import argparse
+import grpc
+import ev3sim.simulation.comm_schema_pb2
+import ev3sim.simulation.comm_schema_pb2_grpc
 from unittest import mock
 from queue import Queue
 
@@ -16,6 +16,7 @@ def main(passed_args = None):
     parser = argparse.ArgumentParser(description='Attach a valid ev3dev2 script to the simulation.')
     parser.add_argument('filename', type=str, help='The relative or absolute path of the script you want to run')
     parser.add_argument('robot_id', nargs='?', type=str, help="The ID of the robot you wish to attach to. Right click a robot to copy it's ID to the clipboard. Defaults to the first robot spawned if unspecified.", default='Robot-0')
+    parser.add_argument('--simulator_addr', default='localhost:50051', metavar='address:port', help="The IP address and port that the simulator is running on (you shouldn't need to change this). Default is localhost:50051.")
 
     args = parser.parse_args(passed_args[1:])
 
@@ -26,7 +27,7 @@ def main(passed_args = None):
     def comms(data, result):
         logging.basicConfig()
         first_message = True
-        with grpc.insecure_channel('localhost:50051') as channel:
+        with grpc.insecure_channel(args.simulator_addr) as channel:
             try:
                 stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
@@ -47,7 +48,7 @@ def main(passed_args = None):
                 result.put(('Communications', e))
 
     def write(data, result):
-        with grpc.insecure_channel('localhost:50051') as channel:
+        with grpc.insecure_channel(args.simulator_addr) as channel:
             try:
                 stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 while True:
