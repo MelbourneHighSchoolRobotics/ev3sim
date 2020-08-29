@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Batched Commands &mdash; ev3sim  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensions to normal EV3 Code" href="ev3_extensions.html" />
+    <link rel="prev" title="Setting up and Running EV3Sim" href="setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> ev3sim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Batched Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-batched-command">Running a batched command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-batched-commands">Defining batched commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batched-command-problems">Batched command problems</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ev3sim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Batched Commands</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/batched_commands.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="batched-commands">
+<h1>Batched Commands<a class="headerlink" href="#batched-commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-a-batched-command">
+<h2>Running a batched command<a class="headerlink" href="#running-a-batched-command" title="Permalink to this headline">¶</a></h2>
+<p>In the previous document, we run the simulator and attach script logic in two separate terminals.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml
+ev3attach demo.py Robot-0
+</pre></div>
+</div>
+<p>When testing robot code, as well as competitions, many of these commands will be the same however, and it would be much easier if the entire simulation, with code running, could be invoked by a single command.
+In fact, the simulator allows for this!</p>
+<p>To run the simulator with two bots both running the demo code, execute the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim -b soccer_competition.yaml
+</pre></div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">-b</span></code> or <code class="docutils literal notranslate"><span class="pre">--batch</span></code> flag specifies to use the file <code class="docutils literal notranslate"><span class="pre">soccer_competition.yaml</span></code> as the information for the simulator, as well as attaching code to bots.</p>
+</div>
+<div class="section" id="defining-batched-commands">
+<h2>Defining batched commands<a class="headerlink" href="#defining-batched-commands" title="Permalink to this headline">¶</a></h2>
+<p>You can write your own batched commands, just as you can write your own bot definitions and bot code. You can find the source for <code class="docutils literal notranslate"><span class="pre">soccer_competition.yaml</span></code> <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/batched_commands/soccer_competition.yaml">here</a>.</p>
+<p>The batched command file looks like the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">preset_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">soccer.yaml</span>
+<span class="nt">bots</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bot.yaml</span>
+  <span class="nt">scripts</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">demo.py</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bot.yaml</span>
+  <span class="nt">scripts</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">demo.py</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">preset_file</span></code> points to the preset to load (usually specified with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag in <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code>, but defaults to <code class="docutils literal notranslate"><span class="pre">soccer.yaml</span></code>).
+After this you can specify any bots to load, as well as scripts to attach to them.</p>
+</div>
+<div class="section" id="batched-command-problems">
+<h2>Batched command problems<a class="headerlink" href="#batched-command-problems" title="Permalink to this headline">¶</a></h2>
+<p>If your computer is not powerful enough to run the number of bots specified with scripts attached, the command may just fail or hang.
+This method of loading robots is only supplied for ease of use, and has its problems.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ev3_extensions.html" class="btn btn-neutral float-right" title="Extensions to normal EV3 Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setting up and Running EV3Sim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
