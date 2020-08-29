@@ -100,6 +100,11 @@ class ScreenObjectManager:
 
     def handleEvents(self):
         for event in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                self.screen_width, self.screen_height = event.size
+                self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+                for key in self.sorting_order:
+                    self.objects[key].calculatePoints()
             if event.type == pygame.QUIT:
                 from ev3sim.simulation.loader import ScriptLoader
                 pygame.quit()
