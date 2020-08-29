@@ -1,0 +1,29 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "angustrau",
+      "name": "Angus Trau",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/13267947?v=4",
+      "profile": "https://angus.ws",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "ev3sim",
+  "projectOwner": "MelbourneHighSchoolRobotics",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
