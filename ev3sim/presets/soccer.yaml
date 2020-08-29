@@ -17,8 +17,8 @@ interactors:
 - class_path: ev3sim.presets.soccer.SoccerInteractor
   kwargs:
     names:
-    - Short name
-    - Long name
+    - Unicorns
+    - Stah..schaft
     spawns:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
