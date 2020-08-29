@@ -38,6 +38,7 @@ message WriteResult {
 message RobotLogRequest {
     string robot_id = 1;
     string log = 2;
+    bool print = 3;
 }
 
 message RobotLogResult {

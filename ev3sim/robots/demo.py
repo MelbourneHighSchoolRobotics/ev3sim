@@ -65,17 +65,20 @@ while True:
     if time.time() - last_print_time > PRINT_TIME:
         # Print sensor values.
         last_print_time = time.time()
-        print("Sensor Values")
-        print("=============")
-        print("Colour Sensor")
-        print(f"RGB: {cs.rgb}")
-        print("Ultrasonic")
-        print(f"Distance: {us.distance_centimeters}cm")
-        print("Infrared")
-        print(f"Values: {[ir.value(x) for x in range(7)]}")
-        print("Compass")
-        print(f"Bearing: {compass.value()}")
-        print("=============")
+        # We add each line to a string so that we can print the lines all at
+        # once, instead of one line at a time
+        message  = "Sensor Values\n"
+        message += "=============\n"
+        message += "Colour Sensor\n"
+        message += f"RGB: {cs.rgb}\n"
+        message += "Ultrasonic\n"
+        message += f"Distance: {us.distance_centimeters}cm\n"
+        message += "Infrared\n"
+        message += f"Values: {[ir.value(x) for x in range(7)]}\n"
+        message += "Compass\n"
+        message += f"Bearing: {compass.value()}\n"
+        message += "============="
+        print(message)
 
     # If we hit the white line, then reverse this ongoing action
     # This white detection is bad, you should replace with something better (and more stable).

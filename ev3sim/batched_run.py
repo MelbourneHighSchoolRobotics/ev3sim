@@ -1,5 +1,6 @@
 import sys
 import yaml
+import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process
 
@@ -18,10 +19,11 @@ def batched_run(batch_file, bind_addr):
     for i, bot in enumerate(config['bots']):
         for script in bot.get('scripts', []):
             script_processes.append(Process(target=attach, kwargs={
-                'passed_args': ['Useless', '--simulator_addr', bind_addr, script, f"Robot-{i}"]
+                'passed_args': ['Useless', '--send_logs', '--simulator_addr', bind_addr, script, f"Robot-{i}"]
             }))
 
     sim_process.start()
+    time.sleep(0.5) # Give the gRPC server 500ms to start
     for p in script_processes:
         p.start()
 

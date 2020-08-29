@@ -37,7 +37,12 @@ def main(passed_args = None):
                     data['tick_rate'] = r.tick_rate
                     data['current_data'] = json.loads(r.content)
                     if first_message:
-                        print(f'[{robot_id}] Connection initialised.')
+                        # Assume that if send_logs is set, we are running in batched mode so need
+                        # to tag our output with the robot ID
+                        tag = ''
+                        if args.send_logs:
+                            tag = f'[{robot_id}] '
+                        print(f'{tag}Connection initialised.')
                         first_message = False
                         data['start_robot_queue'].put(True)
                     for key in data['active_data_handlers']:
@@ -57,7 +62,7 @@ def main(passed_args = None):
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
                     elif action_type == 'send_log':
-                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_name=robot_id, log=info))
+                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_id=robot_id, log=info, print=args.send_logs))
                     elif action_type == 'begin_server':
                         d = stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info))
                         if not d.result:
@@ -190,18 +195,14 @@ def main(passed_args = None):
                         if elapsed >= seconds:
                             return
                         data['condition_updated'].wait(0.1)
-
-            def conditional_decorator(decorator, condition: bool):
-                def d(f):
-                    if condition:
-                        return decorator(f)
-                    return f
-                return d
-
-            # Matches the signature of builtin `print` except `file` and `flush` are ignored
+            
+            print_builtin = print
+            # Matches the signature of builtin `print` where possible
             def send_log(*objects, sep=' ', end='\n', **kwargs):
                 message = sep.join(str(obj) for obj in objects)
                 data['actions_queue'].put(('send_log', message))
+                if not args.send_logs:
+                    print_builtin(message, end=end, **kwargs)
 
             def raiseEV3Error(*args, **kwargs):
                 raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
@@ -320,7 +321,7 @@ def main(passed_args = None):
 
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
-            @conditional_decorator(mock.patch('builtins.print', send_log), args.send_logs)
+            @mock.patch('builtins.print', send_log)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
             @mock.patch('ev3dev2.Device.__init__', device__init__)
             @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
