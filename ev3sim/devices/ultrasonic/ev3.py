@@ -11,6 +11,8 @@ class UltrasonicInteractor(IDeviceInteractor):
     UPDATE_PER_SECOND = 5
 
     def tick(self, tick):
+        if tick == -1:
+            self.device_class.saved = 0
         if tick % (ScriptLoader.instance.GAME_TICK_RATE // self.UPDATE_PER_SECOND) == 0:
             self.device_class._calc()
             ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = (

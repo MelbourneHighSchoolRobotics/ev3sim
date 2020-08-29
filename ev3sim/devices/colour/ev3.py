@@ -10,6 +10,8 @@ class ColorInteractor(IDeviceInteractor):
     name = 'COLOUR'
 
     def tick(self, tick):
+        if tick == -1:
+            self.device_class.saved_raw = (0, 0, 0)
         try:
             self.device_class._calc_raw()
             ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = self.device_class.rgb()

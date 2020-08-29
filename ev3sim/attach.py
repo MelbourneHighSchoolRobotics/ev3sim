@@ -1,20 +1,23 @@
-def main():
-    import sys
-    import logging
-    import grpc
-    import ev3sim.simulation.comm_schema_pb2
-    import ev3sim.simulation.comm_schema_pb2_grpc
-    import json
-    import time
-    import argparse
-    from unittest import mock
-    from queue import Queue
+import sys
+import logging
+import grpc
+import ev3sim.simulation.comm_schema_pb2
+import ev3sim.simulation.comm_schema_pb2_grpc
+import json
+import time
+import argparse
+from unittest import mock
+from queue import Queue
+
+def main(passed_args = None):
+    if passed_args is None:
+        passed_args = sys.argv
 
     parser = argparse.ArgumentParser(description='Attach a valid ev3dev2 script to the simulation.')
     parser.add_argument('filename', type=str, help='The relative or absolute path of the script you want to run')
     parser.add_argument('robot_id', nargs='?', type=str, help="The ID of the robot you wish to attach to. Right click a robot to copy it's ID to the clipboard. Defaults to the first robot spawned if unspecified.", default='Robot-0')
 
-    args = parser.parse_args()
+    args = parser.parse_args(passed_args[1:])
 
     robot_id = args.robot_id
 
