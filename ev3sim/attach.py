@@ -25,27 +25,34 @@ def main(passed_args = None):
     class CommunicationsError(Exception): pass
 
     def comms(data, result):
+        from grpc._channel import _MultiThreadedRendezvous
         logging.basicConfig()
         first_message = True
-        with grpc.insecure_channel(args.simulator_addr) as channel:
-            try:
-                stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-                response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
-                for r in response:
-                    data['tick'] = r.tick
-                    data['tick_rate'] = r.tick_rate
-                    data['current_data'] = json.loads(r.content)
-                    if first_message:
-                        print("Connection initialised.")
-                        print("-----------------------")
-                        first_message = False
-                        data['start_robot_queue'].put(True)
-                    for key in data['active_data_handlers']:
-                        data['active_data_handlers'][key].put(True)
-                    with data['condition_updating']:
-                        data['condition_updated'].notify()
-            except Exception as e:
-                result.put(('Communications', e))
+        while True:
+            with grpc.insecure_channel(args.simulator_addr) as channel:
+                try:
+                    stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+                    response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+                    for r in response:
+                        data['tick'] = r.tick
+                        data['tick_rate'] = r.tick_rate
+                        data['current_data'] = json.loads(r.content)
+                        if first_message:
+                            print("Connection initialised.")
+                            print("-----------------------")
+                            first_message = False
+                            data['start_robot_queue'].put(True)
+                        for key in data['active_data_handlers']:
+                            data['active_data_handlers'][key].put(True)
+                        with data['condition_updating']:
+                            data['condition_updated'].notify()
+                except Exception as e:
+                    # https://github.com/MelbourneHighSchoolRobotics/ev3sim/issues/55 pygame window dragging will deadline.
+                    if not (isinstance(e, _MultiThreadedRendezvous) and e._state.details == "Deadline Exceeded"):
+                        result.put(('Communications', e))
+                        break
+                    # For some reason this needs to be done despite using the context manager.
+                    channel.close()
 
     def write(data, result):
         with grpc.insecure_channel(args.simulator_addr) as channel:
