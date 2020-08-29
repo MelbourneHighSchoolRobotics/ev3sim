@@ -37,8 +37,7 @@ def main(passed_args = None):
                     data['tick_rate'] = r.tick_rate
                     data['current_data'] = json.loads(r.content)
                     if first_message:
-                        print("Connection initialised.")
-                        print("-----------------------")
+                        print(f'[{robot_id}] Connection initialised.')
                         first_message = False
                         data['start_robot_queue'].put(True)
                     for key in data['active_data_handlers']:
@@ -201,7 +200,7 @@ def main(passed_args = None):
 
             # Matches the signature of builtin `print` except `file` and `flush` are ignored
             def send_log(*objects, sep=' ', end='\n', **kwargs):
-                message = sep.join(str(obj) for obj in objects) + end
+                message = sep.join(str(obj) for obj in objects)
                 data['actions_queue'].put(('send_log', message))
 
             def raiseEV3Error(*args, **kwargs):
