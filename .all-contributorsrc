@@ -1,0 +1,89 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "peter-drew",
+      "name": "Peter Drew",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10608341?v=4",
+      "profile": "https://pdrew.com/",
+      "contributions": [
+        "code",
+        "doc",
+        "eventOrganizing",
+        "ideas"
+      ]
+    },
+    {
+      "login": "angustrau",
+      "name": "Angus Trau",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/13267947?v=4",
+      "profile": "https://angus.ws",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "Dalordish",
+      "name": "Richard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5959205?v=4",
+      "profile": "https://dalordish.github.io",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "ideas",
+        "review"
+      ]
+    },
+    {
+      "login": "jtbui20",
+      "name": "James Bui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/29140560?v=4",
+      "profile": "https://github.com/jtbui20",
+      "contributions": [
+        "code",
+        "design",
+        "review"
+      ]
+    },
+    {
+      "login": "platy11",
+      "name": "Max",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/17060983?v=4",
+      "profile": "https://github.com/platy11",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "glipR",
+      "name": "Jackson Goerner",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/37640160?v=4",
+      "profile": "https://github.com/glipR",
+      "contributions": [
+        "code",
+        "doc",
+        "maintenance",
+        "ideas",
+        "question",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "ev3sim",
+  "projectOwner": "MelbourneHighSchoolRobotics",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
