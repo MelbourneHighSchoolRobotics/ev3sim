@@ -16,6 +16,20 @@
         "eventOrganizing",
         "ideas"
       ]
+    },
+    {
+      "login": "angustrau",
+      "name": "Angus Trau",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/13267947?v=4",
+      "profile": "https://angus.ws",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "question",
+        "review",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
