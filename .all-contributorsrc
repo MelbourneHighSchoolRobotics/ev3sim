@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "peter-drew",
+      "name": "Peter Drew",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10608341?v=4",
+      "profile": "https://pdrew.com/",
+      "contributions": [
+        "code",
+        "doc",
+        "eventOrganizing",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "ev3sim",
+  "projectOwner": "MelbourneHighSchoolRobotics",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
