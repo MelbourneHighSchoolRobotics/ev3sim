@@ -26,6 +26,8 @@ class ScreenObjectManager:
     def initFromKwargs(self, **kwargs):
         self.screen_width = kwargs.get('screen_width', 640)
         self.screen_height = kwargs.get('screen_height', 480)
+        self.original_screen_width = self.screen_width
+        self.original_screen_height = self.screen_height
         # NOTE: TEMPORARY - this would describe the dimensions of the simulated map vs the screen dimensions.
         self.map_width = kwargs.get('map_width', 210)
         self.map_height = kwargs.get('map_height', 160)
@@ -110,3 +112,10 @@ class ScreenObjectManager:
                 pygame.quit()
                 ScriptLoader.instance.running = False
             yield event
+
+    def relativeScreenScale(self):
+        """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
+        return [
+            self.screen_width / self.original_screen_width,
+            self.screen_height / self.original_screen_height,
+        ]
