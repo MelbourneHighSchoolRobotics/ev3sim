@@ -30,6 +30,17 @@
         "review",
         "test"
       ]
+    },
+    {
+      "login": "jtbui20",
+      "name": "James Bui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/29140560?v=4",
+      "profile": "https://github.com/jtbui20",
+      "contributions": [
+        "code",
+        "design",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
