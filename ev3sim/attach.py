@@ -37,12 +37,7 @@ def main(passed_args = None):
                     data['tick_rate'] = r.tick_rate
                     data['current_data'] = json.loads(r.content)
                     if first_message:
-                        # Assume that if send_logs is set, we are running in batched mode so need
-                        # to tag our output with the robot ID
-                        tag = ''
-                        if args.send_logs:
-                            tag = f'[{robot_id}] '
-                        print(f'{tag}Connection initialised.')
+                        print('Connection initialised.')
                         first_message = False
                         data['start_robot_queue'].put(True)
                     for key in data['active_data_handlers']:
@@ -199,10 +194,10 @@ def main(passed_args = None):
             print_builtin = print
             # Matches the signature of builtin `print` where possible
             def send_log(*objects, sep=' ', end='\n', **kwargs):
-                message = sep.join(str(obj) for obj in objects)
+                message = sep.join(str(obj) for obj in objects) + end
                 data['actions_queue'].put(('send_log', message))
                 if not args.send_logs:
-                    print_builtin(message, end=end, **kwargs)
+                    print_builtin(message, end='', **kwargs)
 
             def raiseEV3Error(*args, **kwargs):
                 raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
