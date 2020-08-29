@@ -30,6 +30,19 @@
         "review",
         "test"
       ]
+    },
+    {
+      "login": "Dalordish",
+      "name": "Richard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5959205?v=4",
+      "profile": "https://dalordish.github.io",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "ideas",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
