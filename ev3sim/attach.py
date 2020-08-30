@@ -23,13 +23,27 @@ def main(passed_args = None):
 
     robot_id = args.robot_id
 
+    print_builtin = print
+    def print_mock(source):
+        # send_log matches the builtin `print` where possible
+        def send_log(*objects, sep=' ', end='\n', **kwargs):
+            message = sep.join(str(obj) for obj in objects) + end
+            shared_data['actions_queue'].put(('send_log', (message, source)))
+            if not args.send_logs:
+                print_builtin(message, end='', **kwargs)
+        return send_log
+
     class CommunicationsError(Exception): pass
 
+    @mock.patch('builtins.print', print_mock(ev3sim.simulation.comm_schema_pb2.RobotLogSource.COMMS))
     def comms(data, result):
+        print('comms')
         logging.basicConfig()
         first_message = True
         with grpc.insecure_channel(args.simulator_addr) as channel:
+            print('comms>with')
             try:
+                print('comms>with>try')
                 stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
                 for r in response:
@@ -47,9 +61,13 @@ def main(passed_args = None):
             except Exception as e:
                 result.put(('Communications', e))
 
+    @mock.patch('builtins.print', print_mock(ev3sim.simulation.comm_schema_pb2.RobotLogSource.WRITE))
     def write(data, result):
+        print('write')
         with grpc.insecure_channel(args.simulator_addr) as channel:
+            print('write>with')
             try:
+                print('write>with>try')
                 stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
                 while True:
                     action_type, info = data['actions_queue'].get()
@@ -57,7 +75,8 @@ def main(passed_args = None):
                         path, value = info
                         stub.SendWriteInfo(ev3sim.simulation.comm_schema_pb2.RobotWrite(robot_id=robot_id, attribute_path=path, value=value))
                     elif action_type == 'send_log':
-                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_id=robot_id, log=info, print=args.send_logs))
+                        message, source = info
+                        stub.SendRobotLog(ev3sim.simulation.comm_schema_pb2.RobotLogRequest(robot_id=robot_id, log=message, source=source, print=args.send_logs))
                     elif action_type == 'begin_server':
                         d = stub.RequestServer(ev3sim.simulation.comm_schema_pb2.ServerRequest(**info))
                         if not d.result:
@@ -96,6 +115,7 @@ def main(passed_args = None):
             except Exception as e:
                 result.put(('Communications', e))
 
+    @mock.patch('builtins.print', print_mock(ev3sim.simulation.comm_schema_pb2.RobotLogSource.ROBOT))
     def robot(filename, data, result):
         try:
             from ev3dev2 import Device, DeviceNotFound
@@ -190,14 +210,6 @@ def main(passed_args = None):
                         if elapsed >= seconds:
                             return
                         data['condition_updated'].wait(0.1)
-            
-            print_builtin = print
-            # Matches the signature of builtin `print` where possible
-            def send_log(*objects, sep=' ', end='\n', **kwargs):
-                message = sep.join(str(obj) for obj in objects) + end
-                data['actions_queue'].put(('send_log', message))
-                if not args.send_logs:
-                    print_builtin(message, end='', **kwargs)
 
             def raiseEV3Error(*args, **kwargs):
                 raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
@@ -316,7 +328,6 @@ def main(passed_args = None):
 
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
-            @mock.patch('builtins.print', send_log)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
             @mock.patch('ev3dev2.Device.__init__', device__init__)
             @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)

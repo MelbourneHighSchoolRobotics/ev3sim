@@ -54,7 +54,10 @@ def start_server_with_shared_data(data, result, bind_addr):
 
             def SendRobotLog(self, request, context):
                 if request.print:
-                    tag = f'[{request.robot_id}] '
+                    source_name = ''
+                    if request.source != 0:
+                        source_name = f'/{ev3sim.simulation.comm_schema_pb2.RobotLogSource.Name(request.source).lower()}'
+                    tag = f'[{request.robot_id}{source_name}] '
                     lines = request.log.split('\n')
                     message = []
                     for i, line in enumerate(lines):

@@ -35,10 +35,18 @@ message WriteResult {
     bool result = 1;
 }
 
+enum RobotLogSource {
+    UNKNOWN = 0;
+    COMMS = 1;
+    WRITE = 2;
+    ROBOT = 3;
+}
+
 message RobotLogRequest {
     string robot_id = 1;
     string log = 2;
     bool print = 3;
+    RobotLogSource source = 4;
 }
 
 message RobotLogResult {
