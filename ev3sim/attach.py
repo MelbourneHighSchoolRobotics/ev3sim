@@ -8,8 +8,10 @@ import ev3sim.simulation.comm_schema_pb2
 import ev3sim.simulation.comm_schema_pb2_grpc
 from unittest import mock
 from queue import Queue
+from os import path, getcwd
 
 def main(passed_args = None):
+    called_from = getcwd()
     if passed_args is None:
         passed_args = sys.argv
 
@@ -311,6 +313,9 @@ def main(passed_args = None):
                     info = data['write_results'].get()
                     data['active_connections'].remove(self)
 
+            fake_path = sys.path.copy()
+            fake_path.append(called_from)
+
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
@@ -320,6 +325,7 @@ def main(passed_args = None):
             @mock.patch('ev3sim.code_helpers.is_sim', True)
             @mock.patch('ev3sim.code_helpers.CommServer', MockedCommServer)
             @mock.patch('ev3sim.code_helpers.CommClient', MockedCommClient)
+            @mock.patch('sys.path', fake_path)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
                 module = SourceFileLoader('__main__', fname).load_module()
