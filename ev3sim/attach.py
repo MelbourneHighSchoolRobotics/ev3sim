@@ -8,8 +8,10 @@ import ev3sim.simulation.comm_schema_pb2
 import ev3sim.simulation.comm_schema_pb2_grpc
 from unittest import mock
 from queue import Queue
+from os import path, getcwd
 
 def main(passed_args = None):
+    called_from = getcwd()
     if passed_args is None:
         passed_args = sys.argv
 
@@ -38,28 +40,36 @@ def main(passed_args = None):
     @mock.patch('builtins.print', print_mock(ev3sim.simulation.comm_schema_pb2.RobotLogSource.COMMS))
     def comms(data, result):
         print('comms')
+        from grpc._channel import _MultiThreadedRendezvous
         logging.basicConfig()
         first_message = True
-        with grpc.insecure_channel(args.simulator_addr) as channel:
-            print('comms>with')
-            try:
-                print('comms>with>try')
-                stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
-                response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
-                for r in response:
-                    data['tick'] = r.tick
-                    data['tick_rate'] = r.tick_rate
-                    data['current_data'] = json.loads(r.content)
-                    if first_message:
-                        print('Connection initialised.')
-                        first_message = False
-                        data['start_robot_queue'].put(True)
-                    for key in data['active_data_handlers']:
-                        data['active_data_handlers'][key].put(True)
-                    with data['condition_updating']:
-                        data['condition_updated'].notify()
-            except Exception as e:
-                result.put(('Communications', e))
+        while True:
+            with grpc.insecure_channel(args.simulator_addr) as channel:
+                print('comms>with')
+                try:
+                    print('comms>with>try')
+                    stub = ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerStub(channel)
+                    response = stub.RequestTickUpdates(ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id))
+                    for r in response:
+                        data['tick'] = r.tick
+                        data['tick_rate'] = r.tick_rate
+                        data['current_data'] = json.loads(r.content)
+                        if first_message:
+                            print("Connection initialised.")
+                            print("-----------------------")
+                            first_message = False
+                            data['start_robot_queue'].put(True)
+                        for key in data['active_data_handlers']:
+                            data['active_data_handlers'][key].put(True)
+                        with data['condition_updating']:
+                            data['condition_updated'].notify()
+                except Exception as e:
+                    # https://github.com/MelbourneHighSchoolRobotics/ev3sim/issues/55 pygame window dragging will deadline.
+                    if not (isinstance(e, _MultiThreadedRendezvous) and e._state.details == "Deadline Exceeded"):
+                        result.put(('Communications', e))
+                        break
+                    # For some reason this needs to be done despite using the context manager.
+                    channel.close()
 
     @mock.patch('builtins.print', print_mock(ev3sim.simulation.comm_schema_pb2.RobotLogSource.WRITE))
     def write(data, result):
@@ -326,6 +336,9 @@ def main(passed_args = None):
                     info = data['write_results'].get()
                     data['active_connections'].remove(self)
 
+            fake_path = sys.path.copy()
+            fake_path.append(called_from)
+
             @mock.patch('time.time', get_time)
             @mock.patch('time.sleep', sleep)
             @mock.patch('ev3dev2.motor.Motor.wait', wait)
@@ -335,6 +348,7 @@ def main(passed_args = None):
             @mock.patch('ev3sim.code_helpers.is_sim', True)
             @mock.patch('ev3sim.code_helpers.CommServer', MockedCommServer)
             @mock.patch('ev3sim.code_helpers.CommClient', MockedCommClient)
+            @mock.patch('sys.path', fake_path)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
                 module = SourceFileLoader('__main__', fname).load_module()

@@ -106,9 +106,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                                 data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
                                 last_tick = time.time()
                             except:
-                                pass
-                            if time.time() - last_tick > SIM_DIED_TIME:
-                                return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="Simulation died.")
+                                if result._qsize():
+                                    return ev3sim.simulation.comm_schema_pb2.ClientResult(result=False, host_robot_id='N/A', msg="Simulation died.")
                 except KeyError:
                     if update_key in data['tick_updates']:
                         del data['tick_updates'][update_key]
@@ -130,9 +129,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                                 data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
                                 last_tick = time.time()
                             except:
-                                pass
-                            if time.time() - last_tick > SIM_DIED_TIME:
-                                return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=False, client_id='N/A', msg="Simulation died.")    
+                                if result._qsize():
+                                    return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=False, client_id='N/A', msg="Simulation died.")    
                     c_id = data['bot_communications_data'][key]['client_queue'].get(block=False)
                     del data['tick_updates'][update_key]
                     return ev3sim.simulation.comm_schema_pb2.GetClientResult(result=True, client_id=c_id, msg="")
@@ -170,9 +168,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                                 data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
                                 last_tick = time.time()
                             except:
-                                pass
-                            if time.time() - last_tick > SIM_DIED_TIME:
-                                return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Simulation died.")
+                                if result._qsize():
+                                    return ev3sim.simulation.comm_schema_pb2.SendResult(result=False, msg="Simulation died.")
                 except KeyError:
                     if update_key in data['tick_updates']:
                         del data['tick_updates'][update_key]
@@ -201,9 +198,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                                 data['tick_updates'][update_key].get(timeout=TICK_WAITING_TIMEOUT)
                                 last_tick = time.time()
                             except:
-                                pass
-                            if time.time() - last_tick > SIM_DIED_TIME:
-                                return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Simulation died.")
+                                if result._qsize():
+                                    return ev3sim.simulation.comm_schema_pb2.RecvResult(result=False, data='N/A', msg="Simulation died.")
                     d = data['bot_communications_data'][key]['connections'][data_keys[0]][data_keys[1]].get()
                     with data['bot_locks'][client_id]['condition_changing']:
                         data['bot_locks'][client_id]['condition_waiting'].notify()

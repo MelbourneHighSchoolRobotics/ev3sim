@@ -161,7 +161,8 @@ class Image(Colorable):
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
-        new_size = [int(self.image.get_size()[0] * self.scale), int(self.image.get_size()[1] * self.scale)]
+        relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        new_size = [int(self.image.get_size()[0] * self.scale * relative_scale[0]), int(self.image.get_size()[1] * self.scale * relative_scale[1])]
         scaled = pygame.transform.scale(self.image, new_size)
         self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
@@ -339,12 +340,14 @@ class Circle(Colorable):
             return
         self.point = utils.worldspace_to_screenspace(self.position)
         self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
+        self.h_radius = int(ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * self.radius)
+        self.rect = pygame.Rect(self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2)
 
     def applyToScreen(self):
         if self.fill:
-            pygame.draw.circle(ScreenObjectManager.instance.screen, self.fill, self.point, self.v_radius)
+            pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.fill, self.rect)
         if self.stroke and self.stroke_width:
-            pygame.draw.circle(ScreenObjectManager.instance.screen, self.stroke, self.point, self.v_radius, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
+            pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.stroke, self.rect, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:
@@ -388,25 +391,29 @@ class Text(Colorable):
         if not hasattr(self, 'font'):
             return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
-        baseline = np.array([self.rect.x, self.rect.y])
+        relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        self.surface = pygame.transform.scale(self.surface, (int(self.surface.get_width() * relative_scale[0]), int(self.surface.get_height() * relative_scale[1])))
+        self.screen_size = (self.surface.get_width(), self.surface.get_height())
+        baseline = np.array([self.rect.x * relative_scale[0], self.rect.y * relative_scale[1]])
         self.rect.move_ip(-self.rect.x, -self.rect.y)
+        width, height = self.font.get_rect(self.text).width * relative_scale[0], self.font.get_rect(self.text).height * relative_scale[1]
         self.anchor = utils.worldspace_to_screenspace(self.position)
         if self.hAlignment == 'l':
             pass
         elif self.hAlignment == 'm':
-            self.anchor -= np.array([self.font.get_rect(self.text).width / 2.0, 0.0])
+            self.anchor -= np.array([width / 2.0, 0.0])
         elif self.hAlignment == 'r':
-            self.anchor -= np.array([self.font.get_rect(self.text).width, 0.0])
+            self.anchor -= np.array([width, 0.0])
         else:
             raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
         if self.vAlignment == 't':
             self.anchor -= np.array([0.0, 0.0])
         elif self.vAlignment == 'm':
-            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height / 2])
+            self.anchor -= np.array([0.0, height / 2])
         elif self.vAlignment == 'baseline':
             self.anchor -= np.array([0.0, baseline[1]])
         elif self.vAlignment == 'b':
-            self.anchor -= np.array([0.0, self.font.get_rect(self.text).height])
+            self.anchor -= np.array([0.0, height])
         else:
             raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
         self.rect.move_ip(*self.anchor)

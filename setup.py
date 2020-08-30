@@ -5,7 +5,7 @@ REQUIRES_PYTHON = '>=3.7.0'
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(HERE, "README.md")) as fid:
+with open(os.path.join(HERE, "README.md"), encoding='utf-8') as fid:
     README = fid.read()
 
 with open(os.path.join(HERE, "requirements.txt")) as fid:
@@ -17,7 +17,7 @@ with open(os.path.join(HERE, "requirements.txt")) as fid:
 
 setup(
     name="ev3sim",
-    version="1.2.0",
+    version="1.2.1",
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",

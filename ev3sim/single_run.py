@@ -48,6 +48,8 @@ def single_run(preset_filename, robots, bind_addr):
             while not result_bucket._qsize():
                 result_bucket.not_empty.wait(0.1)
         r = result_bucket.get()
+        # Chuck it back on the queue so that other threads know we are quitting.
+        result_bucket.put(r)
         if r is not True:
             print(f"An error occured in the {r[0]} thread. Raising an error now...")
             time.sleep(1)
