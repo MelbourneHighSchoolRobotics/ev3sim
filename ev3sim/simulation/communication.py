@@ -52,6 +52,16 @@ def start_server_with_shared_data(data, result, bind_addr):
                 data['write_stack'].append((rob_id, attribute_path, value))
                 return ev3sim.simulation.comm_schema_pb2.WriteResult(result=True)
 
+            def SendRobotLog(self, request, context):
+                if request.print:
+                    tag = f'[{request.robot_id}] '
+                    lines = request.log.split('\n')
+                    message = []
+                    for i, line in enumerate(lines):
+                        message.append(f'{tag}{line}' if line and i != len(lines) - 1 else line)
+                    print(*message, sep='\n', end='')
+                return ev3sim.simulation.comm_schema_pb2.RobotLogResult(result=True)
+
             def RequestServer(self, request, context):
                 rob_id = request.robot_id
                 if request.address == 'aa:bb:cc:dd:ee:ff':
