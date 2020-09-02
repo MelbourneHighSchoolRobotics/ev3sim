@@ -170,10 +170,10 @@ class Image(Colorable):
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
-        new_size = [
-            int(self.image.get_size()[0] * self.scale * relative_scale[0]),
-            int(self.image.get_size()[1] * self.scale * relative_scale[1]),
-        ]
+        if isinstance(self.scale, (tuple, list)):
+            new_size = [int(self.image.get_size()[0] * self.scale[0] * relative_scale[0]), int(self.image.get_size()[1] * self.scale[1] * relative_scale[1])]
+        else:
+            new_size = [int(self.image.get_size()[0] * self.scale * relative_scale[0]), int(self.image.get_size()[1] * self.scale * relative_scale[1])]
         scaled = pygame.transform.scale(self.image, new_size)
         self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
