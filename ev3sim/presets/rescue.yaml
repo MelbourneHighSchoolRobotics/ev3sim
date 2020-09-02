@@ -24,9 +24,9 @@ interactors:
       position: [0, 0]
     - path: tiles/definitions/right_angle.yaml
       position: [1, 0]
-    - path: tiles/definitions/color_right.yaml
+    - path: tiles/definitions/color_left.yaml
       position: [1, 1]
-      rotation: 180
+      rotation: 90
     - path: tiles/definitions/left_circle_green.yaml
       position: [2, 1]
       rotation: 0

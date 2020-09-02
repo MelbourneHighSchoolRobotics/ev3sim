@@ -217,6 +217,12 @@ class RescueInteractor(IInteractor):
             return False
         handler.begin = handle_collide
 
+    def spawnAt(self, tileIndex):
+        self.current_follow = None
+        spawn_point = self.tiles[tileIndex]['follows'][0]
+        for i in range(len(self.robots)):
+            self.robots[i].body.position += spawn_point - self.bot_follows[i].body.position
+
     def reset(self):
         self.resetPositions()
         self.current_follow = None
@@ -275,6 +281,10 @@ class RescueInteractor(IInteractor):
             for shape in shapes:
                 if shape.shape.obj.key == "controlsReset":
                     self._pressed = True
+                words = shape.shape.obj.key.split('-')
+                if len(words) == 3 and words[0] == 'Tile' and words[2] == 'UI':
+                    tile_index = int(words[1])
+                    self.spawnAt(tile_index)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
             shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
