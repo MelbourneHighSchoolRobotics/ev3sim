@@ -25,3 +25,4 @@ elements:
   zPos: 0.1
   key: line
   position: [5, 0]
+ui: tiles/ui/blank.yaml

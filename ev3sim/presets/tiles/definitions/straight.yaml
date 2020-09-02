@@ -27,3 +27,4 @@ elements:
   zPos: 0.1
   key: line
   position: [0, 0]
+ui: tiles/ui/completable.yaml

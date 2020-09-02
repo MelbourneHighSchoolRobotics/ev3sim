@@ -71,6 +71,8 @@ class RescueInteractor(IInteractor):
                 'sensorVisible': False,
             })
             self.tiles[-1]['follows'] = []
+            with open(find_abs(t['ui'], allowed_areas=['local/presets/', 'local', 'package/presets/', 'package']), 'r') as f:
+                self.tiles[-1]['ui_elem'] = yaml.safe_load(f)
             for j, (x, y) in enumerate(t['follow_points']):
                 self.tiles[-1]['follows'].append(local_space_to_world_space(np.array([x, y]), tile.get('rotation', 0) * np.pi / 180, base_pos))
             ScriptLoader.instance.loadElements(t['elements'])
@@ -132,6 +134,22 @@ class RescueInteractor(IInteractor):
                     ScreenObjectManager.instance.registerObject(obj, obj.key)
                 tile['follow_colliders'].append(obj)
 
+    TILE_UI_ELEM_HEIGHT = 10
+    TILE_UI_PADDING = 20
+
+    @property
+    def tileUIHeight(self):
+        return self.TILE_UI_PADDING * 2 + self.TILE_UI_ELEM_HEIGHT * len(self.tiles)
+
+    def spawnTileUI(self):
+        elems = []
+        for i, tile in enumerate(self.tiles):
+            elem = tile['ui_elem']
+            elem['key'] = f'Tile-{i}-UI'
+            elem['position'] = [-140, -self.TILE_UI_ELEM_HEIGHT * (i - (len(self.tiles)-1) / 2)]
+            elems.append(elem)
+        ScriptLoader.instance.loadElements(elems)
+
     def locateBots(self):
         self.robots = []
         self.bot_follows = []
@@ -173,6 +191,7 @@ class RescueInteractor(IInteractor):
 
     def startUp(self):
         self.spawnFollowPointPhysics()
+        self.spawnTileUI()
         self.locateBots()
         assert len(self.robots) <= len(self.spawns), "Not enough spawning locations specified."
         self.scores = [0]*len(self.robots)

@@ -8,6 +8,7 @@ colours:
   UI_bg_2: "#dddedf"
   UI_fg: "#efedee"
   UI_fg_2: "1f1f1f"
+  UI_tilebox_not_complete: "#110b11"
 
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
@@ -17,16 +18,16 @@ interactors:
     spawns:
     - [[-1, 0], 0]
     tiles:
-    - path: tiles/city_limits.yaml
+    - path: tiles/definitions/city_limits.yaml
       position: [-1, 0]
-    - path: tiles/straight.yaml
+    - path: tiles/definitions/straight.yaml
       position: [0, 0]
-    - path: tiles/right_angle.yaml
+    - path: tiles/definitions/right_angle.yaml
       position: [1, 0]
-    - path: tiles/color_right.yaml
+    - path: tiles/definitions/color_right.yaml
       position: [1, 1]
       rotation: 180
-    - path: tiles/left_circle_green.yaml
+    - path: tiles/definitions/left_circle_green.yaml
       position: [2, 1]
       rotation: 0
 
@@ -73,6 +74,31 @@ elements:
     vAlignment: t
     zPos: 4.5
   key: controlsReset
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_middle.png
+  hAlignment: l
+  vAlignment: m
+  position: [-146.6, 0]
+  zPos: 4.5
+  key: rescueBGMid
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_top.png
+  hAlignment: l
+  vAlignment: b
+  position: [-146.6, 49]
+  zPos: 4.5
+  key: rescueBGTop
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_bottom.png
+  hAlignment: l
+  vAlignment: t
+  position: [-146.6, -49]
+  zPos: 4.5
+  key: rescueBGBottom
+
 
 loader:
   GAME_TICK_RATE: 30
