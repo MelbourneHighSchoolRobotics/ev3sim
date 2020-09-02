@@ -2,13 +2,15 @@ import datetime
 import numpy as np
 import math
 import pymunk
+import pygame
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import World, stop_on_pause
-from ev3sim.objects.base import objectFactory
+from ev3sim.objects.base import objectFactory, STATIC_CATEGORY
 from ev3sim.objects.utils import local_space_to_world_space, magnitude_sq
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.visual.utils import screenspace_to_worldspace
 
 class RescueInteractor(IInteractor):
 
@@ -29,6 +31,7 @@ class RescueInteractor(IInteractor):
     START_TIME = datetime.timedelta(minutes=5)
 
     TILE_LENGTH = 30
+    _pressed = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -174,21 +177,10 @@ class RescueInteractor(IInteractor):
         assert len(self.robots) <= len(self.spawns), "Not enough spawning locations specified."
         self.scores = [0]*len(self.robots)
 
-        self.resetPositions()
+        self.reset()
         for i in range(len(self.robots)):
             self.bot_follows[i].body.position = self.robots[i].body.position
         self.addCollisionHandler()
-
-        self.current_follow = None
-        self.follow_completed = [
-            [
-                False for x in y['follows']
-            ]
-            for y in self.tiles
-        ]
-        self.tiles_completed = [
-            False for y in self.tiles
-        ]
 
         for robot in self.robots:
             robot.robot_class.onSpawn()
@@ -205,6 +197,20 @@ class RescueInteractor(IInteractor):
                 raise ValueError("Two objects with collision types used by rescue don't have a tile follow point.")
             return False
         handler.begin = handle_collide
+
+    def reset(self):
+        self.resetPositions()
+        self.current_follow = None
+        self.follow_completed = [
+            [
+                False for x in y['follows']
+            ]
+            for y in self.tiles
+        ]
+        self.tiles_completed = [
+            False for y in self.tiles
+        ]
+        self.time_tick = 0
 
     def resetPositions(self):
         for i, robot in enumerate(self.robots):
@@ -226,6 +232,11 @@ class RescueInteractor(IInteractor):
                 print("Lack of Progress!")
                 World.instance.paused = True
                 self.current_follow = None
+        # UI Tick
+        if self._pressed:
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = 'assets/ui/controls_reset_pressed.png'
+        else:
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = 'assets/ui/controls_reset_released.png'
         self.update_time()
 
     @stop_on_pause
@@ -237,3 +248,19 @@ class RescueInteractor(IInteractor):
         minutes = seconds // 60
         seconds = seconds - minutes * 60
         ScriptLoader.instance.object_map['TimerText'].text = '{:02d}:{:02d}'.format(minutes, seconds)
+
+    def handleEvent(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for shape in shapes:
+                if shape.shape.obj.key == "controlsReset":
+                    self._pressed = True
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for shape in shapes:
+                if (shape.shape.obj.key == "controlsReset") & self._pressed:
+                    self.reset()
+                self._pressed = False
+            if len(shapes) == 0: self._pressed = False
