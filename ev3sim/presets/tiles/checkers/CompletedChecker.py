@@ -7,21 +7,28 @@ class CompletedChecker(BaseRescueChecker):
     FOLLOW_POINT_AMOUNT_REQUIRED = 2
     FOLLOW_POINT_PERCENT = 0.8
 
+    COMPLETE_SCORE = 10
+
+    completed = False
+
     def onNewFollowPoint(self, completed):
-        total_complete = 0
-        total_start = 0
-        total_end = 0
-        for x in range(len(completed)):
-            if completed[x]:
-                total_complete += 1
-                if x < self.FOLLOW_POINT_START_END:
-                    total_start += 1
-                if len(completed) - x - 1 < self.FOLLOW_POINT_START_END:
-                    total_end += 1
-        if (
-            total_complete >= self.FOLLOW_POINT_PERCENT * len(completed) and
-            total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED and
-            total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
-        ):
-            self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = "#00ff00"
-            print(f"Completed tile {self.index}")
+        if not self.completed:
+            total_complete = 0
+            total_start = 0
+            total_end = 0
+            for x in range(len(completed)):
+                if completed[x]:
+                    total_complete += 1
+                    if x < self.FOLLOW_POINT_START_END:
+                        total_start += 1
+                    if len(completed) - x - 1 < self.FOLLOW_POINT_START_END:
+                        total_end += 1
+            if (
+                total_complete >= self.FOLLOW_POINT_PERCENT * len(completed) and
+                total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED and
+                total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+            ):
+                self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = "#00ff00"
+                self.rescue.incrementScore(self.COMPLETE_SCORE)
+                self.completed = True
+                print(f"Completed tile {self.index}")
