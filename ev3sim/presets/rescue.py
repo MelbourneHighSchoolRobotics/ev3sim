@@ -21,10 +21,6 @@ class RescueInteractor(IInteractor):
     ROBOT_CENTRE_COLLISION_TYPE = 6
     ROBOT_CENTRE_RADIUS = 3
     FOLLOW_POINT_RADIUS = 1
-    # You need 2/3 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
-    FOLLOW_POINT_START_END = 3
-    FOLLOW_POINT_AMOUNT_REQUIRED = 2
-    FOLLOW_POINT_PERCENT = 0.8
     # You can be at most this far from the previous follow point before lack of progress is called.
     MAX_FOLLOW_DIST = 8
 
@@ -71,10 +67,14 @@ class RescueInteractor(IInteractor):
                 'sensorVisible': False,
             })
             self.tiles[-1]['follows'] = []
+            mname, cname = t.get('checker').rsplit('.', 1)
+            import importlib
+            klass = getattr(importlib.import_module(mname), cname)
             with open(find_abs(t['ui'], allowed_areas=['local/presets/', 'local', 'package/presets/', 'package']), 'r') as f:
                 self.tiles[-1]['ui_elem'] = yaml.safe_load(f)
             for j, (x, y) in enumerate(t['follow_points']):
                 self.tiles[-1]['follows'].append(local_space_to_world_space(np.array([x, y]), tile.get('rotation', 0) * np.pi / 180, base_pos))
+            self.tiles[-1]['checker'] = klass(self.tiles[-1]['follows'], i, self)
             ScriptLoader.instance.loadElements(t['elements'])
 
     def collidedFollowPoint(self, follow_indexes):
@@ -83,27 +83,7 @@ class RescueInteractor(IInteractor):
         self.current_follow = follow_indexes
         self.follow_completed[follow_indexes[0]][follow_indexes[1]] = True
         self.tiles[follow_indexes[0]]['follow_colliders'][follow_indexes[1]].visual.fill = '#00ff00'
-        if self.tiles_completed[follow_indexes[0]]:
-            return
-        # Check if this tile should be completed.
-        total_complete = 0
-        total_start = 0
-        total_end = 0
-        for x in range(len(self.follow_completed[follow_indexes[0]])):
-            if self.follow_completed[follow_indexes[0]][x]:
-                total_complete += 1
-                if x < self.FOLLOW_POINT_START_END:
-                    total_start += 1
-                if len(self.follow_completed[follow_indexes[0]]) - x - 1 < self.FOLLOW_POINT_START_END:
-                    total_end += 1
-        if (
-            total_complete >= self.FOLLOW_POINT_PERCENT * len(self.follow_completed[follow_indexes[0]]) and
-            total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED and
-            total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
-        ):
-            self.tiles_completed[follow_indexes[0]] = True
-            print(f"Completed tile {follow_indexes[0]}")
-
+        self.tiles[follow_indexes[0]]['checker'].onNewFollowPoint(self.follow_completed[follow_indexes[0]])
 
     def spawnFollowPointPhysics(self):
         for i, tile in enumerate(self.tiles):
@@ -148,7 +128,8 @@ class RescueInteractor(IInteractor):
             elem['key'] = f'Tile-{i}-UI'
             elem['position'] = [-140, -self.TILE_UI_ELEM_HEIGHT * (i - (len(self.tiles)-1) / 2)]
             elems.append(elem)
-        ScriptLoader.instance.loadElements(elems)
+        for i, spawned in enumerate(ScriptLoader.instance.loadElements(elems)):
+            self.tiles[i]['ui_spawned'] = spawned
 
     def locateBots(self):
         self.robots = []
@@ -231,9 +212,6 @@ class RescueInteractor(IInteractor):
                 False for x in y['follows']
             ]
             for y in self.tiles
-        ]
-        self.tiles_completed = [
-            False for y in self.tiles
         ]
         self.time_tick = 0
 

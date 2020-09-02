@@ -44,3 +44,4 @@ elements:
   key: turn
   position: [-3, 3]
 ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker

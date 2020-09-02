@@ -28,3 +28,4 @@ elements:
   key: line
   position: [0, 0]
 ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
