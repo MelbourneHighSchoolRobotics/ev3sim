@@ -88,7 +88,7 @@ class ScreenObjectManager:
         return obj
 
     def registerObject(self, obj: "objects.base.BaseObject", key) -> str:  # noqa: F821
-        if obj.visual is not None and obj.visual.visible:
+        if hasattr(obj, "visual") and obj.visual.visible:
             self.registerVisual(obj.visual, key)
         for i, child in enumerate(obj.children):
             self.registerObject(child, child.key)
