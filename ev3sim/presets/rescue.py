@@ -116,6 +116,7 @@ class RescueInteractor(IInteractor):
 
     TILE_UI_ELEM_HEIGHT = 10
     TILE_UI_PADDING = 20
+    TILE_UI_INITIAL_HEIGHT = 98
 
     @property
     def tileUIHeight(self):
@@ -130,6 +131,9 @@ class RescueInteractor(IInteractor):
             elems.append(elem)
         for i, spawned in enumerate(ScriptLoader.instance.loadElements(elems)):
             self.tiles[i]['ui_spawned'] = spawned
+        ScriptLoader.instance.object_map['rescueBGMid'].scale = (1, self.tileUIHeight / self.TILE_UI_INITIAL_HEIGHT)
+        ScriptLoader.instance.object_map['rescueBGTop'].position = (-146.6, self.tileUIHeight / 2)
+        ScriptLoader.instance.object_map['rescueBGBottom'].position = (-146.6, -self.tileUIHeight / 2)
 
     def locateBots(self):
         self.robots = []
