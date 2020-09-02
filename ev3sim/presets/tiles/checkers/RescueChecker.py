@@ -6,5 +6,11 @@ class BaseRescueChecker:
         self.index = tileIndex
         self.rescue = rescueController
 
+    def onSpawn(self):
+        pass
+
+    def onReset(self):
+        pass
+
     def onNewFollowPoint(self, completed):
         pass

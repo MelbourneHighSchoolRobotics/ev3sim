@@ -11,6 +11,13 @@ class CompletedChecker(BaseRescueChecker):
 
     completed = False
 
+    def onSpawn(self):
+        self.initial_fill = self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill
+    
+    def onReset(self):
+        self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = self.initial_fill
+        self.completed = False
+
     def onNewFollowPoint(self, completed):
         if not self.completed:
             total_complete = 0

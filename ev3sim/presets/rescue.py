@@ -131,6 +131,7 @@ class RescueInteractor(IInteractor):
             elems.append(elem)
         for i, spawned in enumerate(ScriptLoader.instance.loadElements(elems)):
             self.tiles[i]['ui_spawned'] = spawned
+            self.tiles[i]['checker'].onSpawn()
         ScriptLoader.instance.object_map['rescueBGMid'].scale = (1, self.tileUIHeight / self.TILE_UI_INITIAL_HEIGHT)
         ScriptLoader.instance.object_map['rescueBGTop'].position = (-146.6, self.tileUIHeight / 2)
         ScriptLoader.instance.object_map['rescueBGBottom'].position = (-146.6, -self.tileUIHeight / 2)
@@ -204,13 +205,12 @@ class RescueInteractor(IInteractor):
         handler.begin = handle_collide
 
     def spawnAt(self, tileIndex):
-        self.current_follow = None
+        self.resetFollows()
         spawn_point = self.tiles[tileIndex]['follows'][0]
         for i in range(len(self.robots)):
             self.robots[i].body.position += spawn_point - self.bot_follows[i].body.position
 
-    def reset(self):
-        self.resetPositions()
+    def resetFollows(self):
         self.current_follow = None
         self.follow_completed = [
             [
@@ -218,8 +218,17 @@ class RescueInteractor(IInteractor):
             ]
             for y in self.tiles
         ]
+        for x in range(len(self.follow_completed)):
+            for y in range(len(self.follow_completed[x])):
+                self.tiles[x]['follow_colliders'][y].visual.fill = '#ff0000'
+
+    def reset(self):
+        self.resetPositions()
         self.time_tick = 0
         self.setScore(0)
+        self.resetFollows()
+        for x in range(len(self.tiles)):
+            self.tiles[x]['checker'].onReset()
 
     def setScore(self, val):
         self.score = val
