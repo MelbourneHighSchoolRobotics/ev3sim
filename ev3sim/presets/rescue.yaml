@@ -98,6 +98,16 @@ elements:
   position: [-146.6, -49]
   zPos: 4.5
   key: rescueBGBottom
+- type: visual
+  name: Text
+  text: scoreSum
+  hAlignment: r
+  vAlignment: baseline
+  fill: "UI_fg_2"
+  font_size: 16
+  position: [-110, 0]
+  zPos: 5
+  key: rescueScoreSum
 
 
 loader:

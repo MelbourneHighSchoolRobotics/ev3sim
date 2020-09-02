@@ -134,6 +134,7 @@ class RescueInteractor(IInteractor):
         ScriptLoader.instance.object_map['rescueBGMid'].scale = (1, self.tileUIHeight / self.TILE_UI_INITIAL_HEIGHT)
         ScriptLoader.instance.object_map['rescueBGTop'].position = (-146.6, self.tileUIHeight / 2)
         ScriptLoader.instance.object_map['rescueBGBottom'].position = (-146.6, -self.tileUIHeight / 2)
+        ScriptLoader.instance.object_map['rescueScoreSum'].position = (-110, -self.tileUIHeight / 2 + self.TILE_UI_PADDING / 2)
 
     def locateBots(self):
         self.robots = []
@@ -218,6 +219,17 @@ class RescueInteractor(IInteractor):
             for y in self.tiles
         ]
         self.time_tick = 0
+        self.setScore(0)
+
+    def setScore(self, val):
+        self.score = val
+        ScriptLoader.instance.object_map['rescueScoreSum'].text = str(self.score)
+
+    def incrementScore(self, val):
+        self.setScore(self.score + val)
+    
+    def decrementScore(self, val):
+        self.setScore(self.score - val)
 
     def resetPositions(self):
         for i, robot in enumerate(self.robots):
