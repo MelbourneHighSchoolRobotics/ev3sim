@@ -34,7 +34,7 @@ elements:
 - type: visual
   name: Image
   image_path: 'assets/ui/timer_bg.png'
-  position: [0,102]
+  position: [0,110]
   hAlignment: m
   vAlignment: t
   zPos: 5
@@ -44,23 +44,35 @@ elements:
   text: "05:00"
   fill: "UI_fg_2"
   font_size: 48
-  position: [0, 110]
-  hAlignment: m
-  vAlignment: t
+  position: [-13.6, 98.5]
+  hAlignment: l
+  vAlignment: baseline
   zPos: 5
   key: TimerText
 - type: object
   collider: inherit
   physics: true
   static: true
-  position: [0, 89]
+  position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_play.png'
-    hAlignment: m
+    image_path: 'assets/ui/controls_pause_released.png'
+    hAlignment: r
     vAlignment: t
-    zPos: 4.9
-  key: controls
+    zPos: 4.5
+  key: controlsPause
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_reset_released.png'
+    hAlignment: l
+    vAlignment: t
+    zPos: 4.5
+  key: controlsReset
 
 loader:
   GAME_TICK_RATE: 30
