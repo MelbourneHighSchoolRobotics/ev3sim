@@ -31,3 +31,14 @@ children:
     stroke_width: 0.1
     zPos: 5
   position: [14, 0]
+- type: object
+  physics: false
+  visual:
+    name: Text
+    text: 0/0
+    font_size: 20
+    fill: Tile_UI_Text
+    hAlignment: r
+    vAlignment: m
+    zPos: 5
+  position: [30, 0]

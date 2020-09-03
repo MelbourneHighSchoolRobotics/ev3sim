@@ -9,6 +9,7 @@ colours:
   UI_fg: "#efedee"
   UI_fg_2: "1f1f1f"
   UI_tilebox_not_complete: "#110b11"
+  Tile_UI_Text: "#c4e3e9"
 
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
@@ -103,8 +104,8 @@ elements:
   text: scoreSum
   hAlignment: r
   vAlignment: baseline
-  fill: "UI_fg_2"
-  font_size: 16
+  fill: Tile_UI_Text
+  font_size: 20
   position: [-110, 0]
   zPos: 5
   key: rescueScoreSum

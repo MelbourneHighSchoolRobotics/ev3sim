@@ -12,11 +12,17 @@ class CompletedChecker(BaseRescueChecker):
     completed = False
 
     def onSpawn(self):
+        super().onSpawn()
         self.initial_fill = self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill
     
     def onReset(self):
+        super().onReset()
         self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = self.initial_fill
         self.completed = False
+
+    @property
+    def maxScore(self):
+        return self.COMPLETE_SCORE
 
     def onNewFollowPoint(self, completed):
         if not self.completed:
@@ -36,6 +42,6 @@ class CompletedChecker(BaseRescueChecker):
                 total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
             ):
                 self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = "#00ff00"
-                self.rescue.incrementScore(self.COMPLETE_SCORE)
+                self.incrementScore(self.COMPLETE_SCORE)
                 self.completed = True
                 print(f"Completed tile {self.index}")
