@@ -18,8 +18,9 @@ class BaseRescueChecker:
     def decrementScore(self, amount):
         self.setScore(self.local_score - amount)
 
-    def setScore(self, amount):
-        self.rescue.incrementScore(amount - self.local_score)
+    def setScore(self, amount, send_to_rescue=True):
+        if send_to_rescue:
+            self.rescue.incrementScore(amount - self.local_score)
         self.local_score = amount
         self.rescue.tiles[self.index]['ui_spawned'].children[-1].visual.text = f"{self.local_score}/{self.maxScore}"
 
@@ -27,7 +28,7 @@ class BaseRescueChecker:
         pass
 
     def onReset(self):
-        self.setScore(0)
+        self.setScore(0, send_to_rescue=False)
 
     def onNewFollowPoint(self, completed):
         pass
