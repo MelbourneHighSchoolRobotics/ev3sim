@@ -12,6 +12,8 @@ You can install this package using pip as follows:
 
     python -m pip install -U ev3sim
 
+(This command also updates ev3sim if you already have it installed.)
+
 After this, any new command prompt or terminal opened should have access to two new commands, ``ev3sim`` and ``ev3attach``.
 
 You can check this is the case by opening command prompt and typing ``ev3sim -h``. You should get some explanation of the use of this program.
