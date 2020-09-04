@@ -44,11 +44,14 @@ def main(passed_args = None):
     print_builtin = print
     def print_mock(*objects, sep=' ', end='\n', **kwargs):
         message = sep.join(str(obj) for obj in objects) + end
-        source = shared_data['thread_ids'][threading.get_ident()]
-        shared_data['actions_queue'].put(('send_log', (message, source)))
-        if not args.send_logs:
-            print_builtin(message, end='', **kwargs)
-
+        thread_id = threading.get_ident()
+        if thread_id in shared_data['thread_ids']:
+            source = shared_data['thread_ids'][thread_id]
+            shared_data['actions_queue'].put(('send_log', (message, source)))
+            if not args.send_logs:
+                print_builtin(message, end='', **kwargs)
+        else:
+            print_builtin(*objects, sep=sep, end=end, **kwargs)
     @mock.patch('builtins.print', print_mock)
     def run_simulation():
         class CommunicationsError(Exception): pass
