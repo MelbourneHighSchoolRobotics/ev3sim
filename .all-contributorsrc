@@ -78,6 +78,15 @@
         "question",
         "review"
       ]
+    },
+    {
+      "login": "Juicymangoes123",
+      "name": "Juicymangoes123",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/53684212?v=4",
+      "profile": "https://github.com/Juicymangoes123",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
