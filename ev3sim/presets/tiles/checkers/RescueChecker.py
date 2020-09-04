@@ -1,7 +1,7 @@
 class BaseRescueChecker:
     # Does nothing.
 
-    def __init__(self, follow_points, tileIndex, rescueController):
+    def __init__(self, follow_points, tileIndex, rescueController, **kwargs):
         self.follow_points = follow_points
         self.index = tileIndex
         self.rescue = rescueController

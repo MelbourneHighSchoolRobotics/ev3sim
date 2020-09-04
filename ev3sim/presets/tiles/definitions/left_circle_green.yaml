@@ -33,4 +33,8 @@ elements:
   key: tile
   position: [0, 0]
 ui: tiles/ui/shortcut.yaml
-checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker # TODO: Add shortcut checker.
+checker: ev3sim.presets.tiles.checkers.ShortcutChecker.ShortcutChecker
+checker_kwargs:
+  shortcut_paths:
+  - [0, 0, 'enter']
+  - [0, 0, 'exit']

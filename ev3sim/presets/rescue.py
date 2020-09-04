@@ -83,7 +83,7 @@ class RescueInteractor(IInteractor):
                             self.tiles[-1]['follows'][-1][-1].append(local_space_to_world_space(np.array(point2), tile.get('rotation', 0) * np.pi / 180, base_pos))
                 else:
                     self.tiles[-1]['follows'].append(local_space_to_world_space(np.array(point), tile.get('rotation', 0) * np.pi / 180, base_pos))
-            self.tiles[-1]['checker'] = klass(self.tiles[-1]['follows'], i, self)
+            self.tiles[-1]['checker'] = klass(self.tiles[-1]['follows'], i, self, **t.get('checker_kwargs', {}))
             ScriptLoader.instance.loadElements(t['elements'])
 
     def _recurseObj(self, obj, indicies):
