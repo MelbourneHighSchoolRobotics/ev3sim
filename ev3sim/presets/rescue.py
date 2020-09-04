@@ -28,6 +28,8 @@ class RescueInteractor(IInteractor):
 
     TILE_LENGTH = 30
     _pressed = False
+    _touches = 0
+    _touch_points = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -136,6 +138,10 @@ class RescueInteractor(IInteractor):
         ScriptLoader.instance.object_map['rescueBGTop'].position = (-146.6, self.tileUIHeight / 2)
         ScriptLoader.instance.object_map['rescueBGBottom'].position = (-146.6, -self.tileUIHeight / 2)
         ScriptLoader.instance.object_map['rescueScoreSum'].position = (-110, -self.tileUIHeight / 2 + self.TILE_UI_PADDING / 2)
+        ScriptLoader.instance.object_map['touchesTitle'].position = (ScriptLoader.instance.object_map['touchesTitle'].position[0], self.tileUIHeight / 2 - self.TILE_UI_PADDING / 2)
+        ScriptLoader.instance.object_map['touchesCount'].position = (ScriptLoader.instance.object_map['touchesCount'].position[0], self.tileUIHeight / 2 - self.TILE_UI_PADDING / 2)
+        ScriptLoader.instance.object_map['touchesScore'].position = (ScriptLoader.instance.object_map['touchesScore'].position[0], self.tileUIHeight / 2 - self.TILE_UI_PADDING / 2)
+        self.touchesChanged()
 
     def locateBots(self):
         self.robots = []
@@ -209,6 +215,7 @@ class RescueInteractor(IInteractor):
         spawn_point = self.tiles[tileIndex]['follows'][0]
         for i in range(len(self.robots)):
             self.robots[i].body.position += spawn_point - self.bot_follows[i].body.position
+        self.touchBot()
 
     def resetFollows(self):
         self.current_follow = None
@@ -225,6 +232,9 @@ class RescueInteractor(IInteractor):
     def reset(self):
         self.resetPositions()
         self.time_tick = 0
+        self._touches = 0
+        self._touch_points = 0
+        self.touchesChanged()
         self.setScore(0)
         self.resetFollows()
         for x in range(len(self.tiles)):
@@ -296,3 +306,17 @@ class RescueInteractor(IInteractor):
                     self.reset()
                 self._pressed = False
             if len(shapes) == 0: self._pressed = False
+
+    TOUCH_PENALTY = 5
+    MAX_TOUCH_PENALTY = 20
+
+    def touchBot(self):
+        self._touches += 1
+        penalty = min(self.TOUCH_PENALTY, self.MAX_TOUCH_PENALTY - self._touch_points)
+        self._touch_points += penalty
+        self.decrementScore(penalty)
+        self.touchesChanged()
+
+    def touchesChanged(self):
+        ScriptLoader.instance.object_map['touchesCount'].text = str(self._touches)
+        ScriptLoader.instance.object_map['touchesScore'].text = str(-self._touch_points)

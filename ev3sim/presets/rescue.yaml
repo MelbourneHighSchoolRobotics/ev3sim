@@ -84,6 +84,36 @@ elements:
   zPos: 4.5
   key: rescueBGMid
 - type: visual
+  name: Text
+  text: "Touches"
+  font_size: 16
+  fill: Tile_UI_Text
+  hAlignment: l
+  vAlignment: baseline
+  position: [-142, 0]
+  zPos: 5
+  key: touchesTitle
+- type: visual
+  name: Text
+  text: "1"
+  font_size: 20
+  fill: Tile_UI_Text
+  hAlignment: l
+  vAlignment: baseline
+  position: [-125, 0]
+  zPos: 5
+  key: touchesCount
+- type: visual
+  name: Text
+  text: "-10"
+  font_size: 20
+  fill: Tile_UI_Text
+  hAlignment: r
+  vAlignment: baseline
+  position: [-110, 0]
+  zPos: 5
+  key: touchesScore
+- type: visual
   name: Image
   image_path: ui/rescue_bg_top.png
   hAlignment: l
@@ -105,7 +135,7 @@ elements:
   hAlignment: r
   vAlignment: baseline
   fill: Tile_UI_Text
-  font_size: 20
+  font_size: 24
   position: [-110, 0]
   zPos: 5
   key: rescueScoreSum
