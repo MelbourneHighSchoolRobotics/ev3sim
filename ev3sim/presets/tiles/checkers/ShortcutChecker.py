@@ -1,3 +1,5 @@
+from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.objects.base import objectFactory
 from ev3sim.presets.tiles.checkers.CompletedChecker import CompletedChecker
 
 class ShortcutChecker(CompletedChecker):
@@ -15,9 +17,42 @@ class ShortcutChecker(CompletedChecker):
         for shortcut in self.shortcuts:
             assert shortcut[2] in ("enter", "exit"), f"Invalid shortcut third value: {shortcut[2]} should be 'enter' or 'exit'"
 
+    def onSpawn(self):
+        super().onSpawn()
+        # This is a rectangle which will contain the completion rects.
+        bounding = self.rescue.tiles[self.index]["ui_spawned"].children[1]
+        self.original_fill = bounding.visual.fill
+        completion_rect_args = [
+            {
+                'type': 'object',
+                'physics': False,
+                'visual': {
+                    'name': 'Rectangle',
+                    'width': bounding.visual.width,
+                    'height': bounding.visual.height / len(self.shortcuts),
+                    'fill': self.original_fill,
+                    'stroke': '#000000',
+                    'stroke_width': 0,
+                    'zPos': 5.5,
+                },
+                'position': [0, ((len(self.shortcuts)-1)/2 - x) * bounding.visual.height / len(self.shortcuts)]
+            }
+            for x in range(len(self.shortcuts))
+        ]
+        cur_length = len(bounding.children)
+        self.completion_rects = []
+        for i, child in enumerate(completion_rect_args):
+            child['key'] = bounding.key + f'-child-{i+cur_length}'
+            bounding.children.append(objectFactory(**child))
+            self.completion_rects.append(bounding.children[-1])
+            ScreenObjectManager.instance.registerObject(bounding.children[-1], bounding.children[-1].key)
+            bounding.children[-1].parent = bounding
+
     def onReset(self):
         super().onReset()
         self.shortcut_complete = [False for s in self.shortcuts]
+        for rect in self.completion_rects:
+            rect.visual.fill = self.original_fill
 
     @property
     def maxScore(self):
@@ -59,6 +94,7 @@ class ShortcutChecker(CompletedChecker):
                 pre_good = sum(pre_path_points) / len(pre_path_points) >= self.PATH_COMPLETION_PCT
                 if enter_good and pre_good:
                     self.shortcut_complete[a] = True
+                    self.completion_rects[a].visual.fill = '#00ff00'
                     self.incrementScore(self.SHORTCUT_SCORE)
             elif shortcut[2] == 'exit':
                 # Check that we've exited this path correctly.
@@ -76,5 +112,6 @@ class ShortcutChecker(CompletedChecker):
                 post_good = sum(post_path_points) / len(post_path_points) >= self.PATH_COMPLETION_PCT
                 if enter_good and post_good:
                     self.shortcut_complete[a] = True
+                    self.completion_rects[a].visual.fill = '#00ff00'
                     self.incrementScore(self.SHORTCUT_SCORE)
 
