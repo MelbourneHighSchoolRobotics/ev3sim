@@ -1,6 +1,6 @@
 # ev3sim
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ![Python package](https://github.com/MelbourneHighSchoolRobotics/ev3sim/workflows/Python%20package/badge.svg)
@@ -28,6 +28,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/jtbui20"><img src="https://avatars2.githubusercontent.com/u/29140560?v=4" width="100px;" alt=""/><br /><sub><b>James Bui</b></sub></a><br /><a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/commits?author=jtbui20" title="Code">💻</a> <a href="#design-jtbui20" title="Design">🎨</a> <a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/pulls?q=is%3Apr+reviewed-by%3Ajtbui20" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/platy11"><img src="https://avatars0.githubusercontent.com/u/17060983?v=4" width="100px;" alt=""/><br /><sub><b>Max</b></sub></a><br /><a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/commits?author=platy11" title="Code">💻</a> <a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/pulls?q=is%3Apr+reviewed-by%3Aplaty11" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/glipR"><img src="https://avatars1.githubusercontent.com/u/37640160?v=4" width="100px;" alt=""/><br /><sub><b>Jackson Goerner</b></sub></a><br /><a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/commits?author=glipR" title="Code">💻</a> <a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/commits?author=glipR" title="Documentation">📖</a> <a href="#maintenance-glipR" title="Maintenance">🚧</a> <a href="#ideas-glipR" title="Ideas, Planning, & Feedback">🤔</a> <a href="#question-glipR" title="Answering Questions">💬</a> <a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/pulls?q=is%3Apr+reviewed-by%3AglipR" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/Juicymangoes123"><img src="https://avatars0.githubusercontent.com/u/53684212?v=4" width="100px;" alt=""/><br /><sub><b>Juicymangoes123</b></sub></a><br /><a href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/commits?author=Juicymangoes123" title="Documentation">📖</a></td>
   </tr>
 </table>
 
