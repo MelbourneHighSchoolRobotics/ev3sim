@@ -74,47 +74,71 @@ class RescueInteractor(IInteractor):
             klass = getattr(importlib.import_module(mname), cname)
             with open(find_abs(t['ui'], allowed_areas=['local/presets/', 'local', 'package/presets/', 'package']), 'r') as f:
                 self.tiles[-1]['ui_elem'] = yaml.safe_load(f)
-            for j, (x, y) in enumerate(t['follow_points']):
-                self.tiles[-1]['follows'].append(local_space_to_world_space(np.array([x, y]), tile.get('rotation', 0) * np.pi / 180, base_pos))
+            for j, point in enumerate(t['follow_points']):
+                if isinstance(point[0], (list, tuple)):
+                    self.tiles[-1]['follows'].append([])
+                    for path in point:
+                        self.tiles[-1]['follows'][-1].append([])
+                        for point2 in path:
+                            self.tiles[-1]['follows'][-1][-1].append(local_space_to_world_space(np.array(point2), tile.get('rotation', 0) * np.pi / 180, base_pos))
+                else:
+                    self.tiles[-1]['follows'].append(local_space_to_world_space(np.array(point), tile.get('rotation', 0) * np.pi / 180, base_pos))
             self.tiles[-1]['checker'] = klass(self.tiles[-1]['follows'], i, self)
             ScriptLoader.instance.loadElements(t['elements'])
 
+    def _recurseObj(self, obj, indicies):
+        for index in indicies:
+            obj = obj[index]
+        return obj
+
     def collidedFollowPoint(self, follow_indexes):
-        if self.follow_completed[follow_indexes[0]][follow_indexes[1]]:
+        if self._recurseObj(self.follow_completed[follow_indexes[0]], follow_indexes[1:]):
             return
         self.current_follow = follow_indexes
-        self.follow_completed[follow_indexes[0]][follow_indexes[1]] = True
-        self.tiles[follow_indexes[0]]['follow_colliders'][follow_indexes[1]].visual.fill = '#00ff00'
+        self._recurseObj(self.follow_completed[follow_indexes[0]], follow_indexes[1:-1])[follow_indexes[-1]] = True
+        self._recurseObj(self.tiles[follow_indexes[0]]['follow_colliders'], follow_indexes[1:]).visual.fill = '#00ff00'
         self.tiles[follow_indexes[0]]['checker'].onNewFollowPoint(self.follow_completed[follow_indexes[0]])
+
+    def _spawnFollowAtLocationWithIndicies(self, position, indicies):
+        key = 'Tile-follow-' + '-'.join(list(map(str, indicies)))
+        obj = objectFactory(**{
+            'collider': 'inherit',
+            'visual': {
+                'name': 'Circle',
+                'radius': self.FOLLOW_POINT_RADIUS,
+                'fill': '#ff0000' if self.SHOW_FOLLOW_POINTS else None,
+                'stroke_width': 0,
+                'sensorVisible': False,
+                'zPos': self.maxZpos + 0.2,
+            },
+            'position': position,
+            'physics': True,
+            'static': True,
+            'key': key,
+        })
+        obj.shape.filter = pymunk.ShapeFilter(categories=self.FOLLOW_POINT_CATEGORY)
+        obj.shape.sensor = True
+        obj.shape._follow_indexes = indicies
+        obj.shape.collision_type = self.FOLLOW_POINT_COLLISION_TYPE
+        World.instance.registerObject(obj)
+        if self.SHOW_FOLLOW_POINTS:
+            ScreenObjectManager.instance.registerObject(obj, obj.key)
+        return obj
 
     def spawnFollowPointPhysics(self):
         for i, tile in enumerate(self.tiles):
             tile['follow_colliders'] = []
             for j, pos in enumerate(tile['follows']):
-                obj = objectFactory(**{
-                    'collider': 'inherit',
-                    'visual': {
-                        'name': 'Circle',
-                        'radius': self.FOLLOW_POINT_RADIUS,
-                        'position': pos,
-                        'fill': '#ff0000' if self.SHOW_FOLLOW_POINTS else None,
-                        'stroke_width': 0,
-                        'sensorVisible': False,
-                        'zPos': self.maxZpos + 0.2,
-                    },
-                    'position': pos,
-                    'physics': True,
-                    'static': True,
-                    'key': f'Tile-{i}-follow-{j}',
-                })
-                obj.shape.filter = pymunk.ShapeFilter(categories=self.FOLLOW_POINT_CATEGORY)
-                obj.shape.sensor = True
-                obj.shape._follow_indexes = (i, j)
-                obj.shape.collision_type = self.FOLLOW_POINT_COLLISION_TYPE
-                World.instance.registerObject(obj)
-                if self.SHOW_FOLLOW_POINTS:
-                    ScreenObjectManager.instance.registerObject(obj, obj.key)
-                tile['follow_colliders'].append(obj)
+                if isinstance(pos[0], (list, tuple)):
+                    tile['follow_colliders'].append([])
+                    for k, path in enumerate(pos):
+                        tile['follow_colliders'][-1].append([])
+                        for l, pos2 in enumerate(path):
+                            obj = self._spawnFollowAtLocationWithIndicies(pos2, (i, j, k, l))
+                            tile['follow_colliders'][-1][-1].append(obj)
+                else:
+                    obj = self._spawnFollowAtLocationWithIndicies(pos, (i, j))
+                    tile['follow_colliders'].append(obj)
 
     TILE_UI_ELEM_HEIGHT = 10
     TILE_UI_PADDING = 20
@@ -221,13 +245,25 @@ class RescueInteractor(IInteractor):
         self.current_follow = None
         self.follow_completed = [
             [
-                False for x in y['follows']
+                [
+                    [
+                        False
+                        for point in path
+                    ]
+                    for path in x
+                ] if isinstance(x, (list, tuple)) else False
+                for x in y['follows']
             ]
             for y in self.tiles
         ]
-        for x in range(len(self.follow_completed)):
-            for y in range(len(self.follow_completed[x])):
-                self.tiles[x]['follow_colliders'][y].visual.fill = '#ff0000'
+        for x in range(len(self.tiles)):
+            for y in range(len(self.tiles[x]['follow_colliders'])):
+                if isinstance(self.tiles[x]['follow_colliders'][y], (list, tuple)):
+                    for path in self.tiles[x]['follow_colliders'][y]:
+                        for w in range(len(path)):
+                            path[w].visual.fill = '#ff0000'
+                else:
+                    self.tiles[x]['follow_colliders'][y].visual.fill = '#ff0000'
 
     def reset(self):
         self.resetPositions()
@@ -265,7 +301,7 @@ class RescueInteractor(IInteractor):
             # Ensure visual is not 1 frame behind.
             self.bot_follows[i].position = self.robots[i].body.position
         if self.current_follow is not None and not World.instance.paused:
-            distance = magnitude_sq(self.bot_follows[i].position - self.tiles[self.current_follow[0]]['follows'][self.current_follow[1]])
+            distance = magnitude_sq(self.bot_follows[i].position - self._recurseObj(self.tiles[self.current_follow[0]]['follows'], self.current_follow[1:]))
             if distance > self.MAX_FOLLOW_DIST * self.MAX_FOLLOW_DIST:
                 print("Lack of Progress!")
                 World.instance.paused = True

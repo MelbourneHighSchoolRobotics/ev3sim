@@ -26,11 +26,28 @@ class CompletedChecker(BaseRescueChecker):
 
     def onNewFollowPoint(self, completed):
         if not self.completed:
+            total_points = len(completed)
             total_complete = 0
             total_start = 0
             total_end = 0
             for x in range(len(completed)):
-                if completed[x]:
+                if isinstance(completed[x], (list, tuple)):
+                    for path in completed[x]:
+                        print(len(path))
+                        path_amount = 0
+                        for p in path:
+                            if p:
+                                path_amount += 1
+                        print(path_amount, len(path))
+                        if path_amount / len(path) >= self.FOLLOW_POINT_PERCENT:
+                            # Path completed, use this one.
+                            total_complete += path_amount
+                            total_points += len(path) - 1
+                            break
+                    else:
+                        # No paths complete
+                        return
+                elif completed[x]:
                     total_complete += 1
                     if x < self.FOLLOW_POINT_START_END:
                         total_start += 1
