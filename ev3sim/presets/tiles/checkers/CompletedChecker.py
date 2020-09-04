@@ -33,12 +33,10 @@ class CompletedChecker(BaseRescueChecker):
             for x in range(len(completed)):
                 if isinstance(completed[x], (list, tuple)):
                     for path in completed[x]:
-                        print(len(path))
                         path_amount = 0
                         for p in path:
                             if p:
                                 path_amount += 1
-                        print(path_amount, len(path))
                         if path_amount / len(path) >= self.FOLLOW_POINT_PERCENT:
                             # Path completed, use this one.
                             total_complete += path_amount
