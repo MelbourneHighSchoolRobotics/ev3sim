@@ -42,6 +42,7 @@ class ControllableBot(Robot):
         self.compass : CompassSensor = self.getDevice('in4')
 
     def onSpawn(self):
+        super().onSpawn()
         self.compass.calibrate()
 
     def tick(self, tick):
