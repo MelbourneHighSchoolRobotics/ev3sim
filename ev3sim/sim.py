@@ -11,7 +11,7 @@ parser.add_argument('--preset', '-p', type=str, help="Path of preset file to loa
 parser.add_argument('robots', nargs='+', help='Path of robots to load. Separate each robot path by a space.')
 parser.add_argument('--batch', '-b', action='store_true', help='Whether to use a batched command to run this simulation.', dest='batched')
 parser.add_argument('--bind_addr', default='[::1]:50051', metavar='address:port', help="The IP address and port to run on (you shouldn't need to change this). Default is [::1]:50051 (localhost only). Use [::]:50051 to listen on all network interfaces.")
-parser.add_argument('--seed', type=int, default=None, help='Seed help.')
+parser.add_argument('--seed', '-s', type=int, default=None, help='Used to seed randomisation, integer from 0 to 2^32-1. Will generate randomly if left blank.')
 parser.add_argument('--randomise_sensors', '-r', action='store_true', help='Enables sensor randomisation.')
 
 def main(passed_args = None):
