@@ -35,9 +35,9 @@ class ColorSensor(ColourSensorMixin, Device):
     _b_calibration_max = 300
 
     def calculateBias(self):
-        self.__r_bias = self._interactor.random()*150/255 + 250/255
-        self.__g_bias = self._interactor.random()*150/255 + 250/255
-        self.__b_bias = self._interactor.random()*150/255 + 250/255
+        self.__r_bias = (self._interactor.random() if ScriptLoader.RANDOMISE_SENSORS else 1)*150/255 + 250/255
+        self.__g_bias = (self._interactor.random() if ScriptLoader.RANDOMISE_SENSORS else 1)*150/255 + 250/255
+        self.__b_bias = (self._interactor.random() if ScriptLoader.RANDOMISE_SENSORS else 1)*150/255 + 250/255
         self.bias_calculated = True
 
     def raw(self):

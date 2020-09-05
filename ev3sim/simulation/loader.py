@@ -18,6 +18,8 @@ class ScriptLoader:
     # TIME_SCALE simply affects the speed at which the simulation runs 
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
+    RANDOMISE_SENSORS = False
+
     instance: 'ScriptLoader' = None
     running = True
 
