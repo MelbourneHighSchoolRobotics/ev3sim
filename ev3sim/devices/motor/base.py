@@ -3,7 +3,11 @@ from ev3sim.simulation.loader import ScriptLoader
 
 class MotorMixin:
 
-    MAX_FORCE = 10000
+    THEORETICAL_MAX_FORCE = 10000
+    # Possible multipliers for the theoretical maximum force.
+    MIN_FORCE_PCT = 0.9
+    MAX_FORCE_PCT = 1.05
+
     time_wait = -1
 
     applied_force = 0
@@ -18,6 +22,11 @@ class MotorMixin:
     counts_per_rot = 3
 
     def _updateTime(self, tick):
+        if tick == -1:
+            if ScriptLoader.RANDOMISE_SENSORS:
+                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT))
+            else:
+                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
             if self.time_wait <= 0:

@@ -27,11 +27,11 @@ class MotorInteractor(IDeviceInteractor):
 class LargeMotor(MotorMixin, Device):
 
     driver_name = 'lego-ev3-l-motor'
-    MAX_FORCE = 1000
+    THEORETICAL_MAX_FORCE = 1000
     ROTATIONS_PER_SECOND_AT_MAX = 10
 
 class MediumMotor(MotorMixin, Device):
 
     driver_name = 'lego-ev3-m-motor'
-    MAX_FORCE = 500
+    THEORETICAL_MAX_FORCE = 500
     ROTATIONS_PER_SECOND_AT_MAX = 5
