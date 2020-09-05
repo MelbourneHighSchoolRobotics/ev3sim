@@ -64,12 +64,12 @@ class CyclicMixin:
     
 class RandomDistributionMixin:
 
-    def __init__(self, minimum, maximum, num_points, distribution_var):
+    def __init__(self, minimum, maximum, num_points, distribution_var, randomState):
         """Generate the points using a normal distribution"""
         super().__init__(minimum, maximum, num_points)
         # Redefine self.points
         step = (self.max - self.min) / (num_points - 1)
-        steps = Randomiser.getGlobalRandom().normal(loc=step, scale=np.sqrt(distribution_var), size=(num_points-2, ))
+        steps = randomState.normal(loc=step, scale=np.sqrt(distribution_var), size=(num_points-2, ))
         self.points = [self.min]
         cur_val = self.min
         for step in steps:
