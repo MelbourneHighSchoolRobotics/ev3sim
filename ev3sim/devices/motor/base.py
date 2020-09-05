@@ -1,5 +1,6 @@
 import numpy as np
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.devices.utils import NearestValue
 
 class MotorMixin:
 
@@ -7,6 +8,8 @@ class MotorMixin:
     # Possible multipliers for the theoretical maximum force.
     MIN_FORCE_PCT = 0.9
     MAX_FORCE_PCT = 1.05
+    # How many fixed speeds the motors support (This is between +ve and negative, should be odd so that 0 is fixed).
+    FIXED_SPEED_POINTS = 11
 
     time_wait = -1
 
@@ -27,6 +30,7 @@ class MotorMixin:
                 self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT))
             else:
                 self.MAX_FORCE = self.THEORETICAL_MAX_FORCE
+            self.speed_selection = NearestValue(-100, 100, self.FIXED_SPEED_POINTS if ScriptLoader.RANDOMISE_SENSORS else 201)
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
             if self.time_wait <= 0:
@@ -42,6 +46,7 @@ class MotorMixin:
         :param float speed: Any number from -100 to 100. Negative values turn the motors the opposite direction.
         """
         assert - 100 <= speed <= 100, "Speed value is out of bounds."
+        speed = self.speed_selection.get_closest(speed)
         self.applied_force = speed * self.MAX_FORCE / 100
         # Ensure this overwrites further 
         self.time_wait = -1
