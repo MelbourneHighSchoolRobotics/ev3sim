@@ -68,13 +68,8 @@ class RandomDistributionMixin:
         """Generate the points using a normal distribution"""
         super().__init__(minimum, maximum, num_points)
         # Redefine self.points
-        step = (self.max - self.min) / (num_points - 1)
-        steps = randomState.normal(loc=step, scale=np.sqrt(distribution_var), size=(num_points-2, ))
-        self.points = [self.min]
-        cur_val = self.min
-        for step in steps:
-            cur_val += step
-            cur_val = min(max(cur_val, self.min), self.max)
-            self.points.append(cur_val)
-        self.points.append(self.max)
+        diffs = randomState.normal(loc=0, scale=np.sqrt(distribution_var), size=(num_points-2, ))
+        for x in range(num_points - 2):
+            self.points[x+1] += diffs[x]
+            self.points[x+1] = min(max(self.points[x+1], self.min), self.max)
         self.points.sort()
