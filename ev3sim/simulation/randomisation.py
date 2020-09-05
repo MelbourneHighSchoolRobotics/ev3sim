@@ -1,6 +1,5 @@
 # Singleton instance for generating random numbers, so it can be globally seeded and keep multiple random instances available
 import numpy.random as rd
-from ctypes import c_uint32
 
 class Randomiser:
 
