@@ -5,9 +5,13 @@ from queue import Queue
 import time
 from ev3sim.file_helper import find_abs
 import yaml
-from ev3sim.simulation.loader import runFromConfig
+from ev3sim.simulation.loader import runFromConfig, ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 
-def single_run(preset_filename, robots, bind_addr):
+def single_run(preset_filename, robots, bind_addr, seed, randomise_sensors):
+    Randomiser.createGlobalRandomiserWithSeed(seed)
+    ScriptLoader.RANDOMISE_SENSORS = randomise_sensors
+
     preset_file = find_abs(preset_filename, allowed_areas=['local', 'local/presets/', 'package', 'package/presets/'])
     with open(preset_file, 'r') as f:
         config = yaml.safe_load(f)

@@ -3,8 +3,6 @@ import sys
 import time
 from random import randint, seed
 from ev3sim.file_helper import find_abs
-from ev3sim.simulation.randomisation import Randomiser
-from ev3sim.simulation.loader import ScriptLoader
 
 parser = argparse.ArgumentParser(description='Run the simulation, include some robots.')
 parser.add_argument('--preset', '-p', type=str, help="Path of preset file to load. (You shouldn't need to change this, by default it is presets/soccer.yaml)", default='soccer.yaml', dest='preset')
@@ -20,23 +18,20 @@ def main(passed_args = None):
 
     args = parser.parse_args(passed_args[1:])
 
-    ScriptLoader.RANDOMISE_SENSORS = args.randomise_sensors
-
     if args.seed is None:
         seed(time.time())
         # Seed for numpy randomisation is 0 to 2^32-1, inclusive.
         args.seed = randint(0, (1 << 32) - 1)
 
     print(f"Simulating with seed {args.seed}")
-    Randomiser.createGlobalRandomiserWithSeed(args.seed)
 
     if args.batched:
         from ev3sim.batched_run import batched_run
         assert len(args.robots) == 1, "Exactly one batched command file should be provided."
-        batched_run(args.robots[0], args.bind_addr)
+        batched_run(args.robots[0], args.bind_addr, args.seed, args.randomise_sensors)
     else:
         from ev3sim.single_run import single_run
-        single_run(args.preset, args.robots, args.bind_addr)
+        single_run(args.preset, args.robots, args.bind_addr, args.seed, args.randomise_sensors)
 
 if __name__ == '__main__':
     main()
