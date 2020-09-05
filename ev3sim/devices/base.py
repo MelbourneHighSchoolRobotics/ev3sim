@@ -3,6 +3,7 @@ import numpy as np
 import ev3sim.visual.utils as utils
 from ev3sim.simulation.interactor import IInteractor, fromOptions
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.objects.base import objectFactory
 from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.visual.manager import ScreenObjectManager
@@ -43,6 +44,8 @@ class IDeviceInteractor(IInteractor):
 
     name = 'UNNAMED'
 
+    port_key = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.device_class = kwargs.get('device')
@@ -77,6 +80,9 @@ class IDeviceInteractor(IInteractor):
                 self.physical_object.position,
             )
             obj.rotation = self.physical_object.rotation + self.relative_rotation
+
+    def random(self):
+        return Randomiser.getPortRandom(self.port_key).random()
 
 def initialise_device(deviceData, parentObj, index):
     classes = find_abs('devices/classes.yaml')

@@ -1,6 +1,7 @@
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import stop_on_pause
+from ev3sim.simulation.randomisation import Randomiser
 
 def add_devices(parent, device_info):
     devices = []
@@ -21,7 +22,7 @@ def add_to_key(obj, prefix):
         for v in obj:
             add_to_key(v, prefix)
 
-def initialise_bot(topLevelConfig, filename, prefix):
+def initialise_bot(topLevelConfig, filename, prefix, path_index):
     # Returns the robot class, as well as a completed robot to add to the elements list.
     import yaml
     with open(filename, 'r') as f:
@@ -40,7 +41,8 @@ def initialise_bot(topLevelConfig, filename, prefix):
             robot = klass()
             ScriptLoader.instance.active_scripts.append(RobotInteractor(**{
                 'robot': robot,
-                'base_key': bot_config['key']
+                'base_key': bot_config['key'],
+                'path_index': path_index,
             }))
             robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
@@ -54,11 +56,14 @@ class RobotInteractor(IInteractor):
         self.robot_class : Robot = kwargs.get('robot')
         self.robot_class._interactor = self
         self.robot_key = kwargs.get('base_key')
+        self.path_index = kwargs.get('path_index')
     
     def connectDevices(self):
         self.devices = {}
         for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
             self.devices[interactor.port] = interactor.device_class
+            interactor.port_key = f"{self.path_index}-{interactor.port}"
+            Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
     def sendDeviceInitTicks(self):
