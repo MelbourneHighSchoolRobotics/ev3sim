@@ -2,6 +2,7 @@ import math
 import numpy as np
 from ev3sim.objects.base import objectFactory
 from ev3sim.simulation.world import World
+from ev3sim.simulation.loader import ScriptLoader
 
 class InfraredSensorMixin:
 
@@ -27,25 +28,35 @@ class InfraredSensorMixin:
 
     MAX_STRENGTH = 9
 
-    def _sensorStrength(self, relativeBearing, distance):
+    SUBSENSOR_BIAS_MAGNITUDE = 5
+
+    def generateBias(self):
+        self.distance_biases = [
+            self._interactor.random() * self.SUBSENSOR_BIAS_MAGNITUDE
+            if ScriptLoader.RANDOMISE_SENSORS else 0
+            for _ in range(5)
+        ]
+
+    def _sensorStrength(self, relativeBearing, distance, sensorIndex):
+        perceived_distance = distance + self.distance_biases[sensorIndex]
         while relativeBearing > np.pi:
             relativeBearing -= 2*np.pi
         while relativeBearing < -np.pi:
             relativeBearing += 2*np.pi
-        if distance > self.MAX_SENSOR_RANGE:
+        if perceived_distance > self.MAX_SENSOR_RANGE:
             return 0
         if abs(relativeBearing) > self.SENSOR_BEARING_DROPOFF_MAX:
             return 0
         # At halfway to the sensor, this value is 1/4.
-        sq_dist = pow(distance / self.MAX_SENSOR_RANGE, 2)
+        sq_dist = pow(perceived_distance / self.MAX_SENSOR_RANGE, 2)
         exclude_bearing = (1 - sq_dist) * 9
         bearing_mult = 1 - abs(relativeBearing) / self.SENSOR_BEARING_DROPOFF_MAX
         return int(math.floor(exclude_bearing * bearing_mult + 0.5))
 
     def _sensorValues(self, relativeBearing, distance):
         return [
-            self._sensorStrength(relativeBearing-b, distance)
-            for b in self.SENSOR_BEARINGS
+            self._sensorStrength(relativeBearing-b, distance, i)
+            for i, b in enumerate(self.SENSOR_BEARINGS)
         ]
 
     def _predict(self, sensorValues):
