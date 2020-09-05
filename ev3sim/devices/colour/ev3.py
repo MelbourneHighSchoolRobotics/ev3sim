@@ -1,7 +1,7 @@
-import random
 from ev3sim.devices.base import Device, IDeviceInteractor
 from ev3sim.devices.colour.base import ColourSensorMixin
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import worldspace_to_screenspace
 
@@ -28,16 +28,17 @@ class ColorSensor(ColourSensorMixin, Device):
     reasonable and reproduceable values by using the `calibrate_white` method.
     """
 
+    bias_calculated = False
+
     _r_calibration_max = 300
     _g_calibration_max = 300
     _b_calibration_max = 300
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Biases should be somewhere between 250/255 and 400/255.
-        self.__r_bias = random.random()*150/255 + 250/255
-        self.__g_bias = random.random()*150/255 + 250/255
-        self.__b_bias = random.random()*150/255 + 250/255
+    def calculateBias(self):
+        self.__r_bias = self._interactor.random()*150/255 + 250/255
+        self.__g_bias = self._interactor.random()*150/255 + 250/255
+        self.__b_bias = self._interactor.random()*150/255 + 250/255
+        self.bias_calculated = True
 
     def raw(self):
         """
@@ -50,6 +51,8 @@ class ColorSensor(ColourSensorMixin, Device):
         return self.saved_raw
 
     def _calc_raw(self):
+        if not self.bias_calculated:
+            self.calculateBias()
         res = self._SenseValueAboutPosition(self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos)))
         # These are 0-255. RAW is meant to be 0-1020 but actually more like 0-300.
         self.saved_raw = [
