@@ -43,6 +43,8 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
                 'robot': robot,
                 'base_key': bot_config['key'],
                 'path_index': path_index,
+                # Don't include directories here, since that shouldn't affect randomisation.
+                'filename': filename.replace('\\', '/').rsplit('/', 1)[-1],
             }))
             robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
@@ -57,12 +59,13 @@ class RobotInteractor(IInteractor):
         self.robot_class._interactor = self
         self.robot_key = kwargs.get('base_key')
         self.path_index = kwargs.get('path_index')
+        self.filename = kwargs.get('filename')
     
     def connectDevices(self):
         self.devices = {}
         for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
             self.devices[interactor.port] = interactor.device_class
-            interactor.port_key = f"{self.path_index}-{interactor.port}"
+            interactor.port_key = f"{self.filename}-{self.path_index}-{interactor.port}"
             Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
