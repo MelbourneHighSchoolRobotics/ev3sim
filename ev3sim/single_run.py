@@ -5,6 +5,7 @@ from queue import Queue
 import time
 from ev3sim.file_helper import find_abs
 import yaml
+from unittest import mock
 from ev3sim.simulation.loader import runFromConfig
 
 def single_run(preset_filename, robots, bind_addr):
@@ -36,6 +37,11 @@ def single_run(preset_filename, robots, bind_addr):
             result.put(('Simulation', e))
             return
         result.put(True)
+
+    # Handle any other settings modified by the preset.
+    settings = config.get('settings', {})
+    for keyword, value in settings.items():
+        run = mock.patch(keyword, value)(run)
 
     comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True)
     sim_thread = Thread(target=run, args=(shared_data, result_bucket), daemon=True)
