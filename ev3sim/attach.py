@@ -235,8 +235,10 @@ def main(passed_args = None):
                 
                 data['last_checked_tick'] = data['tick']
                 def wait_for_tick():
-                    if data['last_checked_tick'] == data['tick']:
-                        with data['condition_updated']:
+                    with data['condition_updated']:
+                        while data['actions_queue'].qsize():
+                            data['condition_updated'].wait(0.1)
+                        if data['last_checked_tick'] == data['tick']:
                             while True:
                                 if data['last_checked_tick'] != data['tick']:
                                     data['last_checked_tick'] = data['tick']
