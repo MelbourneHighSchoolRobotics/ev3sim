@@ -17,6 +17,17 @@ class MotorMixin:
     position_sp = 0
     counts_per_rot = 3
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset()
+
+    def reset(self):
+        self.state = 'holding'
+        self.stop_action = 'hold'
+        self.time_sp = 0
+        self.speed_sp = 0
+        self.position_sp = 0
+
     def _updateTime(self, tick):
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
@@ -108,6 +119,8 @@ class MotorMixin:
                 self.on_for_rotations(self.speed_sp, self.position_sp / self.counts_per_rot, stop_action=self.stop_action)
             elif value == 'stop':
                 self.off()
+            elif value == 'reset':
+                self.reset()
             else:
                 raise ValueError(f'Unhandled write! {attribute} {value}')
         else:
