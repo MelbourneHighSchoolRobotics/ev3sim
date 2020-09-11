@@ -4,26 +4,34 @@ import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process
 
+
 def batched_run(batch_file, bind_addr):
     from ev3sim.single_run import single_run as sim
     from ev3sim.attach import main as attach
 
-    batch_path = find_abs(batch_file, allowed_areas=['local', 'local/batched_commands/', 'package', 'package/batched_commands/'])
-    with open(batch_path, 'r') as f:
+    batch_path = find_abs(
+        batch_file, allowed_areas=["local", "local/batched_commands/", "package", "package/batched_commands/"]
+    )
+    with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 
-    bot_paths = [x['name'] for x in config['bots']]
-    sim_process = Process(target=sim, args=[config['preset_file'], bot_paths, bind_addr])
+    bot_paths = [x["name"] for x in config["bots"]]
+    sim_process = Process(target=sim, args=[config["preset_file"], bot_paths, bind_addr])
 
     script_processes = []
-    for i, bot in enumerate(config['bots']):
-        for script in bot.get('scripts', []):
-            script_processes.append(Process(target=attach, kwargs={
-                'passed_args': ['Useless', '--send_logs', '--simulator_addr', bind_addr, script, f"Robot-{i}"]
-            }))
+    for i, bot in enumerate(config["bots"]):
+        for script in bot.get("scripts", []):
+            script_processes.append(
+                Process(
+                    target=attach,
+                    kwargs={
+                        "passed_args": ["Useless", "--send_logs", "--simulator_addr", bind_addr, script, f"Robot-{i}"]
+                    },
+                )
+            )
 
     sim_process.start()
-    time.sleep(0.5) # Give the gRPC server 500ms to start
+    time.sleep(0.5)  # Give the gRPC server 500ms to start
     for p in script_processes:
         p.start()
 
