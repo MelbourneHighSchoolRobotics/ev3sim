@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#waiting-for-simulation-ticks">Waiting for simulation ticks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#robot-communications">Robot Communications</a></li>
 </ul>
@@ -161,6 +162,20 @@
             
   <div class="section" id="extensions-to-normal-ev3-code">
 <h1>Extensions to normal EV3 Code<a class="headerlink" href="#extensions-to-normal-ev3-code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="waiting-for-simulation-ticks">
+<h2>Waiting for simulation ticks<a class="headerlink" href="#waiting-for-simulation-ticks" title="Permalink to this headline">¶</a></h2>
+<p>As most ev3 programs tend to have a single loop which handles all of the robot’s logic, in the interest of efficiency on simulator we highly recommend you attempt to sync this program loop up with each tick of the simulator.
+This is because running multiple program loops per simulation tick is useless (as sensor values won’t change) and it can degrade the reliability of sensor values in future, if this program is spending a lot of CPU time running these pointless loops.</p>
+<p>You can achieve such a sync with the <code class="docutils literal notranslate"><span class="pre">wait_for_tick</span></code> method from the code helpers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">wait_for_tick</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># Program logic...</span>
+    <span class="n">wait_for_tick</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
 <div class="section" id="simulation-testing">
 <h2>Simulation testing<a class="headerlink" href="#simulation-testing" title="Permalink to this headline">¶</a></h2>
 <p>Since you should be able to use the same code on simulator as on your physical bot, some changes need to be made so the script can detect whether it is running in a simulated environment.
