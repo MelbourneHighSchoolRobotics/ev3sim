@@ -147,7 +147,22 @@ def main(passed_args = None):
                         self.k2, self.k3, self.k4 = data_path
                         self.seek_point = 0
                     
+                    MAXIMUM_TICK_WAIT = 0.1
+
+                    def _ensure_tick_received(self):
+                        if data['last_handled_tick'] != data['tick']:
+                            data['last_handled_tick'] = data['tick']
+                            data['last_tick_time'] = builtin_time()
+                        # Ensure a tick has been received in the past MAXIMUM_TICK_WAIT seconds.
+                        if builtin_time() - data['last_tick_time'] >= self.MAXIMUM_TICK_WAIT:
+                            with data['condition_updated']:
+                                while True:
+                                    if builtin_time() - data['last_tick_time'] < self.MAXIMUM_TICK_WAIT:
+                                        return
+                                    data['condition_updated'].wait(0.1)
+
                     def read(self):
+                        self._ensure_tick_received()
                         if isinstance(data['current_data'][self.k2][self.k3][self.k4], int):
                             res = str(data['current_data'][self.k2][self.k3][self.k4])
                         if isinstance(data['current_data'][self.k2][self.k3][self.k4], str):
@@ -161,6 +176,7 @@ def main(passed_args = None):
                         self.seek_point = i
                     
                     def write(self, value):
+                        self._ensure_tick_received()
                         data['actions_queue'].put(('write', (f'{self.k2} {self.k3} {self.k4}', value.decode())))
                     
                     def flush(self):
@@ -220,6 +236,9 @@ def main(passed_args = None):
                             del data['active_data_handlers'][handler_key]
                             return cond(self.state)
 
+                builtin_time = time.time
+                data['last_tick_time'] = builtin_time()
+                data['last_handled_tick'] = -1
                 def get_time():
                     return data['tick'] / data['tick_rate']
 
