@@ -232,6 +232,16 @@ def main(passed_args = None):
                             if elapsed >= seconds:
                                 return
                             data['condition_updated'].wait(0.1)
+                
+                data['last_checked_tick'] = data['tick']
+                def wait_for_tick():
+                    if data['last_checked_tick'] == data['tick']:
+                        with data['condition_updated']:
+                            while True:
+                                if data['last_checked_tick'] != data['tick']:
+                                    data['last_checked_tick'] = data['tick']
+                                    return
+                                data['condition_updated'].wait(0.1)
 
                 def raiseEV3Error(*args, **kwargs):
                     raise ValueError("This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/")
@@ -360,6 +370,7 @@ def main(passed_args = None):
                 @mock.patch('ev3sim.code_helpers.is_sim', True)
                 @mock.patch('ev3sim.code_helpers.CommServer', MockedCommServer)
                 @mock.patch('ev3sim.code_helpers.CommClient', MockedCommClient)
+                @mock.patch('ev3sim.code_helpers.wait_for_tick', wait_for_tick)
                 @mock.patch('sys.path', fake_path)
                 def run_script(fname):
                     from importlib.machinery import SourceFileLoader
