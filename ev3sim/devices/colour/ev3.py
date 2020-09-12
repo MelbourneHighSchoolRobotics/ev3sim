@@ -40,17 +40,17 @@ class ColorSensor(ColourSensorMixin, Device):
         self.__r_bias = (
             (self._interactor.random() * 150 / 255 + 250 / 255)
             if ScriptLoader.RANDOMISE_SENSORS
-            else self._r_calibration_max
+            else self._r_calibration_max / 255
         )
         self.__g_bias = (
             (self._interactor.random() * 150 / 255 + 250 / 255)
             if ScriptLoader.RANDOMISE_SENSORS
-            else self._g_calibration_max
+            else self._g_calibration_max / 255
         )
         self.__b_bias = (
             (self._interactor.random() * 150 / 255 + 250 / 255)
             if ScriptLoader.RANDOMISE_SENSORS
-            else self._b_calibration_max
+            else self._b_calibration_max / 255
         )
         self.bias_calculated = True
 
