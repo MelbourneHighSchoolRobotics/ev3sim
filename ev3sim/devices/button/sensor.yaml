@@ -1,0 +1,21 @@
+class: ev3sim.devices.button.ev3.Button
+colours:
+  BUTTON_back_color_release: '#f1faee'
+  BUTTON_back_color_press: '#3a413e'
+interactors:
+- class_path: ev3sim.devices.button.ev3.ButtonInteractor
+  kwargs:
+    elements:
+    - visual:
+        name: Rectangle
+        width: 3
+        height: 3
+        fill: 'BUTTON_back_color_release'
+        stroke_width: 0.1
+        stroke: '#000000'
+        zPos: 0.1
+      physics: true
+      sensor: true
+      clickZ: 1
+      position: [0, 0]
+      key: button_block
