@@ -7,15 +7,16 @@ from ev3sim.visual import ScreenObjectManager
 from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 
+
 class ScriptLoader:
 
-    KEY_TICKS_PER_SECOND = 'tps'
+    KEY_TICKS_PER_SECOND = "tps"
 
     active_scripts: List[IInteractor]
     VISUAL_TICK_RATE = 30
     GAME_TICK_RATE = 60
     TIME_SCALE = 1
-    # TIME_SCALE simply affects the speed at which the simulation runs 
+    # TIME_SCALE simply affects the speed at which the simulation runs
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
     RANDOMISE_SENSORS = False
@@ -42,30 +43,31 @@ class ScriptLoader:
         # Handle any programmatic color references.
         elements = []
         from ev3sim.devices.base import initialise_device
+
         for item in items:
-            assert 'key' in item and 'type' in item, f"Each item requires a key and type. {item}"
-            if item['type'] == 'visual':
+            assert "key" in item and "type" in item, f"Each item requires a key and type. {item}"
+            if item["type"] == "visual":
                 vis = visualFactory(**item)
                 vis.key = item["key"]
                 ScreenObjectManager.instance.registerVisual(vis, vis.key)
                 self.object_map[item["key"]] = vis
                 elements.append(vis)
-            elif item['type'] == 'object':
+            elif item["type"] == "object":
                 devices = []
                 to_remove = []
-                for x in range(len(item.get('children', []))):
-                    if item['children'][x]['type'] == 'device':
-                        devices.append(item['children'][x])
+                for x in range(len(item.get("children", []))):
+                    if item["children"][x]["type"] == "device":
+                        devices.append(item["children"][x])
                         to_remove.append(x)
                 for x in to_remove[::-1]:
-                    del item['children'][x]
+                    del item["children"][x]
                 obj = objectFactory(**item)
                 obj.key = item["key"]
                 for index, device in enumerate(devices):
                     # Instantiate the devices.
                     initialise_device(device, obj, index)
-                if item.get('physics', False):
-                    World.instance.registerObject(obj)    
+                if item.get("physics", False):
+                    World.instance.registerObject(obj)
                 ScreenObjectManager.instance.registerObject(obj, obj.key)
                 self.object_map[obj.key] = obj
                 elements.append(obj)
@@ -74,7 +76,7 @@ class ScriptLoader:
     @stop_on_pause
     def incrementPhysicsTick(self):
         self.physics_tick += 1
-        self.data['tick'] = self.physics_tick
+        self.data["tick"] = self.physics_tick
 
     def simulate(self):
         for interactor in self.active_scripts:
@@ -92,16 +94,16 @@ class ScriptLoader:
             new_time = time.time()
             if new_time - last_game_update > 1 / self.GAME_TICK_RATE / self.TIME_SCALE:
                 # Send out static tick updates
-                for key in self.data['tick_updates']:
-                    self.data['tick_updates'][key].put(True)
+                for key in self.data["tick_updates"]:
+                    self.data["tick_updates"][key].put(True)
                 # Handle any writes
-                while self.data['write_stack']:
-                    rob_id, attribute_path, value = self.data['write_stack'].popleft()
+                while self.data["write_stack"]:
+                    rob_id, attribute_path, value = self.data["write_stack"].popleft()
                     sensor_type, specific_sensor, attribute = attribute_path.split()
                     self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
                 for key, robot in self.robots.items():
-                    if robot.spawned and key in self.data['data_queue']:
-                        self.data['data_queue'][key].put(robot._interactor.collectDeviceData())
+                    if robot.spawned and key in self.data["data_queue"]:
+                        self.data["data_queue"][key].put(robot._interactor.collectDeviceData())
                 # Handle simulation.
                 # First of all, check the script can handle the current settings.
                 if new_time - last_game_update > 2 / self.GAME_TICK_RATE / self.TIME_SCALE:
@@ -130,15 +132,15 @@ class ScriptLoader:
                         interactor.handleEvent(event)
 
     def getSimulationConstants(self):
-        return {
-            ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE
-        }
+        return {ScriptLoader.KEY_TICKS_PER_SECOND: self.GAME_TICK_RATE}
+
 
 def runFromConfig(config, shared):
     from collections import defaultdict
     from ev3sim.robot import initialise_bot, RobotInteractor
     from ev3sim.file_helper import find_abs
-    sl = ScriptLoader(**config.get('loader', {}))
+
+    sl = ScriptLoader(**config.get("loader", {}))
     sl.setSharedData(shared)
     sl.active_scripts = []
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get('colours', {})
@@ -154,8 +156,8 @@ def runFromConfig(config, shared):
         except Exception as exc:
             print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
     if sl.active_scripts:
-        sl.startUp(**config.get('screen', {}))
-        sl.loadElements(config.get('elements', []))
+        sl.startUp(**config.get("screen", {}))
+        sl.loadElements(config.get("elements", []))
         for interactor in sl.active_scripts:
             if isinstance(interactor, RobotInteractor):
                 interactor.connectDevices()

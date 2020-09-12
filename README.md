@@ -7,11 +7,15 @@
 
 ## Getting started
 
-To get up and running with the simulator, check the docs: https://ev3sim.mhscsr.club
+To get up and running with the simulator, see the docs: https://ev3sim.mhscsr.club
 
 ## Problems
 
 Find any issues with the simulator? Feel free to make an issue here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/issues
+
+## Contributing
+
+To contribute to ev3sim, see the contributing page of the docs: https://ev3sim.mhscsr.club/contributing
 
 ## Contributors ✨
 

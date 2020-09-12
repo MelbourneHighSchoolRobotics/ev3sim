@@ -6,7 +6,7 @@ import time
 from ev3sim.code_helpers import CommServer
 
 # This address should be the actual address of the bluetooth receiver on the server bot.
-server = CommServer('aa:bb:cc:dd:ee:ff', 1234)
+server = CommServer("aa:bb:cc:dd:ee:ff", 1234)
 
 print("Waiting for first client to connect")
 client1, c1info = server.accept_client()

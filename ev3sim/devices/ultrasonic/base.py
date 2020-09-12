@@ -5,11 +5,12 @@ from ev3sim.simulation.world import World
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 
+
 class UltrasonicSensorMixin:
 
-    MODE_DIST_CM = 'US-DIST-CM'
+    MODE_DIST_CM = "US-DIST-CM"
 
-    device_type = 'lego-sensor'
+    device_type = "lego-sensor"
     mode = MODE_DIST_CM
 
     RAYCAST_RADIUS = 2
@@ -36,7 +37,12 @@ class UltrasonicSensorMixin:
                 for shape in obj.shapes:
                     cats.append(shape.filter.categories)
                     shape.filter = pymunk.ShapeFilter(categories=0b1)
-            raycast = World.instance.space.segment_query_first(startPosition, endPosition, self.RAYCAST_RADIUS, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0b1))
+            raycast = World.instance.space.segment_query_first(
+                startPosition,
+                endPosition,
+                self.RAYCAST_RADIUS,
+                pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0b1),
+            )
             i = 0
             for obj in self.ignore_objects:
                 for shape in obj.shapes:
@@ -58,22 +64,22 @@ class UltrasonicSensorMixin:
                     opposite_angle += 2*np.pi
                 self.last_angle_diff = abs(opposite_angle - raycast.normal.angle)
             top_length = raycast.alpha * top_length - self.ACCEPTANCE_LEVEL
-        return 0                
+        return 0
 
     def _getObjName(self, port):
-        return 'sensor' + port
+        return "sensor" + port
 
     def applyWrite(self, attribute, value):
-        if attribute == 'mode':
+        if attribute == "mode":
             self.mode = value
         else:
-            raise ValueError(f'Unhandled write! {attribute} {value}')
+            raise ValueError(f"Unhandled write! {attribute} {value}")
 
     def toObject(self):
         return {
-            'address': self._interactor.port,
-            'driver_name': 'lego-ev3-us',
-            'mode': self.mode,
-            'value0': self.distance_centimeters if self.mode == self.MODE_DIST_CM else self.distance_inches,
-            'decimals': 0,
+            "address": self._interactor.port,
+            "driver_name": "lego-ev3-us",
+            "mode": self.mode,
+            "value0": self.distance_centimeters if self.mode == self.MODE_DIST_CM else self.distance_inches,
+            "decimals": 0,
         }

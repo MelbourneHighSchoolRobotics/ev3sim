@@ -5,26 +5,28 @@ from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import worldspace_to_screenspace
 
+
 class ColorInteractor(IDeviceInteractor):
-    
-    name = 'COLOUR'
+
+    name = "COLOUR"
 
     def tick(self, tick):
         if tick == -1:
             self.device_class.saved_raw = (0, 0, 0)
         try:
             self.device_class._calc_raw()
-            ScriptLoader.instance.object_map[self.getPrefix() + 'light_up'].visual.fill = self.device_class.rgb()
+            ScriptLoader.instance.object_map[self.getPrefix() + "light_up"].visual.fill = self.device_class.rgb()
         except:
             pass
         return False
 
+
 class ColorSensor(ColourSensorMixin, Device):
     """
     EV3 Color Sensor.
-    
+
     Makes available the red green and blue values viewed under the sensor.
-    Note that this isn't exactly what's seen, you will likely get more 
+    Note that this isn't exactly what's seen, you will likely get more
     reasonable and reproduceable values by using the `calibrate_white` method.
     """
 
@@ -56,11 +58,11 @@ class ColorSensor(ColourSensorMixin, Device):
         res = self._SenseValueAboutPosition(self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos)))
         # These are 0-255. RAW is meant to be 0-1020 but actually more like 0-300.
         self.saved_raw = [
-            int(res[0] * self.__r_bias), 
-            int(res[1] * self.__g_bias), 
+            int(res[0] * self.__r_bias),
+            int(res[1] * self.__g_bias),
             int(res[2] * self.__b_bias),
         ]
-    
+
     def calibrate_white(self):
         """
         Calibrates the current sensor reading to be the colour white.
@@ -69,7 +71,7 @@ class ColorSensor(ColourSensorMixin, Device):
         and anything more 'white' than that gray spot will be RGB 255, 255, 255.
         """
         self._r_calibration_max, self._g_calibration_max, self._b_calibration_max = self.raw()
-    
+
     def rgb(self):
         """
         Returns the scaled to bias RGB values.
@@ -82,7 +84,7 @@ class ColorSensor(ColourSensorMixin, Device):
             min(max(res[1] * 255 / self._g_calibration_max, 0), 255),
             min(max(res[2] * 255 / self._b_calibration_max, 0), 255),
         ]
-    
+
     def reflected_light_intensity(self):
         """Not implemented"""
         raise NotImplementedError("`reflected_light_intensity` is currently not implemented.")

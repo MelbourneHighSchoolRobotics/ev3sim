@@ -4,26 +4,32 @@ from ev3sim.devices.base import IDeviceInteractor, Device
 from ev3sim.devices.infrared.base import InfraredSensorMixin
 from ev3sim.simulation.loader import ScriptLoader
 
+
 class InfraredInteractor(IDeviceInteractor):
 
-    name = 'INFRARED'
+    name = "INFRARED"
 
     def startUp(self):
         super().startUp()
-        self.tracking_ball = ScriptLoader.instance.object_map['IR_BALL']
+        self.tracking_ball = ScriptLoader.instance.object_map["IR_BALL"]
 
     def tick(self, tick):
         if tick == -1:
             self.device_class.generateBias()
         ball_pos = self.tracking_ball.position
-        sensor = ScriptLoader.instance.object_map[self.getPrefix() + 'light_up_2']
+        sensor = ScriptLoader.instance.object_map[self.getPrefix() + "light_up_2"]
         distance = np.sqrt(magnitude_sq(ball_pos - sensor.position))
         vector = ball_pos - sensor.position
         relative_bearing = np.arctan2(vector[1], vector[0]) - sensor.rotation
         self.device_class._calc(relative_bearing, distance)
         for x in range(5):
-            ScriptLoader.instance.object_map[self.getPrefix() + f'light_up_{x}'].visual.fill = (max(min(255 * self.device_class.value(x+1) / 9, 255), 0), 0, 0)
+            ScriptLoader.instance.object_map[self.getPrefix() + f"light_up_{x}"].visual.fill = (
+                max(min(255 * self.device_class.value(x + 1) / 9, 255), 0),
+                0,
+                0,
+            )
         return False
+
 
 class InfraredSensor(InfraredSensorMixin, Device):
     """
@@ -35,11 +41,11 @@ class InfraredSensor(InfraredSensorMixin, Device):
 
     def _calc(self, relativeBearing, distance):
         self._values = self._sensorValues(relativeBearing, distance)
-    
+
     def value(self, index):
         """
         Get sensor data.
-        
+
         index=0:
             Get a crude direction prediction from the sensor.
             return 0: Ball lost
@@ -67,7 +73,7 @@ class InfraredSensor(InfraredSensorMixin, Device):
         if index == 0:
             return self._predict(self._values)
         if 1 <= index <= 5:
-            return self._values[index-1]
+            return self._values[index - 1]
         if index == 6:
             return int(sum(self._values) / len(self._values))
         raise ValueError(f"Unknown value index {index}, should be an integer from 0-6.")
