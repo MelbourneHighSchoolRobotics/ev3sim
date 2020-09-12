@@ -1,6 +1,7 @@
 is_ev3 = True
 is_sim = False
 
+
 class CommServer:
     """
     Communications Server. Allows other bots to connect via a CommClient.
@@ -11,6 +12,7 @@ class CommServer:
     def __init__(self, hostAddress, port):
         """Initialise the communication server."""
         import bluetooth
+
         self.socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self.socket.bind((hostAddress, port))
         # Synchronous (1 Backlog)?
@@ -26,11 +28,12 @@ class CommServer:
         """
         self.clients.append(self.socket.accept())
         return self.clients[-1]
-    
+
     def close(self):
         for client in self.clients:
             client.close()
         self.socket.close()
+
 
 class CommClient:
     """
@@ -40,17 +43,19 @@ class CommClient:
     def __init__(self, hostAddress, port):
         """Initialise the connection."""
         import bluetooth
+
         self.socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self.socket.connect((hostAddress, port))
-    
+
     def send(self, data):
         self.socket.send(data)
-    
+
     def recv(self, limit):
         self.socket.recv(limit)
 
     def close(self):
         self.socket.close()
+
 
 def wait_for_tick():
     """If in simulation, waits for the next simulation tick."""
