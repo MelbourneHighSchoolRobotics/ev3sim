@@ -191,10 +191,12 @@ class SoccerInteractor(IInteractor):
         self.current_goal_score_tick = self.cur_tick
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
-                actual_index = team*self.BOTS_PER_TEAM + index
+                actual_index = team * self.BOTS_PER_TEAM + index
                 if actual_index >= len(self.robots):
                     break
-                ScriptLoader.instance.sendEvent(f'Robot-{actual_index}', GOAL_SCORED, {'against_you': team == teamIndex})
+                ScriptLoader.instance.sendEvent(
+                    f"Robot-{actual_index}", GOAL_SCORED, {"against_you": team == teamIndex}
+                )
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

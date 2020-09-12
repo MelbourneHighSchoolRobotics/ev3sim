@@ -12,9 +12,11 @@ from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
 from ev3sim.code_helpers import is_sim, EventSystem
 
+
 def handle_scored(data):
-    if not data['against_you']:
+    if not data["against_you"]:
         print("I scored a goal!")
+
 
 EventSystem.on_goal_scored = handle_scored
 

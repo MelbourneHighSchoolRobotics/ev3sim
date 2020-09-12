@@ -39,17 +39,17 @@ def main(passed_args=None):
     robot_id = args.robot_id
 
     shared_data = {
-        'tick': 0,
-        'tickrate': 1,
-        'current_data': {},
-        'actions_queue': Queue(maxsize=0),
-        'start_robot_queue': Queue(maxsize=0),
-        'active_data_handlers': {},
-        'update_lock': threading.Lock(),
-        'write_results': Queue(maxsize=0),
-        'active_connections': [],
-        'thread_ids': {},
-        'events': Queue(maxsize=0),
+        "tick": 0,
+        "tickrate": 1,
+        "current_data": {},
+        "actions_queue": Queue(maxsize=0),
+        "start_robot_queue": Queue(maxsize=0),
+        "active_data_handlers": {},
+        "update_lock": threading.Lock(),
+        "write_results": Queue(maxsize=0),
+        "active_connections": [],
+        "thread_ids": {},
+        "events": Queue(maxsize=0),
     }
     shared_data["condition_updated"] = threading.Condition(shared_data["update_lock"])
     shared_data["condition_updating"] = threading.Condition(shared_data["update_lock"])
@@ -86,11 +86,11 @@ def main(passed_args=None):
                             ev3sim.simulation.comm_schema_pb2.RobotRequest(robot_id=robot_id)
                         )
                         for r in response:
-                            data['tick'] = r.tick
-                            data['tick_rate'] = r.tick_rate
-                            data['current_data'] = json.loads(r.content)
-                            for e in data['current_data']['events']:
-                                data['events'].put(e)
+                            data["tick"] = r.tick
+                            data["tick_rate"] = r.tick_rate
+                            data["current_data"] = json.loads(r.content)
+                            for e in data["current_data"]["events"]:
+                                data["events"].put(e)
                             if first_message:
                                 print("Connection initialised.")
                                 first_message = False
@@ -174,8 +174,8 @@ def main(passed_args=None):
                 @classmethod
                 def handle_events(cls):
                     """Since we can only handle events in mocked function calls, define a function to handle all of the existing events."""
-                    while data['events'].qsize():
-                        event_name, event_data = data['events'].get()
+                    while data["events"].qsize():
+                        event_name, event_data = data["events"].get()
                         func = getattr(cls, event_name)
                         func(event_data)
 
@@ -444,17 +444,17 @@ def main(passed_args=None):
                 fake_path = sys.path.copy()
                 fake_path.append(called_from)
 
-                @mock.patch('time.time', get_time)
-                @mock.patch('time.sleep', sleep)
-                @mock.patch('ev3dev2.motor.Motor.wait', wait)
-                @mock.patch('ev3dev2.Device.__init__', device__init__)
-                @mock.patch('ev3dev2.Device._attribute_file_open', _attribute_file_open)
-                @mock.patch('ev3sim.code_helpers.is_ev3', False)
-                @mock.patch('ev3sim.code_helpers.is_sim', True)
-                @mock.patch('ev3sim.code_helpers.CommServer', MockedCommServer)
-                @mock.patch('ev3sim.code_helpers.CommClient', MockedCommClient)
-                @mock.patch('ev3sim.code_helpers.EventSystem.handle_events', handle_events)
-                @mock.patch('sys.path', fake_path)
+                @mock.patch("time.time", get_time)
+                @mock.patch("time.sleep", sleep)
+                @mock.patch("ev3dev2.motor.Motor.wait", wait)
+                @mock.patch("ev3dev2.Device.__init__", device__init__)
+                @mock.patch("ev3dev2.Device._attribute_file_open", _attribute_file_open)
+                @mock.patch("ev3sim.code_helpers.is_ev3", False)
+                @mock.patch("ev3sim.code_helpers.is_sim", True)
+                @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
+                @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
+                @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
+                @mock.patch("sys.path", fake_path)
                 def run_script(fname):
                     from importlib.machinery import SourceFileLoader
 

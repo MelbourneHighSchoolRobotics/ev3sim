@@ -56,8 +56,8 @@ class CommClient:
     def close(self):
         self.socket.close()
 
-class EventSystem:
 
+class EventSystem:
     @classmethod
     def on_reset(cls, data):
         """Triggers whenever the game is reset. No extra data provided."""

@@ -29,7 +29,7 @@ class ScriptLoader:
             setattr(self, key, value)
 
     def sendEvent(self, botID, eventName, eventData):
-        self.data['events'][botID].put((eventName, eventData))
+        self.data["events"][botID].put((eventName, eventData))
 
     def setSharedData(self, data):
         self.data = data

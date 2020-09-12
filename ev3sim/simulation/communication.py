@@ -26,17 +26,15 @@ def start_server_with_shared_data(data, result, bind_addr):
         class SimulationDealer(ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerServicer):
             def RequestTickUpdates(self, request, context):
                 rob_id = request.robot_id
-                data['events'][rob_id] = Queue()
-                if rob_id not in data['active_count']:
-                    data['active_count'][rob_id] = 0
-                data['active_count'][rob_id] += 1
-                data['bot_locks'][rob_id] = {
-                    'lock': threading.Lock()
-                }
-                data['bot_locks'][rob_id]['condition_waiting'] = threading.Condition(data['bot_locks'][rob_id]['lock'])
-                data['bot_locks'][rob_id]['condition_changing'] = threading.Condition(data['bot_locks'][rob_id]['lock'])
-                c = data['active_count'][rob_id]
-                data['data_queue'][rob_id] = Queue(maxsize=0)
+                data["events"][rob_id] = Queue()
+                if rob_id not in data["active_count"]:
+                    data["active_count"][rob_id] = 0
+                data["active_count"][rob_id] += 1
+                data["bot_locks"][rob_id] = {"lock": threading.Lock()}
+                data["bot_locks"][rob_id]["condition_waiting"] = threading.Condition(data["bot_locks"][rob_id]["lock"])
+                data["bot_locks"][rob_id]["condition_changing"] = threading.Condition(data["bot_locks"][rob_id]["lock"])
+                c = data["active_count"][rob_id]
+                data["data_queue"][rob_id] = Queue(maxsize=0)
                 while True:
                     if data["active_count"][rob_id] != c:
                         return
@@ -45,12 +43,14 @@ def start_server_with_shared_data(data, result, bind_addr):
                         res = data["data_queue"][rob_id].get(timeout=SIM_DIED_TIME)
                     except:
                         return
-                    tick = data['tick']
+                    tick = data["tick"]
                     # If there are any events, then pop them off and add to the payload.
-                    res['events'] = []
-                    while data['events'][rob_id].qsize():
-                        res['events'].append(data['events'][rob_id].get())
-                    yield ev3sim.simulation.comm_schema_pb2.RobotData(tick=tick, tick_rate=ScriptLoader.instance.GAME_TICK_RATE, content=json.dumps(res))
+                    res["events"] = []
+                    while data["events"][rob_id].qsize():
+                        res["events"].append(data["events"][rob_id].get())
+                    yield ev3sim.simulation.comm_schema_pb2.RobotData(
+                        tick=tick, tick_rate=ScriptLoader.instance.GAME_TICK_RATE, content=json.dumps(res)
+                    )
 
             def SendWriteInfo(self, request, context):
                 rob_id = request.robot_id
