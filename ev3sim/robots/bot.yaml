@@ -22,6 +22,9 @@ devices:
 - CompassSensor:
     position: [0, 0]
     port: in4
+- Button:
+    position: [-5, 5]
+    port: up
 base_plate:
   collider: inherit
   visual:
