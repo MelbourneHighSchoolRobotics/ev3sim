@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Devices &mdash; ev3sim  documentation</title>
+  <title>Contributing &mdash; ev3sim  documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Large Motor" href="devices/LargeMotor.html" />
-    <link rel="prev" title="Robot" href="robot.html" /> 
+    <link rel="next" title="Simulation Objects" href="system.html" />
+    <link rel="prev" title="Customising Bots and Maps" href="customisation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,22 +89,12 @@
 <li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="system.html">Simulation Objects</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="visual.html">Visuals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="robot.html">Robot</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Devices</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="devices/LargeMotor.html">Large Motor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices/MediumMotor.html">Medium Motor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices/UltrasonicSensor.html">Ultrasonic Sensor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices/InfraredSensor.html">Infrared Sensor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices/CompassSensor.html">Compass Sensor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices/ColorSensor.html">Color Sensor</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-locally">Running locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linting-code">Linting code</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="interactor.html">Interactors</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
 
             
@@ -151,15 +141,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="system.html">Simulation Objects</a> &raquo;</li>
-        
-      <li>Devices</li>
+      <li>Contributing</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/devices.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -172,17 +160,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="devices">
-<h1>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="devices/LargeMotor.html">Large Motor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devices/MediumMotor.html">Medium Motor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devices/UltrasonicSensor.html">Ultrasonic Sensor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devices/InfraredSensor.html">Infrared Sensor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devices/CompassSensor.html">Compass Sensor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devices/ColorSensor.html">Color Sensor</a></li>
-</ul>
+  <div class="section" id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>If you would like to contribute to the project, there’s a few things you should know, to assist your development efforts and make the pull request workflow easier on everyone</p>
+<div class="section" id="running-locally">
+<h2>Running locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
+<p>To test your changes locally, we recommend pip installing the local changes - this ensures the build process is also working fine.
+While in the top level directory, you can run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install .
+</pre></div>
+</div>
+<p>To install the project. Note that this will remove your existing install of stable ev3sim, so be aware of this.</p>
+</div>
+<div class="section" id="linting-code">
+<h2>Linting code<a class="headerlink" href="#linting-code" title="Permalink to this headline">¶</a></h2>
+<p>Pull requests are linted with <a class="reference external" href="https://github.com/psf/black">black</a>. To run black locally to fix any formatting errors you’ve made, run the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black --config pyproject.toml .
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -194,10 +189,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="devices/LargeMotor.html" class="btn btn-neutral float-right" title="Large Motor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="system.html" class="btn btn-neutral float-right" title="Simulation Objects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="robot.html" class="btn btn-neutral float-left" title="Robot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="customisation.html" class="btn btn-neutral float-left" title="Customising Bots and Maps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
