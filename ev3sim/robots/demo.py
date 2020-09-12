@@ -10,6 +10,7 @@ This code will:
 from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
+from ev3dev2.button import Button
 from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick
 
 
@@ -28,6 +29,20 @@ else:
 import random
 import time
 from collections import deque
+
+# When the up button is pressed, end the script.
+end = False
+
+buttons = Button()
+
+
+def end_script(state):
+    global end
+    if state is True:
+        end = True
+
+
+buttons.on_up = end_script
 
 # Some behavioural constants
 STEP_LENGTH = (1, 3)  # Move in a new direction every 1-3 seconds
@@ -108,4 +123,8 @@ while True:
             solving_white = True
     EventSystem.handle_events()
 
+    buttons.process()
     wait_for_tick()
+
+    if end:
+        break

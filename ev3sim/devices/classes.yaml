@@ -4,3 +4,4 @@ InfraredSensor: infrared/sensor.yaml
 LargeMotor: motor/large.yaml
 MediumMotor: motor/medium.yaml
 CompassSensor: compass/sensor.yaml
+Button: button/sensor.yaml
