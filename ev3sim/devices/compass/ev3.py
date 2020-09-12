@@ -48,18 +48,26 @@ class CompassSensor(CompassSensorMixin, Device):
 
     calced_before = False
 
+    # Generate 31 (Really 30) static points of interest that the compass jumps to.
+    NEAREST_POINTS_AMOUNT = 31
+    # The distribution variance of the nearest points
+    NEAREST_POINTS_VARIANCE = 16
+
+    # Maximum bias towards one direction, in degrees.
+    MAX_SENSOR_OFFSET = 5
+
     def _calc(self):
         if not self.calced_before:
             if ScriptLoader.RANDOMISE_SENSORS:
                 # Distribute cyclically between 0 and 360, generating 31 points with variance 16
                 # This means on average about 12 degrees per step.
                 self.dist = CompassValueDistribution(
-                    0, 360, 31, 16, Randomiser.getPortRandom(self._interactor.port_key)
+                    0, 360, self.NEAREST_POINTS_AMOUNT, self.NEAREST_POINTS_VARIANCE, Randomiser.getPortRandom(self._interactor.port_key)
                 )
                 # +- 5 degrees offset.
-                self.offset = self._interactor.random() * 5
+                self.offset = (0.5 - self._interactor.random()) * 2 * self.MAX_SENSOR_OFFSET
             else:
-                self.dist = CompassValueDistributionNoRandom(0, 360, 31)
+                self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_AMOUNT)
                 self.offset = 0
             self.calced_before = True
         self._value = int(self.dist.get_closest(self._getValue() + self.offset))

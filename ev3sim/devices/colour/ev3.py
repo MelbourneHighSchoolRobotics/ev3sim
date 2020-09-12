@@ -30,25 +30,35 @@ class ColorSensor(ColourSensorMixin, Device):
     reasonable and reproduceable values by using the `calibrate_white` method.
     """
 
+    MAX_RGB_BIAS = 400
+    MIN_RGB_BIAS = 230
+    STARTING_CALIBRATION = 300
+
     bias_calculated = False
 
-    _r_calibration_max = 300
-    _g_calibration_max = 300
-    _b_calibration_max = 300
-
     def calculateBias(self):
+        if ScriptLoader.RANDOMISE_SENSORS:
+            self._r_calibration_max = self.STARTING_CALIBRATION
+            self._g_calibration_max = self.STARTING_CALIBRATION
+            self._b_calibration_max = self.STARTING_CALIBRATION
+        else:
+            self._r_calibration_max = 255
+            self._g_calibration_max = 255
+            self._b_calibration_max = 255
+
+
         self.__r_bias = (
-            (self._interactor.random() * 150 / 255 + 250 / 255)
+            (self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
             if ScriptLoader.RANDOMISE_SENSORS
             else self._r_calibration_max / 255
         )
         self.__g_bias = (
-            (self._interactor.random() * 150 / 255 + 250 / 255)
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
             if ScriptLoader.RANDOMISE_SENSORS
             else self._g_calibration_max / 255
         )
         self.__b_bias = (
-            (self._interactor.random() * 150 / 255 + 250 / 255)
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
             if ScriptLoader.RANDOMISE_SENSORS
             else self._b_calibration_max / 255
         )
