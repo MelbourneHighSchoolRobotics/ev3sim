@@ -1,7 +1,6 @@
 name: Docs Check
 
 on:
-  pull_request_target:
   push:
     branches-ignore:
       - gh-pages
