@@ -16,7 +16,8 @@ class SoccerInteractor(IInteractor):
 
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
-    START_TIME = datetime.timedelta(minutes=5)
+    GAME_HALF_LENGTH_MINUTES = 5
+    START_TIME = datetime.timedelta(minutes=GAME_HALF_LENGTH_MINUTES)
 
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
