@@ -17,7 +17,6 @@ class SoccerInteractor(IInteractor):
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
     GAME_HALF_LENGTH_MINUTES = 5
-    START_TIME = datetime.timedelta(minutes=GAME_HALF_LENGTH_MINUTES)
 
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
@@ -26,6 +25,7 @@ class SoccerInteractor(IInteractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
         self.names = kwargs.get("names", ["Team 1", "Team 2"])
         self.spawns = kwargs.get("spawns")
         self.goals = kwargs.get("goals")
