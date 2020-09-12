@@ -23,8 +23,8 @@ class MotorMixin:
         self.reset()
 
     def reset(self):
-        self.state = 'holding'
-        self.stop_action = 'hold'
+        self.state = "holding"
+        self.stop_action = "hold"
         self.time_sp = 0
         self.speed_sp = 0
         self.position_sp = 0
@@ -122,7 +122,7 @@ class MotorMixin:
                 )
             elif value == "stop":
                 self.off()
-            elif value == 'reset':
+            elif value == "reset":
                 self.reset()
             else:
                 raise ValueError(f"Unhandled write! {attribute} {value}")
