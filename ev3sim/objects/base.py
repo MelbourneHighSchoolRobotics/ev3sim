@@ -8,29 +8,30 @@ from ev3sim.simulation.world import stop_on_pause
 DYNAMIC_CATEGORY = 0b10
 STATIC_CATEGORY = 0b100
 
+
 class BaseObject:
 
-    parent: 'BaseObject'
+    parent: "BaseObject"
 
     _position: np.ndarray
     _rotation: float
 
     visual: IVisualElement
-    children: List['BaseObject']
+    children: List["BaseObject"]
 
     def initFromKwargs(self, **kwargs):
         self._rotation = 0
         self.children = []
         self.parent = None
-        if 'visual' in kwargs:
-            self.visual = visualFactory(**kwargs['visual'])
-        self.position = kwargs.get('position', (0.5, 0.5))
-        self.rotation = kwargs.get('rotation', 0)
-        for i, child in enumerate(kwargs.get('children', [])):
-            child['key'] = kwargs['key'] + f'-child-{i}'
+        if "visual" in kwargs:
+            self.visual = visualFactory(**kwargs["visual"])
+        self.position = kwargs.get("position", (0.5, 0.5))
+        self.rotation = kwargs.get("rotation", 0)
+        for i, child in enumerate(kwargs.get("children", [])):
+            child["key"] = kwargs["key"] + f"-child-{i}"
             self.children.append(objectFactory(**child))
             self.children[-1].parent = self
-        self.key = kwargs['key']
+        self.key = kwargs["key"]
         self.updateVisualProperties()
 
     @property
@@ -58,18 +59,23 @@ class BaseObject:
         # This function assumes that the parent position and rotation are correct, and that a visual exists,
         # as otherwise each of these calls will have to go all the way up the parent tree.
         # In future this change could be made to support parts with no visual object.
-        if hasattr(self, 'visual'):
+        if hasattr(self, "visual"):
             if self.parent is None:
                 self.visual.position = self.position
                 self.visual.rotation = self.rotation
             elif self.parent.visual is not None:
-                self.visual.position = self.parent.visual.position + np.array([
-                    self.position[0] * np.cos(self.parent.visual.rotation) - self.position[1] * np.sin(self.parent.visual.rotation),
-                    self.position[1] * np.cos(self.parent.visual.rotation) + self.position[0] * np.sin(self.parent.visual.rotation)
-                ])
+                self.visual.position = self.parent.visual.position + np.array(
+                    [
+                        self.position[0] * np.cos(self.parent.visual.rotation)
+                        - self.position[1] * np.sin(self.parent.visual.rotation),
+                        self.position[1] * np.cos(self.parent.visual.rotation)
+                        + self.position[0] * np.sin(self.parent.visual.rotation),
+                    ]
+                )
                 self.visual.rotation = self.parent.visual.rotation + self.rotation
             for child in self.children:
                 child.updateVisualProperties()
+
 
 class PhysicsObject(BaseObject):
 
@@ -84,17 +90,19 @@ class PhysicsObject(BaseObject):
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        self.mass = kwargs.get('mass', 1)
-        self.static = kwargs.get('static', False)
-        self.friction_coefficient = kwargs.get('friction', 1)
-        self.restitution_coefficient = kwargs.get('restitution', 0.7)
+        self.mass = kwargs.get("mass", 1)
+        self.static = kwargs.get("static", False)
+        self.friction_coefficient = kwargs.get("friction", 1)
+        self.restitution_coefficient = kwargs.get("restitution", 0.7)
         self.body, self.shape = self.visual.generateBodyAndShape(self)
         self.shapes = [self.shape]
         self.shape.obj = self
         self.body.position = self.position + self.visual.getPositionAnchorOffset()
         for child in self.children:
             if isinstance(child, PhysicsObject):
-                child.body, child.shape = child.visual.generateBodyAndShape(child, body=self.body, rel_pos=child.position)
+                child.body, child.shape = child.visual.generateBodyAndShape(
+                    child, body=self.body, rel_pos=child.position
+                )
                 child.shape.obj = self
                 self.shapes.append(child.shape)
 
@@ -116,8 +124,9 @@ class PhysicsObject(BaseObject):
             pos = np.array([0.0, 0.0])
         self.shape.body.apply_force_at_local_point(f, pos)
 
+
 def objectFactory(**options):
-    if options.get('physics', False):
+    if options.get("physics", False):
         r = PhysicsObject()
     else:
         r = BaseObject()

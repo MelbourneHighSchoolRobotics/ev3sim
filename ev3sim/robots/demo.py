@@ -10,7 +10,7 @@ This code will:
 from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
-from ev3sim.code_helpers import is_sim
+from ev3sim.code_helpers import is_sim, wait_for_tick
 
 if is_sim:
     print("Hello from the simulator!!!")
@@ -22,23 +22,25 @@ import time
 from collections import deque
 
 # Some behavioural constants
-STEP_LENGTH = (1, 3)            # Move in a new direction every 1-3 seconds
-MOTOR_SPEEDS = (-100, 100)      # Motor values are anything between -100 and 100
-PRINT_TIME = 5                  # Print sensor values every 5 seconds
+STEP_LENGTH = (1, 3)  # Move in a new direction every 1-3 seconds
+MOTOR_SPEEDS = (-100, 100)  # Motor values are anything between -100 and 100
+PRINT_TIME = 5  # Print sensor values every 5 seconds
+
 
 def random_between(a, b):
     # Returns a random float between a and b:
-    return a + random.random() * (b-a)
+    return a + random.random() * (b - a)
+
 
 # Initialise all sensors.
-lm1 = LargeMotor(address='outB')
-lm2 = LargeMotor(address='outC')
-cs = ColorSensor(address='in2')
-us = UltrasonicSensor(address='in3')
-ir = Sensor(address='in1', driver_name='ht-nxt-ir-seek-v2')
-compass = Sensor(address='in4', driver_name='ht-nxt-compass')
-compass.command = 'BEGIN-CAL'
-compass.command = 'END-CAL'
+lm1 = LargeMotor(address="outB")
+lm2 = LargeMotor(address="outC")
+cs = ColorSensor(address="in2")
+us = UltrasonicSensor(address="in3")
+ir = Sensor(address="in1", driver_name="ht-nxt-ir-seek-v2")
+compass = Sensor(address="in4", driver_name="ht-nxt-compass")
+compass.command = "BEGIN-CAL"
+compass.command = "END-CAL"
 
 # This code moves in random directions, and stores the movements in a circular queue.
 movement_queue = deque([], maxlen=5)
@@ -55,11 +57,13 @@ while True:
         current_step_wait = random_between(*STEP_LENGTH)
         lm1.on_for_seconds(m1Speed, current_step_wait, block=False)
         lm2.on_for_seconds(m2Speed, current_step_wait, block=False)
-        movement_queue.append({
-            'motor1Speed': m1Speed,
-            'motor2Speed': m2Speed,
-            'wait_time': current_step_wait,
-        })
+        movement_queue.append(
+            {
+                "motor1Speed": m1Speed,
+                "motor2Speed": m2Speed,
+                "wait_time": current_step_wait,
+            }
+        )
         solving_white = False
 
     if time.time() - last_print_time > PRINT_TIME:
@@ -67,7 +71,7 @@ while True:
         last_print_time = time.time()
         # We add each line to a string so that we can print the lines all at
         # once, instead of one line at a time
-        message  = "Sensor Values\n"
+        message = "Sensor Values\n"
         message += "=============\n"
         message += "Colour Sensor\n"
         message += f"RGB: {cs.rgb}\n"
@@ -90,7 +94,9 @@ while True:
             # Set the last_step_time to now, and make sure we wait `elapsed` seconds.
             last_step_time = time.time()
             current_step_wait = elapsed
-            lm1.on_for_seconds(-movement['motor1Speed'], elapsed, block=False)
-            lm2.on_for_seconds(-movement['motor2Speed'], elapsed, block=False)
+            lm1.on_for_seconds(-movement["motor1Speed"], elapsed, block=False)
+            lm2.on_for_seconds(-movement["motor2Speed"], elapsed, block=False)
             # Set this so we don't infinitely back up.
             solving_white = True
+
+    wait_for_tick()
