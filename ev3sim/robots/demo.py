@@ -10,7 +10,7 @@ This code will:
 from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
-from ev3sim.code_helpers import is_sim
+from ev3sim.code_helpers import is_sim, wait_for_tick
 
 if is_sim:
     print("Hello from the simulator!!!")
@@ -94,3 +94,5 @@ while True:
             lm2.on_for_seconds(-movement['motor2Speed'], elapsed, block=False)
             # Set this so we don't infinitely back up.
             solving_white = True
+
+    wait_for_tick()
