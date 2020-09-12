@@ -40,11 +40,13 @@ def single_run(preset_filename, robots, bind_addr):
         result.put(True)
 
     # Handle any other settings modified by the preset.
-    settings = config.get('settings', {})
+    settings = config.get("settings", {})
     for keyword, value in settings.items():
         run = mock.patch(keyword, value)(run)
 
-    comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True)
+    comm_thread = Thread(
+        target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True
+    )
     sim_thread = Thread(target=run, args=(shared_data, result_bucket), daemon=True)
 
     comm_thread.start()
