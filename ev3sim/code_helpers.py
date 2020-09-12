@@ -56,6 +56,9 @@ class CommClient:
     def close(self):
         self.socket.close()
 
+def wait_for_tick():
+    """If in simulation, waits for the next simulation tick."""
+    pass
 
 class EventSystem:
     @classmethod

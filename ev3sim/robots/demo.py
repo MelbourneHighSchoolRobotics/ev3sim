@@ -11,6 +11,7 @@ from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
 from ev3sim.code_helpers import is_sim, EventSystem
+from ev3sim.code_helpers import is_sim, wait_for_tick
 
 
 def handle_scored(data):

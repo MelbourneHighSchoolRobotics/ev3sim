@@ -453,6 +453,7 @@ def main(passed_args=None):
                 @mock.patch("ev3sim.code_helpers.is_sim", True)
                 @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
                 @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
+                @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
                 @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
                 @mock.patch("sys.path", fake_path)
                 def run_script(fname):
