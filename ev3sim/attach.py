@@ -522,7 +522,7 @@ def main(passed_args=None):
             shared_data["condition_updated"].wait(0.5)
 
         if r is not True:
-            print(f"An error occured in the {r[0]} thread. Raising an error now...")
+            print(f"An error occurred in the {r[0]} thread. Raising an error now...")
             raise r[1]
 
     run_simulation()

@@ -125,4 +125,4 @@ def initialise_device(deviceData, parentObj, index):
                 # Device interactors always act first.
                 ScriptLoader.instance.active_scripts.insert(0, interactor)
         except yaml.YAMLError as exc:
-            print(f"An error occured while loading devices. Exited with error: {exc}")
+            print(f"An error occurred while loading devices. Exited with error: {exc}")
