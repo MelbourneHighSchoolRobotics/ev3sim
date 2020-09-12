@@ -26,17 +26,17 @@ class IVisualElement:
 
     def initFromKwargs(self, **kwargs):
         """Initialise the visual object given some extra named arguments (normally provided in the ``.yaml`` files)."""
-        self.position = kwargs.get('position', [0, 0])
-        self.rotation = kwargs.get('rotation', 0)
-        self.zPos = kwargs.get('zPos', 0)
-        self.sensorVisible = kwargs.get('sensorVisible', False)
-        self.visible = kwargs.get('visible', True)
+        self.position = kwargs.get("position", [0, 0])
+        self.rotation = kwargs.get("rotation", 0)
+        self.zPos = kwargs.get("zPos", 0)
+        self.sensorVisible = kwargs.get("sensorVisible", False)
+        self.visible = kwargs.get("visible", True)
 
     @property
     def position(self) -> np.ndarray:
         """
         The global position of the visual object - **Do not** set this when specifying local position of an object! Set the parent object position!
-        
+
         :math:`0,0` is the default as centre of the screen, x increasing to the right and y increasing upwards.
         By convention, please let this position be the **centre** of your object.
         """
@@ -75,13 +75,17 @@ class IVisualElement:
         A method that all visual elements must implement.
         When invoked, should apply themselves to the screen.
         """
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `applyToScreen`")
+        raise NotImplementedError(
+            f"The VisualElement {self.__cls__} does not implement the pivotal method `applyToScreen`"
+        )
 
     def calculatePoints(self):
         """
         Called whenever the position or rotation of the object is changed, allowing for any calculation needed to be made.
         """
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`")
+        raise NotImplementedError(
+            f"The VisualElement {self.__cls__} does not implement the pivotal method `calculatePoints`"
+        )
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=None):
         """
@@ -92,10 +96,13 @@ class IVisualElement:
         :param tuple rel_pos: If an existing body was specified, then this is the relative position of the shape on the body.
         :returns (pymunk.Body, pymunk.Shape): The generated objects.
         """
-        raise NotImplementedError(f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`")
+        raise NotImplementedError(
+            f"The VisualElement {self.__cls__} does not implement the pivotal method `generateShape`"
+        )
 
     def getPositionAnchorOffset(self):
-        return np.array([0., 0.])
+        return np.array([0.0, 0.0])
+
 
 class Colorable(IVisualElement):
     _fill: Optional[Tuple[int]]
@@ -104,9 +111,9 @@ class Colorable(IVisualElement):
 
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
-        self.fill = kwargs.get('fill', '#ffffff')
-        self.stroke = kwargs.get('stroke', None)
-        self.stroke_width = kwargs.get('stroke_width', 1)
+        self.fill = kwargs.get("fill", "#ffffff")
+        self.stroke = kwargs.get("stroke", None)
+        self.stroke_width = kwargs.get("stroke_width", 1)
 
     @property
     def fill(self) -> Tuple[int]:
@@ -117,7 +124,7 @@ class Colorable(IVisualElement):
         if isinstance(value, str):
             if value in utils.GLOBAL_COLOURS:
                 value = utils.GLOBAL_COLOURS[value]
-            if value.startswith('#'):
+            if value.startswith("#"):
                 value = value[1:]
             self._fill = utils.hex_to_pycolor(value)
         else:
@@ -132,22 +139,22 @@ class Colorable(IVisualElement):
         if isinstance(value, str):
             if value in utils.GLOBAL_COLOURS:
                 value = utils.GLOBAL_COLOURS[value]
-            if value.startswith('#'):
+            if value.startswith("#"):
                 value = value[1:]
             self._stroke = utils.hex_to_pycolor(value)
         else:
             self._stroke = value
 
-class Image(Colorable):
 
+class Image(Colorable):
     def initFromKwargs(self, **kwargs):
-        self._image_path = ''
-        self.image_path = kwargs.get('image_path')
+        self._image_path = ""
+        self.image_path = kwargs.get("image_path")
         super().initFromKwargs(**kwargs)
-        self.fill = kwargs.get('fill', (0, 0, 0, 0))
-        self.hAlignment = kwargs.get('hAlignment', 'm')
-        self.vAlignment = kwargs.get('vAlignment', 'm')
-        self.scale = kwargs.get('scale', 1)
+        self.fill = kwargs.get("fill", (0, 0, 0, 0))
+        self.hAlignment = kwargs.get("hAlignment", "m")
+        self.vAlignment = kwargs.get("vAlignment", "m")
+        self.scale = kwargs.get("scale", 1)
         self.calculatePoints()
 
     @property
@@ -157,40 +164,50 @@ class Image(Colorable):
     @image_path.setter
     def image_path(self, value):
         from ev3sim.file_helper import find_abs
-        self._image_path = find_abs(value, allowed_areas=['local', 'local/assets/', 'package', 'package/assets/'])
+
+        self._image_path = find_abs(value, allowed_areas=["local", "local/assets/", "package", "package/assets/"])
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
-        new_size = [int(self.image.get_size()[0] * self.scale * relative_scale[0]), int(self.image.get_size()[1] * self.scale * relative_scale[1])]
+        new_size = [
+            int(self.image.get_size()[0] * self.scale * relative_scale[0]),
+            int(self.image.get_size()[1] * self.scale * relative_scale[1]),
+        ]
         scaled = pygame.transform.scale(self.image, new_size)
         self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
         self.screen_location = utils.worldspace_to_screenspace(self.position)
         self.screen_size = self.rotated.get_size()
-        if self.hAlignment == 'l':
+        if self.hAlignment == "l":
             pass
-        elif self.hAlignment == 'm':
+        elif self.hAlignment == "m":
             self.screen_location -= np.array([self.screen_size[0] / 2, 0.0])
-        elif self.hAlignment == 'r':
+        elif self.hAlignment == "r":
             self.screen_location -= np.array([self.screen_size[0], 0.0])
         else:
-            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
-        if self.vAlignment == 't':
+            raise ValueError(f"hAlignment is incorrect: {self.hAlignment}")
+        if self.vAlignment == "t":
             pass
-        elif self.vAlignment == 'm':
+        elif self.vAlignment == "m":
             self.screen_location -= np.array([0.0, self.screen_size[1] / 2])
-        elif self.vAlignment == 'b':
+        elif self.vAlignment == "b":
             self.screen_location -= np.array([0.0, self.screen_size[1]])
         else:
-            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+            raise ValueError(f"vAlignment is incorrect: {self.vAlignment}")
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
+
+        physics_size = screenspace_to_worldspace(
+            [
+                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+            ]
+        )
         self.verts = [
-            (physics_size[0]/2, physics_size[1]/2),
-            (physics_size[0]/2, -physics_size[1]/2),
-            (-physics_size[0]/2, -physics_size[1]/2),
-            (-physics_size[0]/2, physics_size[1]/2),
+            (physics_size[0] / 2, physics_size[1] / 2),
+            (physics_size[0] / 2, -physics_size[1] / 2),
+            (-physics_size[0] / 2, -physics_size[1] / 2),
+            (-physics_size[0] / 2, physics_size[1] / 2),
         ]
 
     def applyToScreen(self):
@@ -199,51 +216,65 @@ class Image(Colorable):
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:
             moment = pymunk.moment_for_poly(physObj.mass, self.verts)
-            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
-        shape = pymunk.Poly(body, self.verts, transform=pymunk.Transform(
-            a=np.cos(physObj.rotation), 
-            b=np.sin(physObj.rotation), 
-            c=-np.sin(physObj.rotation), 
-            d=np.cos(physObj.rotation), 
-            tx=rel_pos[0],
-            ty=rel_pos[1],
-        ))
+            body = pymunk.Body(
+                physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC
+            )
+        shape = pymunk.Poly(
+            body,
+            self.verts,
+            transform=pymunk.Transform(
+                a=np.cos(physObj.rotation),
+                b=np.sin(physObj.rotation),
+                c=-np.sin(physObj.rotation),
+                d=np.cos(physObj.rotation),
+                tx=rel_pos[0],
+                ty=rel_pos[1],
+            ),
+        )
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
         from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
+
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
 
     def getPositionAnchorOffset(self):
-        res = np.array([.0, .0])
+        res = np.array([0.0, 0.0])
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
-        if self.hAlignment == 'l':
+
+        physics_size = screenspace_to_worldspace(
+            [
+                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+            ]
+        )
+        if self.hAlignment == "l":
             res += np.array([physics_size[0] / 2, 0.0])
-        elif self.hAlignment == 'm':
+        elif self.hAlignment == "m":
             pass
-        elif self.hAlignment == 'r':
+        elif self.hAlignment == "r":
             res -= np.array([physics_size[0] / 2, 0.0])
         else:
-            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
-        if self.vAlignment == 't':
+            raise ValueError(f"hAlignment is incorrect: {self.hAlignment}")
+        if self.vAlignment == "t":
             res += np.array([0.0, physics_size[1] / 2])
-        elif self.vAlignment == 'm':
+        elif self.vAlignment == "m":
             pass
-        elif self.vAlignment == 'b':
+        elif self.vAlignment == "b":
             res -= np.array([0.0, physics_size[1] / 2])
         else:
-            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+            raise ValueError(f"vAlignment is incorrect: {self.vAlignment}")
         return res
+
 
 class Line(Colorable):
 
     # THESE DON'T HAVE A LOCAL POSITION
 
     def initFromKwargs(self, **kwargs):
-        self.start = kwargs.get('start')
-        self.end = kwargs.get('end')
+        self.start = kwargs.get("start")
+        self.end = kwargs.get("end")
         super().initFromKwargs(**kwargs)
 
     def calculatePoints(self):
@@ -252,28 +283,36 @@ class Line(Colorable):
     def applyToScreen(self):
         if self.fill:
             pygame.draw.line(
-                ScreenObjectManager.instance.screen, 
-                self.fill, 
+                ScreenObjectManager.instance.screen,
+                self.fill,
                 utils.worldspace_to_screenspace(self.start),
                 utils.worldspace_to_screenspace(self.end),
                 1,
             )
         if self.stroke and self.stroke_width:
             pygame.draw.line(
-                ScreenObjectManager.instance.screen, 
-                self.fill, 
+                ScreenObjectManager.instance.screen,
+                self.fill,
                 utils.worldspace_to_screenspace(self.start),
                 utils.worldspace_to_screenspace(self.end),
-                max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)),
+                max(
+                    1,
+                    int(
+                        self.stroke_width
+                        * ScreenObjectManager.instance.screen_width
+                        / ScreenObjectManager.instance.map_width
+                    ),
+                ),
             )
+
 
 class Polygon(Colorable):
 
     verts: np.array
 
     def initFromKwargs(self, **kwargs):
-        self.verts = kwargs.get('verts')
-        self.points = [None]*len(self.verts)
+        self.verts = kwargs.get("verts")
+        self.points = [None] * len(self.verts)
         super().initFromKwargs(**kwargs)
 
     def calculatePoints(self):
@@ -282,32 +321,54 @@ class Polygon(Colorable):
         except:
             return
         for i, v in enumerate(self.verts):
-            self.points[i] = utils.worldspace_to_screenspace(local_space_to_world_space(v, self.rotation, self.position))
+            self.points[i] = utils.worldspace_to_screenspace(
+                local_space_to_world_space(v, self.rotation, self.position)
+            )
 
     def applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke and self.stroke_width:
-            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
+            pygame.draw.polygon(
+                ScreenObjectManager.instance.screen,
+                self.stroke,
+                self.points,
+                max(
+                    1,
+                    int(
+                        self.stroke_width
+                        * ScreenObjectManager.instance.screen_width
+                        / ScreenObjectManager.instance.map_width
+                    ),
+                ),
+            )
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:
             moment = pymunk.moment_for_poly(physObj.mass, self.verts)
-            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
-        shape = pymunk.Poly(body, self.verts, transform=pymunk.Transform(
-            a=np.cos(physObj.rotation), 
-            b=np.sin(physObj.rotation), 
-            c=-np.sin(physObj.rotation), 
-            d=np.cos(physObj.rotation), 
-            tx=rel_pos[0],
-            ty=rel_pos[1],
-        ))
+            body = pymunk.Body(
+                physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC
+            )
+        shape = pymunk.Poly(
+            body,
+            self.verts,
+            transform=pymunk.Transform(
+                a=np.cos(physObj.rotation),
+                b=np.sin(physObj.rotation),
+                c=-np.sin(physObj.rotation),
+                d=np.cos(physObj.rotation),
+                tx=rel_pos[0],
+                ty=rel_pos[1],
+            ),
+        )
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
         from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
+
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
+
 
 class Rectangle(Polygon):
 
@@ -315,22 +376,23 @@ class Rectangle(Polygon):
     height: float
 
     def initFromKwargs(self, **kwargs):
-        self.width = kwargs.get('width', 20)
-        self.height = kwargs.get('height', 20)
-        kwargs['verts'] = [
-            [self.width/2, self.height/2],
-            [-self.width/2, self.height/2],
-            [-self.width/2, -self.height/2],
-            [self.width/2, -self.height/2],
+        self.width = kwargs.get("width", 20)
+        self.height = kwargs.get("height", 20)
+        kwargs["verts"] = [
+            [self.width / 2, self.height / 2],
+            [-self.width / 2, self.height / 2],
+            [-self.width / 2, -self.height / 2],
+            [self.width / 2, -self.height / 2],
         ]
         super().initFromKwargs(**kwargs)
+
 
 class Circle(Colorable):
 
     radius: float
 
     def initFromKwargs(self, **kwargs):
-        self.radius = kwargs.get('radius', 20)
+        self.radius = kwargs.get("radius", 20)
         super().initFromKwargs(**kwargs)
 
     def calculatePoints(self):
@@ -339,27 +401,49 @@ class Circle(Colorable):
         except:
             return
         self.point = utils.worldspace_to_screenspace(self.position)
-        self.v_radius = int(ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius)
-        self.h_radius = int(ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * self.radius)
-        self.rect = pygame.Rect(self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2)
+        self.v_radius = int(
+            ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius
+        )
+        self.h_radius = int(
+            ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * self.radius
+        )
+        self.rect = pygame.Rect(
+            self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2
+        )
 
     def applyToScreen(self):
         if self.fill:
             pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.fill, self.rect)
         if self.stroke and self.stroke_width:
-            pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.stroke, self.rect, max(1, int(self.stroke_width * ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width)))
+            pygame.draw.ellipse(
+                ScreenObjectManager.instance.screen,
+                self.stroke,
+                self.rect,
+                max(
+                    1,
+                    int(
+                        self.stroke_width
+                        * ScreenObjectManager.instance.screen_width
+                        / ScreenObjectManager.instance.map_width
+                    ),
+                ),
+            )
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:
             moment = pymunk.moment_for_circle(physObj.mass, 0, self.radius)
-            body = pymunk.Body(physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC)
+            body = pymunk.Body(
+                physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC
+            )
         shape = pymunk.Circle(body, self.radius, offset=rel_pos)
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
         from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
+
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
+
 
 class Text(Colorable):
 
@@ -379,77 +463,92 @@ class Text(Colorable):
     def initFromKwargs(self, **kwargs):
         super().initFromKwargs(**kwargs)
         from ev3sim.file_helper import find_abs
-        self.font_style = kwargs.get('font_style', "OpenSans-SemiBold.ttf")
-        self.font_path = find_abs(self.font_style, allowed_areas=['local/assets/', 'local', 'package/assets/', 'package'])
-        self.font_size = kwargs.get('font_size', 30)
+
+        self.font_style = kwargs.get("font_style", "OpenSans-SemiBold.ttf")
+        self.font_path = find_abs(
+            self.font_style, allowed_areas=["local/assets/", "local", "package/assets/", "package"]
+        )
+        self.font_size = kwargs.get("font_size", 30)
         self.font = pygame.freetype.Font(self.font_path, self.font_size)
-        self.hAlignment = kwargs.get('hAlignment', 'l')
-        self.vAlignment = kwargs.get('vAlignment', 't')
-        self.text = kwargs.get('text', 'Test')
+        self.hAlignment = kwargs.get("hAlignment", "l")
+        self.vAlignment = kwargs.get("vAlignment", "t")
+        self.text = kwargs.get("text", "Test")
 
     def calculatePoints(self):
-        if not hasattr(self, 'font'):
+        if not hasattr(self, "font"):
             return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
-        self.surface = pygame.transform.scale(self.surface, (int(self.surface.get_width() * relative_scale[0]), int(self.surface.get_height() * relative_scale[1])))
+        self.surface = pygame.transform.scale(
+            self.surface,
+            (int(self.surface.get_width() * relative_scale[0]), int(self.surface.get_height() * relative_scale[1])),
+        )
         self.screen_size = (self.surface.get_width(), self.surface.get_height())
         baseline = np.array([self.rect.x * relative_scale[0], self.rect.y * relative_scale[1]])
         self.rect.move_ip(-self.rect.x, -self.rect.y)
-        width, height = self.font.get_rect(self.text).width * relative_scale[0], self.font.get_rect(self.text).height * relative_scale[1]
+        width, height = (
+            self.font.get_rect(self.text).width * relative_scale[0],
+            self.font.get_rect(self.text).height * relative_scale[1],
+        )
         self.anchor = utils.worldspace_to_screenspace(self.position)
-        if self.hAlignment == 'l':
+        if self.hAlignment == "l":
             pass
-        elif self.hAlignment == 'm':
+        elif self.hAlignment == "m":
             self.anchor -= np.array([width / 2.0, 0.0])
-        elif self.hAlignment == 'r':
+        elif self.hAlignment == "r":
             self.anchor -= np.array([width, 0.0])
         else:
-            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
-        if self.vAlignment == 't':
+            raise ValueError(f"hAlignment is incorrect: {self.hAlignment}")
+        if self.vAlignment == "t":
             self.anchor -= np.array([0.0, 0.0])
-        elif self.vAlignment == 'm':
+        elif self.vAlignment == "m":
             self.anchor -= np.array([0.0, height / 2])
-        elif self.vAlignment == 'baseline':
+        elif self.vAlignment == "baseline":
             self.anchor -= np.array([0.0, baseline[1]])
-        elif self.vAlignment == 'b':
+        elif self.vAlignment == "b":
             self.anchor -= np.array([0.0, height])
         else:
-            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+            raise ValueError(f"vAlignment is incorrect: {self.vAlignment}")
         self.rect.move_ip(*self.anchor)
-    
+
     def applyToScreen(self):
         ScreenObjectManager.instance.screen.blit(self.surface, self.rect)
 
     def getPositionAnchorOffset(self):
-        res = np.array([.0, .0])
+        res = np.array([0.0, 0.0])
         from ev3sim.visual.utils import screenspace_to_worldspace
-        physics_size = screenspace_to_worldspace([ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0], ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1]])
-        if self.hAlignment == 'l':
+
+        physics_size = screenspace_to_worldspace(
+            [
+                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+            ]
+        )
+        if self.hAlignment == "l":
             res += np.array([physics_size[0] / 2, 0.0])
-        elif self.hAlignment == 'm':
+        elif self.hAlignment == "m":
             pass
-        elif self.hAlignment == 'r':
+        elif self.hAlignment == "r":
             res -= np.array([physics_size[0] / 2, 0.0])
         else:
-            raise ValueError(f'hAlignment is incorrect: {self.hAlignment}')
-        if self.vAlignment == 't':
+            raise ValueError(f"hAlignment is incorrect: {self.hAlignment}")
+        if self.vAlignment == "t":
             res += np.array([0.0, physics_size[1] / 2])
-        elif self.vAlignment == 'm':
+        elif self.vAlignment == "m":
             pass
-        elif self.vAlignment == 'b':
+        elif self.vAlignment == "b":
             res -= np.array([0.0, physics_size[1] / 2])
         else:
-            raise ValueError(f'vAlignment is incorrect: {self.vAlignment}')
+            raise ValueError(f"vAlignment is incorrect: {self.vAlignment}")
         return res
 
 
 def visualFactory(**options):
-    if 'name' not in options:
+    if "name" not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
     for klass in (Polygon, Rectangle, Circle, Text, Image):
-        if options['name'] == klass.__name__:
+        if options["name"] == klass.__name__:
             r = klass(**options)
             return r
-    name = options['name']
+    name = options["name"]
     raise ValueError(f"Unknown visual element, {name}")

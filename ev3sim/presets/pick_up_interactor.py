@@ -8,6 +8,7 @@ from ev3sim.objects.base import objectFactory
 from ev3sim.visual.utils import screenspace_to_worldspace
 from ev3sim.objects.base import STATIC_CATEGORY
 
+
 class PickUpInteractor(IInteractor):
 
     # Variables for grabbing an object
@@ -24,7 +25,7 @@ class PickUpInteractor(IInteractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.positions = [None]*10
+        self.positions = [None] * 10
 
     def tick(self, tick):
         super().tick(tick)
@@ -34,13 +35,15 @@ class PickUpInteractor(IInteractor):
             self.obj.body.position = self.obj_rel_pos + self.obj_m_pos
             idx = (self.position_index + self.position_length) % self.TOTAL_POSITIONS
             self.positions[(self.position_index + self.position_length) % self.TOTAL_POSITIONS] = self.obj_m_pos
-            self.position_length = min(self.position_length+1, 10)
+            self.position_length = min(self.position_length + 1, 10)
             self.position_index = (idx - self.position_length + 1 + self.TOTAL_POSITIONS) % self.TOTAL_POSITIONS
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
+            )
             if len(shapes) > 0:
                 self.obj = shapes[0].shape.obj
                 self.obj.body.velocity = np.array([0.0, 0.0])
@@ -50,18 +53,25 @@ class PickUpInteractor(IInteractor):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             # If a robot is right clicked, copy it's ID for use in the attach script.
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
+            )
             if len(shapes) > 0:
                 self.obj = shapes[0].shape.obj
-                if hasattr(self.obj, 'robot_class'):
+                if hasattr(self.obj, "robot_class"):
                     pyperclip.copy(self.obj.robot_class.ID)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.obj_grabbed:
             self.obj_grabbed = False
             # Give velocity based on previous mouse positions.
             if self.position_length != 0:
                 differences = sum(
-                    (x+1) / self.position_length * (self.positions[(self.position_index + x+1) % self.TOTAL_POSITIONS] - self.positions[(self.position_index + x) % self.TOTAL_POSITIONS])
-                    for x in range(self.position_length-1)
+                    (x + 1)
+                    / self.position_length
+                    * (
+                        self.positions[(self.position_index + x + 1) % self.TOTAL_POSITIONS]
+                        - self.positions[(self.position_index + x) % self.TOTAL_POSITIONS]
+                    )
+                    for x in range(self.position_length - 1)
                 )
                 # Sum will return 0 if position length is 0 - we need to handle this.
                 if isinstance(differences, int):

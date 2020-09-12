@@ -6,8 +6,8 @@ from ev3sim.devices.compass.ev3 import CompassSensor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.visual.utils import hsl_to_rgb
 
-class ControllableBot(Robot):
 
+class ControllableBot(Robot):
     def handleEvent(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
@@ -35,11 +35,11 @@ class ControllableBot(Robot):
     def startUp(self):
         self.direction = np.array([0.0, 0.0])
         self.rotate = False
-        self.leftMotor : LargeMotor = self.getDevice('outB')
-        self.rightMotor : LargeMotor = self.getDevice('outC')
-        self.topMotor : LargeMotor = self.getDevice('outA')
-        self.botMotor : LargeMotor = self.getDevice('outD')
-        self.compass : CompassSensor = self.getDevice('in4')
+        self.leftMotor: LargeMotor = self.getDevice("outB")
+        self.rightMotor: LargeMotor = self.getDevice("outC")
+        self.topMotor: LargeMotor = self.getDevice("outA")
+        self.botMotor: LargeMotor = self.getDevice("outD")
+        self.compass: CompassSensor = self.getDevice("in4")
 
     def onSpawn(self):
         self.compass.calibrate()
@@ -70,6 +70,6 @@ class ControllableBot(Robot):
         self.rightMotor.on(vMotorScale * speed)
         self.topMotor.on(hMotorScale * speed)
         self.botMotor.on(hMotorScale * speed)
-    
+
     def move_global_rotation(self, bearing, speed=100):
         self.move_relative_rotation(bearing - np.pi * self.compass.value() / 180, speed=speed)
