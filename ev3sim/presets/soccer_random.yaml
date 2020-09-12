@@ -1,0 +1,565 @@
+colours:
+  wall_color: "#2a9d8f"
+  strip_color: "#f1faee"
+  grass_color: "#55a630"
+  goal_fill: "#e63946"
+  strip_dark_color: "#000000"
+  UI_bg: "#efedee"
+  UI_bg_2: "#dddedf"
+  UI_fg: "#efedee"
+  UI_fg_2: "1f1f1f"
+  team_1: "#3235a9"
+  team_2: "#ba3333"
+
+interactors:
+- class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
+- class_path: ev3sim.presets.pause_interactor.PauseInteractor
+- class_path: ev3sim.presets.soccer.SoccerInteractor
+  kwargs:
+    names:
+    - Team 1
+    - Team 2
+    spawns:
+    - [[[-80, -18], 0], [[-50, -18], 0]]
+    - [[[80, -18], 180], [[50, -18], 180]]
+    goals:
+    - name: Rectangle
+      width: 7.4
+      height: 45
+      position: [-95.2, -18]
+      fill: goal_fill
+    - name: Rectangle
+      width: 7.4
+      height: 45
+      position: [95.2, -18]
+      fill: goal_fill
+    show_goal_colliders: true
+elements:
+- type: visual
+  name: Rectangle
+  width: 243
+  height: 183
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [0, -18]
+  zPos: 3
+  key: grass
+  sensorVisible: true
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 246
+    height: 3
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, 73.5]
+  static: true
+  key: topbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 300
+    height: 100
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, 122]
+  static: true
+  key: topbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 246
+    height: 3
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, -109.5]
+  static: true
+  key: botbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 300
+    height: 100
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [0, -158]
+  static: true
+  key: botbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 183
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [-121.5, -18]
+  static: true
+  key: leftbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 100
+    height: 300
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [-170, -18]
+  static: true
+  key: leftbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 183
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [121.5, -18]
+  static: true
+  key: rightbar
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 100
+    height: 300
+    fill: null
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [170, -18]
+  static: true
+  key: rightbarExtended
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 7.4
+    height: 3
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [-95.2, 4.5]
+  static: true
+  key: leftTopGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 7.4
+    height: 3
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [-95.2, -40.5]
+  static: true
+  key: leftBotGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 48
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [-99, -18]
+  static: true
+  key: leftBackGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 7.4
+    height: 3
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [95.2, 4.5]
+  static: true
+  key: rightTopGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 7.4
+    height: 3
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [95.2, -40.5]
+  static: true
+  key: rightBotGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 48
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [99, -18]
+  static: true
+  key: rightBackGoalPost
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [-77.5, 28]
+  zPos: 5
+  key: leftTopStrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [-77.5, -62]
+  zPos: 5
+  key: leftBotStrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 90
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [-63.5, -18]
+  zPos: 5
+  key: leftMidStrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [77.5, 28]
+  zPos: 5
+  key: rightTopStrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [77.5, -62]
+  zPos: 5
+  key: rightBotStrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 90
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [63.5, -18]
+  zPos: 5
+  key: rightMidStrip
+  sensorVisible: true
+- type: visual
+  name: Circle
+  radius: 1
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [0, -18]
+  zPos: 5
+  key: midSpot
+  sensorVisible: true
+- type: visual
+  name: Circle
+  radius: 1
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [0, 12]
+  zPos: 5
+  key: topSpot
+  sensorVisible: true
+- type: visual
+  name: Circle
+  radius: 1
+  fill: strip_dark_color
+  stroke_width: 0
+  position: [0, -48]
+  zPos: 5
+  key: botSpot
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 5
+  height: 132
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [94, -18]
+  zPos: 5
+  key: rightstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 5
+  height: 132
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [-94, -18]
+  zPos: 5
+  key: leftstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 193
+  height: 5
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [0, 48]
+  zPos: 5
+  key: topstrip
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 193
+  height: 5
+  fill: 'strip_color'
+  stroke_width: 0
+  position: [0, -84]
+  zPos: 5
+  key: botstrip 
+  sensorVisible: true
+# UI Elements
+- type: visual
+  name: Image
+  image_path: 'assets/ui/left_bg.png'
+  position: [-145, 110]
+  hAlignment: l
+  vAlignment: t
+  zPos: 5
+  key: team1UI
+- type: visual
+  name: Image
+  image_path: 'assets/ui/right_bg.png'
+  position: [145, 110]
+  hAlignment: r
+  vAlignment: t
+  zPos: 5
+  key: team2UI
+- type: visual
+  name: Text
+  text: "0"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [-50, 98.5]
+  hAlignment: r
+  vAlignment: baseline
+  zPos: 5
+  key: score1Text
+- type: visual
+  name: Text
+  text: "0"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [50, 98.5]
+  hAlignment: l
+  vAlignment: baseline 
+  zPos: 5
+  key: score2Text
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: r
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [-38, 107.5]
+  key: score1Plus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: r
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [-38, 101.5]
+  key: score1Minus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_plus.png"
+    hAlignment: l
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [38, 107.5]
+  key: score2Plus
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  visual:
+    name: Image
+    image_path: "assets/ui/goal_minus.png"
+    hAlignment: l
+    vAlignment: t
+    scale: 0.5
+    zPos: 7
+  position: [38, 101.5]
+  key: score2Minus
+- type: visual
+  name: Text
+  fill: "UI_fg"
+  font_size: 34  
+  position: [-130, 100]
+  hAlignment: l
+  vAlignment: baseline
+  zPos: 5
+  key: name1Text
+- type: visual
+  name: Text
+  fill: "UI_fg"
+  font_size: 34
+  position: [130, 100]
+  hAlignment: r
+  vAlignment: baseline
+  zPos: 5
+  key: name2Text
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_pause_released.png'
+    hAlignment: r
+    vAlignment: t
+    zPos: 5
+  key: controlsPause
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'assets/ui/controls_reset_released.png'
+    hAlignment: l
+    vAlignment: t
+    zPos: 5
+  key: controlsReset
+- type: visual
+  name: Image
+  image_path: 'assets/ui/timer_bg.png'
+  position: [0,110]
+  hAlignment: m
+  vAlignment: t
+  zPos: 5
+  key: timer_bg
+- type: visual
+  name: Text
+  text: ""
+  fill: "UI_fg"
+  font_size: 24
+  hAlignment: l
+  vAlignment: baseline
+  position: [-132,87]
+  zPos: 6
+  key: temp_1
+- type: visual
+  name: Text
+  text: ""
+  fill: "UI_fg"
+  font_size: 24
+  hAlignment: r
+  vAlignment: baseline
+  position: [132,87]
+  zPos: 6
+  key: temp_2
+- type: visual
+  name: Text
+  text: "05:00"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [-13.6, 98.5]
+  hAlignment: l
+  vAlignment: baseline
+  zPos: 5
+  key: TimerText
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Circle
+    radius: 3.4
+    fill: '#ff0000'
+    stroke_width: 0.2
+    stroke: '#ffffff'
+    zPos: 2
+  friction: 1
+  mass: 0.1
+  restitution: 0.8
+  position: [-100, -18]
+  key: IR_BALL
+loader:
+  GAME_TICK_RATE: 30
+  VISUAL_TICK_RATE: 30
+screen:
+  screen_width: 1280
+  screen_height: 960
+  map_width: 293.3
+  map_height: 220
+  background_color: '#1f1f1f'
+settings:
+  ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS: true

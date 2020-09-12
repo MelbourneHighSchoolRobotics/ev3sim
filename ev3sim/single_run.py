@@ -10,9 +10,8 @@ from ev3sim.simulation.randomisation import Randomiser
 from unittest import mock
 
 
-def single_run(preset_filename, robots, bind_addr, seed, randomise_sensors):
+def single_run(preset_filename, robots, bind_addr, seed):
     Randomiser.createGlobalRandomiserWithSeed(seed)
-    ScriptLoader.RANDOMISE_SENSORS = randomise_sensors
 
     preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
     with open(preset_file, "r") as f:

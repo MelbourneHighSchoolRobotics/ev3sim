@@ -34,7 +34,6 @@ parser.add_argument(
     default=None,
     help="Used to seed randomisation, integer from 0 to 2^32-1. Will generate randomly if left blank.",
 )
-parser.add_argument("--randomise_sensors", "-r", action="store_true", help="Enables sensor randomisation.")
 
 
 def main(passed_args=None):
@@ -54,11 +53,11 @@ def main(passed_args=None):
         from ev3sim.batched_run import batched_run
 
         assert len(args.robots) == 1, "Exactly one batched command file should be provided."
-        batched_run(args.robots[0], args.bind_addr, args.seed, args.randomise_sensors)
+        batched_run(args.robots[0], args.bind_addr, args.seed)
     else:
         from ev3sim.single_run import single_run
 
-        single_run(args.preset, args.robots, args.bind_addr, args.seed, args.randomise_sensors)
+        single_run(args.preset, args.robots, args.bind_addr, args.seed)
 
 
 if __name__ == "__main__":
