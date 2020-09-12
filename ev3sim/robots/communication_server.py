@@ -13,7 +13,7 @@ client1, c1info = server.accept_client()
 print("Waiting for second client to connect")
 client2, c2info = server.accept_client()
 
-print("Ready to recieve!")
+print("Ready to receive!")
 
 while True:
     # Swap the data around.

@@ -55,7 +55,7 @@ def single_run(preset_filename, robots, bind_addr):
         # Chuck it back on the queue so that other threads know we are quitting.
         result_bucket.put(r)
         if r is not True:
-            print(f"An error occured in the {r[0]} thread. Raising an error now...")
+            print(f"An error occurred in the {r[0]} thread. Raising an error now...")
             time.sleep(1)
             raise r[1]
     except KeyboardInterrupt:
