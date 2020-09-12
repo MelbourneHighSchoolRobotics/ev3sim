@@ -49,6 +49,7 @@ def main(passed_args=None):
         "write_results": Queue(maxsize=0),
         "active_connections": [],
         "thread_ids": {},
+        "events": Queue(maxsize=0),
     }
     shared_data["condition_updated"] = threading.Condition(shared_data["update_lock"])
     shared_data["condition_updating"] = threading.Condition(shared_data["update_lock"])
@@ -88,6 +89,8 @@ def main(passed_args=None):
                             data["tick"] = r.tick
                             data["tick_rate"] = r.tick_rate
                             data["current_data"] = json.loads(r.content)
+                            for e in data["current_data"]["events"]:
+                                data["events"].put(e)
                             if first_message:
                                 print("Connection initialised.")
                                 first_message = False
@@ -167,6 +170,14 @@ def main(passed_args=None):
             data["thread_ids"][threading.get_ident()] = ev3sim.simulation.comm_schema_pb2.RobotLogSource.ROBOT
             try:
                 from ev3dev2 import Device, DeviceNotFound
+
+                @classmethod
+                def handle_events(cls):
+                    """Since we can only handle events in mocked function calls, define a function to handle all of the existing events."""
+                    while data["events"].qsize():
+                        event_name, event_data = data["events"].get()
+                        func = getattr(cls, event_name)
+                        func(event_data)
 
                 class MockedFile:
                     def __init__(self, data_path):
@@ -443,6 +454,7 @@ def main(passed_args=None):
                 @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
                 @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
                 @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
+                @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
                 @mock.patch("sys.path", fake_path)
                 def run_script(fname):
                     from importlib.machinery import SourceFileLoader

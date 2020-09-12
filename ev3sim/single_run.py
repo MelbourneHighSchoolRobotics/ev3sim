@@ -17,13 +17,14 @@ def single_run(preset_filename, robots, bind_addr):
     config["robots"] = config.get("robots", []) + robots
 
     shared_data = {
-        "tick": 0,  # Current tick
-        "write_stack": deque(),  # All write actions are processed through this
-        "data_queue": {},  # Simulation data for each bot
+        "tick": 0,  # Current tick.
+        "write_stack": deque(),  # All write actions are processed through this.
+        "data_queue": {},  # Simulation data for each bot.
         "active_count": {},  # Keeps track of which code connection each bot has.
-        "bot_locks": {},  # Threading Locks and Conditions for each bot to wait for connection actions
-        "bot_communications_data": {},  # Buffers and information for all bot communications
+        "bot_locks": {},  # Threading Locks and Conditions for each bot to wait for connection actions.
+        "bot_communications_data": {},  # Buffers and information for all bot communications.
         "tick_updates": {},  # Simply a dictionary where the simulation tick will push static data, so the other methods are aware of when the simulation has exited.
+        "events": {},  # Any events that should be sent to robots.
     }
 
     result_bucket = Queue(maxsize=1)

@@ -60,3 +60,24 @@ class CommClient:
 def wait_for_tick():
     """If in simulation, waits for the next simulation tick."""
     pass
+
+
+class EventSystem:
+    @classmethod
+    def on_reset(cls, data):
+        """Triggers whenever the game is reset. No extra data provided."""
+        pass
+
+    @classmethod
+    def on_goal_scored(cls, data):
+        """
+        Triggers when a goal is scored by any team into any goal.
+        Data:
+            against_you: True if the ball went in your goal, False otherwise.
+        """
+        pass
+
+    @classmethod
+    def handle_events(cls):
+        """Handle all outstanding events."""
+        pass
