@@ -223,7 +223,8 @@ def main(passed_args=None):
                                 self._device_index = get_index(name)
                                 break
                         else:
-                            print(kwargs, data["current_data"][self._path[0]])
+                            # Debug print for adding new devices.
+                            # print(kwargs, data["current_data"][self._path[0]])
                             self._device_index = None
 
                             raise DeviceNotFound("%s is not connected." % self)
@@ -430,6 +431,100 @@ def main(passed_args=None):
                         info = data["write_results"].get()
                         data["active_connections"].remove(self)
 
+                class MockedButton:
+                    class MockedButtonSpecific(Device):
+                        _pressed = None
+
+                        @property
+                        def pressed(self):
+                            self._pressed, value = self.get_attr_int(self._pressed, "pressed")
+                            return value
+
+                    button_names = ["up", "down", "left", "right", "enter", "backspace"]
+                    on_up = None
+                    on_down = None
+                    on_left = None
+                    on_right = None
+                    on_enter = None
+                    on_backspace = None
+                    on_change = None
+
+                    previous_presses = None
+
+                    def __init__(self):
+                        self.button_classes = {}
+                        for name in self.button_names:
+                            try:
+                                self.button_classes[name] = MockedButton.MockedButtonSpecific(
+                                    "brick_button", address=name
+                                )
+                            except Exception as e:
+                                if name == "up":
+                                    raise e
+                                self.button_classes[name] = None
+
+                    @property
+                    def buttons_pressed(self):
+                        pressed = []
+                        for name, obj in self.button_classes.items():
+                            if obj is not None and obj.pressed:
+                                pressed.append(name)
+                        return pressed
+
+                    @property
+                    def up(self):
+                        if self.button_classes["up"] is None:
+                            raise ValueError("Up button not connected.")
+                        return "up" in self.buttons_pressed
+
+                    @property
+                    def down(self):
+                        if self.button_classes["down"] is None:
+                            raise ValueError("Down button not connected.")
+                        return "down" in self.buttons_pressed
+
+                    @property
+                    def left(self):
+                        if self.button_classes["left"] is None:
+                            raise ValueError("Left button not connected.")
+                        return "left" in self.buttons_pressed
+
+                    @property
+                    def right(self):
+                        if self.button_classes["right"] is None:
+                            raise ValueError("Right button not connected.")
+                        return "right" in self.buttons_pressed
+
+                    @property
+                    def enter(self):
+                        if self.button_classes["enter"] is None:
+                            raise ValueError("Enter button not connected.")
+                        return "enter" in self.buttons_pressed
+
+                    @property
+                    def backspace(self):
+                        if self.button_classes["backspace"] is None:
+                            raise ValueError("Backspace button not connected.")
+                        return "backspace" in self.buttons_pressed
+
+                    def process(self, new_state=None):
+                        if new_state is None:
+                            new_state = set(self.buttons_pressed)
+                        if self.previous_presses is None:
+                            self.previous_presses = new_state
+
+                        changed_names = new_state.symmetric_difference(self.previous_presses)
+                        for name in changed_names:
+                            bound_method = getattr(self, f"on_{name}")
+
+                            if bound_method is not None:
+                                bound_method(name in new_state)
+
+                        if self.on_change is not None and state_diff:
+                            self.on_change([(name, name in new_state) for name in changed_names])
+
+                        self.previous_presses = new_state
+
                 fake_path = sys.path.copy()
                 fake_path.append(called_from)
 
@@ -445,6 +540,7 @@ def main(passed_args=None):
                 @mock.patch("ev3dev2.motor.Motor.wait", wait)
                 @mock.patch("ev3dev2.Device.__init__", device__init__)
                 @mock.patch("ev3dev2.Device._attribute_file_open", _attribute_file_open)
+                @mock.patch("ev3dev2.button.Button", MockedButton)
                 @mock.patch("ev3sim.code_helpers.is_ev3", False)
                 @mock.patch("ev3sim.code_helpers.is_sim", True)
                 @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
