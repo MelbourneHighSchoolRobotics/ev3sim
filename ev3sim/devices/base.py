@@ -77,6 +77,7 @@ class IDeviceInteractor(IInteractor):
 
     def afterPhysics(self):
         from ev3sim.objects.base import PhysicsObject
+
         for i, obj in enumerate(self.generated):
             obj.position = local_space_to_world_space(
                 self.relative_location

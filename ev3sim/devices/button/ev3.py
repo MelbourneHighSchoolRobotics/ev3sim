@@ -6,9 +6,10 @@ from ev3sim.objects.base import DYNAMIC_CATEGORY
 from ev3sim.simulation.world import World
 from ev3sim.visual.utils import screenspace_to_worldspace
 
+
 class ButtonInteractor(IDeviceInteractor):
-    
-    name = 'BUTTON'
+
+    name = "BUTTON"
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -20,10 +21,10 @@ class ButtonInteractor(IDeviceInteractor):
                 for pq in shapes:
                     if pq.shape.obj.key == self.generated[0].key:
                         self.device_class.pressed = True
-                        self.generated[0].visual.fill = 'BUTTON_back_color_press'
+                        self.generated[0].visual.fill = "BUTTON_back_color_press"
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.device_class.pressed = False
-            self.generated[0].visual.fill = 'BUTTON_back_color_release'
+            self.generated[0].visual.fill = "BUTTON_back_color_release"
 
 
 class Button(ButtonMixin, Device):
