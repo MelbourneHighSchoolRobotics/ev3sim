@@ -22,10 +22,14 @@ class UltrasonicSensorMixin:
     # 0 - 2 of actual value at max angle.
     ANGLE_RANDOM_AMPLITUDE = 1
 
+    # Static offset
+    OFFSET_MAX = 7
+
     last_angle_diff = 0
 
     def generateBias(self):
         self.saved = 0
+        self.offset = (0.5 - self._interactor.random()) * 2 * self.OFFSET_MAX
 
     def _SetIgnoredObjects(self, objs):
         self.ignore_objects = objs
@@ -54,7 +58,7 @@ class UltrasonicSensorMixin:
 
             if raycast == None:
                 if top_length == self.MAX_RAYCAST or (not ScriptLoader.RANDOMISE_SENSORS):
-                    return top_length
+                    return max(0, min(self.MAX_RAYCAST, top_length + self.offset))
                 # If randomiser, linearly scale result by angle between surface normal of raycasted point.
                 return max(
                     0,
@@ -68,7 +72,8 @@ class UltrasonicSensorMixin:
                             * self.ANGLE_RANDOM_AMPLITUDE
                             / np.pi
                             * 2
-                        ),
+                        )
+                        + self.offset,
                     ),
                 )
             else:
@@ -79,7 +84,7 @@ class UltrasonicSensorMixin:
                     opposite_angle += 2 * np.pi
                 self.last_angle_diff = abs(opposite_angle - raycast.normal.angle)
             top_length = raycast.alpha * top_length - self.ACCEPTANCE_LEVEL
-        return 0
+        return max(0, min(self.MAX_RAYCAST, self.offset))
 
     def _getObjName(self, port):
         return "sensor" + port
