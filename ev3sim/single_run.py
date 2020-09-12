@@ -7,12 +7,13 @@ from ev3sim.file_helper import find_abs
 import yaml
 from ev3sim.simulation.loader import runFromConfig
 
+
 def single_run(preset_filename, robots, bind_addr):
-    preset_file = find_abs(preset_filename, allowed_areas=['local', 'local/presets/', 'package', 'package/presets/'])
-    with open(preset_file, 'r') as f:
+    preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+    with open(preset_file, "r") as f:
         config = yaml.safe_load(f)
 
-    config['robots'] = config.get('robots', []) + robots
+    config["robots"] = config.get("robots", []) + robots
 
     shared_data = {
         'tick': 0,                      # Current tick.
@@ -34,11 +35,13 @@ def single_run(preset_filename, robots, bind_addr):
         try:
             runFromConfig(config, shared_data)
         except Exception as e:
-            result.put(('Simulation', e))
+            result.put(("Simulation", e))
             return
         result.put(True)
 
-    comm_thread = Thread(target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True)
+    comm_thread = Thread(
+        target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True
+    )
     sim_thread = Thread(target=run, args=(shared_data, result_bucket), daemon=True)
 
     comm_thread.start()

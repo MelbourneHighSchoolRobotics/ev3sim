@@ -1,0 +1,27 @@
+Contributing
+============
+
+If you would like to contribute to the project, there's a few things you should know, to assist your development efforts and make the pull request workflow easier on everyone
+
+Running locally
+---------------
+
+To test your changes locally, we recommend pip installing the local changes - this ensures the build process is also working fine.
+While in the top level directory, you can run
+
+.. code-block:: bash
+
+    pip install .
+
+To install the project. Note that this will remove your existing install of stable ev3sim, so be aware of this.
+
+Linting code
+------------
+
+Pull requests are linted with `black`_. To run black locally to fix any formatting errors you've made, run the following:
+
+.. code-block:: bash
+
+    black --config pyproject.toml .
+
+.. _black: https://github.com/psf/black

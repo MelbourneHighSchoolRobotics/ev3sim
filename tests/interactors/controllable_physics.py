@@ -3,18 +3,18 @@ import numpy as np
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 
-class ControllablePhysics(IInteractor):
 
+class ControllablePhysics(IInteractor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.accel = kwargs.get('accel', 1)
-        self.ang_accel = kwargs.get('ang_accel', 1)
+        self.accel = kwargs.get("accel", 1)
+        self.ang_accel = kwargs.get("ang_accel", 1)
         self.f = np.array([0, 0])
         self.a = 0
 
     def tick(self, tick):
-        ScriptLoader.instance.object_map['phys_obj'].apply_force(self.f)
-        ScriptLoader.instance.object_map['phys_obj'].apply_torque(self.a)
+        ScriptLoader.instance.object_map["phys_obj"].apply_force(self.f)
+        ScriptLoader.instance.object_map["phys_obj"].apply_torque(self.a)
         return False
 
     def handleEvent(self, event):

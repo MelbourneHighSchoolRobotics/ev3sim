@@ -1,6 +1,24 @@
 Extensions to normal EV3 Code
 =============================
 
+Waiting for simulation ticks
+----------------------------
+
+As most ev3 programs tend to have a single loop which handles all of the robot's logic, in the interest of efficiency on simulator we highly recommend you attempt to sync this program loop up with each tick of the simulator.
+This is because running multiple program loops per simulation tick is useless (as sensor values won't change) and it can degrade the reliability of sensor values in future, if this program is spending a lot of CPU time running these pointless loops.
+
+You can achieve such a sync with the ``wait_for_tick`` method from the code helpers:
+
+.. code-block:: python
+
+    from ev3sim.code_helpers import wait_for_tick
+
+    while True:
+        # Program logic...
+        wait_for_tick()
+
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+
 Simulation testing
 ------------------
 

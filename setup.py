@@ -1,23 +1,19 @@
 import os.path
 from setuptools import setup
 
-REQUIRES_PYTHON = '>=3.7.0'
+REQUIRES_PYTHON = ">=3.7.0"
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(HERE, "README.md"), encoding='utf-8') as fid:
+with open(os.path.join(HERE, "README.md"), encoding="utf-8") as fid:
     README = fid.read()
 
 with open(os.path.join(HERE, "requirements.txt")) as fid:
-    REQUIREMENTS = [
-        req
-        for req in fid.read().split('\n')
-        if req
-    ]
+    REQUIREMENTS = [req for req in fid.read().split("\n") if req]
 
 setup(
     name="ev3sim",
-    version="1.2.1",
+    version="1.2.3",
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -45,4 +41,4 @@ setup(
             "ev3attach=ev3sim.attach:main",
         ]
     },
-) 
+)
