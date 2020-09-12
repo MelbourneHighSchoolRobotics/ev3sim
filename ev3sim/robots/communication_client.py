@@ -6,4 +6,4 @@ client = CommClient("aa:bb:cc:dd:ee:ff", 1234)
 
 while True:
     client.send(str(us.distance_centimeters))
-    print(f"Recieved: {client.recv(1024)}")
+    print(f"Received: {client.recv(1024)}")
