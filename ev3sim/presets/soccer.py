@@ -3,6 +3,7 @@ import pygame
 import numpy as np
 import math
 import pymunk
+from ev3sim.events import GAME_RESET, GOAL_SCORED
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import World, stop_on_pause
@@ -127,9 +128,10 @@ class SoccerInteractor(IInteractor):
         self.resetPositions()
         self.time_tick = 0
         self.update_time_text = True
+        for robotID in ScriptLoader.instance.robots.keys():
+            ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
 
     def resetPositions(self):
-        # It is assumed that 2 robots to each team, with indexes increasing as we go across teams.
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
                 actual_index = team * self.BOTS_PER_TEAM + index
@@ -187,6 +189,14 @@ class SoccerInteractor(IInteractor):
         # Pause the game temporarily
         World.instance.paused = True
         self.current_goal_score_tick = self.cur_tick
+        for team in range(len(self.names)):
+            for index in range(self.BOTS_PER_TEAM):
+                actual_index = team * self.BOTS_PER_TEAM + index
+                if actual_index >= len(self.robots):
+                    break
+                ScriptLoader.instance.sendEvent(
+                    f"Robot-{actual_index}", GOAL_SCORED, {"against_you": team == teamIndex}
+                )
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
