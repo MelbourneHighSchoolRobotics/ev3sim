@@ -29,11 +29,18 @@ To make simulation of devices a bit more realistic, there is also support for th
 * Motors having a theoretical maximum speed, but also a physical one which differs slightly
 * Sensors having slight biases towards certain directions
 
-And you can enable this randomisation by adding the ``--randomise_sensors`` or ``-r`` flag in ``ev3sim``:
+And you can enable this randomisation by using the ``soccer_random.yaml`` preset rather than ``soccer.yaml``:
 
 .. code-block:: bash
 
-    ev3sim bot.yaml --seed 123456789 -r
+    ev3sim bot.yaml --seed 123456789 -p soccer_random.yaml
+
+To add randomisation to your particular preset, you only need to add the following:
+
+.. code-block:: yaml
+
+    settings:
+      ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS: true  
 
 That being said, some of this randomisation is not done based on the seed, but rather the port and robot the device is connected to (This is to simulate you working with the same device with the same bias between runs). As a rule of thumb:
 
