@@ -84,6 +84,10 @@ class PhysicsObject(BaseObject):
     friction_coefficient: float
     restitution_coefficient: float
 
+    sensor: bool
+    # clickZ tells the object what level of the hierarchy it is at, onClick handlers will only target objects selected with the highest clickZ.
+    clickZ: float
+
     shape: pymunk.Shape
 
     static: bool
@@ -92,8 +96,10 @@ class PhysicsObject(BaseObject):
         super().initFromKwargs(**kwargs)
         self.mass = kwargs.get("mass", 1)
         self.static = kwargs.get("static", False)
+        self.clickZ = kwargs.get("clickZ", 0)
         self.friction_coefficient = kwargs.get("friction", 1)
         self.restitution_coefficient = kwargs.get("restitution", 0.7)
+        self.sensor = kwargs.get("sensor", False)
         self.body, self.shape = self.visual.generateBodyAndShape(self)
         self.shapes = [self.shape]
         self.shape.obj = self
@@ -107,9 +113,10 @@ class PhysicsObject(BaseObject):
                 self.shapes.append(child.shape)
 
     def update(self):
-        self.position = self.body.position - self.visual.getPositionAnchorOffset()
-        self.rotation = self.body.angle
-        self.update_velocities()
+        if not self.static:
+            self.position = self.body.position - self.visual.getPositionAnchorOffset()
+            self.rotation = self.body.angle
+            self.update_velocities()
 
     @stop_on_pause
     def update_velocities(self):
