@@ -15,13 +15,10 @@ class ColourSensorMixin:
 
     def _SenseValueAboutPosition(self, centrePosition, valueGetter):
         # Randomly sample value from SENSOR_POINTS chosen around the centrePosition.
-        points = [
-            Randomiser.random()*self.SENSOR_RADIUS
-            for _ in range(self.SENSOR_POINTS)
-        ]
+        points = [Randomiser.random() * self.SENSOR_RADIUS for _ in range(self.SENSOR_POINTS)]
         for x in range(len(points)):
             angle = Randomiser.random() * 2 * np.pi
-            points[x] = valueGetter(np.array([np.cos(angle)*points[x], np.cos(angle)*points[x]]) + centrePosition)
+            points[x] = valueGetter(np.array([np.cos(angle) * points[x], np.cos(angle) * points[x]]) + centrePosition)
             # For some reason the color module hangs otherwise :/
             if hasattr(points[x], "r"):
                 points[x] = np.array([points[x].r, points[x].g, points[x].b])

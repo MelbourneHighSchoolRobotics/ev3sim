@@ -37,9 +37,21 @@ class ColorSensor(ColourSensorMixin, Device):
     _b_calibration_max = 300
 
     def calculateBias(self):
-        self.__r_bias = (self._interactor.random()*150/255 + 250/255) if ScriptLoader.RANDOMISE_SENSORS else self._r_calibration_max
-        self.__g_bias = (self._interactor.random()*150/255 + 250/255) if ScriptLoader.RANDOMISE_SENSORS else self._g_calibration_max
-        self.__b_bias = (self._interactor.random()*150/255 + 250/255) if ScriptLoader.RANDOMISE_SENSORS else self._b_calibration_max
+        self.__r_bias = (
+            (self._interactor.random() * 150 / 255 + 250 / 255)
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._r_calibration_max
+        )
+        self.__g_bias = (
+            (self._interactor.random() * 150 / 255 + 250 / 255)
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._g_calibration_max
+        )
+        self.__b_bias = (
+            (self._interactor.random() * 150 / 255 + 250 / 255)
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._b_calibration_max
+        )
         self.bias_calculated = True
 
     def raw(self):
@@ -55,7 +67,9 @@ class ColorSensor(ColourSensorMixin, Device):
     def _calc_raw(self):
         if not self.bias_calculated:
             self.calculateBias()
-        res = self._SenseValueAboutPosition(self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos)))
+        res = self._SenseValueAboutPosition(
+            self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos))
+        )
         # These are 0-255. RAW is meant to be 0-1020 but actually more like 0-300.
         self.saved_raw = [
             int(res[0] * self.__r_bias),

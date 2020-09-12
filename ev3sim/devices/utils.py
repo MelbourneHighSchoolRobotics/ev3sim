@@ -1,6 +1,7 @@
 import numpy as np
 from ev3sim.simulation.randomisation import Randomiser
 
+
 class NearestValue:
     """
     Utility class to support defaulting to the nearest value to some input, with points equidistantly separated between max and min.
@@ -9,10 +10,7 @@ class NearestValue:
     def __init__(self, minimum, maximum, num_points):
         self.min = minimum
         self.max = maximum
-        self.points = [
-            self.min + i * (self.max - self.min) / (num_points - 1)
-            for i in range(num_points)
-        ]
+        self.points = [self.min + i * (self.max - self.min) / (num_points - 1) for i in range(num_points)]
 
     def get_closest(self, val):
         # If we are on the outskirts, return boundaries
@@ -29,9 +27,10 @@ class NearestValue:
                 hi = mid
             else:
                 lo = mid
-        if abs(self.points[lo] - val) > abs(self.points[lo+1] - val):
-            return self.points[lo+1]
+        if abs(self.points[lo] - val) > abs(self.points[lo + 1] - val):
+            return self.points[lo + 1]
         return self.points[lo]
+
 
 class CyclicMixin:
     """
@@ -42,9 +41,9 @@ class CyclicMixin:
 
     def get_closest(self, val):
         while val < self.points[0]:
-            val += (self.points[-1] - self.points[0])
+            val += self.points[-1] - self.points[0]
         while val > self.points[-1]:
-            val -= (self.points[-1] - self.points[0])
+            val -= self.points[-1] - self.points[0]
         # points[0] <= val <= points[-1]
         # Ensure that we don't return points[-1], handle this separately
         if abs(self.points[-2] - val) > abs(self.points[-1] - val):
@@ -58,18 +57,18 @@ class CyclicMixin:
                 hi = mid
             else:
                 lo = mid
-        if abs(self.points[lo] - val) > abs(self.points[lo+1] - val):
-            return self.points[lo+1]
+        if abs(self.points[lo] - val) > abs(self.points[lo + 1] - val):
+            return self.points[lo + 1]
         return self.points[lo]
-    
-class RandomDistributionMixin:
 
+
+class RandomDistributionMixin:
     def __init__(self, minimum, maximum, num_points, distribution_var, randomState):
         """Generate the points using a normal distribution"""
         super().__init__(minimum, maximum, num_points)
         # Redefine self.points
-        diffs = randomState.normal(loc=0, scale=np.sqrt(distribution_var), size=(num_points-2, ))
+        diffs = randomState.normal(loc=0, scale=np.sqrt(distribution_var), size=(num_points - 2,))
         for x in range(num_points - 2):
-            self.points[x+1] += diffs[x]
-            self.points[x+1] = min(max(self.points[x+1], self.min), self.max)
+            self.points[x + 1] += diffs[x]
+            self.points[x + 1] = min(max(self.points[x + 1], self.min), self.max)
         self.points.sort()

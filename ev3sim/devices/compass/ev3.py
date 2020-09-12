@@ -28,11 +28,14 @@ class CompassInteractor(IDeviceInteractor):
             else:
                 obj.rotation = self.physical_object.rotation + self.relative_rotation
 
+
 class CompassValueDistribution(CyclicMixin, RandomDistributionMixin, NearestValue):
     pass
 
+
 class CompassValueDistributionNoRandom(CyclicMixin, NearestValue):
     pass
+
 
 class CompassSensor(CompassSensorMixin, Device):
     """
@@ -50,7 +53,9 @@ class CompassSensor(CompassSensorMixin, Device):
             if ScriptLoader.RANDOMISE_SENSORS:
                 # Distribute cyclically between 0 and 360, generating 31 points with variance 16
                 # This means on average about 12 degrees per step.
-                self.dist = CompassValueDistribution(0, 360, 31, 16, Randomiser.getPortRandom(self._interactor.port_key))
+                self.dist = CompassValueDistribution(
+                    0, 360, 31, 16, Randomiser.getPortRandom(self._interactor.port_key)
+                )
                 # +- 5 degrees offset.
                 self.offset = self._interactor.random() * 5
             else:

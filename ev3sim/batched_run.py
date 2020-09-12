@@ -4,6 +4,7 @@ import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process
 
+
 def batched_run(batch_file, bind_addr, *args):
     from ev3sim.single_run import single_run as sim
     from ev3sim.attach import main as attach
@@ -14,8 +15,8 @@ def batched_run(batch_file, bind_addr, *args):
     with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 
-    bot_paths = [x['name'] for x in config['bots']]
-    sim_args = [config['preset_file'], bot_paths, bind_addr]
+    bot_paths = [x["name"] for x in config["bots"]]
+    sim_args = [config["preset_file"], bot_paths, bind_addr]
     sim_args.extend(args)
     sim_process = Process(target=sim, args=sim_args)
 

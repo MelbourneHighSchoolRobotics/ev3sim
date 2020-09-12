@@ -53,15 +53,27 @@ class UltrasonicSensorMixin:
                 if top_length == self.MAX_RAYCAST or (not ScriptLoader.RANDOMISE_SENSORS):
                     return top_length
                 # If randomiser, linearly scale result by angle between surface normal of raycasted point.
-                return max(0, min(self.MAX_RAYCAST, 
-                    top_length * (1 + self.last_angle_diff * (Randomiser.random() - 0.5) * self.ANGLE_RANDOM_AMPLITUDE / np.pi * 2)
-                ))
+                return max(
+                    0,
+                    min(
+                        self.MAX_RAYCAST,
+                        top_length
+                        * (
+                            1
+                            + self.last_angle_diff
+                            * (Randomiser.random() - 0.5)
+                            * self.ANGLE_RANDOM_AMPLITUDE
+                            / np.pi
+                            * 2
+                        ),
+                    ),
+                )
             else:
                 opposite_angle = centreRotation + np.pi
                 while opposite_angle > raycast.normal.angle + np.pi:
-                    opposite_angle -= 2*np.pi
+                    opposite_angle -= 2 * np.pi
                 while opposite_angle < raycast.normal.angle - np.pi:
-                    opposite_angle += 2*np.pi
+                    opposite_angle += 2 * np.pi
                 self.last_angle_diff = abs(opposite_angle - raycast.normal.angle)
             top_length = raycast.alpha * top_length - self.ACCEPTANCE_LEVEL
         return 0

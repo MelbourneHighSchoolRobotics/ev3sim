@@ -1,9 +1,10 @@
 # Singleton instance for generating random numbers, so it can be globally seeded and keep multiple random instances available
 import numpy.random as rd
 
+
 class Randomiser:
 
-    instance: 'Randomiser' = None
+    instance: "Randomiser" = None
 
     def __init__(self, seed):
         if self.__class__.instance is not None:
@@ -19,8 +20,9 @@ class Randomiser:
     @classmethod
     def _stringToSeed(cls, string):
         import hashlib
+
         # Random unsigned int of size 32 (8*4).
-        return int(hashlib.sha512(string.encode('utf-8')).hexdigest()[:8], 16)
+        return int(hashlib.sha512(string.encode("utf-8")).hexdigest()[:8], 16)
 
     @classmethod
     def createPortRandomiserWithSeed(cls, port_key, seed=None):
@@ -40,7 +42,7 @@ class Randomiser:
     def getGlobalRandom(cls):
         instance = cls.getInstance()
         return instance.global_random
-    
+
     @classmethod
     def getPortRandom(cls, port_key):
         instance = cls.getInstance()

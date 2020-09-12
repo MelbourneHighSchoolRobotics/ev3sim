@@ -33,8 +33,7 @@ class InfraredSensorMixin:
 
     def generateBias(self):
         self.distance_biases = [
-            self._interactor.random() * self.SUBSENSOR_BIAS_MAGNITUDE
-            if ScriptLoader.RANDOMISE_SENSORS else 0
+            self._interactor.random() * self.SUBSENSOR_BIAS_MAGNITUDE if ScriptLoader.RANDOMISE_SENSORS else 0
             for _ in range(5)
         ]
 
@@ -43,7 +42,7 @@ class InfraredSensorMixin:
         while relativeBearing > np.pi:
             relativeBearing -= 2 * np.pi
         while relativeBearing < -np.pi:
-            relativeBearing += 2*np.pi
+            relativeBearing += 2 * np.pi
         if perceived_distance > self.MAX_SENSOR_RANGE:
             return 0
         if abs(relativeBearing) > self.SENSOR_BEARING_DROPOFF_MAX:
@@ -55,10 +54,7 @@ class InfraredSensorMixin:
         return int(math.floor(exclude_bearing * bearing_mult + 0.5))
 
     def _sensorValues(self, relativeBearing, distance):
-        return [
-            self._sensorStrength(relativeBearing-b, distance, i)
-            for i, b in enumerate(self.SENSOR_BEARINGS)
-        ]
+        return [self._sensorStrength(relativeBearing - b, distance, i) for i, b in enumerate(self.SENSOR_BEARINGS)]
 
     def _predict(self, sensorValues):
         total = sum(sensorValues)

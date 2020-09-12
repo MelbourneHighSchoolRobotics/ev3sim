@@ -91,6 +91,7 @@ class IDeviceInteractor(IInteractor):
     def random(self):
         return Randomiser.getPortRandom(self.port_key).random()
 
+
 def initialise_device(deviceData, parentObj, index):
     classes = find_abs("devices/classes.yaml")
     devices = yaml.safe_load(open(classes, "r"))

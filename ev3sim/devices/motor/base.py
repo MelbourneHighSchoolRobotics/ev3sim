@@ -39,10 +39,14 @@ class MotorMixin:
     def _updateTime(self, tick):
         if tick == -1:
             if ScriptLoader.RANDOMISE_SENSORS:
-                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT))
+                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (
+                    self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT)
+                )
             else:
                 self.MAX_FORCE = self.THEORETICAL_MAX_FORCE
-            self.speed_selection = NearestValue(-100, 100, self.FIXED_SPEED_POINTS if ScriptLoader.RANDOMISE_SENSORS else 201)
+            self.speed_selection = NearestValue(
+                -100, 100, self.FIXED_SPEED_POINTS if ScriptLoader.RANDOMISE_SENSORS else 201
+            )
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
             if self.time_wait <= 0:
@@ -57,7 +61,7 @@ class MotorMixin:
 
         :param float speed: Any number from -100 to 100. Negative values turn the motors the opposite direction.
         """
-        assert - 100 <= speed <= 100, "Speed value is out of bounds."
+        assert -100 <= speed <= 100, "Speed value is out of bounds."
         speed = self.speed_selection.get_closest(speed)
         self.applied_force = speed * self.MAX_FORCE / 100
         # Ensure this overwrites further

@@ -143,15 +143,19 @@ class SoccerInteractor(IInteractor):
                 # Generate a uniformly random point in radius of spawn for bot.
                 diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
                 diff_angle = Randomiser.random() * 2 * np.pi
-                self.robots[actual_index].body.position = self.spawns[team][index][0] + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
+                self.robots[actual_index].body.position = self.spawns[team][index][0] + diff_radius * np.array(
+                    [np.cos(diff_angle), np.sin(diff_angle)]
+                )
                 self.robots[actual_index].body.angle = self.spawns[team][index][1] * np.pi / 180
                 self.robots[actual_index].body.velocity = np.array([0.0, 0.0])
                 self.robots[actual_index].body.angular_velocity = 0
         # Generate position for ball.
         diff_radius = Randomiser.random() * self.BALL_SPAWN_RADIUS
         diff_angle = Randomiser.random() * 2 * np.pi
-        ScriptLoader.instance.object_map['IR_BALL'].body.position = np.array([0, -18]) + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
-        ScriptLoader.instance.object_map['IR_BALL'].body.velocity = np.array([0., 0.])
+        ScriptLoader.instance.object_map["IR_BALL"].body.position = np.array([0, -18]) + diff_radius * np.array(
+            [np.cos(diff_angle), np.sin(diff_angle)]
+        )
+        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
 
     def tick(self, tick):
         super().tick(tick)

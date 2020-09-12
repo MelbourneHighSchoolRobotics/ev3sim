@@ -24,6 +24,7 @@ def add_to_key(obj, prefix):
         for v in obj:
             add_to_key(v, prefix)
 
+
 def initialise_bot(topLevelConfig, filename, prefix, path_index):
     # Returns the robot class, as well as a completed robot to add to the elements list.
     import yaml
@@ -43,13 +44,17 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             # Append bot object to elements.
             topLevelConfig["elements"] = topLevelConfig.get("elements", []) + [bot_config]
             robot = klass()
-            ScriptLoader.instance.active_scripts.append(RobotInteractor(**{
-                'robot': robot,
-                'base_key': bot_config['key'],
-                'path_index': path_index,
-                # Don't include directories here, since that shouldn't affect randomisation.
-                'filename': filename.replace('\\', '/').rsplit('/', 1)[-1],
-            }))
+            ScriptLoader.instance.active_scripts.append(
+                RobotInteractor(
+                    **{
+                        "robot": robot,
+                        "base_key": bot_config["key"],
+                        "path_index": path_index,
+                        # Don't include directories here, since that shouldn't affect randomisation.
+                        "filename": filename.replace("\\", "/").rsplit("/", 1)[-1],
+                    }
+                )
+            )
             robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
         except yaml.YAMLError as exc:
@@ -61,10 +66,10 @@ class RobotInteractor(IInteractor):
         super().__init__(*args, **kwargs)
         self.robot_class: Robot = kwargs.get("robot")
         self.robot_class._interactor = self
-        self.robot_key = kwargs.get('base_key')
-        self.path_index = kwargs.get('path_index')
-        self.filename = kwargs.get('filename')
-    
+        self.robot_key = kwargs.get("base_key")
+        self.path_index = kwargs.get("path_index")
+        self.filename = kwargs.get("filename")
+
     def connectDevices(self):
         self.devices = {}
         for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
