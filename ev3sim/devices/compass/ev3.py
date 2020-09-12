@@ -56,12 +56,14 @@ class CompassSensor(CompassSensorMixin, Device):
 
     def generateBias(self):
         if ScriptLoader.RANDOMISE_SENSORS:
-            # Distribute cyclically between 0 and 360, generating 31 points with variance 16
-            # This means on average about 12 degrees per step.
+            # Distribute points cyclically between 0 and 360.
             self.dist = CompassValueDistribution(
-                0, 360, self.NEAREST_POINTS_AMOUNT, self.NEAREST_POINTS_VARIANCE, Randomiser.getPortRandom(self._interactor.port_key)
+                0,
+                360,
+                self.NEAREST_POINTS_AMOUNT,
+                self.NEAREST_POINTS_VARIANCE,
+                Randomiser.getPortRandom(self._interactor.port_key),
             )
-            # +- 5 degrees offset.
             self.offset = (0.5 - self._interactor.random()) * 2 * self.MAX_SENSOR_OFFSET
         else:
             self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_AMOUNT)

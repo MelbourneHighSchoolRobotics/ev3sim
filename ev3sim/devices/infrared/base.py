@@ -33,7 +33,9 @@ class InfraredSensorMixin:
 
     def generateBias(self):
         self.distance_biases = [
-            (0.5-self._interactor.random()) * 2 * self.SUBSENSOR_BIAS_MAGNITUDE if ScriptLoader.RANDOMISE_SENSORS else 0
+            (0.5 - self._interactor.random()) * 2 * self.SUBSENSOR_BIAS_MAGNITUDE
+            if ScriptLoader.RANDOMISE_SENSORS
+            else 0
             for _ in range(5)
         ]
         self._values = [0 for _ in self.SENSOR_BEARINGS]
