@@ -78,9 +78,9 @@ class RobotInteractor(IInteractor):
             Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
-    def sendDeviceInitTicks(self):
+    def initialiseDevices(self):
         for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
-            interactor.tick(-1)
+            interactor.device_class.generateBias()
 
     def startUp(self):
         self.robot_class.startUp()
@@ -150,7 +150,7 @@ class Robot:
         As an example, calibrating the compass sensors should be done ``onSpawn``, rather than on ``startUp``.
         """
         self.spawned = True
-        self._interactor.sendDeviceInitTicks()
+        self._interactor.initialiseDevices()
 
     def tick(self, tick):
         """

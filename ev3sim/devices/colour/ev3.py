@@ -11,8 +11,6 @@ class ColorInteractor(IDeviceInteractor):
     name = "COLOUR"
 
     def tick(self, tick):
-        if tick == -1:
-            self.device_class.saved_raw = (0, 0, 0)
         try:
             self.device_class._calc_raw()
             ScriptLoader.instance.object_map[self.getPrefix() + "light_up"].visual.fill = self.device_class.rgb()
@@ -34,9 +32,8 @@ class ColorSensor(ColourSensorMixin, Device):
     MIN_RGB_BIAS = 230
     STARTING_CALIBRATION = 300
 
-    bias_calculated = False
-
-    def calculateBias(self):
+    def generateBias(self):
+        self.saved_raw = (0, 0, 0)
         if ScriptLoader.RANDOMISE_SENSORS:
             self._r_calibration_max = self.STARTING_CALIBRATION
             self._g_calibration_max = self.STARTING_CALIBRATION
@@ -48,21 +45,20 @@ class ColorSensor(ColourSensorMixin, Device):
 
 
         self.__r_bias = (
-            (self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
             if ScriptLoader.RANDOMISE_SENSORS
             else self._r_calibration_max / 255
         )
         self.__g_bias = (
-            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
             if ScriptLoader.RANDOMISE_SENSORS
             else self._g_calibration_max / 255
         )
         self.__b_bias = (
-            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255)
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
             if ScriptLoader.RANDOMISE_SENSORS
             else self._b_calibration_max / 255
         )
-        self.bias_calculated = True
 
     def raw(self):
         """
@@ -75,8 +71,6 @@ class ColorSensor(ColourSensorMixin, Device):
         return self.saved_raw
 
     def _calc_raw(self):
-        if not self.bias_calculated:
-            self.calculateBias()
         res = self._SenseValueAboutPosition(
             self.global_position, lambda pos: ScreenObjectManager.instance.colourAtPixel(worldspace_to_screenspace(pos))
         )

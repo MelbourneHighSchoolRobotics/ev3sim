@@ -14,8 +14,6 @@ class InfraredInteractor(IDeviceInteractor):
         self.tracking_ball = ScriptLoader.instance.object_map["IR_BALL"]
 
     def tick(self, tick):
-        if tick == -1:
-            self.device_class.generateBias()
         ball_pos = self.tracking_ball.position
         sensor = ScriptLoader.instance.object_map[self.getPrefix() + "light_up_2"]
         distance = np.sqrt(magnitude_sq(ball_pos - sensor.position))

@@ -36,17 +36,18 @@ class MotorMixin:
         self.speed_sp = 0
         self.position_sp = 0
 
-    def _updateTime(self, tick):
-        if tick == -1:
-            if ScriptLoader.RANDOMISE_SENSORS:
-                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (
-                    self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT)
-                )
-            else:
-                self.MAX_FORCE = self.THEORETICAL_MAX_FORCE
-            self.speed_selection = NearestValue(
-                -100, 100, self.FIXED_SPEED_POINTS if ScriptLoader.RANDOMISE_SENSORS else 201
+    def generateBias(self):
+        if ScriptLoader.RANDOMISE_SENSORS:
+            self.MAX_FORCE = self.THEORETICAL_MAX_FORCE * (
+                self.MIN_FORCE_PCT + self._interactor.random() * (self.MAX_FORCE_PCT - self.MIN_FORCE_PCT)
             )
+        else:
+            self.MAX_FORCE = self.THEORETICAL_MAX_FORCE
+        self.speed_selection = NearestValue(
+            -100, 100, self.FIXED_SPEED_POINTS if ScriptLoader.RANDOMISE_SENSORS else 201
+        )
+
+    def _updateTime(self, tick):
         if self.time_wait > 0:
             self.time_wait -= 1 / ScriptLoader.instance.GAME_TICK_RATE
             if self.time_wait <= 0:

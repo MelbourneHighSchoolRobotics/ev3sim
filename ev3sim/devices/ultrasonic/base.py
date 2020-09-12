@@ -24,6 +24,9 @@ class UltrasonicSensorMixin:
 
     last_angle_diff = 0
 
+    def generateBias(self):
+        self.saved = 0
+
     def _SetIgnoredObjects(self, objs):
         self.ignore_objects = objs
 
