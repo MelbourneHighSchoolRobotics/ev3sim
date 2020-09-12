@@ -163,4 +163,4 @@ def runFromConfig(config, shared):
                 interactor.connectDevices()
         sl.simulate()
     else:
-        print("No interactors succesfully loaded. Quitting...")
+        print("No interactors successfully loaded. Quitting...")

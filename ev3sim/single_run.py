@@ -7,6 +7,7 @@ from ev3sim.file_helper import find_abs
 import yaml
 from ev3sim.simulation.loader import runFromConfig, ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
+from unittest import mock
 
 
 def single_run(preset_filename, robots, bind_addr, seed, randomise_sensors):
@@ -42,6 +43,11 @@ def single_run(preset_filename, robots, bind_addr, seed, randomise_sensors):
             return
         result.put(True)
 
+    # Handle any other settings modified by the preset.
+    settings = config.get("settings", {})
+    for keyword, value in settings.items():
+        run = mock.patch(keyword, value)(run)
+
     comm_thread = Thread(
         target=start_server_with_shared_data, args=(shared_data, result_bucket, bind_addr), daemon=True
     )
@@ -58,7 +64,7 @@ def single_run(preset_filename, robots, bind_addr, seed, randomise_sensors):
         # Chuck it back on the queue so that other threads know we are quitting.
         result_bucket.put(r)
         if r is not True:
-            print(f"An error occured in the {r[0]} thread. Raising an error now...")
+            print(f"An error occurred in the {r[0]} thread. Raising an error now...")
             time.sleep(1)
             raise r[1]
     except KeyboardInterrupt:

@@ -58,7 +58,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
         except yaml.YAMLError as exc:
-            print(f"An error occured while loading robot preset {filename}. Exited with error: {exc}")
+            print(f"An error occurred while loading robot preset {filename}. Exited with error: {exc}")
 
 
 class RobotInteractor(IInteractor):
