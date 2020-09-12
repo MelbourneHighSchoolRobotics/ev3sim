@@ -433,6 +433,13 @@ def main(passed_args=None):
                 fake_path = sys.path.copy()
                 fake_path.append(called_from)
 
+                orig_import = __import__
+
+                def import_mock(name, *args):
+                    if name in ("fcntl", "evdev"):
+                        return mock.Mock()
+                    return orig_import(name, *args)
+
                 @mock.patch("time.time", get_time)
                 @mock.patch("time.sleep", sleep)
                 @mock.patch("ev3dev2.motor.Motor.wait", wait)
@@ -443,6 +450,7 @@ def main(passed_args=None):
                 @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
                 @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
                 @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
+                @mock.patch("builtins.__import__", import_mock)
                 @mock.patch("sys.path", fake_path)
                 def run_script(fname):
                     from importlib.machinery import SourceFileLoader
