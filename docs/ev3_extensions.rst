@@ -64,7 +64,7 @@ To handle such events you can use the code helpers EventSystem:
         EventSystem.handle_events()
         wait_for_tick()
 
-``EventSystem.handle_events`` must be called often to allow such events to fire the related code. Any event in the system returns a data object, which will contain any useful information about the event.
+``EventSystem.handle_events`` must be called often (ie in every loop iteration, simply add this line after every occurrence of ``wait_for_tick``) to allow such events to fire the related code. Any event in the system returns a data object, which will contain any useful information about the event.
 
 Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
