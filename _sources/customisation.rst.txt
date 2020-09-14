@@ -55,6 +55,43 @@ Try the above robot by pasting this into a ``.yaml`` file and invoking ``ev3sim`
 
 The rotation of all elements is measured in degrees, where 0 bearing is pointing to the right of the screen (which is assumed to be the front of the bot), and positive degrees indicated a counter-clockwise rotation.
 
+Buttons
+-------
+
+In addition to the usual devices, you can also add working buttons to your robot which can be interacted with as you normally do on ev3dev2.
+Just like with the devices, you specify a position, rotation, and port for the button. The port value determines which button this is recognised as, and can be ``up``, ``down``, ``left``, ``right``, ``enter`` or ``backspace``.
+
+.. code-block:: yaml
+
+  devices:
+  - Button:
+    position: [5, 0]
+    rotation: 0
+    port: enter
+
+Interacting with this button is as usual on the ev3dev2 code:
+
+.. code-block:: python
+
+    from ev3dev2.button import Button
+    from ev3sim.code_helpers import wait_for_tick
+
+    buttons = Button()
+
+    def state_change(state):
+        if state is True:
+            print("Enter pressed!")
+        else:
+            print("Enter released!")
+
+    buttons.on_enter = state_change
+
+    while True:
+        if buttons.up:
+            print("Up is being pressed!")
+        buttons.process()
+        wait_for_tick()
+
 Simulation Definitions
 ----------------------
 

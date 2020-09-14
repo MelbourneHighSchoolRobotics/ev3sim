@@ -90,6 +90,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#waiting-for-simulation-ticks">Waiting for simulation ticks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-simulation-events">Handling simulation events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#on-goal-scored"><code class="docutils literal notranslate"><span class="pre">on_goal_scored</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#on-reset"><code class="docutils literal notranslate"><span class="pre">on_reset</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#robot-communications">Robot Communications</a></li>
 </ul>
 </li>
@@ -192,6 +197,41 @@ As an example, the simulator currently does not implement the <code class="docut
 </pre></div>
 </div>
 <p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
+<div class="section" id="handling-simulation-events">
+<h2>Handling simulation events<a class="headerlink" href="#handling-simulation-events" title="Permalink to this headline">¶</a></h2>
+<p>While in simulation, for various reasons you might want to react to certain events occuring in the simulator.
+As an example, your code may want to be aware of when an enemy (or you) has scored a goal, so you can change playstyle, or evaluate current strategy.</p>
+<p>To handle such events you can use the code helpers EventSystem:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">EventSystem</span><span class="p">,</span> <span class="n">wait_for_tick</span>
+
+<span class="k">def</span> <span class="nf">handle_scored</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;against_you&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I scored a goal!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No we let them score!&quot;</span><span class="p">)</span>
+
+<span class="n">EventSystem</span><span class="o">.</span><span class="n">on_goal_scored</span> <span class="o">=</span> <span class="n">handle_scored</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">EventSystem</span><span class="o">.</span><span class="n">handle_events</span><span class="p">()</span>
+    <span class="n">wait_for_tick</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">EventSystem.handle_events</span></code> must be called often (ie in every loop iteration, simply add this line after every occurrence of <code class="docutils literal notranslate"><span class="pre">wait_for_tick</span></code>) to allow such events to fire the related code. Any event in the system returns a data object, which will contain any useful information about the event.</p>
+<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+<p>The full list of events is:</p>
+<div class="section" id="on-goal-scored">
+<h3><code class="docutils literal notranslate"><span class="pre">on_goal_scored</span></code><a class="headerlink" href="#on-goal-scored" title="Permalink to this headline">¶</a></h3>
+<p>Fires whenever a goal is scored by either team.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">against_you</span></code>: True if the enemy team scored against you. False otherwise.</p></li>
+</ul>
+</div>
+<div class="section" id="on-reset">
+<h3><code class="docutils literal notranslate"><span class="pre">on_reset</span></code><a class="headerlink" href="#on-reset" title="Permalink to this headline">¶</a></h3>
+<p>Fires whenever the game is reset manually.</p>
+</div>
 </div>
 <div class="section" id="robot-communications">
 <h2>Robot Communications<a class="headerlink" href="#robot-communications" title="Permalink to this headline">¶</a></h2>

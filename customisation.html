@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Customising Bots and Maps</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#bot-definitions">Bot Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#buttons">Buttons</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simulation-definitions">Simulation Definitions</a></li>
 </ul>
 </li>
@@ -209,6 +210,39 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">base_plate</span></code>: Describes the plate the devices are placed on. <a class="reference internal" href="visual.html"><span class="doc">Visuals</span></a> gives a full list of what shapes you can make. At the moment children cannot have physics (and therefore a collider).</p></li>
 </ul>
 <p>The rotation of all elements is measured in degrees, where 0 bearing is pointing to the right of the screen (which is assumed to be the front of the bot), and positive degrees indicated a counter-clockwise rotation.</p>
+</div>
+<div class="section" id="buttons">
+<h2>Buttons<a class="headerlink" href="#buttons" title="Permalink to this headline">¶</a></h2>
+<p>In addition to the usual devices, you can also add working buttons to your robot which can be interacted with as you normally do on ev3dev2.
+Just like with the devices, you specify a position, rotation, and port for the button. The port value determines which button this is recognised as, and can be <code class="docutils literal notranslate"><span class="pre">up</span></code>, <code class="docutils literal notranslate"><span class="pre">down</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">enter</span></code> or <code class="docutils literal notranslate"><span class="pre">backspace</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">devices</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">Button</span><span class="p">:</span>
+  <span class="nt">position</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
+  <span class="nt">rotation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">enter</span>
+</pre></div>
+</div>
+<p>Interacting with this button is as usual on the ev3dev2 code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3dev2.button</span> <span class="kn">import</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">wait_for_tick</span>
+
+<span class="n">buttons</span> <span class="o">=</span> <span class="n">Button</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">state_change</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Enter pressed!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Enter released!&quot;</span><span class="p">)</span>
+
+<span class="n">buttons</span><span class="o">.</span><span class="n">on_enter</span> <span class="o">=</span> <span class="n">state_change</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">buttons</span><span class="o">.</span><span class="n">up</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Up is being pressed!&quot;</span><span class="p">)</span>
+    <span class="n">buttons</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+    <span class="n">wait_for_tick</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="simulation-definitions">
 <h2>Simulation Definitions<a class="headerlink" href="#simulation-definitions" title="Permalink to this headline">¶</a></h2>
