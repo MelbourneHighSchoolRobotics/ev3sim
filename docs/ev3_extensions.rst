@@ -40,6 +40,48 @@ Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the br
 
 .. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
 
+Handling simulation events
+--------------------------
+
+While in simulation, for various reasons you might want to react to certain events occuring in the simulator.
+As an example, your code may want to be aware of when an enemy (or you) has scored a goal, so you can change playstyle, or evaluate current strategy.
+
+To handle such events you can use the code helpers EventSystem:
+
+.. code-block:: python
+
+    from ev3sim.code_helpers import EventSystem, wait_for_tick
+
+    def handle_scored(data):
+        if not data["against_you"]:
+            print("I scored a goal!")
+        else:
+            print("No we let them score!")
+
+    EventSystem.on_goal_scored = handle_scored
+
+    while True:
+        EventSystem.handle_events()
+        wait_for_tick()
+
+``EventSystem.handle_events`` must be called often (ie in every loop iteration, simply add this line after every occurrence of ``wait_for_tick``) to allow such events to fire the related code. Any event in the system returns a data object, which will contain any useful information about the event.
+
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+
+.. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
+
+The full list of events is:
+
+``on_goal_scored``
+^^^^^^^^^^^^^^^^^^
+Fires whenever a goal is scored by either team.
+
+* ``against_you``: True if the enemy team scored against you. False otherwise.
+
+``on_reset``
+^^^^^^^^^^^^
+Fires whenever the game is reset manually.
+
 Robot Communications
 --------------------
 
