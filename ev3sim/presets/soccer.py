@@ -71,7 +71,7 @@ class SoccerInteractor(IInteractor):
             self.robots[-1].shape.collision_type = self.BOT_COLLISION_TYPE
             self.robots[-1].shape.bot_index = bot_index
             bot_index += 1
-        self.bot_penalties = [0]*bot_index
+        self.bot_penalties = [0] * bot_index
 
         if len(self.robots) == 0:
             raise ValueError("No robots loaded.")
@@ -114,7 +114,7 @@ class SoccerInteractor(IInteractor):
 
         # Initialise field collider for out on white
         if self.out_on_white:
-            self.field = ScriptLoader.instance.object_map['centreField']
+            self.field = ScriptLoader.instance.object_map["centreField"]
             self.field.shape.sensor = True
             self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
 
@@ -218,7 +218,7 @@ class SoccerInteractor(IInteractor):
                 "controlsReset"
             ].visual.image_path = "assets/ui/controls_reset_released.png"
         self.update_time()
-    
+
     def afterPhysics(self):
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
@@ -278,7 +278,16 @@ class SoccerInteractor(IInteractor):
 
     def generatePenaltyGraphic(self, botIndex):
         team = botIndex // self.BOTS_PER_TEAM
-        penaltyIndex = len([x for x in range(team * self.BOTS_PER_TEAM, (team+1) * self.BOTS_PER_TEAM) if x < len(self.bot_penalties) and self.bot_penalties[x] != 0]) - 1
+        penaltyIndex = (
+            len(
+                [
+                    x
+                    for x in range(team * self.BOTS_PER_TEAM, (team + 1) * self.BOTS_PER_TEAM)
+                    if x < len(self.bot_penalties) and self.bot_penalties[x] != 0
+                ]
+            )
+            - 1
+        )
         xPos = 128 if penaltyIndex == 0 else 115
         xPosMult = -1 if team == 0 else 1
         position = (xPos * xPosMult, 89)
@@ -318,12 +327,18 @@ class SoccerInteractor(IInteractor):
 
     def finishPenalty(self, botIndex):
         self.bot_penalties[botIndex] = 0
-        self.robots[botIndex].body.position = self.spawns[botIndex // self.BOTS_PER_TEAM][botIndex % self.BOTS_PER_TEAM][0]
-        self.robots[botIndex].body.angle = self.spawns[botIndex // self.BOTS_PER_TEAM][botIndex % self.BOTS_PER_TEAM][1] * np.pi / 180
+        self.robots[botIndex].body.position = self.spawns[botIndex // self.BOTS_PER_TEAM][
+            botIndex % self.BOTS_PER_TEAM
+        ][0]
+        self.robots[botIndex].body.angle = (
+            self.spawns[botIndex // self.BOTS_PER_TEAM][botIndex % self.BOTS_PER_TEAM][1] * np.pi / 180
+        )
         self.robots[botIndex].body.velocity = np.array([0.0, 0.0])
         self.robots[botIndex].body.angular_velocity = 0
         ScreenObjectManager.instance.unregisterVisual(f"UI-penalty-{botIndex}")
-        ScreenObjectManager.instance.unregisterVisual(ScriptLoader.instance.object_map[f"UI-penalty-{botIndex}"].children[0].key)
+        ScreenObjectManager.instance.unregisterVisual(
+            ScriptLoader.instance.object_map[f"UI-penalty-{botIndex}"].children[0].key
+        )
         World.instance.unregisterObject(ScriptLoader.instance.object_map[f"UI-penalty-{botIndex}"])
 
     def handleEvent(self, event):
