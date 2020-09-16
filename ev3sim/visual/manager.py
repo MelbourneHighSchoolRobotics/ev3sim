@@ -91,8 +91,7 @@ class ScreenObjectManager:
         if obj.visual is not None and obj.visual.visible:
             self.registerVisual(obj.visual, key)
         for i, child in enumerate(obj.children):
-            new_key = key + str(child.__class__.__name__) + str(i)
-            self.registerObject(child, new_key)
+            self.registerObject(child, child.key)
 
     def applyToScreen(self):
         self.screen.fill(self.background_colour)
