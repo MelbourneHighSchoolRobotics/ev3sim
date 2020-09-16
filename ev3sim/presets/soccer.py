@@ -16,18 +16,26 @@ from ev3sim.objects.base import STATIC_CATEGORY
 
 class SoccerInteractor(IInteractor):
 
-    SHOW_GOAL_COLLIDERS = False
+    # Must occur before device interactors.
+    SORT_ORDER = -10
 
+    SHOW_GOAL_COLLIDERS = False
+    OUT_ON_WHITE = True
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
     GAME_HALF_LENGTH_MINUTES = 5
+    # 5 Second penalty
+    BOT_OUT_ON_WHITE_PENALTY_SECONDS = 5
 
     TEAM_NAMES = []
     SPAWN_LOCATIONS = []
+    PENALTY_LOCATIONS = []
     GOALS = []
 
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
+    FIELD_COLLISION_TYPE = 5
+    BOT_COLLISION_TYPE = 6
 
     # Randomisation of spawn locations
     # Set these to 0 to disable spawn randomisation
@@ -41,6 +49,7 @@ class SoccerInteractor(IInteractor):
         self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
         self.names = self.TEAM_NAMES[:]
         self.spawns = self.SPAWN_LOCATIONS[:]
+        self.penalty = self.PENALTY_LOCATIONS[:]
         self.goals = self.GOALS[:]
         self.current_goal_score_tick = -1
         self.time_tick = 0
@@ -59,7 +68,10 @@ class SoccerInteractor(IInteractor):
                 break
             possible_keys.sort(key=len)
             self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+            self.robots[-1].shape.collision_type = self.BOT_COLLISION_TYPE
+            self.robots[-1].shape.bot_index = bot_index
             bot_index += 1
+        self.bot_penalties = [0]*bot_index
 
         if len(self.robots) == 0:
             raise ValueError("No robots loaded.")
@@ -99,6 +111,26 @@ class SoccerInteractor(IInteractor):
             return False
 
         handler.begin = handle_collide
+
+        # Initialise field collider for out on white
+        if self.out_on_white:
+            self.field = ScriptLoader.instance.object_map['centreField']
+            self.field.shape.sensor = True
+            self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
+
+            handler = World.instance.space.add_collision_handler(self.FIELD_COLLISION_TYPE, self.BOT_COLLISION_TYPE)
+
+            def handle_separate(arbiter, space, data):
+                a, b = arbiter.shapes
+                if hasattr(a, "bot_index"):
+                    self.penaliseBot(a.bot_index)
+                elif hasattr(b, "bot_index"):
+                    self.penaliseBot(b.bot_index)
+                else:
+                    raise ValueError("Two objects with collision types used by soccer don't have a bot index.")
+                return False
+
+            handler.separate = handle_separate
 
         for x in range(len(self.names)):
             # Set up goal collider.
@@ -186,6 +218,18 @@ class SoccerInteractor(IInteractor):
                 "controlsReset"
             ].visual.image_path = "assets/ui/controls_reset_released.png"
         self.update_time()
+    
+    def afterPhysics(self):
+        for team in range(len(self.names)):
+            for index in range(self.BOTS_PER_TEAM):
+                actual_index = team * self.BOTS_PER_TEAM + index
+                if actual_index >= len(self.robots):
+                    break
+                if self.bot_penalties[actual_index] > 0:
+                    self.robots[actual_index].body.position = self.penalty[team][index][0]
+                    self.robots[actual_index].body.angle = self.penalty[team][index][1] * np.pi / 180
+                    self.robots[actual_index].position = self.robots[actual_index].body.position
+                    self.robots[actual_index].rotation = self.robots[actual_index].body.angle
 
     @stop_on_pause
     def update_time(self):
@@ -204,6 +248,10 @@ class SoccerInteractor(IInteractor):
             self.update_time_text = False
         ScriptLoader.instance.object_map["TimerText"].text = "{:02d}:{:02d}".format(minutes, seconds)
 
+        for idx in range(len(self.bot_penalties)):
+            if self.bot_penalties[idx] > 0:
+                self.bot_penalties[idx] -= 1
+
     def goalScoredIn(self, teamIndex):
         self.team_scores[1 - teamIndex] += 1
         self.updateScoreText()
@@ -219,6 +267,9 @@ class SoccerInteractor(IInteractor):
                 ScriptLoader.instance.sendEvent(
                     f"Robot-{actual_index}", GOAL_SCORED, {"against_you": team == teamIndex}
                 )
+
+    def penaliseBot(self, botIndex):
+        self.bot_penalties[botIndex] = self.BOT_OUT_ON_WHITE_PENALTY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
 
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
