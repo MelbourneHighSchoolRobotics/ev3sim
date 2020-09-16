@@ -10,6 +10,8 @@ class InfraredSensorMixin:
 
     ALL_VALUES = "AC-ALL"
     DIRECTION = "AC"
+    ALL_VALUES_DC = "DC-ALL"
+    DIRECTION_DC = "DC"
 
     mode = ALL_VALUES
 
@@ -70,10 +72,15 @@ class InfraredSensorMixin:
             "mode": self.mode,
         }
         if self.mode == self.ALL_VALUES:
-            for x in range(7):
+            for x in range(6):
                 data[f"value{x}"] = self.value(x)
         elif self.mode == self.DIRECTION:
             data["value0"] = self.value(0)
+        elif self.mode == self.ALL_VALUES_DC:
+            for x in range(7):
+                data[f"value{x}"] = 0
+        elif self.mode == self.DIRECTION_DC:
+            data["value0"] = 0
         else:
             raise ValueError(f"Unhandled mode {self.mode}")
         return data
