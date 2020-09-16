@@ -5,6 +5,9 @@ class IInteractor:
     Any actions or dynamic elements in the soccer simulation is due to `interactors`. You can find the location of these interactors in `presets/soccer.yaml`.
     """
 
+    # This defines the ordering of this interactor in the list of total interactors, affecting the order in which `afterPhysics` and `tick` are called.
+    SORT_ORDER = 0
+
     constants: dict
 
     def __init__(self, **kwargs):

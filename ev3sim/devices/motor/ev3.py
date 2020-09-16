@@ -16,6 +16,8 @@ class MotorInteractor(IDeviceInteractor):
         return "MMotor"
 
     def tick(self, tick):
+        if tick == -1:
+            return
         self.device_class._updateTime(tick)
         if self.device_class.applied_force > 0:
             ScriptLoader.instance.object_map[self.getPrefix() + "light_up"].visual.fill = (
