@@ -251,6 +251,11 @@ class SoccerInteractor(IInteractor):
         for idx in range(len(self.bot_penalties)):
             if self.bot_penalties[idx] > 0:
                 self.bot_penalties[idx] -= 1
+                if self.bot_penalties[idx] == 0:
+                    self.robots[idx].body.position = self.spawns[idx // self.BOTS_PER_TEAM][idx % self.BOTS_PER_TEAM][0]
+                    self.robots[idx].body.angle = self.spawns[idx // self.BOTS_PER_TEAM][idx % self.BOTS_PER_TEAM][1] * np.pi / 180
+                    self.robots[idx].body.velocity = np.array([0.0, 0.0])
+                    self.robots[idx].body.angular_velocity = 0
 
     def goalScoredIn(self, teamIndex):
         self.team_scores[1 - teamIndex] += 1
