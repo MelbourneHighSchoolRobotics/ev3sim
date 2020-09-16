@@ -11,16 +11,13 @@ jobs:
   test-package:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.x]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.x
     - name: Install dependencies
       run: |
         sudo apt-get update
