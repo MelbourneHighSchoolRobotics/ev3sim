@@ -349,6 +349,20 @@ class SoccerInteractor(IInteractor):
                 if shape.shape.obj.key == "controlsReset":
                     self._pressed = True
 
+        if event.type == pygame.MOUSEMOTION:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for team in range(len(self.names)):
+                for index in range(self.BOTS_PER_TEAM):
+                    for shape in shapes:
+                        if shape.shape.obj.key == f"UI-penalty-{team * self.BOTS_PER_TEAM + index}":
+                            shape.shape.obj.visual.fill = "penalty_ui_bg_hover"
+                            break
+                    else:
+                        key = f"UI-penalty-{team * self.BOTS_PER_TEAM + index}"
+                        if key in ScriptLoader.instance.object_map:
+                            ScriptLoader.instance.object_map[key].visual.fill = "penalty_ui_bg"
+
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
             shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))

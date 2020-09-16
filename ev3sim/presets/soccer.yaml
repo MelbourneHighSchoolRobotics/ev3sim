@@ -12,6 +12,7 @@ colours:
   team_2: "#ba3333"
   penalty_area_bg: "#464e47"
   penalty_ui_bg: "#ed4d6e"
+  penalty_ui_bg_hover: "#f494a8"
 
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
