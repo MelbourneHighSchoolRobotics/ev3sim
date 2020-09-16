@@ -50,6 +50,7 @@ def main(passed_args=None):
         "active_connections": [],
         "thread_ids": {},
         "events": Queue(maxsize=0),
+        "write_blocking_ticks": {},
     }
     shared_data["condition_updated"] = threading.Condition(shared_data["update_lock"])
     shared_data["condition_updating"] = threading.Condition(shared_data["update_lock"])
@@ -116,11 +117,13 @@ def main(passed_args=None):
                         action_type, info = data["actions_queue"].get()
                         if action_type == "write":
                             path, value = info
-                            stub.SendWriteInfo(
+                            d = stub.SendWriteInfo(
                                 ev3sim.simulation.comm_schema_pb2.RobotWrite(
                                     robot_id=robot_id, attribute_path=path, value=value
                                 )
                             )
+                            if path.split()[-1] == "mode":
+                                data["write_results"].put(d)
                         elif action_type == "send_log":
                             message, source = info
                             stub.SendRobotLog(
@@ -182,9 +185,17 @@ def main(passed_args=None):
                 class MockedFile:
                     def __init__(self, data_path):
                         self.k2, self.k3, self.k4 = data_path
+                        if self.k4 == "mode":
+                            data["write_blocking_ticks"][f"{self.k2} {self.k3} {self.k4}"] = -1
                         self.seek_point = 0
 
                     def read(self):
+                        # If mode requires us to wait for values to update, then wait.
+                        mode_string = f"{self.k2} {self.k3} mode"
+                        if mode_string in data["write_blocking_ticks"]:
+                            while data["write_blocking_ticks"][mode_string] >= data["tick"]:
+                                data["last_checked_tick"] = data["tick"]
+                                wait_for_tick()
                         if isinstance(data["current_data"][self.k2][self.k3][self.k4], int):
                             res = str(data["current_data"][self.k2][self.k3][self.k4])
                         if isinstance(data["current_data"][self.k2][self.k3][self.k4], str):
@@ -199,6 +210,12 @@ def main(passed_args=None):
 
                     def write(self, value):
                         data["actions_queue"].put(("write", (f"{self.k2} {self.k3} {self.k4}", value.decode())))
+                        if self.k4 == "mode":
+                            with data["write_results"].not_empty:
+                                while not data["write_results"]._qsize():
+                                    data["write_results"].not_empty.wait(0.1)
+                            res = data["write_results"].get()
+                            data["write_blocking_ticks"][f"{self.k2} {self.k3} {self.k4}"] = data["tick"]
 
                     def flush(self):
                         pass
