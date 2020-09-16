@@ -10,6 +10,7 @@ colours:
   UI_fg_2: "1f1f1f"
   team_1: "#3235a9"
   team_2: "#ba3333"
+  penalty_area_bg: "#464e47"
 
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
@@ -66,7 +67,7 @@ elements:
   name: Rectangle
   width: 48.5
   height: 48
-  fill: 'grass_color'
+  fill: 'penalty_area_bg'
   stroke_width: 0
   position: [-115.75, -18]
   zPos: 3
@@ -76,7 +77,7 @@ elements:
   name: Rectangle
   width: 48.5
   height: 48
-  fill: 'grass_color'
+  fill: 'penalty_area_bg'
   stroke_width: 0
   position: [115.75, -18]
   zPos: 3
