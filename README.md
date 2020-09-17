@@ -1,9 +1,9 @@
 # ev3sim
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-![Python package](https://github.com/MelbourneHighSchoolRobotics/ev3sim/workflows/Python%20package/badge.svg)
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
+![Python test suite](https://github.com/MelbourneHighSchoolRobotics/ev3sim/workflows/Python%20test%20suite/badge.svg)
+![Docs Check](https://github.com/MelbourneHighSchoolRobotics/ev3sim/workflows/Docs%20Check/badge.svg)
 
 ## Getting started
 
