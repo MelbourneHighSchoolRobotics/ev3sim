@@ -72,7 +72,7 @@ class InfraredSensorMixin:
             "mode": self.mode,
         }
         if self.mode == self.ALL_VALUES:
-            for x in range(6):
+            for x in range(7):
                 data[f"value{x}"] = self.value(x)
         elif self.mode == self.DIRECTION:
             data["value0"] = self.value(0)
