@@ -116,11 +116,10 @@ class SoccerInteractor(IInteractor):
         handler.begin = handle_collide
 
         # Initialise field collider for ball reset on white
+        self.field_ball = ScriptLoader.instance.object_map["centreFieldBallDetector"]
+        self.field_ball.shape.sensor = True
+        self.field_ball.shape.collision_type = self.FIELD_BALL_COLLISION_TYPE
         if self.BALL_RESET_ON_WHITE:
-            self.field_ball = ScriptLoader.instance.object_map["centreFieldBallDetector"]
-            self.field_ball.shape.sensor = True
-            self.field_ball.shape.collision_type = self.FIELD_BALL_COLLISION_TYPE
-
             handler = World.instance.space.add_collision_handler(
                 self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE
             )
@@ -132,11 +131,10 @@ class SoccerInteractor(IInteractor):
             handler.separate = handle_separate
 
         # Initialise field collider for out on white
+        self.field = ScriptLoader.instance.object_map["centreField"]
+        self.field.shape.sensor = True
+        self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
         if self.OUT_ON_WHITE:
-            self.field = ScriptLoader.instance.object_map["centreField"]
-            self.field.shape.sensor = True
-            self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
-
             handler = World.instance.space.add_collision_handler(self.FIELD_COLLISION_TYPE, self.BOT_COLLISION_TYPE)
 
             def handle_separate(arbiter, space, data):
