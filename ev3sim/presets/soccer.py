@@ -121,7 +121,9 @@ class SoccerInteractor(IInteractor):
             self.field_ball.shape.sensor = True
             self.field_ball.shape.collision_type = self.FIELD_BALL_COLLISION_TYPE
 
-            handler = World.instance.space.add_collision_handler(self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE)
+            handler = World.instance.space.add_collision_handler(
+                self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE
+            )
 
             def handle_separate(arbiter, space, data):
                 self.resetBallClosest()
@@ -216,10 +218,18 @@ class SoccerInteractor(IInteractor):
         ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
 
     def resetBallClosest(self):
-        best_key = sorted([
-            (magnitude_sq(ScriptLoader.instance.object_map["IR_BALL"].body.position - ScriptLoader.instance.object_map[key].position), key)
-            for key in ("midSpot", "topSpot", "botSpot")
-        ])[0][1]
+        best_key = sorted(
+            [
+                (
+                    magnitude_sq(
+                        ScriptLoader.instance.object_map["IR_BALL"].body.position
+                        - ScriptLoader.instance.object_map[key].position
+                    ),
+                    key,
+                )
+                for key in ("midSpot", "topSpot", "botSpot")
+            ]
+        )[0][1]
         ScriptLoader.instance.object_map["IR_BALL"].body.position = ScriptLoader.instance.object_map[best_key].position
         ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
 
