@@ -9,6 +9,7 @@ from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.objects.base import objectFactory
+from ev3sim.objects.utils import magnitude_sq
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
 from ev3sim.objects.base import STATIC_CATEGORY
@@ -21,6 +22,7 @@ class SoccerInteractor(IInteractor):
 
     SHOW_GOAL_COLLIDERS = False
     OUT_ON_WHITE = True
+    BALL_RESET_ON_WHITE = True
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
     GAME_HALF_LENGTH_MINUTES = 5
@@ -36,6 +38,7 @@ class SoccerInteractor(IInteractor):
     GOAL_COLLISION_TYPE = 4
     FIELD_COLLISION_TYPE = 5
     BOT_COLLISION_TYPE = 6
+    FIELD_BALL_COLLISION_TYPE = 7
 
     # Randomisation of spawn locations
     # Set these to 0 to disable spawn randomisation
@@ -112,8 +115,22 @@ class SoccerInteractor(IInteractor):
 
         handler.begin = handle_collide
 
+        # Initialise field collider for ball reset on white
+        if self.BALL_RESET_ON_WHITE:
+            self.field_ball = ScriptLoader.instance.object_map["centreFieldBallDetector"]
+            self.field_ball.shape.sensor = True
+            self.field_ball.shape.collision_type = self.FIELD_BALL_COLLISION_TYPE
+
+            handler = World.instance.space.add_collision_handler(self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE)
+
+            def handle_separate(arbiter, space, data):
+                self.resetBallClosest()
+                return False
+
+            handler.separate = handle_separate
+
         # Initialise field collider for out on white
-        if self.out_on_white:
+        if self.OUT_ON_WHITE:
             self.field = ScriptLoader.instance.object_map["centreField"]
             self.field.shape.sensor = True
             self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
@@ -196,6 +213,14 @@ class SoccerInteractor(IInteractor):
         ScriptLoader.instance.object_map["IR_BALL"].body.position = np.array([0, -18]) + diff_radius * np.array(
             [np.cos(diff_angle), np.sin(diff_angle)]
         )
+        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
+
+    def resetBallClosest(self):
+        best_key = sorted([
+            (magnitude_sq(ScriptLoader.instance.object_map["IR_BALL"].body.position - ScriptLoader.instance.object_map[key].position), key)
+            for key in ("midSpot", "topSpot", "botSpot")
+        ])[0][1]
+        ScriptLoader.instance.object_map["IR_BALL"].body.position = ScriptLoader.instance.object_map[best_key].position
         ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
 
     def tick(self, tick):

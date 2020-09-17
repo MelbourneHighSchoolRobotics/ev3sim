@@ -53,6 +53,7 @@ settings:
       fill: goal_fill
   ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
   ev3sim.presets.soccer.SoccerInteractor.OUT_ON_WHITE: true
+  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
 
 elements:
 - type: visual
@@ -436,6 +437,18 @@ elements:
     zPos: 5.2
   position: [0, -18]
   key: centreField
+- type: object
+  physics: true
+  static: true
+  visual:
+    name: Rectangle
+    width: 192
+    height: 136
+    fill: null
+    stroke_width: 0
+    zPos: 5.2
+  position: [0, -18]
+  key: centreFieldBallDetector
 - type: visual
   name: Rectangle
   width: 5
