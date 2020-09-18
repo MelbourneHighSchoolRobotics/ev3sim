@@ -14,7 +14,7 @@ class ScriptLoader:
 
     active_scripts: List[IInteractor]
     VISUAL_TICK_RATE = 30
-    GAME_TICK_RATE = 60
+    GAME_TICK_RATE = 30
     TIME_SCALE = 1
     # TIME_SCALE simply affects the speed at which the simulation runs
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
