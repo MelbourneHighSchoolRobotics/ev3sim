@@ -16,7 +16,9 @@ def batched_run(batch_file, bind_addr):
         config = yaml.safe_load(f)
 
     bot_paths = [x["name"] for x in config["bots"]]
-    sim_process = Process(target=sim, args=[config["preset_file"], bot_paths, bind_addr])
+    sim_process = Process(
+        target=sim, args=[config["preset_file"], bot_paths, bind_addr], kwargs={"batch_file": batch_file}
+    )
 
     script_processes = []
     for i, bot in enumerate(config["bots"]):

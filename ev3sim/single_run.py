@@ -7,9 +7,13 @@ from ev3sim.file_helper import find_abs
 import yaml
 from unittest import mock
 from ev3sim.simulation.loader import runFromConfig
+from ev3sim.visual.manager import ScreenObjectManager
 
 
-def single_run(preset_filename, robots, bind_addr):
+def single_run(preset_filename, robots, bind_addr, batch_file=None):
+    if batch_file:
+        ScreenObjectManager.BATCH_FILE = batch_file
+    ScreenObjectManager.PRESET_FILE = preset_filename
     preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
     with open(preset_file, "r") as f:
         config = yaml.safe_load(f)
