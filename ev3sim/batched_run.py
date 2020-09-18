@@ -17,7 +17,9 @@ def batched_run(batch_file, bind_addr):
 
     bot_paths = [x["name"] for x in config["bots"]]
     sim_process = Process(
-        target=sim, args=[config["preset_file"], bot_paths, bind_addr], kwargs={"batch_file": batch_file}
+        target=sim,
+        args=[config["preset_file"], bot_paths, bind_addr],
+        kwargs={"batch_file": batch_file, "override_settings": config.get("settings", {})},
     )
 
     script_processes = []
