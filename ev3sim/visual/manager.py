@@ -55,11 +55,11 @@ class ScreenObjectManager:
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
-        caption = f"MHS Robotics Club Simulator version {version}"
+        caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
         if hasattr(ScreenObjectManager, "BATCH_FILE"):
-            caption = caption + f" {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
+            caption = caption + f" - {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
         else:
-            caption = caption + f" {ScreenObjectManager.PRESET_FILE}"
+            caption = caption + f" - {ScreenObjectManager.PRESET_FILE}"
         pygame.display.set_caption(caption)
         img_path = find_abs("Logo.png", allowed_areas=["package/assets/"])
         img = pygame.image.load(img_path)
