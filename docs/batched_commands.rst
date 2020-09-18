@@ -49,6 +49,10 @@ The batched command file looks like the following:
       # ScreenObjectManager
       ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
       ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+      # Soccer
+      ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
+        - Team 1
+        - Team 2
 
 The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
 After this you can specify any bots to load, as well as scripts to attach to them.
