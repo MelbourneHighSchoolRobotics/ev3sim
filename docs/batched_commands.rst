@@ -41,6 +41,14 @@ The batched command file looks like the following:
     - name: bot.yaml
       scripts:
       - demo.py
+    settings:
+      # ScriptLoader
+      ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
+      ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
+      ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
+      # ScreenObjectManager
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
 
 The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
 After this you can specify any bots to load, as well as scripts to attach to them.
