@@ -15,14 +15,15 @@ interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
 - class_path: ev3sim.presets.pause_interactor.PauseInteractor
 - class_path: ev3sim.presets.soccer.SoccerInteractor
-  kwargs:
-    names:
+
+settings:
+  ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
     - Team 1
     - Team 2
-    spawns:
+  ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
-    goals:
+  ev3sim.presets.soccer.SoccerInteractor.GOALS:
     - name: Rectangle
       width: 7.4
       height: 45
@@ -33,7 +34,8 @@ interactors:
       height: 45
       position: [95.2, -18]
       fill: goal_fill
-    show_goal_colliders: true
+  ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
+
 elements:
 - type: visual
   name: Rectangle
