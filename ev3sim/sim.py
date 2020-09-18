@@ -12,7 +12,7 @@ parser.add_argument(
     default="soccer.yaml",
     dest="preset",
 )
-parser.add_argument("robots", nargs="+", help="Path of robots to load. Separate each robot path by a space.")
+parser.add_argument("robots", nargs="*", help="Path of robots to load. Separate each robot path by a space.")
 parser.add_argument(
     "--batch",
     "-b",
@@ -26,6 +26,13 @@ parser.add_argument(
     metavar="address:port",
     help="The IP address and port to run on (you shouldn't need to change this). Default is [::1]:50051 (localhost only). Use [::]:50051 to listen on all network interfaces.",
 )
+parser.add_argument(
+    "--version",
+    "-v",
+    action="store_true",
+    help="Show the version of ev3sim.",
+    dest="version",
+)
 
 
 def main(passed_args=None):
@@ -33,6 +40,12 @@ def main(passed_args=None):
         passed_args = sys.argv
 
     args = parser.parse_args(passed_args[1:])
+
+    if args.version:
+        import ev3sim
+
+        print(f"Running ev3sim version {ev3sim.__version__}")
+        return
 
     if args.batched:
         from ev3sim.batched_run import batched_run
@@ -42,6 +55,7 @@ def main(passed_args=None):
     else:
         from ev3sim.single_run import single_run
 
+        assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
         single_run(args.preset, args.robots, args.bind_addr)
 
 

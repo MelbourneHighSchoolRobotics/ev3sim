@@ -50,11 +50,17 @@ class ScreenObjectManager:
             self._background_color = value
 
     def startScreen(self):
+        from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
-        pygame.display.set_caption("MHS Robotics Club Simulator")
+        caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
+        if hasattr(ScreenObjectManager, "BATCH_FILE"):
+            caption = caption + f" - {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
+        else:
+            caption = caption + f" - {ScreenObjectManager.PRESET_FILE}"
+        pygame.display.set_caption(caption)
         img_path = find_abs("Logo.png", allowed_areas=["package/assets/"])
         img = pygame.image.load(img_path)
         img.set_colorkey((255, 255, 255))

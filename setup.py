@@ -11,9 +11,11 @@ with open(os.path.join(HERE, "README.md"), encoding="utf-8") as fid:
 with open(os.path.join(HERE, "requirements.txt")) as fid:
     REQUIREMENTS = [req for req in fid.read().split("\n") if req]
 
+from ev3sim import __version__
+
 setup(
     name="ev3sim",
-    version="1.3.1",
+    version=__version__,
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",
