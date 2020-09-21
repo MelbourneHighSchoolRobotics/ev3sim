@@ -54,7 +54,7 @@ def main(passed_args=None):
 
         print(f"Running ev3sim version {ev3sim.__version__}")
         return
-    
+
     if args.seed is None:
         seed(time.time())
         # Seed for numpy randomisation is 0 to 2^32-1, inclusive.
