@@ -6,8 +6,7 @@ from multiprocessing import Process
 
 
 def batched_run(batch_file, bind_addr):
-    from ev3sim.single_run import single_run as sim
-    from ev3sim.attach import main as attach
+    from ev3sim.batched import single_run as sim
 
     batch_path = find_abs(
         batch_file, allowed_areas=["local", "local/batched_commands/", "package", "package/batched_commands/"]
@@ -20,25 +19,10 @@ def batched_run(batch_file, bind_addr):
         target=sim, args=[config["preset_file"], bot_paths, bind_addr], kwargs={"batch_file": batch_file}
     )
 
-    script_processes = []
+    bot_data = []
+
     for i, bot in enumerate(config["bots"]):
-        for script in bot.get("scripts", []):
-            script_processes.append(
-                Process(
-                    target=attach,
-                    kwargs={
-                        "passed_args": ["Useless", "--send_logs", "--simulator_addr", bind_addr, script, f"Robot-{i}"]
-                    },
-                )
-            )
+        if bot.get("scripts", []):
+            bot_data.append((bot["scripts"][0], f"Robot-{i}"))
 
-    sim_process.start()
-    time.sleep(0.5)  # Give the gRPC server 500ms to start
-    for p in script_processes:
-        p.start()
-
-    # At the moment, just wait for the simulator to finish then kill all attach processes.
-    # If any attach threads error out, then the stack trace is printed anyways so this is fine.
-    sim_process.join()
-    for p in script_processes:
-        p.terminate()
+    sim(config["preset_file"], bot_paths, bind_addr, batch_file, bot_data)

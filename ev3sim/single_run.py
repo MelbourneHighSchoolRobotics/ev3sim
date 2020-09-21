@@ -29,6 +29,7 @@ def single_run(preset_filename, robots, bind_addr, batch_file=None):
         "bot_communications_data": {},  # Buffers and information for all bot communications.
         "tick_updates": {},  # Simply a dictionary where the simulation tick will push static data, so the other methods are aware of when the simulation has exited.
         "events": {},  # Any events that should be sent to robots.
+        "tick_locks": [],
     }
 
     result_bucket = Queue(maxsize=1)

@@ -57,7 +57,7 @@ def main(passed_args=None):
 
         assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
         single_run(args.preset, args.robots, args.bind_addr)
-
+    
 
 if __name__ == "__main__":
     main()

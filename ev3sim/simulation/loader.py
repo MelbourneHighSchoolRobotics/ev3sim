@@ -103,8 +103,12 @@ class ScriptLoader:
                     sensor_type, specific_sensor, attribute = attribute_path.split()
                     self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
                 for key, robot in self.robots.items():
-                    if robot.spawned and key in self.data["data_queue"]:
-                        self.data["data_queue"][key].put(robot._interactor.collectDeviceData())
+                    if "data_queue" in self.data:
+                        if robot.spawned and key in self.data["data_queue"]:
+                            self.data["data_queue"][key].put(robot._interactor.collectDeviceData())
+                    else:
+                        if robot.spawned:
+                            self.data["current_data"][key] = robot._interactor.collectDeviceData()
                 # Handle simulation.
                 # First of all, check the script can handle the current settings.
                 if new_time - last_game_update > 2 / self.GAME_TICK_RATE / self.TIME_SCALE:
@@ -122,6 +126,9 @@ class ScriptLoader:
                     interactor.afterPhysics()
                 tick += 1
                 self.incrementPhysicsTick()
+                for key in self.data.get("tick_locks"):
+                    with self.data["tick_locks"][key]["lock"]:
+                        self.data["tick_locks"][key]["cond"].notify()
                 if (tick > 10 and total_lag_ticks / tick > 0.5) and not lag_printed:
                     lag_printed = True
                     print("The simulation is currently lagging, you may want to turn down the game tick rate.")
