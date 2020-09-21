@@ -16,9 +16,15 @@ from ev3sim.objects.base import STATIC_CATEGORY
 
 class SoccerInteractor(IInteractor):
 
+    SHOW_GOAL_COLLIDERS = False
+
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY = 1
     GAME_HALF_LENGTH_MINUTES = 5
+
+    TEAM_NAMES = []
+    SPAWN_LOCATIONS = []
+    GOALS = []
 
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
@@ -33,10 +39,9 @@ class SoccerInteractor(IInteractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
-        self.names = kwargs.get("names", ["Team 1", "Team 2"])
-        self.spawns = kwargs.get("spawns")
-        self.goals = kwargs.get("goals")
-        self.show_goal_colliders = kwargs.get("show_goal_colliders", False)
+        self.names = self.TEAM_NAMES[:]
+        self.spawns = self.SPAWN_LOCATIONS[:]
+        self.goals = self.GOALS[:]
         self.current_goal_score_tick = -1
         self.time_tick = 0
         self.update_time_text = True
@@ -112,7 +117,7 @@ class SoccerInteractor(IInteractor):
             self.goal_colliders[-1].shape.collision_type = self.GOAL_COLLISION_TYPE
             self.goal_colliders[-1].shape.goal_index = x
             World.instance.registerObject(self.goal_colliders[-1])
-            if self.show_goal_colliders:
+            if self.SHOW_GOAL_COLLIDERS:
                 ScreenObjectManager.instance.registerVisual(
                     self.goal_colliders[-1].visual, f"Soccer_DEBUG_collider-{len(self.goal_colliders)}"
                 )

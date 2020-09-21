@@ -11,14 +11,16 @@ with open(os.path.join(HERE, "README.md"), encoding="utf-8") as fid:
 with open(os.path.join(HERE, "requirements.txt")) as fid:
     REQUIREMENTS = [req for req in fid.read().split("\n") if req]
 
+from ev3sim import __version__
+
 setup(
     name="ev3sim",
-    version="1.3.1",
+    version=__version__,
     description="Simulate ev3dev programs in Python",
     long_description=README,
     long_description_content_type="text/markdown",
     python_requires=REQUIRES_PYTHON,
-    url="https://github.com/MelbourneHighSchool/ev3sim",
+    url="https://github.com/MelbourneHighSchoolRobotics/ev3sim",
     author="Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew",
     author_email="jgoerner@outlook.com, jtbui20@gmail.com, me@huangrichard.com, contact@angus.ws, peter@pdrew.com",
     license="BSD-3-Clause",

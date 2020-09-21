@@ -7,12 +7,16 @@ from ev3sim.file_helper import find_abs
 import yaml
 from ev3sim.simulation.loader import runFromConfig, ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
+from ev3sim.visual.manager import ScreenObjectManager
 from unittest import mock
 
+def single_run(preset_filename, robots, bind_addr, seed, batch_file=None):
+    if batch_file:
+        ScreenObjectManager.BATCH_FILE = batch_file
+    ScreenObjectManager.PRESET_FILE = preset_filename
 
-def single_run(preset_filename, robots, bind_addr, seed):
     Randomiser.createGlobalRandomiserWithSeed(seed)
-
+    
     preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
     with open(preset_file, "r") as f:
         config = yaml.safe_load(f)

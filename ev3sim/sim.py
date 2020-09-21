@@ -13,7 +13,7 @@ parser.add_argument(
     default="soccer.yaml",
     dest="preset",
 )
-parser.add_argument("robots", nargs="+", help="Path of robots to load. Separate each robot path by a space.")
+parser.add_argument("robots", nargs="*", help="Path of robots to load. Separate each robot path by a space.")
 parser.add_argument(
     "--batch",
     "-b",
@@ -34,6 +34,13 @@ parser.add_argument(
     default=None,
     help="Used to seed randomisation, integer from 0 to 2^32-1. Will generate randomly if left blank.",
 )
+parser.add_argument(
+    "--version",
+    "-v",
+    action="store_true",
+    help="Show the version of ev3sim.",
+    dest="version",
+)
 
 
 def main(passed_args=None):
@@ -42,6 +49,12 @@ def main(passed_args=None):
 
     args = parser.parse_args(passed_args[1:])
 
+    if args.version:
+        import ev3sim
+
+        print(f"Running ev3sim version {ev3sim.__version__}")
+        return
+    
     if args.seed is None:
         seed(time.time())
         # Seed for numpy randomisation is 0 to 2^32-1, inclusive.
@@ -57,6 +70,7 @@ def main(passed_args=None):
     else:
         from ev3sim.single_run import single_run
 
+        assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
         single_run(args.preset, args.robots, args.bind_addr, args.seed)
 
 
