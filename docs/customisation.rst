@@ -112,6 +112,37 @@ All of the logic running the soccer simulation in particular is defined in a **p
     - class_path: custom.MyCustomInteractor
     - ...
   
+    settings:
+      # ScriptLoader
+      ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
+      ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
+      ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
+      # ScreenManager
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+      ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
+      ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
+      ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
+      # Soccer
+      ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
+        - Team 1
+        - Team 2
+      ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
+        - [[[-80, -18], 0], [[-50, -18], 0]]
+        - [[[80, -18], 180], [[50, -18], 180]]
+      ev3sim.presets.soccer.SoccerInteractor.GOALS:
+        - name: Rectangle
+          width: 7.4
+          height: 45
+          position: [-95.2, -18]
+          fill: goal_fill
+        - name: Rectangle
+          width: 7.4
+          height: 45
+          position: [95.2, -18]
+          fill: goal_fill
+      ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
+
     elements:
     - type: visual
       name: Rectangle
@@ -125,23 +156,10 @@ All of the logic running the soccer simulation in particular is defined in a **p
       sensorVisible: true
     - ...
 
-    loader:
-      GAME_TICK_RATE: 30
-      VISUAL_TICK_RATE: 30
-      TIME_SCALE: 0.5
-    
-    screen:
-      screen_width: 1280
-      screen_height: 960
-      map_width: 293.3
-      map_height: 220
-      background_color: '#264653'
-
 * ``colours``: This defines a few colours which might be repeated in the definition of items, for example if you want to draw multiple walls.
 * ``interactors``: This points to any :doc:`/interactor` which should be active when running the simulation.
+* ``settings``: Can redefine essentially any one of the simulator constants. You can delve into the codebase if you want to change particular things or you can just change existing settings in the yaml.
 * ``elements``: This defines all visual and physical objects spawned in the preset. ``sensorVisible`` is true if a colour sensor should pick up this object.
-* ``loader``: Arguments to be passed to the script loader.
-* ``screen``: Arguments to be passed to the screen definition.
 
 A full example of the soccer preset can be found `here`_.
 

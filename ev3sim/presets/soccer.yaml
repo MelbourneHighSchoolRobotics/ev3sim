@@ -17,6 +17,17 @@ interactors:
 - class_path: ev3sim.presets.soccer.SoccerInteractor
 
 settings:
+  # ScriptLoader
+  ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
+  ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
+  ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
+  # ScreenManager
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+  ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
+  ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
+  ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
+  # Soccer
   ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
     - Team 1
     - Team 2
@@ -554,12 +565,3 @@ elements:
   restitution: 0.8
   position: [-100, -18]
   key: IR_BALL
-loader:
-  GAME_TICK_RATE: 30
-  VISUAL_TICK_RATE: 30
-screen:
-  screen_width: 1280
-  screen_height: 960
-  map_width: 293.3
-  map_height: 220
-  background_color: '#1f1f1f'

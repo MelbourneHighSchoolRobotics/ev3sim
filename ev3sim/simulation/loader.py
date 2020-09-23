@@ -14,7 +14,7 @@ class ScriptLoader:
 
     active_scripts: List[IInteractor]
     VISUAL_TICK_RATE = 30
-    GAME_TICK_RATE = 60
+    GAME_TICK_RATE = 30
     TIME_SCALE = 1
     # TIME_SCALE simply affects the speed at which the simulation runs
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
@@ -27,8 +27,6 @@ class ScriptLoader:
     def __init__(self, **kwargs):
         ScriptLoader.instance = self
         self.robots = {}
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     def sendEvent(self, botID, eventName, eventData):
         self.data["events"][botID].put((eventName, eventData))
@@ -143,7 +141,7 @@ def runFromConfig(config, shared):
     from ev3sim.robot import initialise_bot, RobotInteractor
     from ev3sim.file_helper import find_abs
 
-    sl = ScriptLoader(**config.get("loader", {}))
+    sl = ScriptLoader()
     sl.setSharedData(shared)
     sl.active_scripts = []
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get("colours", {})
@@ -159,7 +157,7 @@ def runFromConfig(config, shared):
         except Exception as exc:
             print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
     if sl.active_scripts:
-        sl.startUp(**config.get("screen", {}))
+        sl.startUp()
         sl.loadElements(config.get("elements", []))
         for interactor in sl.active_scripts:
             if isinstance(interactor, RobotInteractor):

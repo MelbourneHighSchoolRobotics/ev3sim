@@ -4,9 +4,8 @@
 name: Build and deploy to PyPi 
 
 on:
-  create:
-    tags:
-      - v*
+  release:
+    types: [released]
 
 jobs:
   build-and-release:

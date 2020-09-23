@@ -11,7 +11,7 @@ from ev3sim.visual.manager import ScreenObjectManager
 from unittest import mock
 
 
-def single_run(preset_filename, robots, bind_addr, seed, batch_file=None):
+def single_run(preset_filename, robots, bind_addr, seed, batch_file=None, override_settings={}):
     if batch_file:
         ScreenObjectManager.BATCH_FILE = batch_file
     ScreenObjectManager.PRESET_FILE = preset_filename
@@ -50,6 +50,7 @@ def single_run(preset_filename, robots, bind_addr, seed, batch_file=None):
 
     # Handle any other settings modified by the preset.
     settings = config.get("settings", {})
+    settings.update(override_settings)
     for keyword, value in settings.items():
         run = mock.patch(keyword, value)(run)
 
