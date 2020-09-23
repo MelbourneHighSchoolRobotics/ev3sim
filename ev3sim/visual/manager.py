@@ -10,10 +10,13 @@ class ScreenObjectManager:
     instance: "ScreenObjectManager"
 
     screen: pygame.Surface
-    screen_width: int
-    screen_height: float
+    SCREEN_WIDTH: int = 1280
+    SCREEN_HEIGHT: int = 960
+    MAP_WIDTH: float = 200
+    MAP_HEIGHT: float = 200
+    BACKGROUND_COLOUR = "#000000"
 
-    _background_color: Tuple[int]
+    _background_colour: Tuple[int]
 
     objects: Dict[str, "visual.objects.IVisualElement"]  # noqa: F821
     sorting_order: List[str]
@@ -25,36 +28,31 @@ class ScreenObjectManager:
         self.initFromKwargs(**kwargs)
 
     def initFromKwargs(self, **kwargs):
-        self.screen_width = kwargs.get("screen_width", 640)
-        self.screen_height = kwargs.get("screen_height", 480)
-        self.original_screen_width = self.screen_width
-        self.original_screen_height = self.screen_height
-        # NOTE: TEMPORARY - this would describe the dimensions of the simulated map vs the screen dimensions.
-        self.map_width = kwargs.get("map_width", 210)
-        self.map_height = kwargs.get("map_height", 160)
-        self.background_color = kwargs.get("background_color", "#000000")
+        self.original_SCREEN_WIDTH = self.SCREEN_WIDTH
+        self.original_SCREEN_HEIGHT = self.SCREEN_HEIGHT
+        self.background_colour = self.BACKGROUND_COLOUR
 
     @property
-    def background_color(self):
-        return self._background_color
+    def background_colour(self):
+        return self._background_colour
 
-    @background_color.setter
-    def background_color(self, value):
+    @background_colour.setter
+    def background_colour(self, value):
         if isinstance(value, str):
             if value in utils.GLOBAL_COLOURS:
                 value = utils.GLOBAL_COLOURS[value]
             if value.startswith("#"):
                 value = value[1:]
-            self._background_color = utils.hex_to_pycolor(value)
+            self._background_colour = utils.hex_to_pycolor(value)
         else:
-            self._background_color = value
+            self._background_colour = value
 
     def startScreen(self):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
 
         pygame.init()
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
         caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
         if hasattr(ScreenObjectManager, "BATCH_FILE"):
             caption = caption + f" - {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
@@ -97,7 +95,7 @@ class ScreenObjectManager:
             self.registerObject(child, new_key)
 
     def applyToScreen(self):
-        self.screen.fill(self.background_color)
+        self.screen.fill(self.background_colour)
         for key in self.sorting_order:
             if self.objects[key].sensorVisible:
                 self.objects[key].applyToScreen()
@@ -113,8 +111,8 @@ class ScreenObjectManager:
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.VIDEORESIZE:
-                self.screen_width, self.screen_height = event.size
-                self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.RESIZABLE)
+                self.SCREEN_WIDTH, self.SCREEN_HEIGHT = event.size
+                self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
                 for key in self.sorting_order:
                     self.objects[key].calculatePoints()
             if event.type == pygame.QUIT:
@@ -127,6 +125,6 @@ class ScreenObjectManager:
     def relativeScreenScale(self):
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
         return [
-            self.screen_width / self.original_screen_width,
-            self.screen_height / self.original_screen_height,
+            self.SCREEN_WIDTH / self.original_SCREEN_WIDTH,
+            self.SCREEN_HEIGHT / self.original_SCREEN_HEIGHT,
         ]

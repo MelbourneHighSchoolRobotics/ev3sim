@@ -199,8 +199,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
             ]
         )
         self.verts = [
@@ -246,8 +246,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
@@ -300,8 +300,8 @@ class Line(Colorable):
                     1,
                     int(
                         self.stroke_width
-                        * ScreenObjectManager.instance.screen_width
-                        / ScreenObjectManager.instance.map_width
+                        * ScreenObjectManager.instance.SCREEN_WIDTH
+                        / ScreenObjectManager.instance.MAP_WIDTH
                     ),
                 ),
             )
@@ -338,8 +338,8 @@ class Polygon(Colorable):
                     1,
                     int(
                         self.stroke_width
-                        * ScreenObjectManager.instance.screen_width
-                        / ScreenObjectManager.instance.map_width
+                        * ScreenObjectManager.instance.SCREEN_WIDTH
+                        / ScreenObjectManager.instance.MAP_WIDTH
                     ),
                 ),
             )
@@ -404,10 +404,10 @@ class Circle(Colorable):
             return
         self.point = utils.worldspace_to_screenspace(self.position)
         self.v_radius = int(
-            ScreenObjectManager.instance.screen_height / ScreenObjectManager.instance.map_height * self.radius
+            ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT * self.radius
         )
         self.h_radius = int(
-            ScreenObjectManager.instance.screen_width / ScreenObjectManager.instance.map_width * self.radius
+            ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH * self.radius
         )
         self.rect = pygame.Rect(
             self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2
@@ -425,8 +425,8 @@ class Circle(Colorable):
                     1,
                     int(
                         self.stroke_width
-                        * ScreenObjectManager.instance.screen_width
-                        / ScreenObjectManager.instance.map_width
+                        * ScreenObjectManager.instance.SCREEN_WIDTH
+                        / ScreenObjectManager.instance.MAP_WIDTH
                     ),
                 ),
             )
@@ -523,8 +523,8 @@ class Text(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.screen_width / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.screen_height / 2 + self.screen_size[1],
+                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
+                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
