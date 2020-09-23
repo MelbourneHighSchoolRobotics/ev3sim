@@ -42,6 +42,7 @@ The batched command file looks like the following:
       scripts:
       - demo.py
     settings:
+      # Optionally, any setting in the preset file can be overridden here
       # ScriptLoader
       ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
       ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
