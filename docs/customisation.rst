@@ -116,6 +116,7 @@ All of the logic running the soccer simulation in particular is defined in a **p
       # ScriptLoader
       ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
       ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
+      ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
       # ScreenManager
       ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
       ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
