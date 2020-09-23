@@ -259,6 +259,37 @@ Just like with the devices, you specify a position, rotation, and port for the b
 <span class="p p-Indicator">-</span> <span class="nt">class_path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">custom.MyCustomInteractor</span>
 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
 
+<span class="nt">settings</span><span class="p">:</span>
+  <span class="c1"># ScriptLoader</span>
+  <span class="nt">ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
+  <span class="nt">ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
+  <span class="nt">ev3sim.simulation.loader.ScriptLoader.TIME_SCALE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="c1"># ScreenManager</span>
+  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1280</span>
+  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">960</span>
+  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">293.3</span>
+  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">220</span>
+  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR</span><span class="p">:</span> <span class="s">&quot;#1f1f1f&quot;</span>
+  <span class="c1"># Soccer</span>
+  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Team 1</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Team 2</span>
+  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[[[</span><span class="nv">-80</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">],</span> <span class="nv">0</span><span class="p p-Indicator">],</span> <span class="p p-Indicator">[[</span><span class="nv">-50</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">],</span> <span class="nv">0</span><span class="p p-Indicator">]]</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[[[</span><span class="nv">80</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">],</span> <span class="nv">180</span><span class="p p-Indicator">],</span> <span class="p p-Indicator">[[</span><span class="nv">50</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">],</span> <span class="nv">180</span><span class="p p-Indicator">]]</span>
+  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.GOALS</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Rectangle</span>
+      <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">7.4</span>
+      <span class="nt">height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45</span>
+      <span class="nt">position</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">-95.2</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">]</span>
+      <span class="nt">fill</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">goal_fill</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Rectangle</span>
+      <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">7.4</span>
+      <span class="nt">height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45</span>
+      <span class="nt">position</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">95.2</span><span class="p p-Indicator">,</span> <span class="nv">-18</span><span class="p p-Indicator">]</span>
+      <span class="nt">fill</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">goal_fill</span>
+  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
 <span class="nt">elements</span><span class="p">:</span>
 <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">visual</span>
   <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Rectangle</span>
@@ -271,26 +302,13 @@ Just like with the devices, you specify a position, rotation, and port for the b
   <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">grass</span>
   <span class="nt">sensorVisible</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
-
-<span class="nt">loader</span><span class="p">:</span>
-  <span class="nt">GAME_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-  <span class="nt">VISUAL_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-  <span class="nt">TIME_SCALE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.5</span>
-
-<span class="nt">screen</span><span class="p">:</span>
-  <span class="nt">screen_width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1280</span>
-  <span class="nt">screen_height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">960</span>
-  <span class="nt">map_width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">293.3</span>
-  <span class="nt">map_height</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">220</span>
-  <span class="nt">background_color</span><span class="p">:</span> <span class="s">&#39;#264653&#39;</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">colours</span></code>: This defines a few colours which might be repeated in the definition of items, for example if you want to draw multiple walls.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">interactors</span></code>: This points to any <a class="reference internal" href="interactor.html"><span class="doc">Interactors</span></a> which should be active when running the simulation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">settings</span></code>: Can redefine essentially any one of the simulator constants. You can delve into the codebase if you want to change particular things or you can just change existing settings in the yaml.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">elements</span></code>: This defines all visual and physical objects spawned in the preset. <code class="docutils literal notranslate"><span class="pre">sensorVisible</span></code> is true if a colour sensor should pick up this object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">loader</span></code>: Arguments to be passed to the script loader.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">screen</span></code>: Arguments to be passed to the screen definition.</p></li>
 </ul>
 <p>A full example of the soccer preset can be found <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/presets/soccer.yaml">here</a>.</p>
 <p>After saving this to <code class="docutils literal notranslate"><span class="pre">preset.yaml</span></code> for example, you can run the simulation with this preset by running</p>
