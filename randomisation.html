@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Contributing &mdash; ev3sim  documentation</title>
+  <title>Randomisation &mdash; ev3sim  documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Simulation Objects" href="system.html" />
-    <link rel="prev" title="Customising Bots and Maps" href="customisation.html" /> 
+    <link rel="next" title="Extensions to normal EV3 Code" href="ev3_extensions.html" />
+    <link rel="prev" title="Batched Commands" href="batched_commands.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,14 +87,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Randomisation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#running-locally">Running locally</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#linting-code">Linting code</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
 
@@ -142,13 +138,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Contributing</li>
+      <li>Randomisation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/randomisation.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -161,29 +157,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
-<p>If you would like to contribute to the project, there’s a few things you should know, to assist your development efforts and make the pull request workflow easier on everyone</p>
-<div class="section" id="running-locally">
-<h2>Running locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
-<p>To test your changes locally, we recommend pip installing the local changes - this ensures the build process is also working fine.
-While in the top level directory, you can run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e  ./
+  <div class="section" id="randomisation">
+<h1>Randomisation<a class="headerlink" href="#randomisation" title="Permalink to this headline">¶</a></h1>
+<p>When executing <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> you may notice that the following is printed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Simulating with seed <span class="m">0000000000</span>
 </pre></div>
 </div>
-<p>or</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop
+<p>But with a different number to the one above. This number is the ‘seed’ and essentially defines all randomness that will occur within the system.</p>
+<p>Despite being mostly the same on every run, some elements of the simulation require randomness, for realism, and to ensure that every run is slightly different:</p>
+<ul class="simple">
+<li><p>The spawn positions of bots and balls is slightly randomised.</p></li>
+<li><p>The way a colour sensor detects colours requires randomness.</p></li>
+</ul>
+<p>As such in order to redo a simulation exactly as was done before, we want to be able to use the same seed, to ensure all random numbers are also the same.</p>
+<p>You can do this with the <code class="docutils literal notranslate"><span class="pre">--seed</span></code> or <code class="docutils literal notranslate"><span class="pre">-s</span></code> flag in <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code>. As an example, to simulate with seed 123456789, you can do the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml --seed <span class="m">123456789</span>
 </pre></div>
 </div>
-<p>To install the project. This creates a .pth link from your python installation to your ev3sim directory. This means any changes made will immediately take effect. Note that this will remove your existing install of stable ev3sim, so be aware of this.</p>
-</div>
-<div class="section" id="linting-code">
-<h2>Linting code<a class="headerlink" href="#linting-code" title="Permalink to this headline">¶</a></h2>
-<p>Pull requests are linted with <a class="reference external" href="https://github.com/psf/black">black</a>. To run black locally to fix any formatting errors you’ve made, run the following:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black --config pyproject.toml .
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">Simulating</span> <span class="pre">with</span> <span class="pre">seed</span></code> line will respect this change. The seed can be any integer from 0 to 2^32 - 1, inclusive.</p>
+<p>To make simulation of devices a bit more realistic, there is also support for the randomisation of device characteristics, in similar ways to what you might expect in real life. Examples include:</p>
+<ul class="simple">
+<li><p>Motors having a theoretical maximum speed, but also a physical one which differs slightly</p></li>
+<li><p>Sensors having slight biases towards certain directions</p></li>
+</ul>
+<p>And you can enable this randomisation by using the <code class="docutils literal notranslate"><span class="pre">soccer_random.yaml</span></code> preset rather than <code class="docutils literal notranslate"><span class="pre">soccer.yaml</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml --seed <span class="m">123456789</span> -p soccer_random.yaml
 </pre></div>
 </div>
+<p>To add randomisation to your particular preset, you only need to add the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span>
+  <span class="nt">ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
 </div>
+<p>That being said, some of this randomisation is not done based on the seed, but rather the port and robot the device is connected to (This is to simulate you working with the same device with the same bias between runs). As a rule of thumb:</p>
+<ul class="simple">
+<li><p>Internal biases of devices will be static on the same port / robot filename.</p></li>
+<li><p>Randomness which is introduced over time or every game tick is tied to the seed.</p></li>
+</ul>
 </div>
 
 
@@ -194,10 +204,10 @@ While in the top level directory, you can run</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="system.html" class="btn btn-neutral float-right" title="Simulation Objects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ev3_extensions.html" class="btn btn-neutral float-right" title="Extensions to normal EV3 Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="customisation.html" class="btn btn-neutral float-left" title="Customising Bots and Maps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="batched_commands.html" class="btn btn-neutral float-left" title="Batched Commands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
