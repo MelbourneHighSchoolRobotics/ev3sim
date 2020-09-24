@@ -15,14 +15,26 @@ interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
 - class_path: ev3sim.presets.pause_interactor.PauseInteractor
 - class_path: ev3sim.presets.soccer.SoccerInteractor
-  kwargs:
-    names:
+
+settings:
+  # ScriptLoader
+  ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
+  ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
+  ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
+  # ScreenManager
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+  ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
+  ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
+  ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
+  # Soccer
+  ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
     - Team 1
     - Team 2
-    spawns:
+  ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
-    goals:
+  ev3sim.presets.soccer.SoccerInteractor.GOALS:
     - name: Rectangle
       width: 7.4
       height: 45
@@ -33,7 +45,9 @@ interactors:
       height: 45
       position: [95.2, -18]
       fill: goal_fill
-    show_goal_colliders: true
+  ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
+  ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS: true
+
 elements:
 - type: visual
   name: Rectangle
@@ -561,5 +575,4 @@ screen:
   map_width: 293.3
   map_height: 220
   background_color: '#1f1f1f'
-settings:
-  ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS: true
+
