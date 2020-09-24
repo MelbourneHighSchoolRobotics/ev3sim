@@ -10,7 +10,7 @@ class MotorMixin:
     MIN_FORCE_PCT = 0.9
     MAX_FORCE_PCT = 1.05
     # How many fixed speeds the motors support (This is between +ve and negative, should be odd so that 0 is fixed).
-    FIXED_SPEED_POINTS = 11
+    FIXED_SPEED_POINTS = 71
 
     time_wait = -1
 
@@ -63,7 +63,7 @@ class MotorMixin:
         :param float speed: Any number from -100 to 100. Negative values turn the motors the opposite direction.
         """
         assert -100 <= speed <= 100, "Speed value is out of bounds."
-        speed = self.speed_selection.get_closest(speed)
+        speed = self.speed_selection.get_closest(speed) if speed >= 0 else -1 * self.speed_selection.get_closest(-speed)
         self.applied_force = speed * self.MAX_FORCE / 100
         # Ensure this overwrites further
         self.time_wait = -1
