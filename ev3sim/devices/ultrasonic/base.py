@@ -20,7 +20,7 @@ class UltrasonicSensorMixin:
     ACCEPTANCE_LEVEL = 1
 
     # 0 - 2 of actual value at max angle.
-    ANGLE_RANDOM_AMPLITUDE = 180
+    ANGLE_RANDOM_AMPLITUDE = 40
 
     STATIC_RANDOM_ANGLE = np.pi / 12
 
