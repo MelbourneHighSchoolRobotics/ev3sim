@@ -28,6 +28,7 @@ class SoccerInteractor(IInteractor):
     GAME_HALF_LENGTH_MINUTES = 5
     # 5 Second penalty
     BOT_OUT_ON_WHITE_PENALTY_SECONDS = 5
+    BALL_RESET_WHITE_DELAY_SECONDS = 1.5
 
     TEAM_NAMES = []
     SPAWN_LOCATIONS = []
@@ -55,6 +56,7 @@ class SoccerInteractor(IInteractor):
         self.penalty = self.PENALTY_LOCATIONS[:]
         self.goals = self.GOALS[:]
         self.current_goal_score_tick = -1
+        self.out_on_white_tick = 0
         self.time_tick = 0
         self.update_time_text = True
 
@@ -124,11 +126,16 @@ class SoccerInteractor(IInteractor):
                 self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE
             )
 
-            def handle_separate(arbiter, space, data):
-                self.resetBallClosest()
+            def handle_separate_ball(arbiter, space, data):
+                self.out_on_white_tick = self.BALL_RESET_WHITE_DELAY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
+                return False
+            
+            def handle_collide_ball(arbiter, space, data):
+                self.out_on_white_tick = 0
                 return False
 
-            handler.separate = handle_separate
+            handler.separate = handle_separate_ball
+            handler.begin = handle_collide_ball
 
         # Initialise field collider for out on white
         self.field = ScriptLoader.instance.object_map["centreField"]
@@ -291,6 +298,11 @@ class SoccerInteractor(IInteractor):
                 ScriptLoader.instance.object_map[f"UI-penalty-{idx}"].children[0].visual.text = str(to_go.seconds)
                 if self.bot_penalties[idx] == 0:
                     self.finishPenalty(idx)
+
+        if self.out_on_white_tick > 0:
+            self.out_on_white_tick -= 1
+            if self.out_on_white_tick == 0:
+                self.resetBallClosest()
 
     def goalScoredIn(self, teamIndex):
         self.team_scores[1 - teamIndex] += 1
