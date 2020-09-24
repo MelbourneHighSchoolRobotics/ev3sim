@@ -176,13 +176,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 7.4
+    width: 28.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [-95.2, 4.5]
+  position: [-105.75, 4.5]
   static: true
   key: leftTopGoalPost
 - type: object
@@ -190,13 +190,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 7.4
+    width: 28.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [-95.2, -40.5]
+  position: [-105.75, -40.5]
   static: true
   key: leftBotGoalPost
 - type: object
@@ -218,13 +218,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 7.4
+    width: 28.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [95.2, 4.5]
+  position: [105.75, 4.5]
   static: true
   key: rightTopGoalPost
 - type: object
@@ -232,13 +232,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 7.4
+    width: 28.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [95.2, -40.5]
+  position: [105.75, -40.5]
   static: true
   key: rightBotGoalPost
 - type: object
@@ -566,13 +566,3 @@ elements:
   restitution: 0.8
   position: [-100, -18]
   key: IR_BALL
-loader:
-  GAME_TICK_RATE: 30
-  VISUAL_TICK_RATE: 30
-screen:
-  screen_width: 1280
-  screen_height: 960
-  map_width: 293.3
-  map_height: 220
-  background_color: '#1f1f1f'
-
