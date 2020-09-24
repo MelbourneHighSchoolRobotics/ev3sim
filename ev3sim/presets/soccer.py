@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 import math
 import pymunk
-from ev3sim.events import GAME_RESET, GOAL_SCORED
+from ev3sim.events import GAME_RESET, GOAL_SCORED, START_PENALTY, END_PENALTY
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
@@ -323,6 +323,9 @@ class SoccerInteractor(IInteractor):
     def penaliseBot(self, botIndex):
         self.bot_penalties[botIndex] = self.BOT_OUT_ON_WHITE_PENALTY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
         self.robots[botIndex].clickable = False
+        ScriptLoader.instance.sendEvent(
+            f"Robot-{botIndex}", START_PENALTY, {}
+        )
         graphic = self.generatePenaltyGraphic(botIndex)
 
     def generatePenaltyGraphic(self, botIndex):
@@ -385,6 +388,9 @@ class SoccerInteractor(IInteractor):
         )
         self.robots[botIndex].body.velocity = np.array([0.0, 0.0])
         self.robots[botIndex].body.angular_velocity = 0
+        ScriptLoader.instance.sendEvent(
+            f"Robot-{botIndex}", END_PENALTY, {}
+        )
         ScreenObjectManager.instance.unregisterVisual(f"UI-penalty-{botIndex}")
         ScreenObjectManager.instance.unregisterVisual(
             ScriptLoader.instance.object_map[f"UI-penalty-{botIndex}"].children[0].key
