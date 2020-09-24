@@ -20,10 +20,12 @@ class UltrasonicSensorMixin:
     ACCEPTANCE_LEVEL = 1
 
     # 0 - 2 of actual value at max angle.
-    ANGLE_RANDOM_AMPLITUDE = 1
+    ANGLE_RANDOM_AMPLITUDE = 180
+
+    STATIC_RANDOM_ANGLE = np.pi / 12
 
     # Static offset
-    OFFSET_MAX = 7
+    OFFSET_MAX = 5
 
     last_angle_diff = 0
 
@@ -65,9 +67,9 @@ class UltrasonicSensorMixin:
                     min(
                         self.MAX_RAYCAST,
                         top_length
-                        * (
+                        + (
                             1
-                            + self.last_angle_diff
+                            + (self.last_angle_diff + self.STATIC_RANDOM_ANGLE * Randomiser.random())
                             * (Randomiser.random() - 0.5)
                             * self.ANGLE_RANDOM_AMPLITUDE
                             / np.pi
