@@ -6,6 +6,7 @@ import pymunk
 from ev3sim.events import GAME_RESET, GOAL_SCORED
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.objects.base import objectFactory
 from ev3sim.visual.manager import ScreenObjectManager
@@ -27,6 +28,11 @@ class SoccerInteractor(IInteractor):
 
     BALL_COLLISION_TYPE = 3
     GOAL_COLLISION_TYPE = 4
+
+    # Randomisation of spawn locations
+    # Set these to 0 to disable spawn randomisation
+    BOT_SPAWN_RADIUS = 3
+    BALL_SPAWN_RADIUS = 1
 
     _pressed = False
 
@@ -143,11 +149,21 @@ class SoccerInteractor(IInteractor):
                 actual_index = team * self.BOTS_PER_TEAM + index
                 if actual_index >= len(self.robots):
                     break
-                self.robots[actual_index].body.position = self.spawns[team][index][0]
+                # Generate a uniformly random point in radius of spawn for bot.
+                diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
+                diff_angle = Randomiser.random() * 2 * np.pi
+                self.robots[actual_index].body.position = self.spawns[team][index][0] + diff_radius * np.array(
+                    [np.cos(diff_angle), np.sin(diff_angle)]
+                )
                 self.robots[actual_index].body.angle = self.spawns[team][index][1] * np.pi / 180
                 self.robots[actual_index].body.velocity = np.array([0.0, 0.0])
                 self.robots[actual_index].body.angular_velocity = 0
-        ScriptLoader.instance.object_map["IR_BALL"].body.position = np.array([0, -18])
+        # Generate position for ball.
+        diff_radius = Randomiser.random() * self.BALL_SPAWN_RADIUS
+        diff_angle = Randomiser.random() * 2 * np.pi
+        ScriptLoader.instance.object_map["IR_BALL"].body.position = np.array([0, -18]) + diff_radius * np.array(
+            [np.cos(diff_angle), np.sin(diff_angle)]
+        )
         ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
 
     def tick(self, tick):

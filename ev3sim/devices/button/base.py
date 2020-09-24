@@ -7,6 +7,9 @@ class ButtonMixin:
     def _getObjName(self, port):
         return "button" + port
 
+    def generateBias(self):
+        pass
+
     def toObject(self):
         data = {
             "address": self._interactor.port,

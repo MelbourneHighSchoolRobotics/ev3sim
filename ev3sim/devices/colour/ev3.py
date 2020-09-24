@@ -1,7 +1,7 @@
-import random
 from ev3sim.devices.base import Device, IDeviceInteractor
 from ev3sim.devices.colour.base import ColourSensorMixin
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import worldspace_to_screenspace
 
@@ -11,8 +11,6 @@ class ColorInteractor(IDeviceInteractor):
     name = "COLOUR"
 
     def tick(self, tick):
-        if tick == -1:
-            self.device_class.saved_raw = (0, 0, 0)
         try:
             self.device_class._calc_raw()
             ScriptLoader.instance.object_map[self.getPrefix() + "light_up"].visual.fill = self.device_class.rgb()
@@ -30,16 +28,36 @@ class ColorSensor(ColourSensorMixin, Device):
     reasonable and reproduceable values by using the `calibrate_white` method.
     """
 
-    _r_calibration_max = 300
-    _g_calibration_max = 300
-    _b_calibration_max = 300
+    MAX_RGB_BIAS = 400
+    MIN_RGB_BIAS = 230
+    STARTING_CALIBRATION = 300
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Biases should be somewhere between 250/255 and 400/255.
-        self.__r_bias = random.random() * 150 / 255 + 250 / 255
-        self.__g_bias = random.random() * 150 / 255 + 250 / 255
-        self.__b_bias = random.random() * 150 / 255 + 250 / 255
+    def generateBias(self):
+        self.saved_raw = (0, 0, 0)
+        if ScriptLoader.RANDOMISE_SENSORS:
+            self._r_calibration_max = self.STARTING_CALIBRATION
+            self._g_calibration_max = self.STARTING_CALIBRATION
+            self._b_calibration_max = self.STARTING_CALIBRATION
+        else:
+            self._r_calibration_max = 255
+            self._g_calibration_max = 255
+            self._b_calibration_max = 255
+
+        self.__r_bias = (
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._r_calibration_max / 255
+        )
+        self.__g_bias = (
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._g_calibration_max / 255
+        )
+        self.__b_bias = (
+            self._interactor.random() * (self.MAX_RGB_BIAS - self.MIN_RGB_BIAS) / 255 + self.MIN_RGB_BIAS / 255
+            if ScriptLoader.RANDOMISE_SENSORS
+            else self._b_calibration_max / 255
+        )
 
     def raw(self):
         """

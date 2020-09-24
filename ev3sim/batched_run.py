@@ -5,7 +5,7 @@ from ev3sim.file_helper import find_abs
 from multiprocessing import Process
 
 
-def batched_run(batch_file, bind_addr):
+def batched_run(batch_file, bind_addr, *args):
     from ev3sim.single_run import single_run as sim
     from ev3sim.attach import main as attach
 
@@ -16,9 +16,11 @@ def batched_run(batch_file, bind_addr):
         config = yaml.safe_load(f)
 
     bot_paths = [x["name"] for x in config["bots"]]
+    sim_args = [config["preset_file"], bot_paths, bind_addr]
+    sim_args.extend(args)
     sim_process = Process(
         target=sim,
-        args=[config["preset_file"], bot_paths, bind_addr],
+        args=sim_args,
         kwargs={"batch_file": batch_file, "override_settings": config.get("settings", {})},
     )
 

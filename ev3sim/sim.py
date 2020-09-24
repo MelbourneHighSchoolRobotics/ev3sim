@@ -1,6 +1,7 @@
 import argparse
 import sys
 import time
+from random import randint, seed
 from ev3sim.file_helper import find_abs
 
 parser = argparse.ArgumentParser(description="Run the simulation, include some robots.")
@@ -27,6 +28,13 @@ parser.add_argument(
     help="The IP address and port to run on (you shouldn't need to change this). Default is [::1]:50051 (localhost only). Use [::]:50051 to listen on all network interfaces.",
 )
 parser.add_argument(
+    "--seed",
+    "-s",
+    type=int,
+    default=None,
+    help="Used to seed randomisation, integer from 0 to 2^32-1. Will generate randomly if left blank.",
+)
+parser.add_argument(
     "--version",
     "-v",
     action="store_true",
@@ -47,16 +55,23 @@ def main(passed_args=None):
         print(f"Running ev3sim version {ev3sim.__version__}")
         return
 
+    if args.seed is None:
+        seed(time.time())
+        # Seed for numpy randomisation is 0 to 2^32-1, inclusive.
+        args.seed = randint(0, (1 << 32) - 1)
+
+    print(f"Simulating with seed {args.seed}")
+
     if args.batched:
         from ev3sim.batched_run import batched_run
 
         assert len(args.robots) == 1, "Exactly one batched command file should be provided."
-        batched_run(args.robots[0], args.bind_addr)
+        batched_run(args.robots[0], args.bind_addr, args.seed)
     else:
         from ev3sim.single_run import single_run
 
         assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
-        single_run(args.preset, args.robots, args.bind_addr)
+        single_run(args.preset, args.robots, args.bind_addr, args.seed)
 
 
 if __name__ == "__main__":

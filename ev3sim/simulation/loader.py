@@ -19,6 +19,8 @@ class ScriptLoader:
     # TIME_SCALE simply affects the speed at which the simulation runs
     # (TIME_SCALE = 2, GAME_TICK_RATE = 30 implies 60 ticks of per actual seconds)
 
+    RANDOMISE_SENSORS = False
+
     instance: "ScriptLoader" = None
     running = True
 
@@ -135,6 +137,7 @@ class ScriptLoader:
 
 
 def runFromConfig(config, shared):
+    from collections import defaultdict
     from ev3sim.robot import initialise_bot, RobotInteractor
     from ev3sim.file_helper import find_abs
 
@@ -142,9 +145,12 @@ def runFromConfig(config, shared):
     sl.setSharedData(shared)
     sl.active_scripts = []
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get("colours", {})
+    # Keep track of index w.r.t. filename.
+    robot_paths = defaultdict(lambda: 0)
     for index, robot in enumerate(config.get("robots", [])):
         robot_path = find_abs(robot, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
-        initialise_bot(config, robot_path, f"Robot-{index}")
+        initialise_bot(config, robot_path, f"Robot-{index}", robot_paths[robot_path])
+        robot_paths[robot_path] += 1
     for opt in config.get("interactors", []):
         try:
             sl.active_scripts.append(fromOptions(opt))
