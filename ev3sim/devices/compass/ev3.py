@@ -47,7 +47,7 @@ class CompassSensor(CompassSensorMixin, Device):
     """
 
     # Generate 31 (Really 30) static points of interest that the compass jumps to.
-    NEAREST_POINTS_AMOUNT = 31
+    NEAREST_POINTS_NUMBER = 31
     # The distribution variance of the nearest points
     NEAREST_POINTS_VARIANCE = 16
 
@@ -60,13 +60,13 @@ class CompassSensor(CompassSensorMixin, Device):
             self.dist = CompassValueDistribution(
                 0,
                 360,
-                self.NEAREST_POINTS_AMOUNT,
+                self.NEAREST_POINTS_NUMBER,
                 self.NEAREST_POINTS_VARIANCE,
                 Randomiser.getPortRandom(self._interactor.port_key),
             )
             self.offset = (0.5 - self._interactor.random()) * 2 * self.MAX_SENSOR_OFFSET
         else:
-            self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_AMOUNT)
+            self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_NUMBER)
             self.offset = 0
         self._value = 0
 
