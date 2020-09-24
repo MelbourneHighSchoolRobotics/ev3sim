@@ -214,6 +214,9 @@ class SoccerInteractor(IInteractor):
             [np.cos(diff_angle), np.sin(diff_angle)]
         )
         ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
+        for idx in range(len(self.bot_penalties)):
+            if self.bot_penalties[idx] > 0:
+                self.finishPenalty(idx)
 
     def resetBallClosest(self):
         best_key = sorted(
