@@ -47,6 +47,7 @@ settings:
       fill: goal_fill
   ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
   ev3sim.simulation.loader.ScriptLoader.RANDOMISE_SENSORS: true
+  ev3sim.devices.infrared.base.InfraredSensorMixin.SUBSENSOR_BIAS_MAGNITUDE: 0
 
 elements:
 - type: visual
