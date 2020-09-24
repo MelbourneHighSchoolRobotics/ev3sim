@@ -47,7 +47,7 @@ class CompassSensor(CompassSensorMixin, Device):
     """
 
     # Generate 31 (Really 30) static points of interest that the compass jumps to.
-    NEAREST_POINTS_NUMBER = 31
+    NEAREST_POINTS_NUMBER = 51
     # The distribution variance of the nearest points
     NEAREST_POINTS_VARIANCE = 16
 
