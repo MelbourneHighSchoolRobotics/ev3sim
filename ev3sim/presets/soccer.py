@@ -310,6 +310,7 @@ class SoccerInteractor(IInteractor):
 
     def penaliseBot(self, botIndex):
         self.bot_penalties[botIndex] = self.BOT_OUT_ON_WHITE_PENALTY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
+        self.robots[botIndex].clickable = False
         graphic = self.generatePenaltyGraphic(botIndex)
 
     def generatePenaltyGraphic(self, botIndex):
@@ -363,6 +364,7 @@ class SoccerInteractor(IInteractor):
 
     def finishPenalty(self, botIndex):
         self.bot_penalties[botIndex] = 0
+        self.robots[botIndex].clickable = True
         self.robots[botIndex].body.position = self.spawns[botIndex // self.BOTS_PER_TEAM][
             botIndex % self.BOTS_PER_TEAM
         ][0]
