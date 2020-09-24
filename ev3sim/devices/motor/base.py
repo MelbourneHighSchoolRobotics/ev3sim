@@ -63,7 +63,7 @@ class MotorMixin:
         :param float speed: Any number from -100 to 100. Negative values turn the motors the opposite direction.
         """
         assert -100 <= speed <= 100, "Speed value is out of bounds."
-        speed = self.speed_selection.get_closest(speed)
+        speed = self.speed_selection.get_closest(speed) if speed >= 0 else -1 * self.speed_selection.get_closest(-speed)
         self.applied_force = speed * self.MAX_FORCE / 100
         # Ensure this overwrites further
         self.time_wait = -1
