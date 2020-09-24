@@ -167,10 +167,14 @@
 <h2>Running locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
 <p>To test your changes locally, we recommend pip installing the local changes - this ensures the build process is also working fine.
 While in the top level directory, you can run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e  ./
 </pre></div>
 </div>
-<p>To install the project. Note that this will remove your existing install of stable ev3sim, so be aware of this.</p>
+<p>or</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop
+</pre></div>
+</div>
+<p>To install the project. This creates a .pth link from your python installation to your ev3sim directory. This means any changes made will immediately take effect. Note that this will remove your existing install of stable ev3sim, so be aware of this.</p>
 </div>
 <div class="section" id="linting-code">
 <h2>Linting code<a class="headerlink" href="#linting-code" title="Permalink to this headline">¶</a></h2>
