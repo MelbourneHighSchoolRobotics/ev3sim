@@ -32,7 +32,7 @@ class PickUpInteractor(IInteractor):
         if not self.obj_grabbed:
             self.position_length = 0
         if self.obj_grabbed:
-            if not getattr(self.obj, 'clickable', True):
+            if not getattr(self.obj, "clickable", True):
                 self.obj_grabbed = False
             else:
                 self.obj.body.position = self.obj_rel_pos + self.obj_m_pos
@@ -51,7 +51,7 @@ class PickUpInteractor(IInteractor):
                 max_z = max(pq.shape.obj.clickZ for pq in shapes)
                 shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]
                 self.obj = shapes[0].shape.obj
-                if getattr(self.obj, 'clickable', True):
+                if getattr(self.obj, "clickable", True):
                     self.obj.body.velocity = np.array([0.0, 0.0])
                     self.obj_grabbed = True
                     self.obj_rel_pos = self.obj.position - m_pos

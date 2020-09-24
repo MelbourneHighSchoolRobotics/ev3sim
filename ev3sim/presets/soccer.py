@@ -129,7 +129,7 @@ class SoccerInteractor(IInteractor):
             def handle_separate_ball(arbiter, space, data):
                 self.out_on_white_tick = self.BALL_RESET_WHITE_DELAY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
                 return False
-            
+
             def handle_collide_ball(arbiter, space, data):
                 self.out_on_white_tick = 0
                 return False
@@ -323,9 +323,7 @@ class SoccerInteractor(IInteractor):
     def penaliseBot(self, botIndex):
         self.bot_penalties[botIndex] = self.BOT_OUT_ON_WHITE_PENALTY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
         self.robots[botIndex].clickable = False
-        ScriptLoader.instance.sendEvent(
-            f"Robot-{botIndex}", START_PENALTY, {}
-        )
+        ScriptLoader.instance.sendEvent(f"Robot-{botIndex}", START_PENALTY, {})
         graphic = self.generatePenaltyGraphic(botIndex)
 
     def generatePenaltyGraphic(self, botIndex):
@@ -388,9 +386,7 @@ class SoccerInteractor(IInteractor):
         )
         self.robots[botIndex].body.velocity = np.array([0.0, 0.0])
         self.robots[botIndex].body.angular_velocity = 0
-        ScriptLoader.instance.sendEvent(
-            f"Robot-{botIndex}", END_PENALTY, {}
-        )
+        ScriptLoader.instance.sendEvent(f"Robot-{botIndex}", END_PENALTY, {})
         ScreenObjectManager.instance.unregisterVisual(f"UI-penalty-{botIndex}")
         ScreenObjectManager.instance.unregisterVisual(
             ScriptLoader.instance.object_map[f"UI-penalty-{botIndex}"].children[0].key
