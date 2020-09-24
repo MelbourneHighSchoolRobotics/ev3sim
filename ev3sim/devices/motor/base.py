@@ -10,7 +10,7 @@ class MotorMixin:
     MIN_FORCE_PCT = 0.9
     MAX_FORCE_PCT = 1.05
     # How many fixed speeds the motors support (This is between +ve and negative, should be odd so that 0 is fixed).
-    FIXED_SPEED_POINTS = 11
+    FIXED_SPEED_POINTS = 71
 
     time_wait = -1
 
