@@ -21,10 +21,10 @@ class SoccerInteractor(IInteractor):
     SORT_ORDER = -10
 
     SHOW_GOAL_COLLIDERS = False
-    OUT_ON_WHITE = True
+    ENFORCE_OUT_ON_WHITE = True
     BALL_RESET_ON_WHITE = True
     # Wait for 1 second after goal score.
-    GOAL_SCORE_PAUSE_DELAY = 1
+    GOAL_SCORE_PAUSE_DELAY_SECONDS = 1
     GAME_HALF_LENGTH_MINUTES = 5
     # 5 Second penalty
     BOT_OUT_ON_WHITE_PENALTY_SECONDS = 5
@@ -141,7 +141,7 @@ class SoccerInteractor(IInteractor):
         self.field = ScriptLoader.instance.object_map["centreField"]
         self.field.shape.sensor = True
         self.field.shape.collision_type = self.FIELD_COLLISION_TYPE
-        if self.OUT_ON_WHITE:
+        if self.ENFORCE_OUT_ON_WHITE:
             handler = World.instance.space.add_collision_handler(self.FIELD_COLLISION_TYPE, self.BOT_COLLISION_TYPE)
 
             def handle_separate(arbiter, space, data):
@@ -248,7 +248,7 @@ class SoccerInteractor(IInteractor):
         if (
             self.current_goal_score_tick != -1
             and (tick - self.current_goal_score_tick)
-            > self.GOAL_SCORE_PAUSE_DELAY * ScriptLoader.instance.GAME_TICK_RATE
+            > self.GOAL_SCORE_PAUSE_DELAY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
         ):
             self.current_goal_score_tick = -1
             World.instance.paused = False
