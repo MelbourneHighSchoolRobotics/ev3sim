@@ -83,7 +83,9 @@ class CompassSensor(CompassSensorMixin, Device):
         self.calibrate()
 
     def _calc(self):
-        noise = self.noise.noise2d(x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset)
+        noise = self.noise.noise2d(
+            x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset
+        )
         self.current_offset += noise * self.NOISE_AMPLIFIER
         self.noise_tick += 1
         add_offset = self.dist.get_closest(self._getValue()) + self.current_offset
