@@ -1,5 +1,6 @@
 from ev3sim.presets.tiles.checkers.RescueChecker import BaseRescueChecker
 
+
 class CompletedChecker(BaseRescueChecker):
 
     # You need 2/3 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
@@ -13,11 +14,11 @@ class CompletedChecker(BaseRescueChecker):
 
     def onSpawn(self):
         super().onSpawn()
-        self.initial_fill = self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill
-    
+        self.initial_fill = self.rescue.tiles[self.index]["ui_spawned"].children[0].visual.fill
+
     def onReset(self):
         super().onReset()
-        self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = self.initial_fill
+        self.rescue.tiles[self.index]["ui_spawned"].children[0].visual.fill = self.initial_fill
         self.completed = False
 
     @property
@@ -52,11 +53,11 @@ class CompletedChecker(BaseRescueChecker):
                     if len(completed) - x - 1 < self.FOLLOW_POINT_START_END:
                         total_end += 1
             if (
-                total_complete >= self.FOLLOW_POINT_PERCENT * len(completed) and
-                total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED and
-                total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+                total_complete >= self.FOLLOW_POINT_PERCENT * len(completed)
+                and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+                and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
             ):
-                self.rescue.tiles[self.index]['ui_spawned'].children[0].visual.fill = "#00ff00"
+                self.rescue.tiles[self.index]["ui_spawned"].children[0].visual.fill = "#00ff00"
                 self.incrementScore(self.COMPLETE_SCORE)
                 self.completed = True
                 print(f"Completed tile {self.index}")

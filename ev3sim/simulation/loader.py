@@ -150,7 +150,7 @@ def runFromConfig(config, shared):
     from ev3sim.file_helper import find_abs
 
     sl = ScriptLoader()
-    sl.startUp(**config.get('screen', {}))
+    sl.startUp(**config.get("screen", {}))
     sl.setSharedData(shared)
     sl.active_scripts = []
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get("colours", {})

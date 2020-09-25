@@ -7,6 +7,7 @@ from ev3sim.simulation.randomisation import Randomiser
 
 from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
 
+
 class UltrasonicSensorMixin:
 
     MODE_DIST_CM = "US-DIST-CM"
