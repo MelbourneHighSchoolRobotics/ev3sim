@@ -5,6 +5,7 @@ from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.devices.utils import NearestValue, CyclicMixin, RandomDistributionMixin
+from opensimplex import OpenSimplex
 
 
 class CompassInteractor(IDeviceInteractor):
@@ -51,6 +52,14 @@ class CompassSensor(CompassSensorMixin, Device):
     # The distribution variance of the nearest points
     NEAREST_POINTS_VARIANCE = 16
 
+    # Random noise on the compass sensor moves along time in the x direction.
+    # Every time calibrate is called a new y position is set.
+    # Because noise is continuous, a device might only have a few patterns of offset if we restrict the y position.
+    NOISE_SAMPLE_HEIGHT = 5
+    NOISE_WIDTH_PER_TICK = 0.03
+    NOISE_AMPLIFIER = 0.2
+    NOISE_Y_OFFSET_MAX = 10000
+
     # Maximum bias towards one direction, in degrees.
     MAX_SENSOR_OFFSET = 5
 
@@ -64,14 +73,22 @@ class CompassSensor(CompassSensorMixin, Device):
                 self.NEAREST_POINTS_VARIANCE,
                 Randomiser.getPortRandom(self._interactor.port_key),
             )
-            self.offset = (0.5 - self._interactor.random()) * 2 * self.MAX_SENSOR_OFFSET
         else:
             self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_NUMBER)
-            self.offset = 0
+        self.current_offset = 0
+        self.device_y_offset = self.NOISE_Y_OFFSET_MAX * self._interactor.random()
+        self.noise_tick = 0
         self._value = 0
+        self.noise = OpenSimplex(seed=Randomiser.getInstance().seeds[self._interactor.port_key])
+        self.calibrate()
 
     def _calc(self):
-        self._value = int(self.dist.get_closest(self._getValue() + self.offset))
+        noise = self.noise.noise2d(x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset)
+        self.current_offset += noise * self.NOISE_AMPLIFIER
+        self.noise_tick += 1
+        add_offset = self.dist.get_closest(self._getValue()) + self.current_offset
+        add_offset %= 360
+        self._value = int(add_offset)
 
     def value(self):
         """
@@ -100,3 +117,5 @@ class CompassSensor(CompassSensorMixin, Device):
         ```
         """
         self._setRelative()
+        self.current_offset = 0
+        self.current_sample_point = Randomiser.random() * self.NOISE_SAMPLE_HEIGHT
