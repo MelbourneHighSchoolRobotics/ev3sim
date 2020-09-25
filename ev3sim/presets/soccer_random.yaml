@@ -562,8 +562,8 @@ elements:
     stroke_width: 0.2
     stroke: '#ffffff'
     zPos: 2
-  friction: 1
+  friction: 0.99
   mass: 0.1
-  restitution: 0.8
+  restitution: 0.3
   position: [-100, -18]
   key: IR_BALL
