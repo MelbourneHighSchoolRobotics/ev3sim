@@ -94,6 +94,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#handling-simulation-events">Handling simulation events</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#on-goal-scored"><code class="docutils literal notranslate"><span class="pre">on_goal_scored</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#on-reset"><code class="docutils literal notranslate"><span class="pre">on_reset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#on-penalty-start"><code class="docutils literal notranslate"><span class="pre">on_penalty_start</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#on-penalty-end"><code class="docutils literal notranslate"><span class="pre">on_penalty_end</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#robot-communications">Robot Communications</a></li>
@@ -232,6 +234,14 @@ As an example, your code may want to be aware of when an enemy (or you) has scor
 <div class="section" id="on-reset">
 <h3><code class="docutils literal notranslate"><span class="pre">on_reset</span></code><a class="headerlink" href="#on-reset" title="Permalink to this headline">¶</a></h3>
 <p>Fires whenever the game is reset manually.</p>
+</div>
+<div class="section" id="on-penalty-start">
+<h3><code class="docutils literal notranslate"><span class="pre">on_penalty_start</span></code><a class="headerlink" href="#on-penalty-start" title="Permalink to this headline">¶</a></h3>
+<p>Fires whenever you are placed in the penalty box.</p>
+</div>
+<div class="section" id="on-penalty-end">
+<h3><code class="docutils literal notranslate"><span class="pre">on_penalty_end</span></code><a class="headerlink" href="#on-penalty-end" title="Permalink to this headline">¶</a></h3>
+<p>Fires whenever you are removed from the penalty box.</p>
 </div>
 </div>
 <div class="section" id="robot-communications">
