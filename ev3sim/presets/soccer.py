@@ -28,7 +28,7 @@ class SoccerInteractor(IInteractor):
     GAME_HALF_LENGTH_MINUTES = 5
     # 5 Second penalty
     BOT_OUT_ON_WHITE_PENALTY_SECONDS = 30
-    BALL_RESET_WHITE_DELAY_SECONDS = 2.5
+    BALL_RESET_WHITE_DELAY_SECONDS = 5
 
     TEAM_NAMES = []
     SPAWN_LOCATIONS = []

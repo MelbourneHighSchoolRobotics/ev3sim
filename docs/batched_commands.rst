@@ -59,7 +59,7 @@ The batched command file looks like the following:
       ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
       ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
       ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
-      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 2.5
+      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 5
       ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
