@@ -54,6 +54,13 @@ The batched command file looks like the following:
       ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
         - Team 1
         - Team 2
+      # Soccer referee game settings
+      ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
+      ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
+      ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
+      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
+      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 2.5
+      ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
 After this you can specify any bots to load, as well as scripts to attach to them.
