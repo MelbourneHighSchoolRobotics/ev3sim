@@ -20,15 +20,15 @@ class SoccerInteractor(IInteractor):
     # Must occur before device interactors.
     SORT_ORDER = -10
 
-    SHOW_GOAL_COLLIDERS = False
+    SHOW_GOAL_COLLIDERS = True
     ENFORCE_OUT_ON_WHITE = True
     BALL_RESET_ON_WHITE = True
     # Wait for 1 second after goal score.
     GOAL_SCORE_PAUSE_DELAY_SECONDS = 1
     GAME_HALF_LENGTH_MINUTES = 5
     # 5 Second penalty
-    BOT_OUT_ON_WHITE_PENALTY_SECONDS = 5
-    BALL_RESET_WHITE_DELAY_SECONDS = 1.5
+    BOT_OUT_ON_WHITE_PENALTY_SECONDS = 30
+    BALL_RESET_WHITE_DELAY_SECONDS = 2.5
 
     TEAM_NAMES = []
     SPAWN_LOCATIONS = []

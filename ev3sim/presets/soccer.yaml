@@ -51,10 +51,13 @@ settings:
       height: 45
       position: [95.2, -18]
       fill: goal_fill
-  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 1.5
+  # Soccer referee game settings
+  ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
   ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
   ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
   ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
+  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 2.5
+  ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 elements:
 - type: visual
