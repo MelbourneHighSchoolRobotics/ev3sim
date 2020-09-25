@@ -45,7 +45,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             # Append bot object to elements.
             topLevelConfig["elements"] = topLevelConfig.get("elements", []) + [bot_config]
             robot = klass()
-            ScriptLoader.instance.active_scripts.append(
+            ScriptLoader.instance.addActiveScript(
                 RobotInteractor(
                     **{
                         "robot": robot,

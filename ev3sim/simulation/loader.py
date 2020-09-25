@@ -28,6 +28,14 @@ class ScriptLoader:
         ScriptLoader.instance = self
         self.robots = {}
 
+    def addActiveScript(self, script: IInteractor):
+        idx = len(self.active_scripts)
+        for x in range(len(self.active_scripts)):
+            if self.active_scripts[x].SORT_ORDER > script.SORT_ORDER:
+                idx = x
+                break
+        self.active_scripts.insert(idx, script)
+
     def sendEvent(self, botID, eventName, eventData):
         self.data["events"][botID].put((eventName, eventData))
 
@@ -153,7 +161,7 @@ def runFromConfig(config, shared):
         robot_paths[robot_path] += 1
     for opt in config.get("interactors", []):
         try:
-            sl.active_scripts.append(fromOptions(opt))
+            sl.addActiveScript(fromOptions(opt))
         except Exception as exc:
             print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
     if sl.active_scripts:

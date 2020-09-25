@@ -82,6 +82,14 @@ Fires whenever a goal is scored by either team.
 ^^^^^^^^^^^^
 Fires whenever the game is reset manually.
 
+``on_penalty_start``
+^^^^^^^^^^^^^^^^^^
+Fires whenever you are placed in the penalty box.
+
+``on_penalty_end``
+^^^^^^^^^^^^^^^^^^
+Fires whenever you are removed from the penalty box.
+
 Robot Communications
 --------------------
 

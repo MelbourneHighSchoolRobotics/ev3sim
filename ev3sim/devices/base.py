@@ -46,6 +46,9 @@ class Device:
 
 class IDeviceInteractor(IInteractor):
 
+    # Device Interactor goes before robot class to precalc.
+    SORT_ORDER = -5
+
     name = "UNNAMED"
 
     port_key = None
@@ -133,7 +136,6 @@ def initialise_device(deviceData, parentObj, index):
                 if not hasattr(parentObj, "device_interactors"):
                     parentObj.device_interactors = []
                 parentObj.device_interactors.append(interactor)
-                # Device interactors always act first.
-                ScriptLoader.instance.active_scripts.insert(0, interactor)
+                ScriptLoader.instance.addActiveScript(interactor)
         except yaml.YAMLError as exc:
             print(f"An error occurred while loading devices. Exited with error: {exc}")

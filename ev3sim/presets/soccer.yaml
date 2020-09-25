@@ -10,6 +10,9 @@ colours:
   UI_fg_2: "1f1f1f"
   team_1: "#3235a9"
   team_2: "#ba3333"
+  penalty_area_bg: "#464e47"
+  penalty_ui_bg: "#ed4d6e"
+  penalty_ui_bg_hover: "#f494a8"
 
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
@@ -34,6 +37,9 @@ settings:
   ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
     - [[[-80, -18], 0], [[-50, -18], 0]]
     - [[[80, -18], 180], [[50, -18], 180]]
+  ev3sim.presets.soccer.SoccerInteractor.PENALTY_LOCATIONS:
+    - [[[-110, -10], 0], [[-125, -26], 0]]
+    - [[[110, -26], 180], [[125, -10], 180]]
   ev3sim.presets.soccer.SoccerInteractor.GOALS:
     - name: Rectangle
       width: 7.4
@@ -45,7 +51,13 @@ settings:
       height: 45
       position: [95.2, -18]
       fill: goal_fill
+  # Soccer referee game settings
+  ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
   ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
+  ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
+  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
+  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 5
+  ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 elements:
 - type: visual
@@ -57,6 +69,26 @@ elements:
   position: [0, -18]
   zPos: 3
   key: grass
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'penalty_area_bg'
+  stroke_width: 0
+  position: [-115.75, -18]
+  zPos: 3
+  key: leftGrass
+  sensorVisible: true
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'penalty_area_bg'
+  stroke_width: 0
+  position: [115.75, -18]
+  zPos: 3
+  key: rightGrass
   sensorVisible: true
 - type: object
   physics: true
@@ -120,14 +152,28 @@ elements:
   visual:
     name: Rectangle
     width: 3
-    height: 183
+    height: 67.5
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
     zPos: 5
-  position: [-121.5, -18]
+  position: [-121.5, -75.75]
   static: true
-  key: leftbar
+  key: leftbarBot
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 67.5
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [-121.5, 39.75]
+  static: true
+  key: leftbarTop
 - type: object
   physics: true
   collider: inherit
@@ -148,14 +194,28 @@ elements:
   visual:
     name: Rectangle
     width: 3
-    height: 183
+    height: 67.5
     fill: 'wall_color'
     stroke_width: 0
     sensorVisible: true
     zPos: 5
-  position: [121.5, -18]
+  position: [121.5, -75.75]
   static: true
-  key: rightbar
+  key: rightbarBot
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 67.5
+    fill: 'wall_color'
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 5
+  position: [121.5, 39.75]
+  static: true
+  key: rightbarTop
 - type: object
   physics: true
   collider: inherit
@@ -175,13 +235,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 28.5
+    width: 48.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [-105.75, 4.5]
+  position: [-115.75, 4.5]
   static: true
   key: leftTopGoalPost
 - type: object
@@ -189,15 +249,29 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 28.5
+    width: 48.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [-105.75, -40.5]
+  position: [-115.75, -40.5]
   static: true
   key: leftBotGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 48
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [-139, -18]
+  static: true
+  key: leftBackMiddleWall
 - type: object
   physics: true
   collider: inherit
@@ -217,13 +291,13 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 28.5
+    width: 48.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [105.75, 4.5]
+  position: [115.75, 4.5]
   static: true
   key: rightTopGoalPost
 - type: object
@@ -231,15 +305,29 @@ elements:
   collider: inherit
   visual:
     name: Rectangle
-    width: 28.5
+    width: 48.5
     height: 3
     fill: wall_color
     stroke_width: 0
     sensorVisible: true
     zPos: 6
-  position: [105.75, -40.5]
+  position: [115.75, -40.5]
   static: true
   key: rightBotGoalPost
+- type: object
+  physics: true
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 3
+    height: 48
+    fill: wall_color
+    stroke_width: 0
+    sensorVisible: true
+    zPos: 6
+  position: [139, -18]
+  static: true
+  key: rightBackMiddleWall
 - type: object
   physics: true
   collider: inherit
@@ -341,6 +429,30 @@ elements:
   zPos: 5
   key: botSpot
   sensorVisible: true
+- type: object
+  physics: true
+  static: true
+  visual:
+    name: Rectangle
+    width: 182
+    height: 126
+    fill: null
+    stroke_width: 0
+    zPos: 5.2
+  position: [0, -18]
+  key: centreField
+- type: object
+  physics: true
+  static: true
+  visual:
+    name: Rectangle
+    width: 192
+    height: 136
+    fill: null
+    stroke_width: 0
+    zPos: 5.2
+  position: [0, -18]
+  key: centreFieldBallDetector
 - type: visual
   name: Rectangle
   width: 5

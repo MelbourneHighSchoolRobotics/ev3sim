@@ -78,6 +78,16 @@ class EventSystem:
         pass
 
     @classmethod
+    def on_penalty_start(cls, data):
+        """Triggers whenever you are placed in the penalty box. No extra data provided."""
+        pass
+
+    @classmethod
+    def on_penalty_end(cls, data):
+        """Triggers whenever you exit the penalty box. No extra data provided."""
+        pass
+
+    @classmethod
     def handle_events(cls):
         """Handle all outstanding events."""
         pass
