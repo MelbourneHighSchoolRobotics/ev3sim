@@ -12,6 +12,7 @@ class Randomiser:
         self.global_random = rd.RandomState(seed)
         self.__class__.instance = self
         self.port_randomisers = {}
+        self.seeds = {}
 
     @classmethod
     def createGlobalRandomiserWithSeed(cls, seed):
@@ -29,7 +30,9 @@ class Randomiser:
         instance = cls.getInstance()
         if port_key in instance.port_randomisers:
             raise ValueError(f"Randomiser instance with key {port_key} already exists")
-        instance.port_randomisers[port_key] = rd.RandomState(seed=cls._stringToSeed(port_key) if seed is None else seed)
+        seed = cls._stringToSeed(port_key) if seed is None else seed
+        instance.port_randomisers[port_key] = rd.RandomState(seed=seed)
+        instance.seeds[port_key] = seed
         return instance.port_randomisers[port_key]
 
     @classmethod
