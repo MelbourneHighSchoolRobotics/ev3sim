@@ -47,6 +47,7 @@ class ShortcutChecker(CompletedChecker):
             self.completion_rects.append(bounding.children[-1])
             ScreenObjectManager.instance.registerObject(bounding.children[-1], bounding.children[-1].key)
             bounding.children[-1].parent = bounding
+        bounding.updateVisualProperties()
 
     def onReset(self):
         super().onReset()
