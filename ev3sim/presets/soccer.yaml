@@ -562,6 +562,6 @@ elements:
     zPos: 2
   friction: 1
   mass: 0.1
-  restitution: 0.8
+  restitution: 0.2
   position: [-100, -18]
   key: IR_BALL
