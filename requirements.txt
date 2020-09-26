@@ -9,3 +9,4 @@ python-ev3dev2>=2.1.0.post1
 wheel>=0.35.0
 black>=20.8b1
 opensimplex>=0.3
+luddite>=1.0.1

@@ -9,12 +9,32 @@ from ev3sim.simulation.loader import runFromConfig, ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.manager import ScreenObjectManager
 from unittest import mock
+from luddite import get_version_pypi
 
 
 def single_run(preset_filename, robots, bind_addr, seed, batch_file=None, override_settings={}):
     if batch_file:
         ScreenObjectManager.BATCH_FILE = batch_file
     ScreenObjectManager.PRESET_FILE = preset_filename
+    import ev3sim
+
+    try:
+        latest_version = get_version_pypi("ev3sim")
+        ScreenObjectManager.NEW_VERSION = latest_version != ev3sim.__version__
+        if ScreenObjectManager.NEW_VERSION:
+            update_message = f"""\
+
+==========================================================================================
+There is a new version of ev3sim available ({latest_version}).
+Keeping an up to date version of ev3sim ensures you have the latest bugfixes and features.
+Please update ev3sim by running the following command:
+    python -m pip install -U ev3sim
+==========================================================================================
+
+"""
+            print(update_message)
+    except:
+        ScreenObjectManager.NEW_VERSION = False
 
     Randomiser.createGlobalRandomiserWithSeed(seed)
 
