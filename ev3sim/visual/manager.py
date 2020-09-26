@@ -58,6 +58,8 @@ class ScreenObjectManager:
             caption = caption + f" - {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
         else:
             caption = caption + f" - {ScreenObjectManager.PRESET_FILE}"
+        if ScreenObjectManager.NEW_VERSION:
+            caption = f"[NEW VERSION AVAILABLE] {caption}"
         pygame.display.set_caption(caption)
         img_path = find_abs("Logo.png", allowed_areas=["package/assets/"])
         img = pygame.image.load(img_path)
