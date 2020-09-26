@@ -59,6 +59,7 @@ class CompassSensor(CompassSensorMixin, Device):
     NOISE_WIDTH_PER_TICK = 0.03
     NOISE_AMPLIFIER = 0.2
     NOISE_Y_OFFSET_MAX = 10000
+    NOISE_EFFECT_MAX = 15
 
     # Maximum bias towards one direction, in degrees.
     MAX_SENSOR_OFFSET = 5
@@ -87,6 +88,7 @@ class CompassSensor(CompassSensorMixin, Device):
             x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset
         )
         self.current_offset += noise * self.NOISE_AMPLIFIER
+        self.current_offset = min(max(self.current_offset, -self.NOISE_EFFECT_MAX), self.NOISE_EFFECT_MAX)
         self.noise_tick += 1
         add_offset = self.dist.get_closest(self._getValue()) + self.current_offset
         add_offset %= 360
