@@ -1,6 +1,7 @@
 is_ev3 = True
 is_sim = False
 
+robot_id = "Robot-0"
 
 class CommServer:
     """
