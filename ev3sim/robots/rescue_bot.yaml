@@ -1,0 +1,41 @@
+devices:
+- LargeMotor:
+    position: [0, 2.5]
+    rotation: 0
+    port: outB
+- LargeMotor:
+    position: [0, -2.5]
+    rotation: 0
+    port: outC
+- ColorSensor:
+    position: [7, 2.5]
+    rotation: 180
+    port: in1
+- ColorSensor:
+    position: [7, -2.5]
+    rotation: 180
+    port: in2
+- UltrasonicSensor:
+    position: [7, 0]
+    rotation: 0
+    port: in3
+- CompassSensor:
+    position: [0, 0]
+    port: in4
+- Button:
+    position: [-4, 0]
+    port: up
+base_plate:
+  collider: inherit
+  visual:
+    name: Rectangle
+    width: 15
+    height: 10
+    fill: '#878E88'
+    stroke_width: 0.1
+    stroke: '#ffffff'
+    zPos: 2
+  mass: 5
+  restitution: 0.2
+  friction: 0.8
+  key: phys_obj
