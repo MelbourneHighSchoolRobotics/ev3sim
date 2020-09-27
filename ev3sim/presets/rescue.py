@@ -111,7 +111,7 @@ class RescueInteractor(IInteractor):
                         )
                         self.tiles[-1]["roam_status"].append(None)
             self.tiles[-1]["checker"] = klass(self.tiles[-1]["follows"], i, self, **t.get("checker_kwargs", {}))
-            ScriptLoader.instance.loadElements(t["elements"])
+            self.tiles[-1]["all_elems"] = ScriptLoader.instance.loadElements(t["elements"])
 
     def _recurseObj(self, obj, indicies):
         for index in indicies:
@@ -373,8 +373,10 @@ class RescueInteractor(IInteractor):
                     abs(self.bot_follows[i].position[0] - self.tiles[self.roam_tile[i]]["world_pos"][0]) > self.TILE_LENGTH / 2
                     or
                     abs(self.bot_follows[i].position[1] - self.tiles[self.roam_tile[i]]["world_pos"][1]) > self.TILE_LENGTH / 2
-                ):
+                ) and magnitude_sq(self.bot_follows[i].position - self._recurseObj(self.tiles[self.roam_tile[i]]["follows"], self.roaming[i][1])) > (self.ROBOT_CENTRE_RADIUS+self.FOLLOW_POINT_RADIUS+0.05) * (self.ROBOT_CENTRE_RADIUS+self.FOLLOW_POINT_RADIUS+0.05):
                     self.lackOfProgress(i)
+        for i in range(len(self.tiles)):
+            self.tiles[i]["checker"].tick(tick)
         # UI Tick
         if self._pressed:
             ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "assets/ui/controls_reset_pressed.png"

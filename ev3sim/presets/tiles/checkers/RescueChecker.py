@@ -32,3 +32,6 @@ class BaseRescueChecker:
 
     def onNewFollowPoint(self, completed):
         pass
+    
+    def tick(self, tick):
+        pass

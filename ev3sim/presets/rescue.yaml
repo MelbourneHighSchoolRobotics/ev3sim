@@ -31,6 +31,9 @@ interactors:
     - path: tiles/definitions/left_circle_green.yaml
       position: [2, 1]
       rotation: 0
+    - path: tiles/definitions/water_tower.yaml
+      position: [2, 2]
+      rotation: 90
 
 settings:
   # ScriptLoader
