@@ -75,6 +75,8 @@ class RescueInteractor(IInteractor):
                 }
             )
             self.tiles[-1]["follows"] = []
+            self.tiles[-1]["roam_status"] = []
+            self.tiles[-1]["world_pos"] = base_pos
             mname, cname = t.get("checker").rsplit(".", 1)
             import importlib
 
@@ -86,18 +88,28 @@ class RescueInteractor(IInteractor):
             for j, point in enumerate(t["follow_points"]):
                 if isinstance(point[0], (list, tuple)):
                     self.tiles[-1]["follows"].append([])
+                    self.tiles[-1]["roam_status"].append([])
                     for path in point:
                         self.tiles[-1]["follows"][-1].append([])
+                        self.tiles[-1]["roam_status"][-1].append([])
                         for point2 in path:
-                            self.tiles[-1]["follows"][-1][-1].append(
-                                local_space_to_world_space(
-                                    np.array(point2), tile.get("rotation", 0) * np.pi / 180, base_pos
+                            if isinstance(point2, str):
+                                self.tiles[-1]["roam_status"][-1][-1][-1] = point2
+                            else:
+                                self.tiles[-1]["follows"][-1][-1].append(
+                                    local_space_to_world_space(
+                                        np.array(point2), tile.get("rotation", 0) * np.pi / 180, base_pos
+                                    )
                                 )
-                            )
+                                self.tiles[-1]["roam_status"][-1][-1].append(None)
                 else:
-                    self.tiles[-1]["follows"].append(
-                        local_space_to_world_space(np.array(point), tile.get("rotation", 0) * np.pi / 180, base_pos)
-                    )
+                    if isinstance(point, str):
+                        self.tiles[-1]["roam_status"][-1] = point
+                    else:
+                        self.tiles[-1]["follows"].append(
+                            local_space_to_world_space(np.array(point), tile.get("rotation", 0) * np.pi / 180, base_pos)
+                        )
+                        self.tiles[-1]["roam_status"].append(None)
             self.tiles[-1]["checker"] = klass(self.tiles[-1]["follows"], i, self, **t.get("checker_kwargs", {}))
             ScriptLoader.instance.loadElements(t["elements"])
 
@@ -106,13 +118,32 @@ class RescueInteractor(IInteractor):
             obj = obj[index]
         return obj
 
-    def collidedFollowPoint(self, follow_indexes):
+    def lackOfProgress(self, bot_index):
+        print("Lack of Progress!")
+        World.instance.paused = True
+        self.current_follow = None
+
+    def collidedFollowPoint(self, follow_indexes, bot_index):
         if self._recurseObj(self.follow_completed[follow_indexes[0]], follow_indexes[1:]):
             return
+        roam = self._recurseObj(self.tiles[follow_indexes[0]]["roam_status"], follow_indexes[1:])
+        if roam is not None:
+            if roam == "ROAM_START":
+                self.roaming[bot_index] = (True, follow_indexes[1:])
+                self.roam_tile[bot_index] = follow_indexes[0]
+            if roam == "ROAM_END":
+                self.roaming[bot_index] = False
+        else:
+            if self.roaming[bot_index] and follow_indexes[1:] > self.roaming[bot_index][1] and follow_indexes[0] == self.roam_tile[bot_index]:
+                # We should hit the roam end trigger first.
+                self.lackOfProgress(bot_index)
         self.current_follow = follow_indexes
         self._recurseObj(self.follow_completed[follow_indexes[0]], follow_indexes[1:-1])[follow_indexes[-1]] = True
         self._recurseObj(self.tiles[follow_indexes[0]]["follow_colliders"], follow_indexes[1:]).visual.fill = "#00ff00"
         self.tiles[follow_indexes[0]]["checker"].onNewFollowPoint(self.follow_completed[follow_indexes[0]])
+
+    def follow_point_colour(self, indicies):
+        return "#ff0000" if self._recurseObj(self.tiles[indicies[0]]["roam_status"], indicies[1:]) is None else "#0000ff"
 
     def _spawnFollowAtLocationWithIndicies(self, position, indicies):
         key = "Tile-follow-" + "-".join(list(map(str, indicies)))
@@ -122,7 +153,7 @@ class RescueInteractor(IInteractor):
                 "visual": {
                     "name": "Circle",
                     "radius": self.FOLLOW_POINT_RADIUS,
-                    "fill": "#ff0000" if self.SHOW_FOLLOW_POINTS else None,
+                    "fill": self.follow_point_colour(indicies) if self.SHOW_FOLLOW_POINTS else None,
                     "stroke_width": 0,
                     "sensorVisible": False,
                     "zPos": self.maxZpos + 0.2,
@@ -228,6 +259,7 @@ class RescueInteractor(IInteractor):
             )
             obj.shape.sensor = True
             obj.shape.collision_type = self.ROBOT_CENTRE_COLLISION_TYPE
+            obj.shape._robot_index = bot_index
             World.instance.registerObject(obj)
             if self.SHOW_ROBOT_COLLIDER:
                 ScreenObjectManager.instance.registerObject(obj, obj.key)
@@ -260,9 +292,9 @@ class RescueInteractor(IInteractor):
         def handle_collide(arbiter, space, data):
             a, b = arbiter.shapes
             if hasattr(a, "_follow_indexes"):
-                self.collidedFollowPoint(a._follow_indexes)
+                self.collidedFollowPoint(a._follow_indexes, b._robot_index)
             elif hasattr(b, "_follow_indexes"):
-                self.collidedFollowPoint(b._follow_indexes)
+                self.collidedFollowPoint(b._follow_indexes, a._robot_index)
             else:
                 raise ValueError("Two objects with collision types used by rescue don't have a tile follow point.")
             return False
@@ -285,11 +317,13 @@ class RescueInteractor(IInteractor):
         for x in range(len(self.tiles)):
             for y in range(len(self.tiles[x]["follow_colliders"])):
                 if isinstance(self.tiles[x]["follow_colliders"][y], (list, tuple)):
-                    for path in self.tiles[x]["follow_colliders"][y]:
+                    for z, path in enumerate(self.tiles[x]["follow_colliders"][y]):
                         for w in range(len(path)):
-                            path[w].visual.fill = "#ff0000"
+                            path[w].visual.fill = self.follow_point_colour((x, y, z, w))
                 else:
-                    self.tiles[x]["follow_colliders"][y].visual.fill = "#ff0000"
+                    self.tiles[x]["follow_colliders"][y].visual.fill = self.follow_point_colour((x, y))
+        self.roaming = [False] * len(self.robots)
+        self.roam_tile = [-1] * len(self.robots)
 
     def reset(self):
         self.resetPositions()
@@ -326,15 +360,21 @@ class RescueInteractor(IInteractor):
             self.bot_follows[i].body.position = self.robots[i].body.position
             # Ensure visual is not 1 frame behind.
             self.bot_follows[i].position = self.robots[i].body.position
-        if self.current_follow is not None and not World.instance.paused:
-            distance = magnitude_sq(
-                self.bot_follows[i].position
-                - self._recurseObj(self.tiles[self.current_follow[0]]["follows"], self.current_follow[1:])
-            )
-            if distance > self.MAX_FOLLOW_DIST * self.MAX_FOLLOW_DIST:
-                print("Lack of Progress!")
-                World.instance.paused = True
-                self.current_follow = None
+            if self.current_follow is not None and not World.instance.paused:
+                distance = magnitude_sq(
+                    self.bot_follows[i].position
+                    - self._recurseObj(self.tiles[self.current_follow[0]]["follows"], self.current_follow[1:])
+                )
+                if distance > self.MAX_FOLLOW_DIST * self.MAX_FOLLOW_DIST and not self.roaming[i]:
+                    self.lackOfProgress(i)
+            if self.roaming[i] and not World.instance.paused:
+                # Check we are still in the tile. Kinda bad.
+                if (
+                    abs(self.bot_follows[i].position[0] - self.tiles[self.roam_tile[i]]["world_pos"][0]) > self.TILE_LENGTH / 2
+                    or
+                    abs(self.bot_follows[i].position[1] - self.tiles[self.roam_tile[i]]["world_pos"][1]) > self.TILE_LENGTH / 2
+                ):
+                    self.lackOfProgress(i)
         # UI Tick
         if self._pressed:
             ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "assets/ui/controls_reset_pressed.png"
