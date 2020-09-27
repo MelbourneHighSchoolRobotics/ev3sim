@@ -2,6 +2,7 @@ from ev3sim.presets.tiles.checkers.CompletedChecker import CompletedChecker
 from ev3sim.simulation.world import stop_on_pause
 from ev3sim.objects.utils import magnitude_sq
 
+
 class WaterChecker(CompletedChecker):
 
     COMPLETE_SCORE = 20
@@ -27,4 +28,3 @@ class WaterChecker(CompletedChecker):
         if abs(pos1[0] - pos2[0]) > self.rescue.TILE_LENGTH / 2 or abs(pos1[1] - pos2[1]) > self.rescue.TILE_LENGTH / 2:
             # Bad! Infer which bot based on in the tile.
             self.rescue.lackOfProgress(0)
-

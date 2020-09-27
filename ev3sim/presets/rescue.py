@@ -134,7 +134,11 @@ class RescueInteractor(IInteractor):
             if roam == "ROAM_END":
                 self.roaming[bot_index] = False
         else:
-            if self.roaming[bot_index] and follow_indexes[1:] > self.roaming[bot_index][1] and follow_indexes[0] == self.roam_tile[bot_index]:
+            if (
+                self.roaming[bot_index]
+                and follow_indexes[1:] > self.roaming[bot_index][1]
+                and follow_indexes[0] == self.roam_tile[bot_index]
+            ):
                 # We should hit the roam end trigger first.
                 self.lackOfProgress(bot_index)
         self.current_follow = follow_indexes
@@ -143,7 +147,9 @@ class RescueInteractor(IInteractor):
         self.tiles[follow_indexes[0]]["checker"].onNewFollowPoint(self.follow_completed[follow_indexes[0]])
 
     def follow_point_colour(self, indicies):
-        return "#ff0000" if self._recurseObj(self.tiles[indicies[0]]["roam_status"], indicies[1:]) is None else "#0000ff"
+        return (
+            "#ff0000" if self._recurseObj(self.tiles[indicies[0]]["roam_status"], indicies[1:]) is None else "#0000ff"
+        )
 
     def _spawnFollowAtLocationWithIndicies(self, position, indicies):
         key = "Tile-follow-" + "-".join(list(map(str, indicies)))
@@ -370,10 +376,18 @@ class RescueInteractor(IInteractor):
             if self.roaming[i] and not World.instance.paused:
                 # Check we are still in the tile. Kinda bad.
                 if (
-                    abs(self.bot_follows[i].position[0] - self.tiles[self.roam_tile[i]]["world_pos"][0]) > self.TILE_LENGTH / 2
-                    or
-                    abs(self.bot_follows[i].position[1] - self.tiles[self.roam_tile[i]]["world_pos"][1]) > self.TILE_LENGTH / 2
-                ) and magnitude_sq(self.bot_follows[i].position - self._recurseObj(self.tiles[self.roam_tile[i]]["follows"], self.roaming[i][1])) > (self.ROBOT_CENTRE_RADIUS+self.FOLLOW_POINT_RADIUS+0.05) * (self.ROBOT_CENTRE_RADIUS+self.FOLLOW_POINT_RADIUS+0.05):
+                    abs(self.bot_follows[i].position[0] - self.tiles[self.roam_tile[i]]["world_pos"][0])
+                    > self.TILE_LENGTH / 2
+                    or abs(self.bot_follows[i].position[1] - self.tiles[self.roam_tile[i]]["world_pos"][1])
+                    > self.TILE_LENGTH / 2
+                ) and magnitude_sq(
+                    self.bot_follows[i].position
+                    - self._recurseObj(self.tiles[self.roam_tile[i]]["follows"], self.roaming[i][1])
+                ) > (
+                    self.ROBOT_CENTRE_RADIUS + self.FOLLOW_POINT_RADIUS + 0.05
+                ) * (
+                    self.ROBOT_CENTRE_RADIUS + self.FOLLOW_POINT_RADIUS + 0.05
+                ):
                     self.lackOfProgress(i)
         for i in range(len(self.tiles)):
             self.tiles[i]["checker"].tick(tick)
