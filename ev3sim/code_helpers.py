@@ -3,6 +3,7 @@ is_sim = False
 
 robot_id = "Robot-0"
 
+
 class CommServer:
     """
     Communications Server. Allows other bots to connect via a CommClient.
