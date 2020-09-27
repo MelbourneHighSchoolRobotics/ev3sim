@@ -12,7 +12,7 @@ from ev3sim.objects.base import objectFactory
 from ev3sim.objects.utils import magnitude_sq
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
-from ev3sim.objects.base import STATIC_CATEGORY
+from ev3sim.objects.base import DYNAMIC_CATEGORY, STATIC_CATEGORY
 
 
 class SoccerInteractor(IInteractor):
@@ -226,6 +226,14 @@ class SoccerInteractor(IInteractor):
                 self.finishPenalty(idx)
 
     def resetBallClosest(self):
+        all_keys = ("midSpot", "topSpot", "botSpot")
+        available_keys = [
+            key
+            for key in all_keys
+            if not World.instance.space.point_query(
+                ScriptLoader.instance.object_map[key].position, 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY)
+            )
+        ]
         best_key = sorted(
             [
                 (
@@ -235,7 +243,7 @@ class SoccerInteractor(IInteractor):
                     ),
                     key,
                 )
-                for key in ("midSpot", "topSpot", "botSpot")
+                for key in (available_keys if available_keys else all_keys)
             ]
         )[0][1]
         ScriptLoader.instance.object_map["IR_BALL"].body.position = ScriptLoader.instance.object_map[best_key].position
