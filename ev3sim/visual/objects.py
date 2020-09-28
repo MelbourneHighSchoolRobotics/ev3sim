@@ -149,12 +149,12 @@ class Colorable(IVisualElement):
 class Image(Colorable):
     def initFromKwargs(self, **kwargs):
         self._image_path = ""
-        self.image_path = kwargs.get("image_path")
         super().initFromKwargs(**kwargs)
         self.fill = kwargs.get("fill", (0, 0, 0, 0))
         self.hAlignment = kwargs.get("hAlignment", "m")
         self.vAlignment = kwargs.get("vAlignment", "m")
         self.scale = kwargs.get("scale", 1)
+        self.image_path = kwargs.get("image_path")
         self.calculatePoints()
 
     @property
@@ -165,8 +165,11 @@ class Image(Colorable):
     def image_path(self, value):
         from ev3sim.file_helper import find_abs
 
-        self._image_path = find_abs(value, allowed_areas=["local", "local/assets/", "package", "package/assets/"])
-        self.image = pygame.image.load(self._image_path)
+        image_path = find_abs(value, allowed_areas=["local", "local/assets/", "package", "package/assets/"])
+        if image_path != self._image_path:
+            self._image_path = image_path
+            self.image = pygame.image.load(self._image_path)
+            self.calculatePoints()
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()

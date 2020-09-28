@@ -427,9 +427,7 @@ class RescueInteractor(IInteractor):
             for shape in shapes:
                 if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()
-                self._pressed = False
-            if len(shapes) == 0:
-                self._pressed = False
+            self._pressed = False
 
     TOUCH_PENALTY = 5
     MAX_TOUCH_PENALTY = 20
