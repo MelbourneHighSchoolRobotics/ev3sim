@@ -6,7 +6,6 @@ from concurrent import futures
 import logging
 
 import grpc
-import sys
 
 import ev3sim.simulation.comm_schema_pb2
 import ev3sim.simulation.comm_schema_pb2_grpc
@@ -69,8 +68,7 @@ def start_server_with_shared_data(data, result, bind_addr):
                     for i, line in enumerate(lines):
                         message.append(f"{tag}{line}" if line and i != len(lines) - 1 else line)
                     with print_lock:
-                        print(*message, sep="\n", end="")
-                        sys.stdout.flush()
+                        print(*message, sep="\n", end="", flush=True)
                 return ev3sim.simulation.comm_schema_pb2.RobotLogResult(result=True)
 
             def RequestServer(self, request, context):
