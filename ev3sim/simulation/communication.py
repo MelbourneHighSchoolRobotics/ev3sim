@@ -23,6 +23,8 @@ SIM_DIED_TIME = 0.3
 def start_server_with_shared_data(data, result, bind_addr):
     try:
 
+        print_lock = threading.Lock()
+
         class SimulationDealer(ev3sim.simulation.comm_schema_pb2_grpc.SimulationDealerServicer):
             def RequestTickUpdates(self, request, context):
                 rob_id = request.robot_id
@@ -65,7 +67,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                     message = []
                     for i, line in enumerate(lines):
                         message.append(f"{tag}{line}" if line and i != len(lines) - 1 else line)
-                    print(*message, sep="\n", end="")
+                    with print_lock:
+                        print(*message, sep="\n", end="", flush=True)
                 return ev3sim.simulation.comm_schema_pb2.RobotLogResult(result=True)
 
             def RequestServer(self, request, context):
