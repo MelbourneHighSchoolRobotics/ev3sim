@@ -20,6 +20,8 @@ interactors:
     - [[-1, 0], 0]
     tiles:
     - path: tiles/definitions/city_limits.yaml
+      position: [-2, 0]
+    - path: tiles/definitions/tunnel.yaml
       position: [-1, 0]
     - path: tiles/definitions/straight.yaml
       position: [0, 0]
