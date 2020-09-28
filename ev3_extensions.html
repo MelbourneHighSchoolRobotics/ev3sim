@@ -91,6 +91,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#waiting-for-simulation-ticks">Waiting for simulation ticks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robot-id">Robot ID</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#handling-simulation-events">Handling simulation events</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#on-goal-scored"><code class="docutils literal notranslate"><span class="pre">on_goal_scored</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#on-reset"><code class="docutils literal notranslate"><span class="pre">on_reset</span></code></a></li>
@@ -199,6 +200,17 @@ As an example, the simulator currently does not implement the <code class="docut
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from the sim! Sadly I can&#39;t do lights at the moment :(&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
+<div class="section" id="robot-id">
+<h2>Robot ID<a class="headerlink" href="#robot-id" title="Permalink to this headline">¶</a></h2>
+<p>Since you might be running multiple instances of the same code on different robots, it’s important to be able to check which robot the code is running on, you can do this with <code class="docutils literal notranslate"><span class="pre">code_helpers</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">robot_id</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from &quot;</span> <span class="o">+</span> <span class="n">robot_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will also work on the brick, it should print “Robot-0”.</p>
 <p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
 </div>
 <div class="section" id="handling-simulation-events">
