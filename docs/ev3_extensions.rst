@@ -51,7 +51,7 @@ Since you might be running multiple instances of the same code on different robo
 
     print("Hello from " + robot_id)
 
-This will also work on the brick it should print "Robot-0".
+This will also work on the brick, it should print "Robot-0".
 
 Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
