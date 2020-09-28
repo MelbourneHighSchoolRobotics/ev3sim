@@ -48,20 +48,19 @@ class RescueInteractor(IInteractor):
             base_pos = np.array(tile.get("position", [0, 0]))
             # Transfer to rescue space.
             base_pos = [base_pos[0] * self.TILE_LENGTH, base_pos[1] * self.TILE_LENGTH]
+            base_rotation = tile.get("rotation", 0) * np.pi / 180
             for obj in t["elements"]:
                 rel_pos = np.array(obj.get("position", [0, 0]))
-                obj["rotation"] = (obj.get("rotation", 0) + tile.get("rotation", 0)) * np.pi / 180
-                obj["position"] = local_space_to_world_space(rel_pos, tile.get("rotation", 0) * np.pi / 180, base_pos)
+                obj["rotation"] = (obj.get("rotation", 0)) * np.pi / 180 + base_rotation
+                obj["position"] = local_space_to_world_space(rel_pos, base_rotation, base_pos)
                 obj["sensorVisible"] = True
                 k = obj["key"]
                 obj["key"] = f"Tile-{i}-{k}"
                 self.maxZpos = max(self.maxZpos, obj.get("zPos", 0))
             t["elements"].append(
                 {
-                    "position": local_space_to_world_space(
-                        np.array([0, 0]), tile.get("rotation", 0) * np.pi / 180, base_pos
-                    ),
-                    "rotation": tile.get("rotation", 0) * np.pi / 180,
+                    "position": local_space_to_world_space(np.array([0, 0]), base_rotation, base_pos),
+                    "rotation": base_rotation,
                     "type": "visual",
                     "name": "Rectangle",
                     "width": self.TILE_LENGTH,
@@ -77,6 +76,7 @@ class RescueInteractor(IInteractor):
             self.tiles[-1]["follows"] = []
             self.tiles[-1]["roam_status"] = []
             self.tiles[-1]["world_pos"] = base_pos
+            self.tiles[-1]["rotation"] = base_rotation
             mname, cname = t.get("checker").rsplit(".", 1)
             import importlib
 
