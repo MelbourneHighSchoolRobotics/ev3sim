@@ -17,7 +17,7 @@ interactors:
 - class_path: ev3sim.presets.rescue.RescueInteractor
   kwargs:
     spawns:
-    - [[-1, 0], 0]
+    - [[-2, 0], 0]
     tiles:
     - path: tiles/definitions/city_limits.yaml
       position: [-2, 0]

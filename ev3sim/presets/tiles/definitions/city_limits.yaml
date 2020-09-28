@@ -1,5 +1,10 @@
 follow_points:
 - [0, 0]
+- [3, 0]
+- [6, 0]
+- [9, 0]
+- [12, 0]
+- [15, 0]
 elements:
 - type: visual
   name: Rectangle
