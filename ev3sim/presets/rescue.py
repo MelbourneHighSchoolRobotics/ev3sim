@@ -320,7 +320,15 @@ class RescueInteractor(IInteractor):
         self.resetFollows()
         spawn_point = self.tiles[tileIndex]["follows"][0]
         for i in range(len(self.robots)):
+            self.robots[i].body.angle = self.tiles[tileIndex]["rotation"]
+            self.bot_follows[i].body.position = local_space_to_world_space(
+                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                self.robots[i].body.angle,
+                (self.robots[i].body.position.x, self.robots[i].body.position.y),
+            )
             self.robots[i].body.position += spawn_point - self.bot_follows[i].body.position
+            self.robots[i].body.velocity = (0, 0)
+            self.robots[i].body.angular_velocity = 0
         self.touchBot()
 
     def resetFollows(self):
