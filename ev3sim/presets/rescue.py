@@ -5,6 +5,7 @@ import pymunk
 import pygame
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
+from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.objects.base import objectFactory, STATIC_CATEGORY
 from ev3sim.objects.utils import local_space_to_world_space, magnitude_sq
@@ -24,6 +25,9 @@ class RescueInteractor(IInteractor):
     FOLLOW_POINT_RADIUS = 1
     # You can be at most this far from the previous follow point before lack of progress is called.
     MAX_FOLLOW_DIST = 8
+    # Randomisation constants
+    BOT_SPAWN_RADIUS = 2
+    BOT_SPAWN_ANGLE = [-10, 10]
 
     START_TIME = datetime.timedelta(minutes=5)
 
@@ -354,8 +358,12 @@ class RescueInteractor(IInteractor):
 
     def resetPositions(self):
         for i, robot in enumerate(self.robots):
-            robot.body.position = [self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]
-            robot.body.angle = self.spawns[i][1] * np.pi / 180
+            diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
+            diff_angle = Randomiser.random() * 2 * np.pi
+            robot.body.position = np.array([self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]) + diff_radius * np.array(
+                [np.cos(diff_angle), np.sin(diff_angle)]
+            )
+            robot.body.angle = (self.spawns[i][1] + self.BOT_SPAWN_ANGLE[0] + Randomiser.random() * (self.BOT_SPAWN_ANGLE[1] - self.BOT_SPAWN_ANGLE[0])) * np.pi / 180
             robot.body.velocity = np.array([0.0, 0.0])
             robot.body.angular_velocity = 0
 
