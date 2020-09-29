@@ -11,7 +11,7 @@ from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
 from ev3dev2.button import Button
-from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick
+from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick, robot_id
 
 
 def handle_scored(data):
@@ -22,7 +22,7 @@ def handle_scored(data):
 EventSystem.on_goal_scored = handle_scored
 
 if is_sim:
-    print("Hello from the simulator!!!")
+    print(f"Hello from the simulator, from {robot_id}!!!")
 else:
     print("Hello from the brick!!!")
 

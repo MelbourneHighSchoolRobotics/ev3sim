@@ -40,6 +40,23 @@ Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the br
 
 .. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
 
+Robot ID
+--------
+
+Since you might be running multiple instances of the same code on different robots, it's important to be able to check which robot the code is running on, you can do this with ``code_helpers``:
+
+.. code-block:: python
+
+    from ev3sim.code_helpers import robot_id
+
+    print("Hello from " + robot_id)
+
+This will also work on the brick, it should print "Robot-0".
+
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+
+.. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
+
 Handling simulation events
 --------------------------
 

@@ -571,6 +571,7 @@ def main(passed_args=None):
                 @mock.patch("ev3dev2.button.Button", MockedButton)
                 @mock.patch("ev3sim.code_helpers.is_ev3", False)
                 @mock.patch("ev3sim.code_helpers.is_sim", True)
+                @mock.patch("ev3sim.code_helpers.robot_id", robot_id)
                 @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
                 @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
                 @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
