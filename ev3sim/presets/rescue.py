@@ -288,7 +288,12 @@ class RescueInteractor(IInteractor):
 
         self.reset()
         for i in range(len(self.robots)):
-            self.bot_follows[i].body.position = self.robots[i].body.position
+            # This is bad, I should get the robot key somehow else (Generally speaking the robot class, interactor and object should be more tightly coupled.)
+            self.bot_follows[i].body.position = local_space_to_world_space(
+                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                self.robots[i].body.angle,
+                (self.robots[i].body.position.x, self.robots[i].body.position.y),
+            )
         self.addCollisionHandler()
 
         for robot in self.robots:
@@ -360,10 +365,18 @@ class RescueInteractor(IInteractor):
         for i, robot in enumerate(self.robots):
             diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
             diff_angle = Randomiser.random() * 2 * np.pi
-            robot.body.position = np.array([self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]) + diff_radius * np.array(
-                [np.cos(diff_angle), np.sin(diff_angle)]
+            robot.body.position = np.array(
+                [self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]
+            ) + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
+            robot.body.angle = (
+                (
+                    self.spawns[i][1]
+                    + self.BOT_SPAWN_ANGLE[0]
+                    + Randomiser.random() * (self.BOT_SPAWN_ANGLE[1] - self.BOT_SPAWN_ANGLE[0])
+                )
+                * np.pi
+                / 180
             )
-            robot.body.angle = (self.spawns[i][1] + self.BOT_SPAWN_ANGLE[0] + Randomiser.random() * (self.BOT_SPAWN_ANGLE[1] - self.BOT_SPAWN_ANGLE[0])) * np.pi / 180
             robot.body.velocity = np.array([0.0, 0.0])
             robot.body.angular_velocity = 0
 
@@ -371,9 +384,17 @@ class RescueInteractor(IInteractor):
         super().tick(tick)
         self.cur_tick = tick
         for i in range(len(self.robots)):
-            self.bot_follows[i].body.position = self.robots[i].body.position
+            self.bot_follows[i].body.position = local_space_to_world_space(
+                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                self.robots[i].body.angle,
+                (self.robots[i].body.position.x, self.robots[i].body.position.y),
+            )
             # Ensure visual is not 1 frame behind.
-            self.bot_follows[i].position = self.robots[i].body.position
+            self.bot_follows[i].position = local_space_to_world_space(
+                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                self.robots[i].body.angle,
+                (self.robots[i].body.position.x, self.robots[i].body.position.y),
+            )
             if self.current_follow is not None and not World.instance.paused:
                 distance = magnitude_sq(
                     self.bot_follows[i].position

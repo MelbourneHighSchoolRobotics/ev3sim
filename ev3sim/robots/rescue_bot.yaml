@@ -39,3 +39,4 @@ base_plate:
   restitution: 0.2
   friction: 0.8
   key: phys_obj
+follow_collider: [5, 0]

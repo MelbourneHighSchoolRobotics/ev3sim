@@ -57,6 +57,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
                 )
             )
             robot.ID = prefix
+            robot._follow_collider_offset = config.get("follow_collider", [0, 0])
             ScriptLoader.instance.robots[prefix] = robot
             ScriptLoader.instance.data["events"][robot.ID] = Queue()
         except yaml.YAMLError as exc:
