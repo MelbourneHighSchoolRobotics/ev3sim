@@ -154,12 +154,9 @@ class Colorable(IVisualElement):
     def scaledStrokeWidth(self):
         return max(
             1,
-            int(
-                self.stroke_width
-                * ScreenObjectManager.instance.SCREEN_WIDTH
-                / ScreenObjectManager.instance.MAP_WIDTH
-            ),
+            int(self.stroke_width * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH),
         )
+
 
 class Image(Colorable):
     def initFromKwargs(self, **kwargs):
