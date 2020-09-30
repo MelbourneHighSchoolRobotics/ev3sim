@@ -10,10 +10,6 @@ from ev3sim.objects.utils import local_space_to_world_space
 
 USE_PYGAME_GFX = True
 
-if USE_PYGAME_GFX:
-    import pygame.gfxdraw
-
-
 class IVisualElement:
     """
     A visual element defines some object which can be drawn to the screen, but also can generate a physics object if necessary.
@@ -364,6 +360,8 @@ class Polygon(Colorable):
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, self.scaledStrokeWidth)
 
     def _applyToScreenGfx(self):
+        import pygame.gfxdraw
+
         if self.fill:
             pygame.gfxdraw.aapolygon(ScreenObjectManager.instance.screen, self.points, self.fill)
             pygame.gfxdraw.filled_polygon(ScreenObjectManager.instance.screen, self.points, self.fill)
@@ -459,6 +457,8 @@ class Circle(Colorable):
             pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.stroke, self.rect, self.scaledStrokeWidth)
 
     def _applyToScreenGfx(self):
+        import pygame.gfxdraw
+
         if self.fill and self.stroke and self.stroke_width:
             stroke_width = self.scaledStrokeWidth
 
