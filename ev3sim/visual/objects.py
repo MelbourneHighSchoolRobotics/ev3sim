@@ -10,6 +10,7 @@ from ev3sim.objects.utils import local_space_to_world_space
 
 USE_PYGAME_GFX = True
 
+
 class IVisualElement:
     """
     A visual element defines some object which can be drawn to the screen, but also can generate a physics object if necessary.
