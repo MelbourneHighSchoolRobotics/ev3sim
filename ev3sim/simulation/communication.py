@@ -30,8 +30,8 @@ def start_server_with_shared_data(data, result, bind_addr):
                 rob_id = request.robot_id
                 if rob_id not in data["active_count"]:
                     data["active_count"][rob_id] = 0
-                data["active_count"][rob_id] += 1
-                data["bot_locks"][rob_id] = {"lock": threading.Lock()}
+                    data["bot_locks"][rob_id] = {"lock": threading.Lock()}
+                data["active_count"][rob_id] += 1            
                 data["bot_locks"][rob_id]["condition_waiting"] = threading.Condition(data["bot_locks"][rob_id]["lock"])
                 data["bot_locks"][rob_id]["condition_changing"] = threading.Condition(data["bot_locks"][rob_id]["lock"])
                 c = data["active_count"][rob_id]
