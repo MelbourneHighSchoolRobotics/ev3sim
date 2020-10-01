@@ -135,11 +135,10 @@ class PhysicsObject(BaseObject):
 
 
 class ForceAffectArea(PhysicsObject):
-
     def initFromKwargs(self, **kwargs):
-        kwargs['static'] = True
-        kwargs['physics'] = True
-        kwargs['sensor'] = True
+        kwargs["static"] = True
+        kwargs["physics"] = True
+        kwargs["sensor"] = True
         super().initFromKwargs(**kwargs)
         self.affectsForce = True
         self.force_type = kwargs["force_type"]
@@ -154,7 +153,9 @@ class ForceAffectArea(PhysicsObject):
         # args[0]: normalised vector to slow by
         # args[1]: slow factor
         if self.force_type == "slow_dir":
-            parallel = np.dot(force, local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])) * local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])
+            parallel = np.dot(
+                force, local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])
+            ) * local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])
             perpendicular = force - parallel
             parallel *= self.force_args[1]
             return perpendicular + parallel
