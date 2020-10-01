@@ -23,7 +23,7 @@ interactors:
       position: [-2, 0]
     - path: tiles/definitions/tunnel.yaml
       position: [-1, 0]
-    - path: tiles/definitions/straight.yaml
+    - path: tiles/definitions/ramp.yaml
       position: [0, 0]
     - path: tiles/definitions/right_angle.yaml
       position: [1, 0]
