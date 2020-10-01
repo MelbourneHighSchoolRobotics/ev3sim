@@ -53,8 +53,13 @@ class RescueInteractor(IInteractor):
             # Transfer to rescue space.
             base_pos = [base_pos[0] * self.TILE_LENGTH, base_pos[1] * self.TILE_LENGTH]
             base_rotation = tile.get("rotation", 0) * np.pi / 180
+            flip = tile.get("flip", False)
             for obj in t["elements"]:
                 rel_pos = np.array(obj.get("position", [0, 0]))
+                if flip:
+                    rel_pos[0] = -rel_pos[0]
+                    if obj.get("name", "") == "Image":
+                        obj["flip"] = [True, False]
                 obj["rotation"] = (obj.get("rotation", 0)) * np.pi / 180 + base_rotation
                 obj["position"] = local_space_to_world_space(rel_pos, base_rotation, base_pos)
                 obj["sensorVisible"] = True
@@ -100,6 +105,8 @@ class RescueInteractor(IInteractor):
                             if isinstance(point2, str):
                                 self.tiles[-1]["roam_status"][-1][-1][-1] = point2
                             else:
+                                if flip:
+                                    point2[0] = -point2[0]
                                 self.tiles[-1]["follows"][-1][-1].append(
                                     local_space_to_world_space(
                                         np.array(point2), tile.get("rotation", 0) * np.pi / 180, base_pos
@@ -110,6 +117,8 @@ class RescueInteractor(IInteractor):
                     if isinstance(point, str):
                         self.tiles[-1]["roam_status"][-1] = point
                     else:
+                        if flip:
+                            point[0] = -point[0]
                         self.tiles[-1]["follows"].append(
                             local_space_to_world_space(np.array(point), tile.get("rotation", 0) * np.pi / 180, base_pos)
                         )
