@@ -40,10 +40,10 @@ class ControllableBot(Robot):
         self.topMotor: LargeMotor = self.getDevice("outA")
         self.botMotor: LargeMotor = self.getDevice("outD")
         self.compass: CompassSensor = self.getDevice("in4")
+        self.compass.calibrate()
 
     def onSpawn(self):
         super().onSpawn()
-        self.compass.calibrate()
 
     def tick(self, tick):
         # hue = (tick % 120) * 3

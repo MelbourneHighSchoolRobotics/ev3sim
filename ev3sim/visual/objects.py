@@ -8,6 +8,8 @@ from ev3sim.visual.manager import ScreenObjectManager
 import ev3sim.visual.utils as utils
 from ev3sim.objects.utils import local_space_to_world_space
 
+USE_PYGAME_GFX = True
+
 
 class IVisualElement:
     """
@@ -144,6 +146,13 @@ class Colorable(IVisualElement):
             self._stroke = utils.hex_to_pycolor(value)
         else:
             self._stroke = value
+
+    @property
+    def scaledStrokeWidth(self):
+        return max(
+            1,
+            int(self.stroke_width * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH),
+        )
 
 
 class Image(Colorable):
@@ -292,8 +301,16 @@ class Line(Colorable):
     def calculatePoints(self):
         return
 
-    def applyToScreen(self):
-        if self.fill:
+    def _applyToScreen(self):
+        if self.stroke and self.stroke_width:
+            pygame.draw.line(
+                ScreenObjectManager.instance.screen,
+                self.fill,
+                utils.worldspace_to_screenspace(self.start),
+                utils.worldspace_to_screenspace(self.end),
+                self.scaledStrokeWidth,
+            )
+        elif self.fill:
             pygame.draw.line(
                 ScreenObjectManager.instance.screen,
                 self.fill,
@@ -301,21 +318,32 @@ class Line(Colorable):
                 utils.worldspace_to_screenspace(self.end),
                 1,
             )
+
+    def _applyToScreenGfx(self):
+        # Note: aaline() isn't actually from gfxdraw,
+        # it just seemed nicer to keep all the AA options toggleable together
+
         if self.stroke and self.stroke_width:
-            pygame.draw.line(
+            pygame.draw.aaline(
                 ScreenObjectManager.instance.screen,
                 self.fill,
                 utils.worldspace_to_screenspace(self.start),
                 utils.worldspace_to_screenspace(self.end),
-                max(
-                    1,
-                    int(
-                        self.stroke_width
-                        * ScreenObjectManager.instance.SCREEN_WIDTH
-                        / ScreenObjectManager.instance.MAP_WIDTH
-                    ),
-                ),
+                self.scaledStrokeWidth,
             )
+        elif self.fill:
+            pygame.draw.aaline(
+                ScreenObjectManager.instance.screen,
+                self.fill,
+                utils.worldspace_to_screenspace(self.start),
+                utils.worldspace_to_screenspace(self.end),
+            )
+
+    def applyToScreen(self):
+        if USE_PYGAME_GFX:
+            self._applyToScreenGfx()
+        else:
+            self._applyToScreen()
 
 
 class Polygon(Colorable):
@@ -337,23 +365,33 @@ class Polygon(Colorable):
                 local_space_to_world_space(v, self.rotation, self.position)
             )
 
-    def applyToScreen(self):
+    def _applyToScreen(self):
         if self.fill:
             pygame.draw.polygon(ScreenObjectManager.instance.screen, self.fill, self.points)
         if self.stroke and self.stroke_width:
-            pygame.draw.polygon(
-                ScreenObjectManager.instance.screen,
-                self.stroke,
-                self.points,
-                max(
-                    1,
-                    int(
-                        self.stroke_width
-                        * ScreenObjectManager.instance.SCREEN_WIDTH
-                        / ScreenObjectManager.instance.MAP_WIDTH
-                    ),
-                ),
-            )
+            pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, self.scaledStrokeWidth)
+
+    def _applyToScreenGfx(self):
+        import pygame.gfxdraw
+
+        if self.fill:
+            pygame.gfxdraw.aapolygon(ScreenObjectManager.instance.screen, self.points, self.fill)
+            pygame.gfxdraw.filled_polygon(ScreenObjectManager.instance.screen, self.points, self.fill)
+
+        if self.stroke and self.stroke_width:
+            stroke_width = self.scaledStrokeWidth
+
+            if stroke_width > 1:
+                pygame.draw.polygon(ScreenObjectManager.instance.screen, self.stroke, self.points, stroke_width)
+            else:
+                pygame.gfxdraw.aapolygon(ScreenObjectManager.instance.screen, self.points, self.stroke)
+                pygame.gfxdraw.polygon(ScreenObjectManager.instance.screen, self.points, self.stroke)
+
+    def applyToScreen(self):
+        if USE_PYGAME_GFX:
+            self._applyToScreenGfx()
+        else:
+            self._applyToScreen()
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:
@@ -424,23 +462,49 @@ class Circle(Colorable):
             self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2
         )
 
-    def applyToScreen(self):
+    def _applyToScreen(self):
         if self.fill:
             pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.fill, self.rect)
         if self.stroke and self.stroke_width:
-            pygame.draw.ellipse(
-                ScreenObjectManager.instance.screen,
-                self.stroke,
-                self.rect,
-                max(
-                    1,
-                    int(
-                        self.stroke_width
-                        * ScreenObjectManager.instance.SCREEN_WIDTH
-                        / ScreenObjectManager.instance.MAP_WIDTH
-                    ),
-                ),
+            pygame.draw.ellipse(ScreenObjectManager.instance.screen, self.stroke, self.rect, self.scaledStrokeWidth)
+
+    def _applyToScreenGfx(self):
+        import pygame.gfxdraw
+
+        if self.fill and self.stroke and self.stroke_width:
+            stroke_width = self.scaledStrokeWidth
+
+            pygame.gfxdraw.aaellipse(
+                ScreenObjectManager.instance.screen, *self.point, self.h_radius, self.v_radius, self.stroke
             )
+            pygame.gfxdraw.filled_ellipse(
+                ScreenObjectManager.instance.screen, *self.point, self.h_radius, self.v_radius, self.stroke
+            )
+
+            # Assumes stroke_width >= radius implies fill with stroke colour
+            h_fill_radius = max(int(self.h_radius - stroke_width), 0)
+            v_fill_radius = max(int(self.v_radius - stroke_width), 0)
+
+            if h_fill_radius and v_fill_radius:
+                pygame.gfxdraw.aaellipse(
+                    ScreenObjectManager.instance.screen, *self.point, h_fill_radius, v_fill_radius, self.fill
+                )
+                pygame.gfxdraw.filled_ellipse(
+                    ScreenObjectManager.instance.screen, *self.point, h_fill_radius, v_fill_radius, self.fill
+                )
+        elif self.fill:
+            pygame.gfxdraw.aaellipse(
+                ScreenObjectManager.instance.screen, *self.point, self.h_radius, self.v_radius, self.fill
+            )
+            pygame.gfxdraw.filled_ellipse(
+                ScreenObjectManager.instance.screen, *self.point, self.h_radius, self.v_radius, self.fill
+            )
+
+    def applyToScreen(self):
+        if USE_PYGAME_GFX:
+            self._applyToScreenGfx()
+        else:
+            self._applyToScreen()
 
     def generateBodyAndShape(self, physObj, body=None, rel_pos=(0, 0)):
         if body is None:

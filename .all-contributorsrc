@@ -88,6 +88,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "OwenFeik",
+      "name": "Owen Feik",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/42128841?v=4",
+      "profile": "https://github.com/OwenFeik",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
