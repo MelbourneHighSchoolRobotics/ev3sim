@@ -7,8 +7,8 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 4
-        height: 4
+        width: 2.5
+        height: 2.5
         fill: 'IR_back_color'
         stroke_width: 0.1
         stroke: '#000000'
@@ -16,42 +16,47 @@ interactors:
       position: [0, 0]
       key: main_block
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Rectangle
+        width: 1.25
+        height: 0.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0, 1.2]
+      position: [0.625, 1]
       key: light_up_0
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Rectangle
+        width: 1.25
+        height: 0.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0.5, 0.6]
+      position: [0.625, 0.5]
       key: light_up_1
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Rectangle
+        width: 1.25
+        height: 0.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [1, 0]
+      position: [0.625, 0]
       key: light_up_2
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Rectangle
+        width: 1.25
+        height: 0.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0.5, -0.6]
+      position: [0.625, -0.5]
       key: light_up_3
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Rectangle
+        width: 1.25
+        height: 0.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0, -1.2]
+      position: [0.625, -1]
       key: light_up_4
