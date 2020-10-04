@@ -1,35 +1,35 @@
 devices:
 - LargeMotor:
-    position: [0, 5]
+    position: [0, 4]
     rotation: 0
     port: outB
 - LargeMotor:
-    position: [0, -5]
+    position: [0, -4]
     rotation: 0
     port: outC
 - ColorSensor:
-    position: [-10, 0]
+    position: [-7.5, 0]
     rotation: 180
     port: in2
 - UltrasonicSensor:
-    position: [10, 0]
+    position: [7.5, 0]
     rotation: 0
     port: in3
 - InfraredSensor:
-    position: [0, 10]
+    position: [0, 7.5]
     rotation: 90
     port: in1
 - CompassSensor:
     position: [0, 0]
     port: in4
 - Button:
-    position: [-5, 5]
+    position: [-4, 0]
     port: up
 base_plate:
   collider: inherit
   visual:
     name: Circle
-    radius: 11
+    radius: 8.5
     fill: '#878E88'
     stroke_width: 0.1
     stroke: '#ffffff'
@@ -43,8 +43,9 @@ base_plate:
     visual:
       name: Image
       image_path: 'LogoTransparent.png'
+      scale: 0.7
       zPos: 2.05
-    position: [4.5, 4.5]
+    position: [4.5, 3]
   - physics: true
     type: object
     collider: inherit
@@ -54,7 +55,7 @@ base_plate:
       height: 6
       fill: '#878E88'
       zPos: 2.07
-    position: [11, 0]
+    position: [8.3, 0]
     restitution: 0.2
     friction: 0.8
   - physics: true
@@ -62,11 +63,11 @@ base_plate:
     collider: inherit
     visual:
       name: Rectangle
-      width: 4
+      width: 3
       height: 1
       fill: '#878E88'
       zPos: 2.07
-    position: [12, 4]
+    position: [9, 3]
     rotation: 60
     restitution: 0.2
     friction: 0.8
@@ -75,11 +76,11 @@ base_plate:
     collider: inherit
     visual:
       name: Rectangle
-      width: 4
+      width: 3
       height: 1
       fill: '#878E88'
       zPos: 2.07
-    position: [12, -4]
+    position: [9, -3]
     rotation: -60
     restitution: 0.2
     friction: 0.8
