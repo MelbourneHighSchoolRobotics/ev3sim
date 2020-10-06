@@ -36,7 +36,7 @@ interactors:
         - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
+        zPos: 0.21
       position: [0, 0]
       key: light_up_1
     - visual:
@@ -48,7 +48,7 @@ interactors:
         - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
+        zPos: 0.22
       position: [0, 0]
       key: light_up_2
     - visual:
@@ -60,7 +60,7 @@ interactors:
         - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
+        zPos: 0.21
       position: [0, 0]
       key: light_up_3
     - visual:
