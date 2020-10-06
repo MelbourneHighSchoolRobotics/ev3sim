@@ -18,7 +18,7 @@ interactors:
     - visual:
         name: Rectangle
         width: 1
-        height: 1.75
+        height: 2.5
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
