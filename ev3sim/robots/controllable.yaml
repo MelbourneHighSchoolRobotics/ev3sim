@@ -1,19 +1,19 @@
 robot_class: ev3sim.robots.scripts.controllable.ControllableBot
 devices:
 - LargeMotor:
-    position: [0, 5]
+    position: [0, 4]
     rotation: 0
     port: outB
 - LargeMotor:
-    position: [0, -5]
+    position: [0, -4]
     rotation: 0
     port: outC
 - LargeMotor:
-    position: [5, 0]
+    position: [4, 0]
     rotation: 90
     port: outA
 - LargeMotor:
-    position: [-5, 0]
+    position: [-4, 0]
     rotation: 90
     port: outD
 - CompassSensor:
@@ -24,9 +24,9 @@ base_plate:
   collider: inherit
   visual:
     name: Circle
-    radius: 11
+    radius: 8.5
     fill: '#878E88'
-    stroke_width: 0.01
+    stroke_width: 0.1
     stroke: '#ffffff'
     zPos: 2
   mass: 5
@@ -38,6 +38,7 @@ base_plate:
     visual:
       name: Image
       image_path: 'LogoTransparent.png'
+      scale: 0.7
       zPos: 2.05
-    position: [4.5, 4.5]
+    position: [4.5, 3]
   key: phys_obj

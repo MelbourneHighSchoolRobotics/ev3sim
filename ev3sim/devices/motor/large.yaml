@@ -7,8 +7,8 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 3
-        height: 3
+        width: 2.5
+        height: 2.5
         fill: 'LMOTOR_back_color'
         stroke_width: 0.1
         stroke: '#000000'
