@@ -7,7 +7,7 @@ interactors:
     elements:
     - visual:
         name: Circle
-        radius: 2
+        radius: 1.5
         fill: 'COMPASS_back_color'
         stroke_width: 0
         stroke: '#000000'

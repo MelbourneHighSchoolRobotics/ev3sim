@@ -7,51 +7,71 @@ interactors:
     elements:
     - visual:
         name: Rectangle
-        width: 4
-        height: 4
+        width: 2
+        height: 2.5
         fill: 'IR_back_color'
         stroke_width: 0.1
         stroke: '#000000'
         zPos: 0.1
-      position: [0, 0]
+      position: [-0.25, 0]
       key: main_block
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Polygon
+        verts:
+        - [-0.5, 0]
+        - [0.75, 1]
+        - [1, 0.6]
+        - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0, 1.2]
+      position: [0, 0]
       key: light_up_0
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Polygon
+        verts:
+        - [-0.5, 0]
+        - [1, 0.6]
+        - [1.25, 0.2]
+        - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
-      position: [0.5, 0.6]
+        zPos: 0.21
+      position: [0, 0]
       key: light_up_1
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Polygon
+        verts:
+        - [-0.5, 0]
+        - [1.25, 0.2]
+        - [1.25, -0.2]
+        - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
-      position: [1, 0]
+        zPos: 0.22
+      position: [0, 0]
       key: light_up_2
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Polygon
+        verts:
+        - [-0.5, 0]
+        - [1.25, -0.2]
+        - [1, -0.6]
+        - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
-        zPos: 0.2
-      position: [0.5, -0.6]
+        zPos: 0.21
+      position: [0, 0]
       key: light_up_3
     - visual:
-        name: Circle
-        radius: 0.7
+        name: Polygon
+        verts:
+        - [-0.5, 0]
+        - [1, -0.6]
+        - [0.75, -1]
+        - [-0.5, 0]
         fill: '#000000'
         stroke_width: 0
         zPos: 0.2
-      position: [0, -1.2]
+      position: [0, 0]
       key: light_up_4
