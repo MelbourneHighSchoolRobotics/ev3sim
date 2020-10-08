@@ -179,9 +179,11 @@ class Image(Colorable):
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+        relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
         new_size = [
-            int(self.image.get_size()[0] * self.scale * relative_scale[0]),
-            int(self.image.get_size()[1] * self.scale * relative_scale[1]),
+            int(self.image.get_size()[0] * self.scale * relative_scale),
+            int(self.image.get_size()[1] * self.scale * relative_scale),
         ]
         scaled = pygame.transform.scale(self.image, new_size)
         self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
@@ -208,8 +210,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         self.verts = [
@@ -255,8 +257,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
@@ -544,18 +546,24 @@ class Text(Colorable):
     def calculatePoints(self):
         if not hasattr(self, "font"):
             return
-        self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+        relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
+        new_font_size = int(self.font_size * relative_scale)
+        # Scale the font size as much as possible
+        relative_scale = self.font_size * relative_scale / new_font_size
+        self.font = pygame.freetype.Font(self.font_path, new_font_size)
+        self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
         self.surface = pygame.transform.scale(
             self.surface,
-            (int(self.surface.get_width() * relative_scale[0]), int(self.surface.get_height() * relative_scale[1])),
+            (int(self.surface.get_width() * relative_scale), int(self.surface.get_height() * relative_scale)),
         )
         self.screen_size = (self.surface.get_width(), self.surface.get_height())
-        baseline = np.array([self.rect.x * relative_scale[0], self.rect.y * relative_scale[1]])
+        baseline = np.array([self.rect.x * relative_scale, self.rect.y * relative_scale])
         self.rect.move_ip(-self.rect.x, -self.rect.y)
         width, height = (
-            self.font.get_rect(self.text).width * relative_scale[0],
-            self.font.get_rect(self.text).height * relative_scale[1],
+            self.font.get_rect(self.text).width * relative_scale,
+            self.font.get_rect(self.text).height * relative_scale,
         )
         self.anchor = utils.worldspace_to_screenspace(self.position)
         if self.hAlignment == "l":
@@ -587,8 +595,8 @@ class Text(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
