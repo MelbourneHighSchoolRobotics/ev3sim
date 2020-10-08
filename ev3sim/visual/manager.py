@@ -120,7 +120,9 @@ class ScreenObjectManager:
                     self.SCREEN_HEIGHT = int(self.SCREEN_WIDTH * 3 / 4)
                 else:
                     self.SCREEN_WIDTH = int(self.SCREEN_HEIGHT * 4 / 3)
-                self.screen = pygame.display.set_mode((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE)
+                self.screen = pygame.display.set_mode(
+                    (self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE
+                )
                 for key in self.sorting_order:
                     self.objects[key].calculatePoints()
             if event.type == pygame.QUIT:
