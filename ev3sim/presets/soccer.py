@@ -158,6 +158,7 @@ class SoccerInteractor(IInteractor):
 
         for x in range(len(self.names)):
             # Set up goal collider.
+            self.goals[x]["zPos"] = 6
             pos = self.goals[x]["position"]
             del self.goals[x]["position"]
             obj = {
