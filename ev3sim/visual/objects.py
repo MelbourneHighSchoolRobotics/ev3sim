@@ -179,6 +179,11 @@ class Image(Colorable):
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+        relative_scale = [
+            relative_scale[0] * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280,
+            relative_scale[1] * ScreenObjectManager.instance.original_SCREEN_HEIGHT / 960,
+        ]
         new_size = [
             int(self.image.get_size()[0] * self.scale * relative_scale[0]),
             int(self.image.get_size()[1] * self.scale * relative_scale[1]),
@@ -546,6 +551,11 @@ class Text(Colorable):
             return
         self.surface, self.rect = self.font.render(self.text, fgcolor=self.fill)
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+        relative_scale = [
+            relative_scale[0] * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280,
+            relative_scale[1] * ScreenObjectManager.instance.original_SCREEN_HEIGHT / 960,
+        ]
         self.surface = pygame.transform.scale(
             self.surface,
             (int(self.surface.get_width() * relative_scale[0]), int(self.surface.get_height() * relative_scale[1])),
