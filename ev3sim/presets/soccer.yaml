@@ -78,6 +78,16 @@ elements:
   stroke_width: 0
   position: [-115.75, -18]
   zPos: 3
+  key: leftGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [-115.75, -18]
+  zPos: 2
   key: leftGrass
   sensorVisible: true
 - type: visual
@@ -88,8 +98,18 @@ elements:
   stroke_width: 0
   position: [115.75, -18]
   zPos: 3
+  key: rightGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [115.75, -18]
+  zPos: 2
   key: rightGrass
-  sensorVisible: true
+  sensorVisible: false
 - type: object
   physics: true
   collider: inherit
