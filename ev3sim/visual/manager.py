@@ -132,7 +132,5 @@ class ScreenObjectManager:
 
     def relativeScreenScale(self):
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
-        return [
-            self.SCREEN_WIDTH / self.original_SCREEN_WIDTH,
-            self.SCREEN_HEIGHT / self.original_SCREEN_HEIGHT,
-        ]
+        # We maintain aspect ratio so no tuple is required.
+        return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
