@@ -34,11 +34,11 @@ def worldspace_to_screenspace(point):
     return (
         int(
             point[0] * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH
-            + ScreenObjectManager.instance.SCREEN_WIDTH / 2
+            + ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2
         ),
         int(
             -point[1] * ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT
-            + ScreenObjectManager.instance.SCREEN_HEIGHT / 2
+            + ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2
         ),
     )
 
@@ -49,12 +49,12 @@ def screenspace_to_worldspace(point):
     return np.array(
         [
             float(
-                (point[0] - ScreenObjectManager.instance.SCREEN_WIDTH / 2)
+                (point[0] - ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2)
                 / ScreenObjectManager.instance.SCREEN_WIDTH
                 * ScreenObjectManager.instance.MAP_WIDTH
             ),
             float(
-                -(point[1] - ScreenObjectManager.instance.SCREEN_HEIGHT / 2)
+                -(point[1] - ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2)
                 / ScreenObjectManager.instance.SCREEN_HEIGHT
                 * ScreenObjectManager.instance.MAP_HEIGHT
             ),

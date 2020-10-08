@@ -213,8 +213,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         self.verts = [
@@ -260,8 +260,8 @@ class Image(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
@@ -597,8 +597,8 @@ class Text(Colorable):
 
         physics_size = screenspace_to_worldspace(
             [
-                ScreenObjectManager.instance.SCREEN_WIDTH / 2 + self.screen_size[0],
-                ScreenObjectManager.instance.SCREEN_HEIGHT / 2 + self.screen_size[1],
+                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
             ]
         )
         if self.hAlignment == "l":
