@@ -118,8 +118,8 @@ All of the logic running the soccer simulation in particular is defined in a **p
       ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
       ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
       # ScreenManager
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 960
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 720
       ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
       ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
       ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
