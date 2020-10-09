@@ -691,7 +691,7 @@ elements:
     fill: '#ff0000'
     stroke_width: 0.2
     stroke: '#ffffff'
-    zPos: 2
+    zPos: 6.5
   friction: 0.99
   mass: 0.1
   restitution: 0.3
