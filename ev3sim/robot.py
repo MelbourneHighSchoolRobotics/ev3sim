@@ -26,6 +26,17 @@ def add_to_key(obj, prefix):
             add_to_key(v, prefix)
 
 
+def add_to_zpos(obj, amount):
+    if isinstance(obj, dict):
+        if "zPos" in obj:
+            obj["zPos"] += amount
+        for value in obj.values():
+            add_to_zpos(value, amount)
+    if isinstance(obj, (list, tuple)):
+        for v in obj:
+            add_to_zpos(v, amount)
+
+
 def initialise_bot(topLevelConfig, filename, prefix, path_index):
     # Returns the robot class, as well as a completed robot to add to the elements list.
     import yaml
@@ -42,6 +53,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             bot_config["physics"] = True
             add_devices(bot_config, config.get("devices", []))
             add_to_key(bot_config, prefix)
+            add_to_zpos(bot_config, 10)
             # Append bot object to elements.
             topLevelConfig["elements"] = topLevelConfig.get("elements", []) + [bot_config]
             robot = klass()
