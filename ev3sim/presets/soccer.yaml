@@ -25,8 +25,8 @@ settings:
   ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
   ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
   # ScreenManager
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 960
+  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 720
   ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
   ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
   ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
@@ -78,6 +78,16 @@ elements:
   stroke_width: 0
   position: [-115.75, -18]
   zPos: 3
+  key: leftGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [-115.75, -18]
+  zPos: 2
   key: leftGrass
   sensorVisible: true
 - type: visual
@@ -88,8 +98,18 @@ elements:
   stroke_width: 0
   position: [115.75, -18]
   zPos: 3
+  key: rightGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [115.75, -18]
+  zPos: 2
   key: rightGrass
-  sensorVisible: true
+  sensorVisible: false
 - type: object
   physics: true
   collider: inherit
@@ -434,8 +454,8 @@ elements:
   static: true
   visual:
     name: Rectangle
-    width: 182
-    height: 126
+    width: 192
+    height: 136
     fill: null
     stroke_width: 0
     zPos: 5.2
@@ -671,7 +691,7 @@ elements:
     fill: '#ff0000'
     stroke_width: 0.2
     stroke: '#ffffff'
-    zPos: 2
+    zPos: 6.5
   friction: 0.99
   mass: 0.1
   restitution: 0.3

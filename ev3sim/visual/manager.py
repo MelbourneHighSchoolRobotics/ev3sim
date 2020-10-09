@@ -30,6 +30,7 @@ class ScreenObjectManager:
     def initFromKwargs(self, **kwargs):
         self.original_SCREEN_WIDTH = self.SCREEN_WIDTH
         self.original_SCREEN_HEIGHT = self.SCREEN_HEIGHT
+        self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL = self.SCREEN_WIDTH, self.SCREEN_HEIGHT
         self.background_colour = self.BACKGROUND_COLOUR
 
     @property
@@ -101,9 +102,9 @@ class ScreenObjectManager:
             if self.objects[key].sensorVisible:
                 self.objects[key].applyToScreen()
         self.sensorScreen = self.screen.copy()
+        self.screen.fill(self.background_colour)
         for key in self.sorting_order:
-            if not self.objects[key].sensorVisible:
-                self.objects[key].applyToScreen()
+            self.objects[key].applyToScreen()
         pygame.display.update()
 
     def colourAtPixel(self, screen_position):
@@ -113,7 +114,15 @@ class ScreenObjectManager:
         for event in pygame.event.get():
             if event.type == pygame.VIDEORESIZE:
                 self.SCREEN_WIDTH, self.SCREEN_HEIGHT = event.size
-                self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
+                self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL = self.SCREEN_WIDTH, self.SCREEN_HEIGHT
+                # Preserve a 4:3 ratio.
+                if self.SCREEN_WIDTH / self.SCREEN_HEIGHT < 4 / 3:
+                    self.SCREEN_HEIGHT = int(self.SCREEN_WIDTH * 3 / 4)
+                else:
+                    self.SCREEN_WIDTH = int(self.SCREEN_HEIGHT * 4 / 3)
+                self.screen = pygame.display.set_mode(
+                    (self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE
+                )
                 for key in self.sorting_order:
                     self.objects[key].calculatePoints()
             if event.type == pygame.QUIT:
@@ -125,7 +134,5 @@ class ScreenObjectManager:
 
     def relativeScreenScale(self):
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
-        return [
-            self.SCREEN_WIDTH / self.original_SCREEN_WIDTH,
-            self.SCREEN_HEIGHT / self.original_SCREEN_HEIGHT,
-        ]
+        # We maintain aspect ratio so no tuple is required.
+        return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
