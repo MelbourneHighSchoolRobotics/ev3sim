@@ -4,7 +4,7 @@ Setting up and Running EV3Sim
 Installation
 ------------
 
-EV3sim requires python 3.7+ installed on your system. If you don't already have it, you can download it from https://www.python.org/ .
+EV3sim requires Python 3.7-3.8 (3.9 is currently unsupported and will not work) to be installed on your system. If you don't already have Python installed, you can download it from https://www.python.org/ .
 
 You can install this package using pip as follows:
 
