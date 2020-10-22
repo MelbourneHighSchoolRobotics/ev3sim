@@ -13,14 +13,7 @@ parser.add_argument(
     default="soccer.yaml",
     dest="preset",
 )
-parser.add_argument("robots", nargs="*", help="Path of robots to load. Separate each robot path by a space.")
-parser.add_argument(
-    "--batch",
-    "-b",
-    action="store_true",
-    help="Whether to use a batched command to run this simulation.",
-    dest="batched",
-)
+parser.add_argument("batch", nargs="?", help="Path of the batch file to run the simulation with.")
 parser.add_argument(
     "--bind_addr",
     default="[::1]:50051",
@@ -62,16 +55,10 @@ def main(passed_args=None):
 
     print(f"Simulating with seed {args.seed}")
 
-    if args.batched:
-        from ev3sim.batched_run import batched_run
+    from ev3sim.batched_run import batched_run
 
-        assert len(args.robots) == 1, "Exactly one batched command file should be provided."
-        batched_run(args.robots[0], args.bind_addr, args.seed)
-    else:
-        from ev3sim.single_run import single_run
-
-        assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
-        single_run(args.preset, args.robots, args.bind_addr, args.seed)
+    assert args.batch, "Please provide a batch file!"
+    batched_run(args.batch, args.bind_addr, args.seed)
 
 
 if __name__ == "__main__":
