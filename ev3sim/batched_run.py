@@ -10,6 +10,7 @@ import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process, Queue
 
+
 def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *queues):
     result_queue = queues[0]
     send_queues = queues[1::2]
@@ -40,7 +41,9 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
 
         Randomiser.createGlobalRandomiserWithSeed(seed)
 
-        preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+        preset_file = find_abs(
+            preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"]
+        )
         with open(preset_file, "r") as f:
             config = yaml.safe_load(f)
 
@@ -58,9 +61,11 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
         run()
     except Exception as e:
         import traceback
+
         result_queue.put(("Simulation", traceback.format_exc()))
         return
     result_queue.put(True)
+
 
 def batched_run(batch_file, bind_addr, seed):
 
@@ -72,7 +77,7 @@ def batched_run(batch_file, bind_addr, seed):
 
     bot_paths = [x["name"] for x in config["bots"]]
     sim_args = [batch_file, config["preset_file"], bot_paths, seed, config.get("settings", {})]
-    queues = [Queue() for _ in range(2*len(bot_paths) + 1)]
+    queues = [Queue() for _ in range(2 * len(bot_paths) + 1)]
     sim_args.extend(queues)
     result_queue = queues[0]
 
@@ -87,10 +92,11 @@ def batched_run(batch_file, bind_addr, seed):
     for i, bot in enumerate(config["bots"]):
         for script in bot.get("scripts", []):
             fname = find_abs(script, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
-            bot_processes.append(Process(
-                target=attach_bot,
-                args=(f"Robot-{i}", fname, result_queue, queues[2*i+1], queues[2*i+2])
-            ))
+            bot_processes.append(
+                Process(
+                    target=attach_bot, args=(f"Robot-{i}", fname, result_queue, queues[2 * i + 1], queues[2 * i + 2])
+                )
+            )
 
     sim_process.start()
     for p in bot_processes:

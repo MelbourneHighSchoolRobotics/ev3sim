@@ -13,12 +13,14 @@ tick_rate = 30
 current_data = {}
 last_checked_tick = -1
 
+
 def attach_bot(robot_id, filename, result_queue, rq, sq):
     called_from = getcwd()
 
     try:
         sleep_builtin = sleep
         print_builtin = print
+
         def print_mock(*objects, sep=" ", end="\n"):
             message = sep.join(str(obj) for obj in objects) + end
             print_builtin(f"[{robot_id}] " + message, end="")
@@ -66,7 +68,7 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                     event_name, event_data = cur_events.get()
                     func = getattr(cls, event_name)
                     func(event_data)
-            
+
             fake_path = sys.path.copy()
             fake_path.append(called_from)
 
@@ -86,7 +88,9 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                         else:
                             res = current_data[self.k2][self.k3][self.k4][self.seek_point :]
                     else:
-                        raise ValueError(f"Not sure how to handle datatype {type(current_data[self.k2][self.k3][self.k4])}")
+                        raise ValueError(
+                            f"Not sure how to handle datatype {type(current_data[self.k2][self.k3][self.k4])}"
+                        )
                     return res.encode("utf-8")
 
                 def seek(self, i):
@@ -97,7 +101,7 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
 
                 def flush(self):
                     pass
-            
+
             def device__init__(self, class_name, name_pattern="*", name_exact=False, **kwargs):
                 self._path = [class_name]
                 self.kwargs = kwargs
@@ -148,7 +152,7 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                     res = cond(self.state)
                     if res or ((timeout is not None) and (get_time() >= tic + timeout / 1000)):
                         return cond(self.state)
-            
+
             class MockedButton:
                 class MockedButtonSpecific(Device):
                     _pressed = None
@@ -173,9 +177,7 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                     self.button_classes = {}
                     for name in self.button_names:
                         try:
-                            self.button_classes[name] = MockedButton.MockedButtonSpecific(
-                                "brick_button", address=name
-                            )
+                            self.button_classes[name] = MockedButton.MockedButtonSpecific("brick_button", address=name)
                         except Exception as e:
                             if name == "up":
                                 raise e
@@ -265,6 +267,7 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
             @mock.patch("sys.path", fake_path)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
+
                 wait_for_tick()
                 module = SourceFileLoader("__main__", fname).load_module()
 
@@ -275,13 +278,16 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                     raise ValueError(
                         "This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/"
                     )
+
                 run_script = mock.patch("ev3dev.core.Device.__init__", raiseEV3Error)(run_script)
             except:
                 pass
-        
+
             run_script(fname)
+
         run_code(filename, rq, sq)
     except Exception as e:
         import traceback
+
         result_queue.put((robot_id, traceback.format_exc()))
         return

@@ -9,6 +9,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import DEVICE_WRITE
 
+
 class ScriptLoader:
 
     SEND = 0
