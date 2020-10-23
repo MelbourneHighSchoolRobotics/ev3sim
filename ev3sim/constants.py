@@ -1,0 +1,1 @@
+DEVICE_WRITE = 0
