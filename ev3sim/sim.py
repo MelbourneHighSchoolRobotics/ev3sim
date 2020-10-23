@@ -68,6 +68,17 @@ def main(passed_args=None):
         assert len(args.robots) == 1, "Exactly one batched command file should be provided."
         batched_run(args.robots[0], args.bind_addr, args.seed)
     else:
+        print(
+            f"""
+
+=====================================================
+DEPRECATED: Running ev3sim without the batch argument will be removed in a newer version of ev3sim.
+
+To find out how to use batch commands, consult https://ev3sim.mhscsr.club/batched_commands.html
+=====================================================
+
+"""
+        )
         from ev3sim.single_run import single_run
 
         assert len(args.robots) > 0, "Provide at least one bot to run the simulation with."
