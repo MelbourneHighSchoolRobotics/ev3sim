@@ -4,7 +4,7 @@ from queue import Empty, Queue as NonMultiQueue
 import sys
 from time import sleep
 from unittest import mock
-from ev3sim.constants import DEVICE_WRITE
+from ev3sim.constants import *
 from ev3dev2 import Device, DeviceNotFound
 
 cur_events = NonMultiQueue()
@@ -12,6 +12,7 @@ tick = 0
 tick_rate = 30
 current_data = {}
 last_checked_tick = -1
+communications_messages = NonMultiQueue()
 
 
 def attach_bot(robot_id, filename, result_queue, rq, sq):
@@ -29,24 +30,38 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
         def run_code(fname, recv_q: multiprocessing.Queue, send_q: multiprocessing.Queue):
             ### TIMING FUNCTIONS
 
-            def wait_for_tick():
+            def handle_recv(msg_type, msg):
                 global tick, tick_rate, current_data, cur_events
+                if msg_type == SIM_DATA:
+                    tick = msg["tick"]
+                    tick_rate = msg["tick_rate"]
+                    current_data = msg["data"]
+                    for ev in msg["events"]:
+                        cur_events.put(ev)
+                    return msg_type, msg
+                else:
+                    communications_messages.put((msg_type, msg))
+
+            def wait_for_tick():
                 recved = 0
+                msg_type = -1
                 msg = {}
                 while True:
                     try:
-                        msg = recv_q.get_nowait()
+                        prv_type, prv = msg_type, msg
+                        msg_type, msg = recv_q.get_nowait()
+                        if msg_type != SIM_DATA:
+                            if recved > 0:
+                                # Handle the last sim data.
+                                handle_recv(prv_type, prv)
+                            break
                         recved += 1
                     except Empty:
-                        # Once we've exhausted the queue, break and deal with the latest msg.
-                        if recved > 0:
+                        # Once we've exhausted the queue, and all of our information has been used, break and deal with the latest msg.
+                        if recved > 0 and send_q.qsize() == 0:
                             break
                         sleep_builtin(0.01)
-                tick = msg["tick"]
-                tick_rate = msg["tick_rate"]
-                current_data = msg["data"]
-                for ev in msg["events"]:
-                    cur_events.put(ev)
+                handle_recv(msg_type, msg)
 
             def get_time():
                 return tick / tick_rate
@@ -58,6 +73,121 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
                     if elapsed >= seconds:
                         return
                     wait_for_tick()
+
+            def wait_for_msg_of_type(MSG_TYPE):
+                while True:
+                    try:
+                        msg_type, msg = communications_messages.get_nowait()
+                        if msg_type != MSG_TYPE:
+                            communications_messages.put((msg_type, msg))
+                            wait_for_tick()
+                        else:
+                            return msg
+                    except Empty:
+                        wait_for_tick()
+
+            ### COMMUNICATIONS
+            class MockedCommSocket:
+                def __init__(self, hostaddr, port, sender_id):
+                    self.hostaddr = hostaddr
+                    self.port = str(port)
+                    self.sender_id = sender_id
+
+                def send(self, d):
+                    assert isinstance(d, str), "Can only send string data through simulator."
+                    send_q.put(
+                        (
+                            SEND_DATA,
+                            {
+                                "robot_id": robot_id,
+                                "send_to": self.sender_id,
+                                "connection_string": f"{self.hostaddr}:{self.port}",
+                                "data": d,
+                            },
+                        )
+                    )
+                    wait_for_msg_of_type(SEND_SUCCESS)
+
+                def recv(self, buffer):
+                    # At the moment the buffer is ignored.
+                    msg = wait_for_msg_of_type(RECV_DATA)
+                    return msg["data"]
+
+                def close(self):
+                    send_q.put(
+                        (
+                            CLOSE_CLIENT,
+                            {
+                                "robot_id": robot_id,
+                                "connection_string": f"{self.hostaddr}:{self.port}",
+                            },
+                        )
+                    )
+                    msg = wait_for_msg_of_type(CLIENT_CLOSED)
+
+            class MockedCommClient(MockedCommSocket):
+                def __init__(self, hostaddr, port):
+                    if hostaddr == "aa:bb:cc:dd:ee:ff":
+                        print(
+                            f"While this example will work, for competition bots please change the host address from {hostaddr} so competing bots can communicate separately."
+                        )
+                    send_q.put(
+                        (
+                            JOIN_CLIENT,
+                            {
+                                "robot_id": robot_id,
+                                "connection_string": f"{hostaddr}:{port}",
+                            },
+                        )
+                    )
+                    msg = wait_for_msg_of_type(SUCCESS_CLIENT_CONNECTION)
+                    sender_id = msg["host_id"]
+                    print(f"Client connected to {sender_id}")
+                    super().__init__(hostaddr, port, sender_id)
+
+                def close(self):
+                    super().close()
+
+            class MockedCommServer:
+                def __init__(self, hostaddr, port):
+                    if hostaddr == "aa:bb:cc:dd:ee:ff":
+                        print(
+                            f"While this example will work, for competition bots please change the host address from {hostaddr} so competing bots can communicate separately."
+                        )
+                    self.hostaddr = hostaddr
+                    self.port = str(port)
+                    send_q.put(
+                        (
+                            START_SERVER,
+                            {
+                                "connection_string": f"{self.hostaddr}:{self.port}",
+                                "robot_id": robot_id,
+                            },
+                        )
+                    )
+                    wait_for_msg_of_type(SERVER_SUCCESS)
+                    print(f"Server started on {self.hostaddr}:{self.port}")
+                    self.sockets = []
+
+                def accept_client(self):
+                    msg = wait_for_msg_of_type(NEW_CLIENT_CONNECTION)
+                    self.sockets.append(MockedCommSocket(self.hostaddr, self.port, msg["client_id"]))
+                    return self.sockets[-1], (self.hostaddr, self.port)
+
+                def close(self):
+                    # Close all clients, then close myself
+                    for socket in self.sockets:
+                        socket.close()
+                    send_q.put(
+                        (
+                            CLOSE_SERVER,
+                            {
+                                "robot_id": robot_id,
+                                "connection_string": f"{self.hostaddr}:{self.port}",
+                            },
+                        )
+                    )
+                    msg = wait_for_msg_of_type(SERVER_CLOSED)
 
             ### CODE HELPERS
 
@@ -261,6 +391,9 @@ def attach_bot(robot_id, filename, result_queue, rq, sq):
             @mock.patch("ev3sim.code_helpers.is_ev3", False)
             @mock.patch("ev3sim.code_helpers.is_sim", True)
             @mock.patch("ev3sim.code_helpers.robot_id", robot_id)
+            @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
+            @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
+            @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
             @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
             @mock.patch("builtins.__import__", import_mock)
             @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)

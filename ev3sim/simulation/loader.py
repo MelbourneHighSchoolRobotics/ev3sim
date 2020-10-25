@@ -2,12 +2,13 @@ from queue import Empty
 import time
 from typing import List
 from ev3sim.objects.base import objectFactory
+from ev3sim.simulation.bot_comms import BotCommService
 from ev3sim.simulation.interactor import IInteractor, fromOptions
 from ev3sim.simulation.world import World, stop_on_pause
 from ev3sim.visual import ScreenObjectManager
 from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
-from ev3sim.constants import DEVICE_WRITE
+from ev3sim.constants import *
 
 
 class ScriptLoader:
@@ -34,6 +35,7 @@ class ScriptLoader:
         self.robots = {}
         self.queues = {}
         self.outstanding_events = {}
+        self.comms = BotCommService()
 
     def addActiveScript(self, script: IInteractor):
         idx = len(self.active_scripts)
@@ -103,6 +105,18 @@ class ScriptLoader:
                         attribute_path, value = data
                         sensor_type, specific_sensor, attribute = attribute_path.split()
                         self.robots[rob_id].getDeviceFromPath(sensor_type, specific_sensor).applyWrite(attribute, value)
+                    elif write_type == START_SERVER:
+                        self.comms.startServer(data["connection_string"], data["robot_id"])
+                    elif write_type == CLOSE_SERVER:
+                        self.comms.closeServer(data["connection_string"], data["robot_id"])
+                    elif write_type == JOIN_CLIENT:
+                        self.comms.attemptConnectToServer(data["robot_id"], data["connection_string"])
+                    elif write_type == CLOSE_CLIENT:
+                        self.comms.closeClient(data["connection_string"], data["robot_id"])
+                    elif write_type == SEND_DATA:
+                        self.comms.handleSend(
+                            data["robot_id"], data["send_to"], data["connection_string"], data["data"]
+                        )
                 except Empty:
                     break
 
@@ -124,7 +138,7 @@ class ScriptLoader:
                 "data": robot._interactor.collectDeviceData(),
             }
             self.outstanding_events[key] = []
-            s_queue.put(info)
+            s_queue.put((SIM_DATA, info))
 
     def simulate(self):
         for interactor in self.active_scripts:
