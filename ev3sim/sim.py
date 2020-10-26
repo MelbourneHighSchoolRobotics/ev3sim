@@ -2,7 +2,6 @@ import argparse
 import sys
 import time
 from random import randint, seed
-from ev3sim.file_helper import find_abs
 
 parser = argparse.ArgumentParser(description="Run the simulation, include some robots.")
 parser.add_argument(

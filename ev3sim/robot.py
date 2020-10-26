@@ -1,4 +1,3 @@
-from queue import Queue
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import stop_on_pause

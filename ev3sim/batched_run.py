@@ -1,5 +1,4 @@
 from queue import Empty
-import sys
 from unittest import mock
 from ev3sim.simulation.loader import runFromConfig
 from ev3sim.simulation.randomisation import Randomiser
