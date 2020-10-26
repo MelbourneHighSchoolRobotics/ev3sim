@@ -100,7 +100,17 @@ def batched_run(batch_file, bind_addr, seed):
             fname = find_abs(script, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
             bot_processes.append(
                 Process(
-                    target=attach_bot, args=(f"Robot-{i}", fname, result_queue, result_queue._internal_size, queues[2 * i + 1], queues[2 * i + 1]._internal_size, queues[2 * i + 2], queues[2 * i + 2]._internal_size)
+                    target=attach_bot,
+                    args=(
+                        f"Robot-{i}",
+                        fname,
+                        result_queue,
+                        result_queue._internal_size,
+                        queues[2 * i + 1],
+                        queues[2 * i + 1]._internal_size,
+                        queues[2 * i + 2],
+                        queues[2 * i + 2]._internal_size,
+                    ),
                 )
             )
 

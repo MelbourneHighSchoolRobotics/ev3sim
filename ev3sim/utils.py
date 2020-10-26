@@ -1,6 +1,7 @@
 import multiprocessing
 from multiprocessing.queues import Queue as BaseQueue
 
+
 class Queue(BaseQueue):
     """
     Multiprocessing queue that has a stable qsize value, and supports these methods for OSX.
@@ -8,7 +9,7 @@ class Queue(BaseQueue):
     """
 
     def __init__(self, *args, **kwargs):
-        self._internal_size = multiprocessing.Value('i', 0)
+        self._internal_size = multiprocessing.Value("i", 0)
         if "ctx" not in kwargs:
             kwargs["ctx"] = multiprocessing.get_context()
         super().__init__(*args, **kwargs)
@@ -17,7 +18,7 @@ class Queue(BaseQueue):
         with self._internal_size.get_lock():
             self._internal_size.value += 1
         super().put(*args, **kwargs)
-    
+
     def get(self, *args, **kwargs):
         res = super().get(*args, **kwargs)
         # Ensure the size only decrements once the element has been gained.
@@ -27,6 +28,6 @@ class Queue(BaseQueue):
 
     def qsize(self):
         return self._internal_size.value
-    
+
     def empty(self):
         return not self.qsize()
