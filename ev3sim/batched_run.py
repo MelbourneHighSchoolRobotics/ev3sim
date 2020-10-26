@@ -7,13 +7,19 @@ from ev3sim.visual.manager import ScreenObjectManager
 import yaml
 import time
 from ev3sim.file_helper import find_abs
-from multiprocessing import Process, Queue
+from multiprocessing import Process
+from ev3sim.utils import Queue
 
 
-def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *queues):
-    result_queue = queues[0]
-    send_queues = queues[1::2]
-    recv_queues = queues[2::2]
+def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *queues_sizes):
+    result_queue = queues_sizes[0][0]
+    result_queue._internal_size = queues_sizes[0][1]
+    send_queues = [q for q, _ in queues_sizes[1::2]]
+    for i, (_, size) in enumerate(queues_sizes[1::2]):
+        send_queues[i]._internal_size = size
+    recv_queues = [q for q, _ in queues_sizes[2::2]]
+    for i, (_, size) in enumerate(queues_sizes[2::2]):
+        recv_queues[i]._internal_size = size
     try:
         ScreenObjectManager.BATCH_FILE = batch_file
         ScreenObjectManager.PRESET_FILE = preset_filename
@@ -77,7 +83,8 @@ def batched_run(batch_file, bind_addr, seed):
     bot_paths = [x["name"] for x in config["bots"]]
     sim_args = [batch_file, config["preset_file"], bot_paths, seed, config.get("settings", {})]
     queues = [Queue() for _ in range(2 * len(bot_paths) + 1)]
-    sim_args.extend(queues)
+    queue_with_count = [(q, q._internal_size) for q in queues]
+    sim_args.extend(queue_with_count)
     result_queue = queues[0]
 
     sim_process = Process(
@@ -93,7 +100,7 @@ def batched_run(batch_file, bind_addr, seed):
             fname = find_abs(script, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
             bot_processes.append(
                 Process(
-                    target=attach_bot, args=(f"Robot-{i}", fname, result_queue, queues[2 * i + 1], queues[2 * i + 2])
+                    target=attach_bot, args=(f"Robot-{i}", fname, result_queue, result_queue._internal_size, queues[2 * i + 1], queues[2 * i + 1]._internal_size, queues[2 * i + 2], queues[2 * i + 2]._internal_size)
                 )
             )
 

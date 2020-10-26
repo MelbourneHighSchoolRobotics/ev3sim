@@ -15,7 +15,10 @@ last_checked_tick = -1
 communications_messages = NonMultiQueue()
 
 
-def attach_bot(robot_id, filename, result_queue, rq, sq):
+def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_internal, sq, sq_internal):
+    result_queue._internal_size = result_queue_internal
+    rq._internal_size = rq_internal
+    sq._internal_size = sq_internal
     called_from = getcwd()
 
     try:
