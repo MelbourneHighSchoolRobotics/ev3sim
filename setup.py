@@ -40,7 +40,6 @@ setup(
     entry_points={
         "console_scripts": [
             "ev3sim=ev3sim.sim:main",
-            "ev3attach=ev3sim.attach:main",
         ]
     },
 )

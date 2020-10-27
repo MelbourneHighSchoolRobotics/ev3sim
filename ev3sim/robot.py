@@ -1,4 +1,3 @@
-from queue import Queue
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import stop_on_pause
@@ -70,7 +69,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             )
             robot.ID = prefix
             ScriptLoader.instance.robots[prefix] = robot
-            ScriptLoader.instance.data["events"][robot.ID] = Queue()
+            ScriptLoader.instance.outstanding_events[prefix] = []
         except yaml.YAMLError as exc:
             print(f"An error occurred while loading robot preset {filename}. Exited with error: {exc}")
 
