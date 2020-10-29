@@ -18,46 +18,45 @@ interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
 - class_path: ev3sim.presets.pause_interactor.PauseInteractor
 - class_path: ev3sim.presets.soccer.SoccerInteractor
+  settings_name: soccer
+  settings_defn: ev3sim.presets.soccer.soccer_settings
 
 settings:
-  # ScriptLoader
-  ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
-  # ScreenManager
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 960
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 720
-  ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
-  ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
-  ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
-  # Soccer
-  ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
-    - Team 1
-    - Team 2
-  ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
-    - [[[-80, -18], 0], [[-50, -18], 0]]
-    - [[[80, -18], 180], [[50, -18], 180]]
-  ev3sim.presets.soccer.SoccerInteractor.PENALTY_LOCATIONS:
-    - [[[-110, -10], 0], [[-125, -26], 0]]
-    - [[[110, -26], 180], [[125, -10], 180]]
-  ev3sim.presets.soccer.SoccerInteractor.GOALS:
-    - name: Rectangle
-      width: 7.4
-      height: 45
-      position: [-95.2, -18]
-      fill: goal_fill
-    - name: Rectangle
-      width: 7.4
-      height: 45
-      position: [95.2, -18]
-      fill: goal_fill
-  # Soccer referee game settings
-  ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
-  ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
-  ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
-  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
-  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 5
-  ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
+  app:
+    tick_rate: 30
+    timescale: 1
+  screen:
+    MAP_WIDTH: 293.3
+    MAP_HEIGHT: 220
+    BACKGROUND_COLOUR: "#1f1f1f"
+  soccer:
+    TEAM_NAMES:
+      - Team 1
+      - Team 2
+    SPAWN_LOCATIONS:
+      - [[[-80, -18], 0], [[-50, -18], 0]]
+      - [[[80, -18], 180], [[50, -18], 180]]
+    PENALTY_LOCATIONS:
+      - [[[-110, -10], 0], [[-125, -26], 0]]
+      - [[[110, -26], 180], [[125, -10], 180]]
+    GOALS:
+      - name: Rectangle
+        width: 7.4
+        height: 45
+        position: [-95.2, -18]
+        fill: goal_fill
+      - name: Rectangle
+        width: 7.4
+        height: 45
+        position: [95.2, -18]
+        fill: goal_fill
+    # Soccer referee game settings
+    GAME_HALF_LENGTH_MINUTES: 5
+    SHOW_GOAL_COLLIDERS: true
+    ENFORCE_OUT_ON_WHITE: true
+    BALL_RESET_ON_WHITE: true
+    BALL_RESET_WHITE_DELAY_SECONDS: 5
+    BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 elements:
 - type: visual

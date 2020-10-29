@@ -1,3 +1,4 @@
+from ev3sim.settings import ObjectSetting, SettingsManager
 from queue import Empty
 import time
 from typing import List
@@ -41,6 +42,9 @@ class ScriptLoader:
         self.all_scripts = []
 
     def reset(self):
+        for script in self.all_scripts:
+            if hasattr(script, "_settings_name"):
+                SettingsManager.instance.removeSetting(script._settings_name)
         self.active_scripts = []
         self.all_scripts = []
 
@@ -166,6 +170,12 @@ class ScriptLoader:
             interactor.afterPhysics()
         self.incrementPhysicsTick()
 
+loader_settings = {
+    "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
+    "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
+    "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
+}
+
 class StateHandler:
     """
     Handles the current sim state, and passes information to the simulator, or other menus where appropriate.
@@ -182,6 +192,9 @@ class StateHandler:
         StateHandler.instance = self
         sl = ScriptLoader()
         world = World()
+        settings = SettingsManager()
+        settings.addSettingGroup("app", loader_settings)
+        settings.addSettingGroup("screen", screen_settings)
         self.shared_info = {}
 
     def closeProcesses(self):
@@ -207,6 +220,7 @@ class StateHandler:
 
 
     def startUp(self, **kwargs):
+        SettingsManager.instance.setMany(kwargs)
         man = ScreenObjectManager()
         # Check for a new version of the simulator.
         latest_version = get_version_pypi("ev3sim")
@@ -274,6 +288,7 @@ def initialiseFromConfig(config, send_queues, recv_queues):
             ScriptLoader.instance.addActiveScript(fromOptions(opt))
         except Exception as exc:
             print(f"Failed to load interactor with the following options: {opt}. Got error: {exc}")
+    SettingsManager.instance.setMany(config["settings"])
     if ScriptLoader.instance.active_scripts:
         ScriptLoader.instance.startUp()
         ScriptLoader.instance.loadElements(config.get("elements", []))

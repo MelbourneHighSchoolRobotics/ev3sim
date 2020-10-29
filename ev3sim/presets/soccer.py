@@ -13,6 +13,7 @@ from ev3sim.objects.utils import magnitude_sq
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
 from ev3sim.objects.base import DYNAMIC_CATEGORY, STATIC_CATEGORY
+from ev3sim.settings import ObjectSetting
 
 
 class SoccerInteractor(IInteractor):
@@ -51,10 +52,6 @@ class SoccerInteractor(IInteractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
-        self.names = self.TEAM_NAMES[:]
-        self.spawns = self.SPAWN_LOCATIONS[:]
-        self.penalty = self.PENALTY_LOCATIONS[:]
-        self.goals = self.GOALS[:]
         self.current_goal_score_tick = -1
         self.out_on_white_tick = 0
         self.time_tick = 0
@@ -82,6 +79,10 @@ class SoccerInteractor(IInteractor):
             raise ValueError("No robots loaded.")
 
     def startUp(self):
+        self.names = self.TEAM_NAMES[:]
+        self.spawns = self.SPAWN_LOCATIONS[:]
+        self.penalty = self.PENALTY_LOCATIONS[:]
+        self.goals = self.GOALS[:]
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(
             self.goals
         ), "All player related arrays should be of equal size."
@@ -448,3 +449,19 @@ class SoccerInteractor(IInteractor):
                 self._pressed = False
             if len(shapes) == 0:
                 self._pressed = False
+
+soccer_settings = {
+    attr: ObjectSetting(SoccerInteractor, attr)
+    for attr in [
+        "TEAM_NAMES",
+        "SPAWN_LOCATIONS",
+        "PENALTY_LOCATIONS",
+        "GOALS",
+        "GAME_HALF_LENGTH_MINUTES",
+        "SHOW_GOAL_COLLIDERS",
+        "ENFORCE_OUT_ON_WHITE",
+        "BALL_RESET_ON_WHITE",
+        "BALL_RESET_WHITE_DELAY_SECONDS",
+        "BOT_OUT_ON_WHITE_PENALTY_SECONDS",
+    ]
+}

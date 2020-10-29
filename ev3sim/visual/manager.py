@@ -1,3 +1,4 @@
+from ev3sim.settings import ObjectSetting
 import pygame
 import pygame.freetype
 from typing import Dict, List, Tuple
@@ -142,7 +143,9 @@ class ScreenObjectManager:
         return self.sensorScreen.get_at(screen_position)
 
     def handleEvents(self):
-        for event in pygame.event.get():
+        from ev3sim.simulation.loader import StateHandler
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.VIDEORESIZE:
                 self.SCREEN_WIDTH, self.SCREEN_HEIGHT = event.size
                 self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL = self.SCREEN_WIDTH, self.SCREEN_HEIGHT
@@ -154,16 +157,33 @@ class ScreenObjectManager:
                 self.screen = pygame.display.set_mode(
                     (self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE
                 )
-                for key in self.sorting_order:
-                    self.objects[key].calculatePoints()
+                if self.screen_stack[-1] == self.SCREEN_SIM:
+                    for key in self.sorting_order:
+                        self.objects[key].calculatePoints()
             if event.type == pygame.QUIT:
-                from ev3sim.simulation.loader import ScriptLoader
-
-                pygame.quit()
-                ScriptLoader.instance.running = False
-            yield event
+                StateHandler.instance.is_running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                if len(self.screen_stack) == 1:
+                    StateHandler.instance.is_running = False
+                else:
+                    self.popScreen()
+        if StateHandler.instance.is_running:
+            # We should only update our screens if we haven't quit.
+            self.screens[self.screen_stack[-1]].update(events)
+        return events
 
     def relativeScreenScale(self):
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
+
+screen_settings = {
+    attr: ObjectSetting(ScreenObjectManager, attr)
+    for attr in [
+        "SCREEN_WIDTH",
+        "SCREEN_HEIGHT",
+        "MAP_WIDTH",
+        "MAP_HEIGHT",
+        "BACKGROUND_COLOUR",
+    ]
+}

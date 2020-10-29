@@ -1,0 +1,5 @@
+app:
+  FPS: 30
+screen:
+  SCREEN_WIDTH: 960
+  SCREEN_HEIGHT: 720
