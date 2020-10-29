@@ -196,3 +196,6 @@ screen_settings = {
         "BACKGROUND_COLOUR",
     ]
 }
+def on_change_bg(new_val):
+    ScreenObjectManager.instance.background_colour = new_val
+screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg
