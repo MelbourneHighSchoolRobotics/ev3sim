@@ -12,12 +12,13 @@ class BindableValue:
     @property
     def value(self):
         return self._value
-    
+
     @value.setter
     def value(self, new_value):
         if self._value != new_value:
             self.on_change(new_value)
         self._value = new_value
+
 
 class ObjectSetting(BindableValue):
     """
@@ -35,6 +36,7 @@ class ObjectSetting(BindableValue):
     def on_change(self, new_value):
         super().on_change(new_value)
         setattr(self.obj, self.attr, new_value)
+
 
 class SettingsManager:
     """
@@ -75,7 +77,7 @@ class SettingsManager:
         for subkey in key:
             cur = cur[subkey]
         return cur
-    
+
     def __setitem__(self, key, value):
         if isinstance(key, str):
             self.settings[key].value = value

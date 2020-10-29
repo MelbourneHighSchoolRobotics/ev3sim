@@ -5,9 +5,11 @@ import pygame_menu
 from pygame_menu.locals import ALIGN_LEFT
 from pygame_menu.widgets.widget.button import Button
 
+
 def add_button_for_batch(menu: pygame_menu.Menu, show, batch_file):
     def simulate_batch():
         from ev3sim.visual.manager import ScreenObjectManager
+
         ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, batch=batch_file)
 
     b = Button(show, batch_file, None, simulate_batch)
@@ -17,7 +19,6 @@ def add_button_for_batch(menu: pygame_menu.Menu, show, batch_file):
 
 
 class BatchMenu(pygame_menu.Menu):
-
     def initWithKwargs(self, **kwargs):
         # Find all batch files and show them
         self.available_batches = []

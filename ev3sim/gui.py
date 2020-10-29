@@ -22,16 +22,15 @@ parser.add_argument(
     help="Provide a file with some configurable values for the screen.",
 )
 
+
 def main(passed_args=None):
     if passed_args is None:
         args = parser.parse_args(sys.argv[1:])
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
-    
-    config_path = find_abs(
-        args.config, allowed_areas=["local", "local/presets/", "package", "package/presets/"]
-    )
+
+    config_path = find_abs(args.config, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
@@ -56,6 +55,7 @@ def main(passed_args=None):
         pass
     if error is not None:
         raise error
+
 
 if __name__ == "__main__":
     main()

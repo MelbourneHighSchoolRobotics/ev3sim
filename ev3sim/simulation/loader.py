@@ -170,11 +170,13 @@ class ScriptLoader:
             interactor.afterPhysics()
         self.incrementPhysicsTick()
 
+
 loader_settings = {
     "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
     "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
     "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
 }
+
 
 class StateHandler:
     """
@@ -218,7 +220,6 @@ class StateHandler:
                     except Empty:
                         break
 
-
     def startUp(self, **kwargs):
         SettingsManager.instance.setMany(kwargs)
         man = ScreenObjectManager()
@@ -230,6 +231,7 @@ class StateHandler:
     def beginSimulation(self, **kwargs):
         self.is_simulating = True
         from ev3sim.sim import main
+
         kwargs["command_line"] = False
         main(passed_args=kwargs)
 
@@ -241,12 +243,21 @@ class StateHandler:
         while self.is_running:
             new_time = time.time()
             if self.is_simulating:
-                if new_time - last_game_update > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE:
+                if (
+                    new_time - last_game_update
+                    > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                ):
                     ScriptLoader.instance.simulation_tick()
-                    if new_time - last_game_update > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE:
+                    if (
+                        new_time - last_game_update
+                        > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                    ):
                         total_lag_ticks += 1
                     last_game_update = new_time
-                    if (ScriptLoader.instance.physics_tick > 10 and total_lag_ticks / ScriptLoader.instance.physics_tick > 0.5) and not lag_printed:
+                    if (
+                        ScriptLoader.instance.physics_tick > 10
+                        and total_lag_ticks / ScriptLoader.instance.physics_tick > 0.5
+                    ) and not lag_printed:
                         lag_printed = True
                         print("The simulation is currently lagging, you may want to turn down the game tick rate.")
                 try:
@@ -269,6 +280,7 @@ class StateHandler:
                     if self.is_simulating:
                         ScriptLoader.instance.handleEvents(events)
                     ScreenObjectManager.instance.applyToScreen()
+
 
 def initialiseFromConfig(config, send_queues, recv_queues):
     from collections import defaultdict

@@ -1,5 +1,6 @@
 from ev3sim.validation.validator import Validator
 
+
 class BatchValidator(Validator):
 
     REQUIRED_KEYS = ["preset_file", "bots"]

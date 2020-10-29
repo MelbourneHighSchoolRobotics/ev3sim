@@ -49,14 +49,17 @@ def main(passed_args=None):
     if args.command_line:
         # We need to launch the gui first.
         from ev3sim.gui import main
-        main(passed_args={
-            "batch": args.batch,
-            "simulation_kwargs": {
-                "seed": args.seed,
-                "bind_addr": args.bind_addr,
-                "version": args.version,
+
+        main(
+            passed_args={
+                "batch": args.batch,
+                "simulation_kwargs": {
+                    "seed": args.seed,
+                    "bind_addr": args.bind_addr,
+                    "version": args.version,
+                },
             }
-        })
+        )
         return
 
     if args.seed is None:

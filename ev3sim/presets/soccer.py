@@ -450,6 +450,7 @@ class SoccerInteractor(IInteractor):
             if len(shapes) == 0:
                 self._pressed = False
 
+
 soccer_settings = {
     attr: ObjectSetting(SoccerInteractor, attr)
     for attr in [

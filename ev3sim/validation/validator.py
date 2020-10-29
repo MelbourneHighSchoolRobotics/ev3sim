@@ -1,6 +1,7 @@
 import os
 import yaml
 
+
 class Validator:
 
     # Abstract methods
@@ -8,7 +9,7 @@ class Validator:
     @classmethod
     def validate_json(cls, json_obj) -> bool:
         raise NotImplementedError()
-    
+
     @classmethod
     def validate_file(cls, filepath) -> bool:
         if filepath.endswith(".yaml"):
@@ -33,7 +34,8 @@ class Validator:
 
     @classmethod
     def validate_dict(cls, json_obj) -> bool:
-        if not isinstance(json_obj, dict): return False
+        if not isinstance(json_obj, dict):
+            return False
         for key in cls.REQUIRED_KEYS:
             if key not in json_obj:
                 return False

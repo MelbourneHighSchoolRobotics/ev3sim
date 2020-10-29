@@ -64,12 +64,15 @@ class ScreenObjectManager:
         self.screens = {}
         # Menu screen
         from ev3sim.visual.menus.main import MainMenu
+
         self.screens[self.SCREEN_MENU] = MainMenu(self.SCREEN_HEIGHT, self.SCREEN_WIDTH, "")
         # Batch screen
         from ev3sim.visual.menus.batch_select import BatchMenu
+
         self.screens[self.SCREEN_BATCH] = BatchMenu(self.SCREEN_HEIGHT, self.SCREEN_WIDTH, "")
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
+
         self.screens[self.SCREEN_SIM] = SimulatorMenu()
 
     # TODO: Animate screen popping? Add this as an option?
@@ -77,7 +80,7 @@ class ScreenObjectManager:
     def pushScreen(self, screenString, **kwargs):
         self.screen_stack.append(screenString)
         self.screens[screenString].initWithKwargs(**kwargs)
-    
+
     def popScreen(self):
         self.screens[self.screen_stack[-1]].onPop()
         self.screen_stack.pop()
@@ -148,6 +151,7 @@ class ScreenObjectManager:
 
     def handleEvents(self):
         from ev3sim.simulation.loader import StateHandler
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.VIDEORESIZE:
@@ -180,6 +184,7 @@ class ScreenObjectManager:
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
+
 
 screen_settings = {
     attr: ObjectSetting(ScreenObjectManager, attr)
