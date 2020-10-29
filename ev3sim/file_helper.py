@@ -48,3 +48,7 @@ def find_abs(filepath, allowed_areas=None):
         if os.path.isdir(path) or os.path.isfile(path):
             return path
     raise ValueError(f"File not found: {filepath}")
+
+def find_abs_directory(dirpath):
+    return find_abs("", allowed_areas=[dirpath])
+

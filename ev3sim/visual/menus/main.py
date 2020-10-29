@@ -2,7 +2,7 @@ import pygame_menu
 
 def on_button_simulate(*args, **kwargs):
     from ev3sim.visual.manager import ScreenObjectManager
-    ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, batch="soccer_competition.yaml")
+    ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_BATCH)
 
 class MainMenu(pygame_menu.Menu):
 
