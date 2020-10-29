@@ -7,8 +7,6 @@ class Randomiser:
     instance: "Randomiser" = None
 
     def __init__(self, seed):
-        if self.__class__.instance is not None:
-            raise ValueError(f"Two {self.__class__} instances created.")
         self.global_random = rd.RandomState(seed)
         self.__class__.instance = self
         self.port_randomisers = {}
