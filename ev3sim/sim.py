@@ -4,14 +4,6 @@ import time
 from random import randint, seed
 
 parser = argparse.ArgumentParser(description="Run the simulation, include some robots.")
-parser.add_argument(
-    "--preset",
-    "-p",
-    type=str,
-    help="Path of preset file to load. (You shouldn't need to change this, by default it is presets/soccer.yaml)",
-    default="soccer.yaml",
-    dest="preset",
-)
 parser.add_argument("batch", nargs="?", help="Path of the batch file to run the simulation with.")
 parser.add_argument(
     "--bind_addr",
@@ -27,6 +19,12 @@ parser.add_argument(
     help="Used to seed randomisation, integer from 0 to 2^32-1. Will generate randomly if left blank.",
 )
 parser.add_argument(
+    "--not_command_line",
+    action="store_false",
+    help="This should only be set programmatically, if using the CLI then ignore.",
+    dest="command_line",
+)
+parser.add_argument(
     "--version",
     "-v",
     action="store_true",
@@ -37,14 +35,28 @@ parser.add_argument(
 
 def main(passed_args=None):
     if passed_args is None:
-        passed_args = sys.argv
-
-    args = parser.parse_args(passed_args[1:])
+        args = parser.parse_args(sys.argv[1:])
+    else:
+        args = parser.parse_args(["blank.yaml"])
+        args.__dict__.update(passed_args)
 
     if args.version:
         import ev3sim
 
         print(f"Running ev3sim version {ev3sim.__version__}")
+        return
+
+    if args.command_line:
+        # We need to launch the gui first.
+        from ev3sim.gui import main
+        main(passed_args={
+            "batch": args.batch,
+            "simulation_kwargs": {
+                "seed": args.seed,
+                "bind_addr": args.bind_addr,
+                "version": args.version,
+            }
+        })
         return
 
     if args.seed is None:

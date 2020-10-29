@@ -9,6 +9,11 @@ class ScreenObjectManager:
 
     instance: "ScreenObjectManager"
 
+    SCREEN_MENU = "MAIN_MENU"
+    SCREEN_SIM = "SIMULATOR"
+
+    screen_stack = []
+
     screen: pygame.Surface
     SCREEN_WIDTH: int = 1280
     SCREEN_HEIGHT: int = 960
@@ -25,7 +30,12 @@ class ScreenObjectManager:
         ScreenObjectManager.instance = self
         self.objects = {}
         self.sorting_order = []
+        self.screen_stack = []
         self.initFromKwargs(**kwargs)
+
+    def resetVisualElements(self):
+        self.sorting_order = []
+        self.objects = {}
 
     def initFromKwargs(self, **kwargs):
         self.original_SCREEN_WIDTH = self.SCREEN_WIDTH
@@ -48,6 +58,25 @@ class ScreenObjectManager:
         else:
             self._background_colour = value
 
+    def initScreens(self):
+        self.screens = {}
+        # Menu screen
+        from ev3sim.visual.menus.main import MainMenu
+        self.screens[self.SCREEN_MENU] = MainMenu(self.SCREEN_HEIGHT, self.SCREEN_WIDTH, "")
+        # Simulator screen
+        from ev3sim.visual.menus.sim_menu import SimulatorMenu
+        self.screens[self.SCREEN_SIM] = SimulatorMenu()
+
+    # TODO: Animate screen popping? Add this as an option?
+
+    def pushScreen(self, screenString, **kwargs):
+        self.screen_stack.append(screenString)
+        self.screens[screenString].initWithKwargs(**kwargs)
+    
+    def popScreen(self):
+        self.screens[self.screen_stack[-1]].onPop()
+        self.screen_stack.pop()
+
     def startScreen(self):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
@@ -55,10 +84,6 @@ class ScreenObjectManager:
         pygame.init()
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
         caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
-        if hasattr(ScreenObjectManager, "BATCH_FILE"):
-            caption = caption + f" - {ScreenObjectManager.BATCH_FILE}/{ScreenObjectManager.PRESET_FILE}"
-        else:
-            caption = caption + f" - {ScreenObjectManager.PRESET_FILE}"
         if ScreenObjectManager.NEW_VERSION:
             caption = f"[NEW VERSION AVAILABLE] {caption}"
         pygame.display.set_caption(caption)
@@ -66,6 +91,9 @@ class ScreenObjectManager:
         img = pygame.image.load(img_path)
         img.set_colorkey((255, 255, 255))
         pygame.display.set_icon(img)
+
+        self.initScreens()
+        self.pushScreen(self.SCREEN_MENU)
 
     def registerVisual(self, obj: "visual.objects.IVisualElement", key) -> str:  # noqa: F821
         assert (
@@ -98,13 +126,16 @@ class ScreenObjectManager:
 
     def applyToScreen(self):
         self.screen.fill(self.background_colour)
-        for key in self.sorting_order:
-            if self.objects[key].sensorVisible:
+        if self.screen_stack[-1] == self.SCREEN_SIM:
+            for key in self.sorting_order:
+                if self.objects[key].sensorVisible:
+                    self.objects[key].applyToScreen()
+            self.sensorScreen = self.screen.copy()
+            self.screen.fill(self.background_colour)
+            for key in self.sorting_order:
                 self.objects[key].applyToScreen()
-        self.sensorScreen = self.screen.copy()
-        self.screen.fill(self.background_colour)
-        for key in self.sorting_order:
-            self.objects[key].applyToScreen()
+        else:
+            self.screens[self.screen_stack[-1]].draw(self.screen)
         pygame.display.update()
 
     def colourAtPixel(self, screen_position):
