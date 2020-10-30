@@ -176,6 +176,10 @@ class Image(Colorable):
 
         self._image_path = find_abs(value, allowed_areas=["local", "local/assets/", "package", "package/assets/"])
         self.image = pygame.image.load(self._image_path)
+        try:
+            self.calculatePoints()
+        except:
+            pass
 
     def calculatePoints(self):
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
