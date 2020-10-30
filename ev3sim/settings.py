@@ -68,7 +68,7 @@ class SettingsManager:
                 # group.
                 self.setMany(settings_obj[key], append_keys + [key])
             else:
-                self[append_keys + [key]] = settings_obj[key]
+                self[append_keys + [key]].value = settings_obj[key]
 
     def __getitem__(self, key):
         if isinstance(key, str):
