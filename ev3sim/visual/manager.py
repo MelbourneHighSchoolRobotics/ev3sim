@@ -65,11 +65,11 @@ class ScreenObjectManager:
         # Menu screen
         from ev3sim.visual.menus.main import MainMenu
 
-        self.screens[self.SCREEN_MENU] = MainMenu(self.SCREEN_HEIGHT, self.SCREEN_WIDTH, "")
+        self.screens[self.SCREEN_MENU] = MainMenu((self.SCREEN_HEIGHT, self.SCREEN_WIDTH))
         # Batch screen
         from ev3sim.visual.menus.batch_select import BatchMenu
 
-        self.screens[self.SCREEN_BATCH] = BatchMenu(self.SCREEN_HEIGHT, self.SCREEN_WIDTH, "")
+        self.screens[self.SCREEN_BATCH] = BatchMenu((self.SCREEN_HEIGHT, self.SCREEN_WIDTH))
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
@@ -133,7 +133,10 @@ class ScreenObjectManager:
             self.registerObject(child, child.key)
 
     def applyToScreen(self):
+        from ev3sim.simulation.loader import ScriptLoader
+
         self.screen.fill(self.background_colour)
+        self.screens[self.screen_stack[-1]].update(1 / ScriptLoader.instance.VISUAL_TICK_RATE)
         if self.screen_stack[-1] == self.SCREEN_SIM:
             for key in self.sorting_order:
                 if self.objects[key].sensorVisible:
@@ -143,7 +146,7 @@ class ScreenObjectManager:
             for key in self.sorting_order:
                 self.objects[key].applyToScreen()
         else:
-            self.screens[self.screen_stack[-1]].draw(self.screen)
+            self.screens[self.screen_stack[-1]].draw_ui(self.screen)
         pygame.display.update()
 
     def colourAtPixel(self, screen_position):
@@ -154,6 +157,8 @@ class ScreenObjectManager:
 
         events = pygame.event.get()
         for event in events:
+            self.screens[self.screen_stack[-1]].process_events(event)
+            self.screens[self.screen_stack[-1]].handleEvent(event)
             if event.type == pygame.VIDEORESIZE:
                 self.SCREEN_WIDTH, self.SCREEN_HEIGHT = event.size
                 self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL = self.SCREEN_WIDTH, self.SCREEN_HEIGHT
@@ -175,9 +180,6 @@ class ScreenObjectManager:
                     StateHandler.instance.is_running = False
                 else:
                     self.popScreen()
-        if StateHandler.instance.is_running:
-            # We should only update our screens if we haven't quit.
-            self.screens[self.screen_stack[-1]].update(events)
         return events
 
     def relativeScreenScale(self):
@@ -196,6 +198,10 @@ screen_settings = {
         "BACKGROUND_COLOUR",
     ]
 }
+
+
 def on_change_bg(new_val):
     ScreenObjectManager.instance.background_colour = new_val
+
+
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg

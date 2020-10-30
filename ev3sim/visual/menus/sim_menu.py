@@ -1,5 +1,5 @@
 class SimulatorMenu:
-    def update(self, events):
+    def update(self, draw_time):
         pass
 
     def initWithKwargs(self, **kwargs):
@@ -23,3 +23,9 @@ class SimulatorMenu:
         World.instance.resetWorld()
         # And reset the script loader.
         ScriptLoader.instance.reset()
+
+    def process_events(self, event):
+        pass
+
+    def handleEvent(self, event):
+        pass
