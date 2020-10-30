@@ -8,15 +8,17 @@ from ev3sim.validation.batch_files import BatchValidator
 class BatchMenu(pygame_gui.UIManager):
     def __init__(self, size, *args, **kwargs):
         self._size = size
-        self._batch_buttons = []
+        self._all_objs = []
         super().__init__(size, *args, **kwargs)
         self._button_size = self._size[0] / 4, 40
 
     def initWithKwargs(self, **kwargs):
         # Remove all the previous buttons.
-        for button in self._batch_buttons:
+        for button in self._all_objs:
             button.kill()
-        self._batch_buttons = []
+        self._all_objs = []
+        self.bg = pygame_gui.elements.UIPanel(relative_rect=pygame.Rect(0, 0, *self._size), starting_layer_height=-1, manager=self, object_id=pygame_gui.core.ObjectID("background"))
+        self._all_objs.append(self.bg)
         # Find all batch files and show them
         self.available_batches = []
         for rel_dir in ["package", "package/batched_commands/"]:
@@ -28,7 +30,7 @@ class BatchMenu(pygame_gui.UIManager):
             relative_rect = pygame.Rect(
                 self._size[0] / 10, self._size[1] / 10 + i * self._button_size[1] * 1.5, *self._button_size
             )
-            self._batch_buttons.append(
+            self._all_objs.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=relative_rect,
                     text=show,

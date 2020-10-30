@@ -1,15 +1,17 @@
 {
     "defaults": {
         "colours": {
-            "normal_bg": "#45494e",
-            "hovered_bg": "#ffffff",
+            "normal_bg": "#C5C6C7",
+            "hovered_bg": "#93A4B4",
             "disabled_bg": "#25292e",
             "selected_bg": "#193754",
             "dark_bg": "#15191e",
-            "normal_text": "#c5cbd8",
-            "hovered_text": "#FFFFFF",
-            "selected_text": "#FFFFFF",
+            "active_bg": "#9ACBD6",
+            "normal_text": "#1F2833",
+            "hovered_text": "#011628",
+            "selected_text": "#131920",
             "disabled_text": "#6d736f",
+            "active_text": "#7E8B9A",
             "link_text": "#0000EE",
             "link_hover": "#2020FF",
             "link_selected": "#551A8B",
@@ -21,6 +23,42 @@
             "active_border": "#8080B0",
             "filled_bar": "#f4251b",
             "unfilled_bar": "#CCCCCC"
+        }
+    },
+    "title": {
+        "colours": {
+            "normal_text": "#66FCF1",
+            "dark_bg": "#00000000"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "36",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "button": {
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "simulate_button": {
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "3"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        }
+    },
+    "background": {
+        "colours": {
+            "dark_bg": "#0B0C10"
+        },
+        "misc": {
+            "border_width": "0"
         }
     }
 }
