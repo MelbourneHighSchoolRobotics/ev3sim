@@ -1,4 +1,5 @@
-from ev3sim.settings import ObjectSetting
+from ev3sim.file_helper import find_abs
+from ev3sim.settings import BindableValue, ObjectSetting
 import pygame
 import pygame.freetype
 from typing import Dict, List, Tuple
@@ -27,6 +28,9 @@ class ScreenObjectManager:
 
     objects: Dict[str, "visual.objects.IVisualElement"]  # noqa: F821
     sorting_order: List[str]
+
+    # This needs to be provided in settings.
+    theme_path = ""
 
     def __init__(self, **kwargs):
         ScreenObjectManager.instance = self
@@ -79,6 +83,8 @@ class ScreenObjectManager:
 
     def pushScreen(self, screenString, **kwargs):
         self.screen_stack.append(screenString)
+        if hasattr(self.screens[screenString], "ui_theme"):
+            self.screens[screenString].ui_theme.load_theme(self.theme_path)
         self.screens[screenString].initWithKwargs(**kwargs)
 
     def popScreen(self):
@@ -203,5 +209,9 @@ screen_settings = {
 def on_change_bg(new_val):
     ScreenObjectManager.instance.background_colour = new_val
 
+def on_change_theme(new_val):
+    ScreenObjectManager.theme_path = find_abs(new_val, allowed_areas=["local", "package/assets"])
 
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg
+screen_settings["theme"] = BindableValue("")
+screen_settings["theme"].on_change = on_change_theme

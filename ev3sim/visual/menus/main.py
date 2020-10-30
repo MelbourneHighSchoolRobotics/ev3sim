@@ -13,19 +13,24 @@ class MainMenu(pygame_gui.UIManager):
     def __init__(self, size, *args, **kwargs):
         self._size = size
         super().__init__(size, *args, **kwargs)
-        button_size = self._size[0] / 4, self._size[1] / 6
+        self.button_size = self._size[0] / 4, self._size[1] / 6
+        self._all_objs = []
+
+    def initWithKwargs(self, **kwargs):
+        for obj in self._all_objs:
+            obj.kill()
+        self._all_objs = []
         relative_rect = pygame.Rect(
-            self._size[0] / 2 - button_size[0] / 2, self._size[1] / 2 - button_size[1], *button_size
+            (self._size[0] - self.button_size[0]) / 2, (self._size[1] - self.button_size[1]) / 2, *self.button_size
         )
+        # In order to respect theme changes, objects must be built in initWithKwargs
         self.hello_button = pygame_gui.elements.UIButton(
             relative_rect=relative_rect,
             text="Click me!",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("hello", "menu_button"),
+            object_id=pygame_gui.core.ObjectID("hello", "test"),
         )
-
-    def initWithKwargs(self, **kwargs):
-        pass
+        self._all_objs.append(self.hello_button)
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
