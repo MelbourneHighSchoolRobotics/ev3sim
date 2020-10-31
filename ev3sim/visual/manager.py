@@ -176,9 +176,16 @@ class ScreenObjectManager:
                 self.screen = pygame.display.set_mode(
                     (self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE
                 )
-                if self.screen_stack[-1] == self.SCREEN_SIM:
-                    for key in self.sorting_order:
-                        self.objects[key].calculatePoints()
+                for key, menu in self.screens.items():
+                    if key != self.SCREEN_SIM:
+                        menu.setSize((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL))
+                for screen in self.screen_stack:
+                    if screen == self.SCREEN_SIM:
+                        for key in self.sorting_order:
+                            self.objects[key].calculatePoints()
+                    else:
+                        self.screens[screen].sizeObjects()
+
             if event.type == pygame.QUIT:
                 StateHandler.instance.is_running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -209,8 +216,10 @@ screen_settings = {
 def on_change_bg(new_val):
     ScreenObjectManager.instance.background_colour = new_val
 
+
 def on_change_theme(new_val):
     ScreenObjectManager.theme_path = find_abs(new_val, allowed_areas=["local", "package/assets"])
+
 
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg
 screen_settings["theme"] = BindableValue("")

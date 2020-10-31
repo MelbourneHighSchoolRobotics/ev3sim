@@ -1,6 +1,6 @@
 import pygame
-from pygame import event
 import pygame_gui
+from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 def on_button_simulate(*args, **kwargs):
@@ -9,27 +9,32 @@ def on_button_simulate(*args, **kwargs):
     ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_BATCH)
 
 
-class MainMenu(pygame_gui.UIManager):
-    def __init__(self, size, *args, **kwargs):
-        self._size = size
-        super().__init__(size, *args, **kwargs)
-        self.button_size = self._size[0] / 4, self._size[1] / 6
-        self._all_objs = []
+class MainMenu(BaseMenu):
+    def sizeObjects(self):
+        self.bg.set_dimensions(self._size)
+        self.bg.set_position((0, 0))
+        self.title.set_dimensions((self._size[0] - 60, 50))
+        self.title.set_position((30, 30))
+        button_size = self._size[0] / 4, self._size[1] / 6
+        self.simulate_button.set_dimensions(button_size)
+        self.simulate_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2))
 
-    def initWithKwargs(self, **kwargs):
-        for obj in self._all_objs:
-            obj.kill()
-        self._all_objs = []
+    def generateObjects(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
         # In order to respect theme changes, objects must be built in initWithKwargs
-        self.bg = pygame_gui.elements.UIPanel(relative_rect=pygame.Rect(0, 0, *self._size), starting_layer_height=-1, manager=self, object_id=pygame_gui.core.ObjectID("background"))
-        self._all_objs.append(self.bg)
-        self.title = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(30, 30, self._size[0] - 60, 50), text="EV3Sim", manager=self, object_id=pygame_gui.core.ObjectID("title"))
-        self._all_objs.append(self.title)
-        relative_rect = pygame.Rect(
-            (self._size[0] - self.button_size[0]) / 2, (self._size[1] - self.button_size[1]) / 2, *self.button_size
+        self.bg = pygame_gui.elements.UIPanel(
+            relative_rect=dummy_rect,
+            starting_layer_height=-1,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("background"),
         )
+        self._all_objs.append(self.bg)
+        self.title = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect, text="EV3Sim", manager=self, object_id=pygame_gui.core.ObjectID("title")
+        )
+        self._all_objs.append(self.title)
         self.simulate_button = pygame_gui.elements.UIButton(
-            relative_rect=relative_rect,
+            relative_rect=dummy_rect,
             text="Simulate",
             manager=self,
             object_id=pygame_gui.core.ObjectID("simulate_button"),

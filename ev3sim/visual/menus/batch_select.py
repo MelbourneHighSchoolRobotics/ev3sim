@@ -3,21 +3,27 @@ import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
+from ev3sim.visual.menus.base_menu import BaseMenu
 
 
-class BatchMenu(pygame_gui.UIManager):
-    def __init__(self, size, *args, **kwargs):
-        self._size = size
-        self._all_objs = []
-        super().__init__(size, *args, **kwargs)
-        self._button_size = self._size[0] / 4, 40
+class BatchMenu(BaseMenu):
+    def sizeObjects(self):
+        button_size = self._size[0] / 4, 40
+        batch_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
+        self.bg.set_dimensions(self._size)
+        self.bg.set_position((0, 0))
+        for i in range(len(self.batch_buttons)):
+            self.batch_buttons[i].set_dimensions(button_size)
+            self.batch_buttons[i].set_position(batch_rect(i))
 
-    def initWithKwargs(self, **kwargs):
-        # Remove all the previous buttons.
-        for button in self._all_objs:
-            button.kill()
-        self._all_objs = []
-        self.bg = pygame_gui.elements.UIPanel(relative_rect=pygame.Rect(0, 0, *self._size), starting_layer_height=-1, manager=self, object_id=pygame_gui.core.ObjectID("background"))
+    def generateObjects(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
+        self.bg = pygame_gui.elements.UIPanel(
+            relative_rect=dummy_rect,
+            starting_layer_height=-1,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("background"),
+        )
         self._all_objs.append(self.bg)
         # Find all batch files and show them
         self.available_batches = []
@@ -26,18 +32,17 @@ class BatchMenu(pygame_gui.UIManager):
             for batch in BatchValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .yaml
                 self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch)))
+        self.batch_buttons = []
         for i, (show, batch) in enumerate(self.available_batches):
-            relative_rect = pygame.Rect(
-                self._size[0] / 10, self._size[1] / 10 + i * self._button_size[1] * 1.5, *self._button_size
-            )
-            self._all_objs.append(
+            self.batch_buttons.append(
                 pygame_gui.elements.UIButton(
-                    relative_rect=relative_rect,
+                    relative_rect=dummy_rect,
                     text=show,
                     manager=self,
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "batch_select_button"),
                 )
             )
+        self._all_objs.extend(self.batch_buttons)
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
