@@ -60,5 +60,25 @@
         "misc": {
             "border_width": "0"
         }
+    },
+    "start-sim": {
+        "colours": {
+            "normal_bg": "#80b918",
+            "hovered_bg": "#80b918",
+            "active_bg": "#aacc00",
+            "normal_text": "#f7ede2",
+            "hovered_text": "#f7ede2",
+            "active_text": "#f7ede2"
+        }
+    },
+    "batch_select_button_highlighted": {
+        "colours": {
+            "normal_bg": "#80b918",
+            "hovered_bg": "#80b918",
+            "active_bg": "#aacc00",
+            "normal_text": "#f7ede2",
+            "hovered_text": "#f7ede2",
+            "active_text": "#f7ede2"
+        }
     }
 }
