@@ -88,7 +88,9 @@ class BatchMenu(BaseMenu):
         # Update theming.
         self.start_button.enable()
         for i in range(len(self.batch_buttons)):
-            self.batch_buttons[i].combined_element_ids[1] = "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
+            self.batch_buttons[i].combined_element_ids[1] = (
+                "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
+            )
             self.batch_buttons[i].rebuild_from_changed_theme_data()
 
     def incrementBatchIndex(self, amount):
