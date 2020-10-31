@@ -59,23 +59,45 @@ class BatchMenu(BaseMenu):
         self.batch_index = -1
         self.start_button.disable()
 
+    def clickStart(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
+        )
+
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_object_id.startswith("start-sim"):
-                # Shouldn't happen but lets be safe.
-                if self.batch_index == -1:
-                    return
-                from ev3sim.visual.manager import ScreenObjectManager
-
-                ScreenObjectManager.instance.pushScreen(
-                    ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
-                )
+                self.clickStart()
             else:
-                self.batch_index = int(event.ui_object_id.split("#")[0].split("-")[-1])
-                self.start_button.enable()
-                for i in range(len(self.batch_buttons)):
-                    self.batch_buttons[i].combined_element_ids[1] = "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
-                    self.batch_buttons[i].rebuild_from_changed_theme_data()
+                self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
+        if event.type == pygame.KEYDOWN:
+            if event.key in [pygame.K_DOWN, pygame.K_w]:
+                self.incrementBatchIndex(1)
+            elif event.key in [pygame.K_UP, pygame.K_s]:
+                self.incrementBatchIndex(-1)
+            elif event.key == pygame.K_RETURN:
+                self.clickStart()
+
+    def setBatchIndex(self, new_index):
+        self.batch_index = new_index
+        # Update theming.
+        self.start_button.enable()
+        for i in range(len(self.batch_buttons)):
+            self.batch_buttons[i].combined_element_ids[1] = "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
+            self.batch_buttons[i].rebuild_from_changed_theme_data()
+
+    def incrementBatchIndex(self, amount):
+        if self.batch_index == -1:
+            new_index = amount if amount < 0 else amount - 1
+        else:
+            new_index = self.batch_index + amount
+        new_index %= len(self.batch_buttons)
+        self.setBatchIndex(new_index)
 
     def onPop(self):
         pass
