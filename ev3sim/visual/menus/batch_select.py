@@ -1,4 +1,3 @@
-from re import findall
 import yaml
 import os.path
 import pygame
