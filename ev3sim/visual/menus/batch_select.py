@@ -16,7 +16,7 @@ class BatchMenu(BaseMenu):
         preview_size = self._size[0] / 4, self._size[1] / 4
         preview_size = (
             min(preview_size[0], (preview_size[1] * 4) // 3),
-            min(preview_size[1], (preview_size[0] * 3) // 4)
+            min(preview_size[1], (preview_size[0] * 3) // 4),
         )
         settings_size = preview_size[0] * 0.4, preview_size[1] * 0.4
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
@@ -159,10 +159,14 @@ class BatchMenu(BaseMenu):
         try:
             with open(self.available_batches[self.batch_index][1], "r") as f:
                 config = yaml.safe_load(f)
-            preset_path = find_abs(config["preset_file"], allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+            preset_path = find_abs(
+                config["preset_file"], allowed_areas=["local", "local/presets/", "package", "package/presets/"]
+            )
             with open(preset_path, "r") as f:
                 preset_config = yaml.safe_load(f)
-            preset_preview = find_abs(preset_config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"])
+            preset_preview = find_abs(
+                preset_config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
+            )
             img = pygame.image.load(preset_preview)
             if img.get_size() != self.preview_image.rect.size:
                 img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))
