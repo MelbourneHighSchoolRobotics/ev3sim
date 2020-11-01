@@ -1,3 +1,5 @@
+preview_path: "soccer_preview.png"
+
 colours:
   wall_color: "#2a9d8f"
   strip_color: "#f1faee"
