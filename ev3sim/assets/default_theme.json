@@ -65,10 +65,14 @@
         "colours": {
             "normal_bg": "#80b918",
             "hovered_bg": "#80b918",
-            "active_bg": "#aacc00",
-            "normal_text": "#f7ede2",
-            "hovered_text": "#f7ede2",
-            "active_text": "#f7ede2"
+            "active_bg": "#aacc00"
+        }
+    },
+    "batch-settings": {
+        "colours": {
+            "normal_bg": "#6c757d",
+            "hovered_bg": "#6c757d",
+            "active_bg": "#adb5bd"
         }
     },
     "batch_select_button_highlighted": {
