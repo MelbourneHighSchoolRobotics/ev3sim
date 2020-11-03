@@ -94,7 +94,7 @@ class BatchMenu(BaseMenu):
             relative_rect=dummy_rect,
             image_surface=pygame.Surface(self._size),
             manager=self,
-            object_id=pygame_gui.core.ObjectID("settings-icon"),
+            object_id=pygame_gui.core.ObjectID("preview-image"),
         )
         self._all_objs.append(self.preview_image)
         self.settings_button = pygame_gui.elements.UIButton(
