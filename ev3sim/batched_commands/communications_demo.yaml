@@ -1,4 +1,3 @@
-preset_file: soccer.yaml
 bots:
 - name: bot.yaml
   scripts:
@@ -9,15 +8,13 @@ bots:
 - name: bot.yaml
   scripts:
   - communication_client.py
+preset_file: soccer.yaml
 settings:
   soccer:
-    TEAM_NAMES:
-      - Team 1
-      - Team 2
-    # Soccer referee game settings
-    GAME_HALF_LENGTH_MINUTES: 5
-    SHOW_GOAL_COLLIDERS: true
-    ENFORCE_OUT_ON_WHITE: true
     BALL_RESET_ON_WHITE: true
     BALL_RESET_WHITE_DELAY_SECONDS: 5
     BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
+    ENFORCE_OUT_ON_WHITE: true
+    GAME_HALF_LENGTH_MINUTES: 5
+    TEAM_NAME_1: Team 1
+    TEAM_NAME_2: Team 2
