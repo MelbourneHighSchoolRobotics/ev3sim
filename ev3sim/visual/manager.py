@@ -14,6 +14,7 @@ class ScreenObjectManager:
     SCREEN_MENU = "MAIN_MENU"
     SCREEN_SIM = "SIMULATOR"
     SCREEN_BATCH = "BATCH_SELECT"
+    SCREEN_SETTINGS = "SETTINGS"
 
     screen_stack = []
 
@@ -78,6 +79,10 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
         self.screens[self.SCREEN_SIM] = SimulatorMenu()
+        # Settings generic screen
+        from ev3sim.visual.settings.menu import SettingsMenu
+
+        self.screens[self.SCREEN_SETTINGS] = SettingsMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
     # TODO: Animate screen popping? Add this as an option?
 

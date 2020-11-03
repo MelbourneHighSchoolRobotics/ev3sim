@@ -32,9 +32,8 @@ settings:
     MAP_HEIGHT: 220
     BACKGROUND_COLOUR: "#1f1f1f"
   soccer:
-    TEAM_NAMES:
-      - Team 1
-      - Team 2
+    TEAM_NAME_1: Team 1
+    TEAM_NAME_2: Team 2
     SPAWN_LOCATIONS:
       - [[[-80, -18], 0], [[-50, -18], 0]]
       - [[[80, -18], 180], [[50, -18], 180]]

@@ -61,6 +61,14 @@
             "border_width": "0"
         }
     },
+    "settings-background": {
+        "colours": {
+            "dark_bg": "#181A25"
+        },
+        "misc": {
+            "border_width": "0"
+        }
+    },
     "start-sim": {
         "colours": {
             "normal_bg": "#80b918",
@@ -83,6 +91,48 @@
             "normal_text": "#f7ede2",
             "hovered_text": "#f7ede2",
             "active_text": "#f7ede2"
+        }
+    },
+    "text_entry_line": {
+        "colours": {
+            "dark_bg": "#BCC5CD"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        },
+        "misc": {
+            "padding": "4,2"
+        }
+    },
+    "entry-label": {
+        "colours": {
+            "dark_bg": "#BCC5CD"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        }
+    },
+    "checkbox-button": {
+        "colours": {
+            "normal_bg": "#ffffff00",
+            "hovered_bg": "#ffffff40",
+            "active_bg": "#ffffff80"
+        }
+    },
+    "save-changes": {
+        "colours": {
+            "normal_bg": "#80b918",
+            "hovered_bg": "#80b918",
+            "active_bg": "#aacc00"
+        }
+    },
+    "cancel-changes": {
+        "colours": {
+            "normal_bg": "#EF6E6B",
+            "hovered_bg": "#EF6E6B",
+            "active_bg": "#F39291"
         }
     }
 }

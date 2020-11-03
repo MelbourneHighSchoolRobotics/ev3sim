@@ -129,12 +129,25 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
         )
 
+    def clickSettings(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.presets.soccer import visual_settings
+
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SETTINGS,
+            file=self.available_batches[self.batch_index][1],
+            settings=visual_settings,
+        )
+
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_object_id.startswith("start-sim"):
                 self.clickStart()
             elif event.ui_object_id.startswith("batch-settings"):
-                self.batchEdit()
+                self.clickSettings()
             else:
                 self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:

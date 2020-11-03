@@ -31,7 +31,8 @@ class SoccerInteractor(IInteractor):
     BOT_OUT_ON_WHITE_PENALTY_SECONDS = 30
     BALL_RESET_WHITE_DELAY_SECONDS = 5
 
-    TEAM_NAMES = []
+    TEAM_NAME_1 = ""
+    TEAM_NAME_2 = ""
     SPAWN_LOCATIONS = []
     PENALTY_LOCATIONS = []
     GOALS = []
@@ -51,7 +52,6 @@ class SoccerInteractor(IInteractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
         self.current_goal_score_tick = -1
         self.out_on_white_tick = 0
         self.time_tick = 0
@@ -79,7 +79,8 @@ class SoccerInteractor(IInteractor):
             raise ValueError("No robots loaded.")
 
     def startUp(self):
-        self.names = self.TEAM_NAMES[:]
+        self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
+        self.names = [self.TEAM_NAME_1, self.TEAM_NAME_2]
         self.spawns = self.SPAWN_LOCATIONS[:]
         self.penalty = self.PENALTY_LOCATIONS[:]
         self.goals = self.GOALS[:]
@@ -454,7 +455,8 @@ class SoccerInteractor(IInteractor):
 soccer_settings = {
     attr: ObjectSetting(SoccerInteractor, attr)
     for attr in [
-        "TEAM_NAMES",
+        "TEAM_NAME_1",
+        "TEAM_NAME_2",
         "SPAWN_LOCATIONS",
         "PENALTY_LOCATIONS",
         "GOALS",
@@ -466,3 +468,40 @@ soccer_settings = {
         "BOT_OUT_ON_WHITE_PENALTY_SECONDS",
     ]
 }
+
+from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox
+
+visual_settings = [
+    {
+        "height": lambda s: 190,
+        "objects": [
+            TextEntry(["soccer", "TEAM_NAME_1"], "Team 1", "Team 1 Name", (lambda s: (0, 20))),
+            TextEntry(["soccer", "TEAM_NAME_2"], "Team 2", "Team 2 Name", (lambda s: (0, 70))),
+            NumberEntry(["soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120))),
+        ],
+    },
+    {
+        "height": lambda s: 240 if s[0] < 580 else 140,
+        "objects": [
+            Checkbox(["soccer", "ENFORCE_OUT_ON_WHITE"], True, "Out on white", (lambda s: (0, 20))),
+            Checkbox(
+                ["soccer", "BALL_RESET_ON_WHITE"],
+                True,
+                "Ball reset on white",
+                (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)),
+            ),
+            NumberEntry(
+                ["soccer", "BOT_OUT_ON_WHITE_PENALTY_SECONDS"],
+                30,
+                "Bot out penalty",
+                (lambda s: (0, 120) if s[0] < 540 else (0, 70)),
+            ),
+            NumberEntry(
+                ["soccer", "BALL_RESET_WHITE_DELAY_SECONDS"],
+                5,
+                "Ball reset delay",
+                (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+            ),
+        ],
+    },
+]
