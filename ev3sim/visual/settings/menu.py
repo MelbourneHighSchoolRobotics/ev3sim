@@ -5,6 +5,8 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 class SettingsMenu(BaseMenu):
+    # TODO: Make this scroll. Maybe fix the height of save/cancel to bottom.
+
     def sizeObjects(self):
         yPadding = 20
         yOffset = 0
