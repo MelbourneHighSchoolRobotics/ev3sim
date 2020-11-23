@@ -47,6 +47,7 @@ class ScriptLoader:
                 SettingsManager.instance.removeSetting(script._settings_name)
         self.active_scripts = []
         self.all_scripts = []
+        self.robots = {}
 
     def addActiveScript(self, script: IInteractor):
         idx = len(self.active_scripts)
