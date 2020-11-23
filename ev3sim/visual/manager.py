@@ -1,4 +1,4 @@
-from ev3sim.file_helper import find_abs
+from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
 import pygame
 import pygame.freetype
@@ -143,21 +143,23 @@ class ScreenObjectManager:
         for i, child in enumerate(obj.children):
             self.registerObject(child, child.key)
 
-    def applyToScreen(self):
+    def applyToScreen(self, to_screen=None):
         from ev3sim.simulation.loader import ScriptLoader
 
-        self.screen.fill(self.background_colour)
+        blit_screen = self.screen if to_screen is None else to_screen
+
+        blit_screen.fill(self.background_colour)
         self.screens[self.screen_stack[-1]].update(1 / ScriptLoader.instance.VISUAL_TICK_RATE)
-        if self.screen_stack[-1] == self.SCREEN_SIM:
+        if self.screen_stack[-1] == self.SCREEN_SIM or to_screen is not None:
             for key in self.sorting_order:
                 if self.objects[key].sensorVisible:
-                    self.objects[key].applyToScreen()
+                    self.objects[key].applyToScreen(to_screen)
             self.sensorScreen = self.screen.copy()
-            self.screen.fill(self.background_colour)
+            blit_screen.fill(self.background_colour)
             for key in self.sorting_order:
-                self.objects[key].applyToScreen()
+                self.objects[key].applyToScreen(to_screen)
         else:
-            self.screens[self.screen_stack[-1]].draw_ui(self.screen)
+            self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
         pygame.display.update()
 
     def colourAtPixel(self, screen_position):
@@ -204,6 +206,36 @@ class ScreenObjectManager:
         """Returns the relative scaling of the screen that has occur since the screen was first initialised."""
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
+
+    def captureBotImage(self, filename):
+        self.resetVisualElements()
+        from os.path import join
+        from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.robot import initialise_bot, RobotInteractor
+        from ev3sim.simulation.randomisation import Randomiser
+        Randomiser.createGlobalRandomiserWithSeed(0)
+        ScriptLoader.instance.startUp()
+        elems = {}
+        initialise_bot(elems, filename, "", 0)
+        ScriptLoader.instance.loadElements(elems.get("elements", []))
+        for interactor in ScriptLoader.instance.active_scripts:
+            if isinstance(interactor, RobotInteractor):
+                interactor.connectDevices()
+                interactor.initialiseDevices()
+        for interactor in ScriptLoader.instance.active_scripts:
+            interactor.startUp()
+            interactor.tick(0)
+            interactor.afterPhysics()
+        screen = pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.applyToScreen(screen)
+        top_left = utils.worldspace_to_screenspace((-11, 11))
+        bot_right = utils.worldspace_to_screenspace((11, -11))
+        cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
+        cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
+        self.resetVisualElements()
+        ScriptLoader.instance.reset()
+        dirname = find_abs_directory("package/assets/bots")
+        pygame.image.save(cropped, join(dirname, filename.split("\\")[-1].split(".")[-2] + ".png"))
 
 
 screen_settings = {
