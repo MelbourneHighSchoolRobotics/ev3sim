@@ -159,11 +159,11 @@ class ScreenObjectManager:
         if self.screen_stack[-1] == self.SCREEN_SIM or to_screen is not None:
             for key in self.sorting_order:
                 if self.objects[key].sensorVisible:
-                    self.objects[key].applyToScreen(to_screen)
+                    self.objects[key].applyToScreen(blit_screen)
             self.sensorScreen = self.screen.copy()
             blit_screen.fill(self.background_colour if bg is None else bg)
             for key in self.sorting_order:
-                self.objects[key].applyToScreen(to_screen)
+                self.objects[key].applyToScreen(blit_screen)
         else:
             self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
         pygame.display.update()

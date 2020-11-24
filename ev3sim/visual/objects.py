@@ -574,8 +574,6 @@ class Text(Colorable):
         super().scaleAtPosition(amount, pos=pos)
 
     def calculatePoints(self):
-        if not hasattr(self, "font"):
-            return
         relative_scale = ScreenObjectManager.instance.relativeScreenScale()
         # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
         relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
