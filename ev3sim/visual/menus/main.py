@@ -1,6 +1,8 @@
 import pygame
 import pygame_gui
+from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
+from ev3sim.visual.settings.main_settings import main_settings
 
 
 def on_button_simulate(*args, **kwargs):
@@ -18,11 +20,15 @@ class MainMenu(BaseMenu):
         button_size = self._size[0] / 4, self._size[1] / 6
         self.simulate_button.set_dimensions(button_size)
         self.simulate_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1])
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1] * 1.5)
         )
         self.bot_button.set_dimensions(button_size)
         self.bot_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1])
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2)
+        )
+        self.settings_button.set_dimensions(button_size)
+        self.settings_button.set_position(
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1] * 1.5)
         )
 
     def generateObjects(self):
@@ -53,17 +59,27 @@ class MainMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("bots_button"),
         )
         self._all_objs.append(self.bot_button)
+        self.settings_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="Settings",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("main_settings_button"),
+        )
+        self._all_objs.append(self.settings_button)
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_object_id.startswith("simulate_button"):
-                from ev3sim.visual.manager import ScreenObjectManager
+            from ev3sim.visual.manager import ScreenObjectManager
 
+            if event.ui_object_id.startswith("simulate_button"):
                 ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
             if event.ui_object_id.startswith("bots_button"):
-                from ev3sim.visual.manager import ScreenObjectManager
-
                 ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
-
+            if event.ui_object_id.startswith("main_settings_button"):
+                ScreenObjectManager.instance.pushScreen(
+                    ScreenObjectManager.SCREEN_SETTINGS,
+                    file=find_abs("user_config.yaml", ["package"]),
+                    settings=main_settings,
+                )
     def onPop(self):
         pass
