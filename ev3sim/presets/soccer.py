@@ -476,29 +476,29 @@ visual_settings = [
     {
         "height": lambda s: 190,
         "objects": [
-            TextEntry(["soccer", "TEAM_NAME_1"], "Team 1", "Team 1 Name", (lambda s: (0, 20))),
-            TextEntry(["soccer", "TEAM_NAME_2"], "Team 2", "Team 2 Name", (lambda s: (0, 70))),
-            NumberEntry(["soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120))),
+            TextEntry(["settings", "soccer", "TEAM_NAME_1"], "Team 1", "Team 1 Name", (lambda s: (0, 20))),
+            TextEntry(["settings", "soccer", "TEAM_NAME_2"], "Team 2", "Team 2 Name", (lambda s: (0, 70))),
+            NumberEntry(["settings", "soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120))),
         ],
     },
     {
         "height": lambda s: 240 if s[0] < 580 else 140,
         "objects": [
-            Checkbox(["soccer", "ENFORCE_OUT_ON_WHITE"], True, "Out on white", (lambda s: (0, 20))),
+            Checkbox(["settings", "soccer", "ENFORCE_OUT_ON_WHITE"], True, "Out on white", (lambda s: (0, 20))),
             Checkbox(
-                ["soccer", "BALL_RESET_ON_WHITE"],
+                ["settings", "soccer", "BALL_RESET_ON_WHITE"],
                 True,
                 "Ball reset on white",
                 (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)),
             ),
             NumberEntry(
-                ["soccer", "BOT_OUT_ON_WHITE_PENALTY_SECONDS"],
+                ["settings", "soccer", "BOT_OUT_ON_WHITE_PENALTY_SECONDS"],
                 30,
                 "Bot out penalty",
                 (lambda s: (0, 120) if s[0] < 540 else (0, 70)),
             ),
             NumberEntry(
-                ["soccer", "BALL_RESET_WHITE_DELAY_SECONDS"],
+                ["settings", "soccer", "BALL_RESET_WHITE_DELAY_SECONDS"],
                 5,
                 "Ball reset delay",
                 (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),

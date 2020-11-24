@@ -101,7 +101,7 @@ class SettingsMenu(BaseMenu):
                     json_obj = yaml.safe_load(f)
                 for group in self.settings_obj:
                     for obj in group["objects"]:
-                        obj.setToJson(json_obj["settings"])
+                        obj.setToJson(json_obj)
                 string = yaml.dump(json_obj)
                 with open(self.filename, "w") as f:
                     f.write(string)
@@ -125,5 +125,5 @@ class SettingsMenu(BaseMenu):
         self.settings_obj = kwargs["settings"]
         for group in self.settings_obj:
             for obj in group["objects"]:
-                obj.getFromJson(json_obj["settings"])
+                obj.getFromJson(json_obj)
         super().initWithKwargs(**kwargs)
