@@ -67,6 +67,7 @@ class ScriptLoader:
     def startUp(self):
         self.object_map = {}
         self.physics_tick = 0
+        self.current_tick = 0
 
     def loadElements(self, items):
         # Handle any programmatic color references.
@@ -161,7 +162,7 @@ class ScriptLoader:
         self.setValues()
         to_remove = []
         for i, interactor in enumerate(self.active_scripts):
-            if interactor.tick(self.physics_tick):
+            if interactor.tick(self.current_tick):
                 to_remove.append(i)
         for i in to_remove[::-1]:
             self.active_scripts[i].tearDown()
@@ -170,6 +171,7 @@ class ScriptLoader:
         for interactor in self.active_scripts:
             interactor.afterPhysics()
         self.incrementPhysicsTick()
+        self.current_tick += 1
 
 
 loader_settings = {
@@ -256,8 +258,8 @@ class StateHandler:
                         total_lag_ticks += 1
                     last_game_update = new_time
                     if (
-                        ScriptLoader.instance.physics_tick > 10
-                        and total_lag_ticks / ScriptLoader.instance.physics_tick > 0.5
+                        ScriptLoader.instance.current_tick > 10
+                        and total_lag_ticks / ScriptLoader.instance.current_tick > 0.5
                     ) and not lag_printed:
                         lag_printed = True
                         print("The simulation is currently lagging, you may want to turn down the game tick rate.")
