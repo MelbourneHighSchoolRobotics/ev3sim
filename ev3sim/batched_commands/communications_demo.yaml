@@ -1,14 +1,10 @@
 bots:
-- name: bot.yaml
-  scripts:
-  - communication_server.py
-- name: bot.yaml
-  scripts:
-  - communication_client.py
-- name: bot.yaml
-  scripts:
-  - communication_client.py
+- communication_server.yaml
+- communication_client.py
+- communication_client.py
+
 preset_file: soccer.yaml
+
 settings:
   soccer:
     BALL_RESET_ON_WHITE: true

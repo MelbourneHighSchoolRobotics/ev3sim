@@ -1,5 +1,5 @@
 preview_path: "assets/bots/bot.png"
-script: demo.py
+script: communication_server.py
 devices:
 - LargeMotor:
     position: [0, 4]

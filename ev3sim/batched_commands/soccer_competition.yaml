@@ -1,10 +1,6 @@
 bots:
-- name: bot.yaml
-  scripts:
-  - demo.py
-- name: bot.yaml
-  scripts:
-  - demo.py
+- bot.yaml
+- bot.yaml
 preset_file: soccer.yaml
 settings:
   soccer:

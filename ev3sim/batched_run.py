@@ -42,7 +42,7 @@ def batched_run(batch_file, bind_addr, seed):
     with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 
-    bot_paths = [x["name"] for x in config["bots"]]
+    bot_paths = [x for x in config["bots"]]
     sim_args = [batch_file, config["preset_file"], bot_paths, seed, config.get("settings", {})]
     queues = [Queue() for _ in range(2 * len(bot_paths) + 1)]
     queue_with_count = [(q, q._internal_size) for q in queues]
@@ -51,9 +51,12 @@ def batched_run(batch_file, bind_addr, seed):
     from ev3sim.attach_bot import attach_bot
 
     bot_processes = []
-    for i, bot in enumerate(config["bots"]):
-        for script in bot.get("scripts", []):
-            fname = find_abs(script, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
+    for i, bot in enumerate(bot_paths):
+        p = find_abs(bot, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
+        with open(p, "r") as f:
+            conf = yaml.safe_load(f)
+        if conf.get("script", None) is not None:
+            fname = find_abs(conf["script"], allowed_areas=["local", "local/robots/", "package", "package/robots/"])
             bot_processes.append(
                 Process(
                     target=attach_bot,
