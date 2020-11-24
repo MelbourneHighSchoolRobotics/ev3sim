@@ -504,31 +504,19 @@ class Circle(Colorable):
         if self.fill and self.stroke and self.stroke_width:
             stroke_width = self.scaledStrokeWidth
 
-            pygame.gfxdraw.aaellipse(
-                screen, *self.point, self.h_radius, self.v_radius, self.stroke
-            )
-            pygame.gfxdraw.filled_ellipse(
-                screen, *self.point, self.h_radius, self.v_radius, self.stroke
-            )
+            pygame.gfxdraw.aaellipse(screen, *self.point, self.h_radius, self.v_radius, self.stroke)
+            pygame.gfxdraw.filled_ellipse(screen, *self.point, self.h_radius, self.v_radius, self.stroke)
 
             # Assumes stroke_width >= radius implies fill with stroke colour
             h_fill_radius = max(int(self.h_radius - stroke_width), 0)
             v_fill_radius = max(int(self.v_radius - stroke_width), 0)
 
             if h_fill_radius and v_fill_radius:
-                pygame.gfxdraw.aaellipse(
-                    screen, *self.point, h_fill_radius, v_fill_radius, self.fill
-                )
-                pygame.gfxdraw.filled_ellipse(
-                    screen, *self.point, h_fill_radius, v_fill_radius, self.fill
-                )
+                pygame.gfxdraw.aaellipse(screen, *self.point, h_fill_radius, v_fill_radius, self.fill)
+                pygame.gfxdraw.filled_ellipse(screen, *self.point, h_fill_radius, v_fill_radius, self.fill)
         elif self.fill:
-            pygame.gfxdraw.aaellipse(
-                screen, *self.point, self.h_radius, self.v_radius, self.fill
-            )
-            pygame.gfxdraw.filled_ellipse(
-                screen, *self.point, self.h_radius, self.v_radius, self.fill
-            )
+            pygame.gfxdraw.aaellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
+            pygame.gfxdraw.filled_ellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
 
     def applyToScreen(self, screen):
         if USE_PYGAME_GFX:

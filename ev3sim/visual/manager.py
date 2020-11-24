@@ -213,6 +213,7 @@ class ScreenObjectManager:
         from ev3sim.simulation.loader import ScriptLoader
         from ev3sim.robot import initialise_bot, RobotInteractor
         from ev3sim.simulation.randomisation import Randomiser
+
         Randomiser.createGlobalRandomiserWithSeed(0)
         ScriptLoader.instance.startUp()
         elems = {}
