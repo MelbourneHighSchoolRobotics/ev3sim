@@ -17,7 +17,13 @@ class MainMenu(BaseMenu):
         self.title.set_position((30, 30))
         button_size = self._size[0] / 4, self._size[1] / 6
         self.simulate_button.set_dimensions(button_size)
-        self.simulate_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2))
+        self.simulate_button.set_position(
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1])
+        )
+        self.bot_button.set_dimensions(button_size)
+        self.bot_button.set_position(
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1])
+        )
 
     def generateObjects(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -40,6 +46,13 @@ class MainMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("simulate_button"),
         )
         self._all_objs.append(self.simulate_button)
+        self.bot_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="Bots",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bots_button"),
+        )
+        self._all_objs.append(self.bot_button)
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -47,6 +60,10 @@ class MainMenu(BaseMenu):
                 from ev3sim.visual.manager import ScreenObjectManager
 
                 ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
+            if event.ui_object_id.startswith("bots_button"):
+                from ev3sim.visual.manager import ScreenObjectManager
+
+                ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
 
     def onPop(self):
         pass

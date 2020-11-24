@@ -1,3 +1,4 @@
+preview_path: "assets/bots/controllable.png"
 robot_class: ev3sim.robots.scripts.controllable.ControllableBot
 devices:
 - LargeMotor:

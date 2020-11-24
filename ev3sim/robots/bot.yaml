@@ -1,3 +1,4 @@
+preview_path: "assets/bots/bot.png"
 devices:
 - LargeMotor:
     position: [0, 4]

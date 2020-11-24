@@ -14,6 +14,7 @@ class ScreenObjectManager:
     SCREEN_MENU = "MAIN_MENU"
     SCREEN_SIM = "SIMULATOR"
     SCREEN_BATCH = "BATCH_SELECT"
+    SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
 
     screen_stack = []
@@ -75,6 +76,11 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.batch_select import BatchMenu
 
         self.screens[self.SCREEN_BATCH] = BatchMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Bots screen
+        from ev3sim.visual.menus.bot_menu import BotMenu
+
+        self.screens[self.SCREEN_BOTS] = BotMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
@@ -143,19 +149,19 @@ class ScreenObjectManager:
         for i, child in enumerate(obj.children):
             self.registerObject(child, child.key)
 
-    def applyToScreen(self, to_screen=None):
+    def applyToScreen(self, to_screen=None, bg=None):
         from ev3sim.simulation.loader import ScriptLoader
 
         blit_screen = self.screen if to_screen is None else to_screen
 
-        blit_screen.fill(self.background_colour)
+        blit_screen.fill(self.background_colour if bg is None else bg)
         self.screens[self.screen_stack[-1]].update(1 / ScriptLoader.instance.VISUAL_TICK_RATE)
         if self.screen_stack[-1] == self.SCREEN_SIM or to_screen is not None:
             for key in self.sorting_order:
                 if self.objects[key].sensorVisible:
                     self.objects[key].applyToScreen(to_screen)
             self.sensorScreen = self.screen.copy()
-            blit_screen.fill(self.background_colour)
+            blit_screen.fill(self.background_colour if bg is None else bg)
             for key in self.sorting_order:
                 self.objects[key].applyToScreen(to_screen)
         else:
@@ -207,7 +213,7 @@ class ScreenObjectManager:
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
 
-    def captureBotImage(self, filename):
+    def captureBotImage(self, filename, bg=None):
         self.resetVisualElements()
         from os.path import join
         from ev3sim.simulation.loader import ScriptLoader
@@ -231,7 +237,7 @@ class ScreenObjectManager:
         SCALE_AMOUNT = 5
         for elem in self.objects.values():
             elem.scaleAtPosition(SCALE_AMOUNT)
-        self.applyToScreen(screen)
+        self.applyToScreen(screen, bg=bg)
         top_left = utils.worldspace_to_screenspace((-11 * SCALE_AMOUNT, 11 * SCALE_AMOUNT))
         bot_right = utils.worldspace_to_screenspace((11 * SCALE_AMOUNT, -11 * SCALE_AMOUNT))
         cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
