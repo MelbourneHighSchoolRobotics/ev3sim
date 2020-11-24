@@ -63,6 +63,16 @@
             "size": "24"
         }
     },
+    "main_settings_button": {
+        "misc": {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "3"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        }
+    },
     "background": {
         "colours": {
             "dark_bg": "#0B0C10"
