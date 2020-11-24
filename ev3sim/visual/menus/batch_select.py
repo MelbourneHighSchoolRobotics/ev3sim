@@ -17,8 +17,10 @@ class BatchMenu(BaseMenu):
             min(preview_size[0], (preview_size[1] * 4) // 3),
             min(preview_size[1], (preview_size[0] * 3) // 4),
         )
-        settings_size = preview_size[0] * 0.4, preview_size[1] * 0.4
+        settings_size = (preview_size[0] - 20) * 0.45, preview_size[1] * 0.45
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
+        bot_size = preview_size[0] * 0.45, preview_size[1] * 0.45
+        bot_icon_size = bot_size[1] * 0.6, bot_size[1] * 0.6
         batch_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
@@ -37,7 +39,7 @@ class BatchMenu(BaseMenu):
         )
         self.preview_image.set_dimensions(preview_size)
         self.preview_image.set_position((self._size[0] * 0.9 - preview_size[0], self._size[1] * 0.1))
-        settings_button_pos = (self._size[0] * 0.9 - settings_size[0] - 10, self._size[1] * 0.1 + 10)
+        settings_button_pos = (self._size[0] * 0.9 - settings_size[0] - 10, self._size[1] * 0.1 + preview_size[1] + 10)
         self.settings_button.set_dimensions(settings_size)
         self.settings_button.set_position(settings_button_pos)
         self.settings_icon.set_dimensions(settings_icon_size)
@@ -45,6 +47,16 @@ class BatchMenu(BaseMenu):
             (
                 settings_button_pos[0] + settings_size[0] / 2 - settings_icon_size[0] / 2,
                 settings_button_pos[1] + settings_size[1] * 0.2,
+            )
+        )
+        bot_button_pos = (self._size[0] * 0.9 - preview_size[0] + 10, self._size[1] * 0.1 + preview_size[1] + 10)
+        self.bot_button.set_dimensions(bot_size)
+        self.bot_button.set_position(bot_button_pos)
+        self.bot_icon.set_dimensions(bot_icon_size)
+        self.bot_icon.set_position(
+            (
+                bot_button_pos[0] + bot_size[0] / 2 - bot_icon_size[0] / 2,
+                bot_button_pos[1] + bot_size[1] * 0.2,
             )
         )
 
@@ -112,12 +124,28 @@ class BatchMenu(BaseMenu):
         )
         self._all_objs.append(self.settings_button)
         self._all_objs.append(self.settings_icon)
+        self.bot_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("batch-bots"),
+        )
+        bot_icon_path = find_abs("ui/bot.png", allowed_areas=["package/assets/"])
+        self.bot_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(bot_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bot-icon"),
+        )
+        self._all_objs.append(self.bot_button)
+        self._all_objs.append(self.bot_icon)
 
     def initWithKwargs(self, **kwargs):
         super().initWithKwargs(**kwargs)
         self.batch_index = -1
         self.start_button.disable()
         self.settings_button.disable()
+        self.bot_button.disable()
 
     def clickStart(self):
         # Shouldn't happen but lets be safe.
@@ -141,6 +169,17 @@ class BatchMenu(BaseMenu):
             file=self.available_batches[self.batch_index][1],
             settings=visual_settings,
         )
+    
+    def clickBots(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+        
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOTS,
+            batch_file=self.available_batches[self.batch_index][1],
+        )
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -148,6 +187,8 @@ class BatchMenu(BaseMenu):
                 self.clickStart()
             elif event.ui_object_id.startswith("batch-settings"):
                 self.clickSettings()
+            elif event.ui_object_id.startswith("batch-bots"):
+                self.clickBots()
             else:
                 self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:
@@ -163,6 +204,7 @@ class BatchMenu(BaseMenu):
         # Update theming.
         self.start_button.enable()
         self.settings_button.enable()
+        self.bot_button.enable()
         for i in range(len(self.batch_buttons)):
             self.batch_buttons[i].combined_element_ids[1] = (
                 "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"

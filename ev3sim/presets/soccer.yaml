@@ -1,5 +1,11 @@
 preview_path: "soccer_preview.png"
 
+bot_names:
+  - "Team 1\nBot 1"
+  - "Team 2\nBot 1"
+  - "Team 1\nBot 2"
+  - "Team 2\nBot 2"
+
 colours:
   wall_color: "#2a9d8f"
   strip_color: "#f1faee"

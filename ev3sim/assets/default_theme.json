@@ -86,7 +86,30 @@
             "active_bg": "#aacc00"
         }
     },
+    "select-bot": {
+        "colours": {
+            "normal_bg": "#80b918",
+            "hovered_bg": "#80b918",
+            "active_bg": "#aacc00",
+            "normal_text": "#ffffff"
+        }
+    },
+    "select-done": {
+        "colours": {
+            "normal_bg": "#80b918",
+            "hovered_bg": "#80b918",
+            "active_bg": "#aacc00",
+            "normal_text": "#ffffff"
+        }
+    },
     "batch-settings": {
+        "colours": {
+            "normal_bg": "#6c757d",
+            "hovered_bg": "#6c757d",
+            "active_bg": "#adb5bd"
+        }
+    },
+    "batch-bots": {
         "colours": {
             "normal_bg": "#6c757d",
             "hovered_bg": "#6c757d",
