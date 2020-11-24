@@ -1,9 +1,10 @@
 import argparse
 import pygame
-
-import yaml
-from ev3sim.file_helper import find_abs
 import sys
+import yaml
+from os.path import join
+
+from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
@@ -18,7 +19,7 @@ parser.add_argument(
     "--config",
     "-c",
     type=str,
-    default="screen_preset.yaml",
+    default=None,
     help="Provide a file with some configurable values for the screen.",
 )
 
@@ -30,12 +31,25 @@ def main(passed_args=None):
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
 
-    config_path = find_abs(args.config, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
-    with open(config_path, "r") as f:
-        config = yaml.safe_load(f)
+    # Try loading a user config. If one does not exist, then generate one.
+    try:
+        conf_file = find_abs("user_config.yaml", allowed_areas=["package"])
+        with open(conf_file, "r") as f:
+            conf = yaml.safe_load(f)
+    except:
+        with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
+            conf = yaml.safe_load(fr)
+        with open(join(find_abs_directory("package"), "user_config.yaml"), "w") as fw:
+            fw.write(yaml.dump(conf))
+
+    if args.config is not None:
+        config_path = find_abs(args.config, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+        conf.update(config)
 
     handler = StateHandler()
-    handler.startUp(**config)
+    handler.startUp(**conf)
 
     if args.batch:
         handler.beginSimulation(args.simulation_kwargs)
