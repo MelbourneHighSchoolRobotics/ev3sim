@@ -116,7 +116,7 @@ class BotMenu(BaseMenu):
             elif event.key in [pygame.K_UP, pygame.K_s]:
                 self.incrementBotIndex(-1)
             elif event.key == pygame.K_RETURN:
-                self.clickStart()
+                self.clickSettings()
 
     def setBotIndex(self, new_index):
         self.bot_index = new_index
