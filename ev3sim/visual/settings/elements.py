@@ -80,9 +80,9 @@ class FileEntry(SettingsVisualElement):
         label_size = ((self.container.relative_rect.width - 40) / 2 - 10, 40)
         file_size = ((self.container.relative_rect.width - 40) / 2 - button_size[0] - 30, 40)
         objs[index].set_dimensions(label_size)
-        objs[index+1].set_dimensions(file_size)
-        objs[index+2].set_dimensions(button_size)
-        objs[index+3].set_dimensions(button_size)
+        objs[index + 1].set_dimensions(file_size)
+        objs[index + 2].set_dimensions(button_size)
+        objs[index + 3].set_dimensions(button_size)
 
         objs[index].set_position(
             (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
@@ -91,14 +91,18 @@ class FileEntry(SettingsVisualElement):
             (off[0] + self.container.relative_rect.left + 40 + label_size[0], off[1] + self.container.relative_rect.top)
         )
         objs[index + 2].set_position(
-            (off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0], off[1] + self.container.relative_rect.top - 2)
+            (
+                off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0],
+                off[1] + self.container.relative_rect.top - 2,
+            )
         )
         objs[index + 3].set_position(
-            (off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0], off[1] + self.container.relative_rect.top - 2)
+            (
+                off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0],
+                off[1] + self.container.relative_rect.top - 2,
+            )
         )
-        img = pygame.image.load(
-            find_abs("ui/folder.png", allowed_areas=["package/assets/"])
-        )
+        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=["package/assets/"]))
         if img.get_size() != objs[index + 3].rect.size:
             img = pygame.transform.smoothscale(img, (objs[index + 3].rect.width, objs[index + 3].rect.height))
         objs[index + 3].set_image(img)
@@ -113,6 +117,7 @@ class FileEntry(SettingsVisualElement):
         directory = askdirectory()
         self.current = directory
         self.filename.set_text(self.current)
+
 
 class TextEntry(SettingsVisualElement):
 

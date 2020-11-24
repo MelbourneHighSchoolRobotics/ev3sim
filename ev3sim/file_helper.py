@@ -32,6 +32,7 @@ def find_abs(filepath, allowed_areas=None):
     this defaults to local, then package.
     """
     from ev3sim.simulation.loader import StateHandler
+
     if StateHandler.WORKSPACE_FOLDER:
         WORKSPACE = os.path.abspath(StateHandler.WORKSPACE_FOLDER)
     else:

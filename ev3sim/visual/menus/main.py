@@ -23,9 +23,7 @@ class MainMenu(BaseMenu):
             ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1] * 1.5)
         )
         self.bot_button.set_dimensions(button_size)
-        self.bot_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2)
-        )
+        self.bot_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2))
         self.settings_button.set_dimensions(button_size)
         self.settings_button.set_position(
             ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1] * 1.5)
@@ -81,5 +79,6 @@ class MainMenu(BaseMenu):
                     file=find_abs("user_config.yaml", ["package"]),
                     settings=main_settings,
                 )
+
     def onPop(self):
         pass
