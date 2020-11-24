@@ -71,8 +71,11 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all batch files and show them
         self.available_batches = []
-        for rel_dir in ["package", "package/batched_commands/"]:
-            actual_dir = find_abs_directory(rel_dir)
+        for rel_dir in ["package", "package/batched_commands/", "workspace", "workspace/batched_commands/"]:
+            try:
+                actual_dir = find_abs_directory(rel_dir)
+            except:
+                continue
             for batch in BatchValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .yaml
                 self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch)))

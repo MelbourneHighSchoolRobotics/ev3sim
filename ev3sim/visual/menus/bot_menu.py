@@ -67,8 +67,11 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all bot files and show them
         self.available_bots = []
-        for rel_dir in ["package", "package/robots/"]:
-            actual_dir = find_abs_directory(rel_dir)
+        for rel_dir in ["package", "package/robots/", "workspace", "workspace/robots/"]:
+            try:
+                actual_dir = find_abs_directory(rel_dir)
+            except:
+                continue
             for bot in BotValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .yaml
                 self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot)))

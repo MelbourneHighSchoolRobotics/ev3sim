@@ -31,6 +31,12 @@ def find_abs(filepath, allowed_areas=None):
     areas leftmost will be considered first.
     this defaults to local, then package.
     """
+    from ev3sim.simulation.loader import StateHandler
+    if StateHandler.WORKSPACE_FOLDER:
+        WORKSPACE = os.path.abspath(StateHandler.WORKSPACE_FOLDER)
+    else:
+        WORKSPACE = ""
+
     fnames = split_names(filepath)
     if allowed_areas is None:
         allowed_areas = ["local", "package"]
@@ -39,6 +45,14 @@ def find_abs(filepath, allowed_areas=None):
             path = os.path.join(ROOT, *fnames)
         elif area.startswith("package"):
             path = os.path.join(ROOT, *area[8:].replace("\\", "/").split("/"), *fnames)
+        elif area == "workspace":
+            if not WORKSPACE:
+                continue
+            path = os.path.join(WORKSPACE, *fnames)
+        elif area.startswith("workspace"):
+            if not WORKSPACE:
+                continue
+            path = os.path.join(WORKSPACE, *area[10:].replace("\\", "/").split("/"), *fnames)
         elif area == "local":
             path = filepath
         elif area.startswith("local"):

@@ -174,13 +174,6 @@ class ScriptLoader:
         self.current_tick += 1
 
 
-loader_settings = {
-    "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
-    "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
-    "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
-}
-
-
 class StateHandler:
     """
     Handles the current sim state, and passes information to the simulator, or other menus where appropriate.
@@ -193,11 +186,19 @@ class StateHandler:
 
     shared_info: dict
 
+    WORKSPACE_FOLDER = None
+
     def __init__(self):
         StateHandler.instance = self
         sl = ScriptLoader()
         world = World()
         settings = SettingsManager()
+        loader_settings = {
+            "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
+            "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
+            "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
+            "workspace_folder": ObjectSetting(StateHandler, "WORKSPACE_FOLDER"),
+        }
         settings.addSettingGroup("app", loader_settings)
         settings.addSettingGroup("screen", screen_settings)
         self.shared_info = {}
@@ -223,8 +224,11 @@ class StateHandler:
                     except Empty:
                         break
 
-    def startUp(self, **kwargs):
+    def setConfig(self, **kwargs):
         SettingsManager.instance.setMany(kwargs)
+
+    def startUp(self, **kwargs):
+        self.setConfig(**kwargs)
         man = ScreenObjectManager()
         # Check for a new version of the simulator.
         latest_version = get_version_pypi("ev3sim")
