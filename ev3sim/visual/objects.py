@@ -34,6 +34,12 @@ class IVisualElement:
         self.sensorVisible = kwargs.get("sensorVisible", False)
         self.visible = kwargs.get("visible", True)
 
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.position = (
+            pos[0] + amount * (self.position[0] - pos[0]),
+            pos[1] + amount * (self.position[1] - pos[1]),
+        )
+
     @property
     def position(self) -> np.ndarray:
         """
@@ -117,6 +123,10 @@ class Colorable(IVisualElement):
         self.stroke = kwargs.get("stroke", None)
         self.stroke_width = kwargs.get("stroke_width", 1)
 
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.stroke_width *= amount
+        super().scaleAtPosition(amount, pos=pos)
+
     @property
     def fill(self) -> Tuple[int]:
         return self._fill
@@ -165,6 +175,10 @@ class Image(Colorable):
         self.vAlignment = kwargs.get("vAlignment", "m")
         self.scale = kwargs.get("scale", 1)
         self.calculatePoints()
+
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.scale *= amount
+        super().scaleAtPosition(amount, pos=pos)
 
     @property
     def image_path(self):
@@ -289,6 +303,17 @@ class Line(Colorable):
         self.end = kwargs.get("end")
         super().initFromKwargs(**kwargs)
 
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.start = (
+            pos[0] + amount * (self.start[0] - pos[0]),
+            pos[1] + amount * (self.start[1] - pos[1]),
+        )
+        self.end = (
+            pos[0] + amount * (self.end[0] - pos[0]),
+            pos[1] + amount * (self.end[1] - pos[1]),
+        )
+        super().scaleAtPosition(amount, pos=pos)
+
     def calculatePoints(self):
         return
 
@@ -345,6 +370,16 @@ class Polygon(Colorable):
         self.verts = kwargs.get("verts")
         self.points = [None] * len(self.verts)
         super().initFromKwargs(**kwargs)
+
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.verts = [
+            (
+                pos[0] + amount * (v[0] - pos[0]),
+                pos[1] + amount * (v[1] - pos[1]),
+            )
+            for v in self.verts
+        ]
+        super().scaleAtPosition(amount, pos=pos)
 
     def calculatePoints(self):
         try:
@@ -436,6 +471,10 @@ class Circle(Colorable):
     def initFromKwargs(self, **kwargs):
         self.radius = kwargs.get("radius", 20)
         super().initFromKwargs(**kwargs)
+
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.radius *= amount
+        super().scaleAtPosition(amount, pos=pos)
 
     def calculatePoints(self):
         try:
@@ -538,10 +577,13 @@ class Text(Colorable):
             self.font_style, allowed_areas=["local/assets/", "local", "package/assets/", "package"]
         )
         self.font_size = kwargs.get("font_size", 30)
-        self.font = pygame.freetype.Font(self.font_path, self.font_size)
         self.hAlignment = kwargs.get("hAlignment", "l")
         self.vAlignment = kwargs.get("vAlignment", "t")
         self.text = kwargs.get("text", "Test")
+
+    def scaleAtPosition(self, amount, pos=(0, 0)):
+        self.font_size = int(self.font_size * amount)
+        super().scaleAtPosition(amount, pos=pos)
 
     def calculatePoints(self):
         if not hasattr(self, "font"):

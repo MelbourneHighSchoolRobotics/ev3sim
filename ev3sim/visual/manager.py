@@ -227,9 +227,12 @@ class ScreenObjectManager:
             interactor.tick(0)
             interactor.afterPhysics()
         screen = pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        SCALE_AMOUNT = 5
+        for elem in self.objects.values():
+            elem.scaleAtPosition(SCALE_AMOUNT)
         self.applyToScreen(screen)
-        top_left = utils.worldspace_to_screenspace((-11, 11))
-        bot_right = utils.worldspace_to_screenspace((11, -11))
+        top_left = utils.worldspace_to_screenspace((-11 * SCALE_AMOUNT, 11 * SCALE_AMOUNT))
+        bot_right = utils.worldspace_to_screenspace((11 * SCALE_AMOUNT, -11 * SCALE_AMOUNT))
         cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
         cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
         self.resetVisualElements()
