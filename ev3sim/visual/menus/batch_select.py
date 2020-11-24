@@ -169,13 +169,13 @@ class BatchMenu(BaseMenu):
             file=self.available_batches[self.batch_index][1],
             settings=visual_settings,
         )
-    
+
     def clickBots(self):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
         from ev3sim.visual.manager import ScreenObjectManager
-        
+
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_BOTS,
             batch_file=self.available_batches[self.batch_index][1],

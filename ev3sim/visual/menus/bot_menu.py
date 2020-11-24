@@ -31,7 +31,10 @@ class BotMenu(BaseMenu):
         self.preview_image.set_position((self._size[0] * 0.9 - preview_size[0], self._size[1] * 0.1))
         n_bot_spots = len(self.bot_keys)
         if n_bot_spots == 0:
-            settings_button_pos = (self._size[0] * 0.9 - settings_size[0] - 10, self._size[1] * 0.1 + preview_size[1] + 10)
+            settings_button_pos = (
+                self._size[0] * 0.9 - settings_size[0] - 10,
+                self._size[1] * 0.1 + preview_size[1] + 10,
+            )
             self.settings_button.set_dimensions(settings_size)
             self.settings_button.set_position(settings_button_pos)
             self.settings_icon.set_dimensions(settings_icon_size)
@@ -130,6 +133,7 @@ class BotMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.visual.utils import worldspace_to_screenspace
         from ev3sim.visual.objects import Text
+
         width = 0
         lengths = []
         surfaces = []
@@ -153,13 +157,13 @@ class BotMenu(BaseMenu):
         cropped_surface.fill(pygame.Color("#181A25") if bg is None else bg)
         cur_y = (s - (sum(lengths) + (len(lengths) - 1) * line_spacing)) // 2
         for y, surface in zip(lengths, surfaces):
-            cropped_surface.blit(surface, (0, cur_y), (pos[0] - s//2, pos[1] - (y+1)//2 - 1, s, y + 2))
+            cropped_surface.blit(surface, (0, cur_y), (pos[0] - s // 2, pos[1] - (y + 1) // 2 - 1, s, y + 2))
             cur_y += y + line_spacing
         return pygame_gui.elements.UIImage(
             relative_rect=pygame.Rect(0, 0, *self._size),
             image_surface=cropped_surface,
             manager=self,
-            object_id=pygame_gui.core.ObjectID(f"bot-image-{self.bot_keys[index]}")
+            object_id=pygame_gui.core.ObjectID(f"bot-image-{self.bot_keys[index]}"),
         )
 
     def sizeBotImage(self, index, big_mode=False):
@@ -171,18 +175,20 @@ class BotMenu(BaseMenu):
         if big_mode:
             # beeg
             self.bot_loc_spots[index].set_dimensions((preview_size[0], preview_size[0]))
-            self.bot_loc_spots[index].set_position((
-                self._size[0] * 0.9 - preview_size[0],
-                self._size[1] * 0.1 + preview_size[1] + 20 + (preview_size[0] * 1.1) * index,
-            ))
+            self.bot_loc_spots[index].set_position(
+                (
+                    self._size[0] * 0.9 - preview_size[0],
+                    self._size[1] * 0.1 + preview_size[1] + 20 + (preview_size[0] * 1.1) * index,
+                )
+            )
         else:
             self.bot_loc_spots[index].set_dimensions((preview_size[0] * 0.45, preview_size[0] * 0.45))
-            self.bot_loc_spots[index].set_position((
-                self._size[0] * 0.9 - preview_size[0] * (
-                    1 if index % 2 == 0 else 0.45
-                ),
-                self._size[1] * 0.1 + preview_size[1] + 20 + (index // 2) * preview_size[0] * 0.55
-            ))
+            self.bot_loc_spots[index].set_position(
+                (
+                    self._size[0] * 0.9 - preview_size[0] * (1 if index % 2 == 0 else 0.45),
+                    self._size[1] * 0.1 + preview_size[1] + 20 + (index // 2) * preview_size[0] * 0.55,
+                )
+            )
 
     def initWithKwargs(self, **kwargs):
         self.bot_index = -1
@@ -299,7 +305,9 @@ class BotMenu(BaseMenu):
         self.setBotIndex(new_index)
 
     def setBotAtIndex(self, index):
-        self.bot_values[index] = self.available_bots[self.bot_index][0] + "." + self.available_bots[self.bot_index][1].split(".")[-1]
+        self.bot_values[index] = (
+            self.available_bots[self.bot_index][0] + "." + self.available_bots[self.bot_index][1].split(".")[-1]
+        )
         with open(self.available_bots[self.bot_index][1], "r") as f:
             config = yaml.safe_load(f)
         bot_preview = find_abs(
@@ -307,7 +315,9 @@ class BotMenu(BaseMenu):
         )
         img = pygame.image.load(bot_preview)
         if img.get_size() != self.bot_loc_spots[index].rect.size:
-            img = pygame.transform.smoothscale(img, (self.bot_loc_spots[index].rect.width, self.bot_loc_spots[index].rect.height))
+            img = pygame.transform.smoothscale(
+                img, (self.bot_loc_spots[index].rect.width, self.bot_loc_spots[index].rect.height)
+            )
         self.bot_loc_spots[index].set_image(img)
 
     def highlightBotSelectIndex(self, index):
@@ -334,7 +344,5 @@ class BotMenu(BaseMenu):
         else:
             self.select_button.disable()
         for i in range(len(self.bot_buttons)):
-            self.bot_buttons[i].combined_element_ids[1] = (
-                "bot_select_button"
-            )
+            self.bot_buttons[i].combined_element_ids[1] = "bot_select_button"
             self.bot_buttons[i].rebuild_from_changed_theme_data()
