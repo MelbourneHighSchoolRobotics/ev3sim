@@ -144,7 +144,6 @@
         }
     },
     "cancel-changes": {
-        "prototype": "action_button",
         "colours": {
             "normal_bg": "#EF6E6B",
             "hovered_bg": "#EF6E6B",

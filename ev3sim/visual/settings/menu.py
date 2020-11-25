@@ -76,7 +76,7 @@ class SettingsMenu(BaseMenu):
         self.cancel = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             manager=self,
-            object_id=pygame_gui.core.ObjectID("cancel-changes"),
+            object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
             text="Cancel",
         )
         self._all_objs.append(self.cancel)
