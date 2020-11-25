@@ -9,7 +9,8 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 class BatchMenu(BaseMenu):
     def sizeObjects(self):
-        button_size = self._size[0] / 4, 40
+        button_size = self._size[0] / 4, 60
+        info_size = self._size[0] / 4 - 20, 15
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
         preview_size = self._size[0] / 4, self._size[1] / 4
@@ -22,11 +23,17 @@ class BatchMenu(BaseMenu):
         bot_size = preview_size[0] * 0.45, preview_size[1] * 0.45
         bot_icon_size = bot_size[1] * 0.6, bot_size[1] * 0.6
         batch_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
+        info_rect = lambda b_r: (
+            b_r[0] + button_size[0] - info_size[0] - 10,
+            b_r[1] + button_size[1] - info_size[1] - 5,
+        )
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
         for i in range(len(self.batch_buttons)):
             self.batch_buttons[i].set_dimensions(button_size)
             self.batch_buttons[i].set_position(batch_rect(i))
+            self.batch_descriptions[i].set_dimensions(info_size)
+            self.batch_descriptions[i].set_position(info_rect(batch_rect(i)))
         self.start_button.set_dimensions(start_size)
         start_button_pos = (self._size[0] * 0.9 - start_size[0], self._size[1] * 0.9 - start_size[1])
         self.start_button.set_position(start_button_pos)
@@ -80,6 +87,7 @@ class BatchMenu(BaseMenu):
                 # Show everything except dir and .yaml
                 self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch), rel_dir, batch))
         self.batch_buttons = []
+        self.batch_descriptions = []
         for i, (show, batch, rel_dir, filename) in enumerate(self.available_batches):
             self.batch_buttons.append(
                 pygame_gui.elements.UIButton(
@@ -89,7 +97,16 @@ class BatchMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "batch_select_button"),
                 )
             )
+            self.batch_descriptions.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=dummy_rect,
+                    text=rel_dir,
+                    manager=self,
+                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "batch_directory_info"),
+                )
+            )
         self._all_objs.extend(self.batch_buttons)
+        self._all_objs.extend(self.batch_descriptions)
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -213,6 +230,10 @@ class BatchMenu(BaseMenu):
                 "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
             )
             self.batch_buttons[i].rebuild_from_changed_theme_data()
+            self.batch_descriptions[i].combined_element_ids[1] = (
+                "batch_directory_selected" if i == self.batch_index else "batch_directory_info"
+            )
+            self.batch_descriptions[i].rebuild_from_changed_theme_data()
         try:
             with open(self.available_batches[self.batch_index][1], "r") as f:
                 config = yaml.safe_load(f)

@@ -13,7 +13,8 @@ class BotMenu(BaseMenu):
     bot_keys = []
 
     def sizeObjects(self):
-        button_size = self._size[0] / 4, 40
+        button_size = self._size[0] / 4, 60
+        info_size = self._size[0] / 4 - 20, 15
         preview_size = self._size[0] / 4, self._size[1] / 4
         preview_size = (
             min(preview_size[0], (preview_size[1] * 4) // 3),
@@ -22,11 +23,17 @@ class BotMenu(BaseMenu):
         settings_size = preview_size[0] * 0.4, preview_size[1] * 0.4
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
         bot_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
+        info_rect = lambda b_r: (
+            b_r[0] + button_size[0] - info_size[0] - 10,
+            b_r[1] + button_size[1] - info_size[1] - 5,
+        )
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
         for i in range(len(self.bot_buttons)):
             self.bot_buttons[i].set_dimensions(button_size)
             self.bot_buttons[i].set_position(bot_rect(i))
+            self.bot_descriptions[i].set_dimensions(info_size)
+            self.bot_descriptions[i].set_position(info_rect(bot_rect(i)))
         self.preview_image.set_dimensions(preview_size)
         self.preview_image.set_position((self._size[0] * 0.9 - preview_size[0], self._size[1] * 0.1))
         n_bot_spots = len(self.bot_keys)
@@ -76,6 +83,7 @@ class BotMenu(BaseMenu):
                 # Show everything except dir and .yaml
                 self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot), rel_dir, bot))
         self.bot_buttons = []
+        self.bot_descriptions = []
         for i, (show, bot, rel_dir, filename) in enumerate(self.available_bots):
             self.bot_buttons.append(
                 pygame_gui.elements.UIButton(
@@ -83,6 +91,14 @@ class BotMenu(BaseMenu):
                     text=show,
                     manager=self,
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "bot_select_button"),
+                )
+            )
+            self.bot_descriptions.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=dummy_rect,
+                    text=rel_dir,
+                    manager=self,
+                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "bot_directory_info"),
                 )
             )
         self._all_objs.extend(self.bot_buttons)
@@ -284,6 +300,10 @@ class BotMenu(BaseMenu):
                 "bot_select_button_highlighted" if i == self.bot_index else "bot_select_button"
             )
             self.bot_buttons[i].rebuild_from_changed_theme_data()
+            self.bot_descriptions[i].combined_element_ids[1] = (
+                "bot_directory_selected" if i == self.bot_index else "bot_directory_info"
+            )
+            self.bot_descriptions[i].rebuild_from_changed_theme_data()
         self.blitCurrentBotPreview()
 
     def blitCurrentBotPreview(self):

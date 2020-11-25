@@ -133,6 +133,50 @@
             "active_bg": "#adb5bd"
         }
     },
+    "bot_directory_info": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_text": "#1F2833"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "12",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "bot_directory_selected": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "12",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "batch_directory_info": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_text": "#1F2833"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "12",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "batch_directory_selected": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "12",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
     "batch_select_button_highlighted": {
         "colours": {
             "normal_bg": "#80b918",
