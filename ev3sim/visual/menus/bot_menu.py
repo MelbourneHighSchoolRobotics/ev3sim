@@ -90,7 +90,7 @@ class BotMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=show,
                     manager=self,
-                    object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "bot_select_button"),
+                    object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
             self.bot_descriptions.append(
@@ -98,7 +98,7 @@ class BotMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=rel_dir,
                     manager=self,
-                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "bot_directory_info"),
+                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "button_info"),
                 )
             )
         self._all_objs.extend(self.bot_buttons)
@@ -116,7 +116,7 @@ class BotMenu(BaseMenu):
                 relative_rect=dummy_rect,
                 text="",
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("bot-settings"),
+                object_id=pygame_gui.core.ObjectID("bot-settings", "settings_buttons"),
             )
             settings_icon_path = find_abs("ui/settings.png", allowed_areas=["package/assets/"])
             self.settings_icon = pygame_gui.elements.UIImage(
@@ -137,14 +137,14 @@ class BotMenu(BaseMenu):
                 relative_rect=dummy_rect,
                 text="SELECT",
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("select-bot"),
+                object_id=pygame_gui.core.ObjectID("select-bot", "action_button"),
             )
             self._all_objs.append(self.select_button)
             self.done_button = pygame_gui.elements.UIButton(
                 relative_rect=dummy_rect,
                 text="DONE",
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("select-done"),
+                object_id=pygame_gui.core.ObjectID("select-done", "action_button"),
             )
             self._all_objs.append(self.done_button)
 
@@ -296,12 +296,12 @@ class BotMenu(BaseMenu):
             else:
                 self.select_button.enable()
         for i in range(len(self.bot_buttons)):
-            self.bot_buttons[i].combined_element_ids[1] = (
-                "bot_select_button_highlighted" if i == self.bot_index else "bot_select_button"
+            self.bot_buttons[i].combined_element_ids[2] = (
+                "list_button_highlighted" if i == self.bot_index else "list_button"
             )
             self.bot_buttons[i].rebuild_from_changed_theme_data()
-            self.bot_descriptions[i].combined_element_ids[1] = (
-                "bot_directory_selected" if i == self.bot_index else "bot_directory_info"
+            self.bot_descriptions[i].combined_element_ids[2] = (
+                "button_info_selected" if i == self.bot_index else "button_info"
             )
             self.bot_descriptions[i].rebuild_from_changed_theme_data()
         self.blitCurrentBotPreview()

@@ -94,7 +94,7 @@ class BatchMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=show,
                     manager=self,
-                    object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "batch_select_button"),
+                    object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
             self.batch_descriptions.append(
@@ -102,7 +102,7 @@ class BatchMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=rel_dir,
                     manager=self,
-                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "batch_directory_info"),
+                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "button_info"),
                 )
             )
         self._all_objs.extend(self.batch_buttons)
@@ -111,7 +111,7 @@ class BatchMenu(BaseMenu):
             relative_rect=dummy_rect,
             text="",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("start-sim"),
+            object_id=pygame_gui.core.ObjectID("start-sim", "action_button"),
         )
         start_icon_path = find_abs("ui/start_sim.png", allowed_areas=["package/assets/"])
         self.start_icon = pygame_gui.elements.UIImage(
@@ -133,7 +133,7 @@ class BatchMenu(BaseMenu):
             relative_rect=dummy_rect,
             text="",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("batch-settings"),
+            object_id=pygame_gui.core.ObjectID("batch-settings", "settings_buttons"),
         )
         settings_icon_path = find_abs("ui/settings.png", allowed_areas=["package/assets/"])
         self.settings_icon = pygame_gui.elements.UIImage(
@@ -148,7 +148,7 @@ class BatchMenu(BaseMenu):
             relative_rect=dummy_rect,
             text="",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("batch-bots"),
+            object_id=pygame_gui.core.ObjectID("batch-bots", "settings_buttons"),
         )
         bot_icon_path = find_abs("ui/bot.png", allowed_areas=["package/assets/"])
         self.bot_icon = pygame_gui.elements.UIImage(
@@ -226,12 +226,12 @@ class BatchMenu(BaseMenu):
         self.settings_button.enable()
         self.bot_button.enable()
         for i in range(len(self.batch_buttons)):
-            self.batch_buttons[i].combined_element_ids[1] = (
-                "batch_select_button_highlighted" if i == self.batch_index else "batch_select_button"
+            self.batch_buttons[i].combined_element_ids[2] = (
+                "list_button_highlighted" if i == self.batch_index else "list_button"
             )
             self.batch_buttons[i].rebuild_from_changed_theme_data()
-            self.batch_descriptions[i].combined_element_ids[1] = (
-                "batch_directory_selected" if i == self.batch_index else "batch_directory_info"
+            self.batch_descriptions[i].combined_element_ids[2] = (
+                "button_info_selected" if i == self.batch_index else "button_info"
             )
             self.batch_descriptions[i].rebuild_from_changed_theme_data()
         try:

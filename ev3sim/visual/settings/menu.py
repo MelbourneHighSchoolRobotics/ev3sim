@@ -68,7 +68,7 @@ class SettingsMenu(BaseMenu):
         self.save = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             manager=self,
-            object_id=pygame_gui.core.ObjectID("save-changes"),
+            object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
             text="Save",
         )
         self._all_objs.append(self.save)

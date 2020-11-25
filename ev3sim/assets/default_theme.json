@@ -43,27 +43,7 @@
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
-    "simulate_button": {
-        "misc": {
-            "shape": "rounded_rectangle",
-            "shape_corner_radius": "3"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "24"
-        }
-    },
-    "bots_button": {
-        "misc": {
-            "shape": "rounded_rectangle",
-            "shape_corner_radius": "3"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "24"
-        }
-    },
-    "main_settings_button": {
+    "menu_button": {
         "misc": {
             "shape": "rounded_rectangle",
             "shape_corner_radius": "3"
@@ -89,54 +69,26 @@
             "border_width": "0"
         }
     },
-    "start-sim": {
-        "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00"
-        }
-    },
-    "select-bot": {
+    "action_button": {
         "colours": {
             "normal_bg": "#80b918",
             "hovered_bg": "#80b918",
             "active_bg": "#aacc00",
-            "normal_text": "#ffffff"
+            "normal_text": "#ffffff",
+            "hovered_text": "#ffffff",
+            "active_text": "#ffffff"
         }
     },
-    "select-done": {
-        "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00",
-            "normal_text": "#ffffff"
-        }
-    },
-    "batch-settings": {
+    "settings_buttons": {
         "colours": {
             "normal_bg": "#6c757d",
             "hovered_bg": "#6c757d",
             "active_bg": "#adb5bd"
         }
     },
-    "batch-bots": {
+    "button_info": {
         "colours": {
-            "normal_bg": "#6c757d",
-            "hovered_bg": "#6c757d",
-            "active_bg": "#adb5bd"
-        }
-    },
-    "bot-settings": {
-        "colours": {
-            "normal_bg": "#6c757d",
-            "hovered_bg": "#6c757d",
-            "active_bg": "#adb5bd"
-        }
-    },
-    "bot_directory_info": {
-        "colours": {
-            "dark_bg": "#00000000",
-            "normal_text": "#1F2833"
+            "dark_bg": "#00000000"
         },
         "font": {
             "name": "Roboto",
@@ -144,50 +96,16 @@
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
-    "bot_directory_selected": {
+    "button_info_selected": {
+        "prototype": "button_info",
         "colours": {
-            "dark_bg": "#00000000",
             "normal_text": "#f7ede2"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "12",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
-    "batch_directory_info": {
-        "colours": {
-            "dark_bg": "#00000000",
-            "normal_text": "#1F2833"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "12",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
-        }
+    "list_button": {
+        "prototype": "button"
     },
-    "batch_directory_selected": {
-        "colours": {
-            "dark_bg": "#00000000",
-            "normal_text": "#f7ede2"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "12",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
-        }
-    },
-    "batch_select_button_highlighted": {
-        "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00",
-            "normal_text": "#f7ede2",
-            "hovered_text": "#f7ede2",
-            "active_text": "#f7ede2"
-        }
-    },
-    "bot_select_button_highlighted": {
+    "list_button_highlighted": {
         "colours": {
             "normal_bg": "#80b918",
             "hovered_bg": "#80b918",
@@ -225,14 +143,8 @@
             "active_bg": "#ffffff80"
         }
     },
-    "save-changes": {
-        "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00"
-        }
-    },
     "cancel-changes": {
+        "prototype": "action_button",
         "colours": {
             "normal_bg": "#EF6E6B",
             "hovered_bg": "#EF6E6B",

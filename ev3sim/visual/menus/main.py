@@ -47,21 +47,21 @@ class MainMenu(BaseMenu):
             relative_rect=dummy_rect,
             text="Simulate",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("simulate_button"),
+            object_id=pygame_gui.core.ObjectID("simulate_button", "menu_button"),
         )
         self._all_objs.append(self.simulate_button)
         self.bot_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="Bots",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("bots_button"),
+            object_id=pygame_gui.core.ObjectID("bots_button", "menu_button"),
         )
         self._all_objs.append(self.bot_button)
         self.settings_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="Settings",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("main_settings_button"),
+            object_id=pygame_gui.core.ObjectID("main_settings_button", "menu_button"),
         )
         self._all_objs.append(self.settings_button)
 
