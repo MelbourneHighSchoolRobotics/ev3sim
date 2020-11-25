@@ -74,9 +74,9 @@ class BotMenu(BaseMenu):
                 continue
             for bot in BotValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .yaml
-                self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot)))
+                self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot), rel_dir, bot))
         self.bot_buttons = []
-        for i, (show, bot) in enumerate(self.available_bots):
+        for i, (show, bot, rel_dir, filename) in enumerate(self.available_bots):
             self.bot_buttons.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=dummy_rect,
@@ -224,7 +224,9 @@ class BotMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
 
         ScreenObjectManager.instance.captureBotImage(
-            self.available_bots[self.bot_index][1], bg=pygame.Color(self.bg.background_colour)
+            self.available_bots[self.bot_index][2],
+            self.available_bots[self.bot_index][3],
+            bg=pygame.Color(self.bg.background_colour),
         )
         self.blitCurrentBotPreview()
 

@@ -78,9 +78,9 @@ class BatchMenu(BaseMenu):
                 continue
             for batch in BatchValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .yaml
-                self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch)))
+                self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch), rel_dir, batch))
         self.batch_buttons = []
-        for i, (show, batch) in enumerate(self.available_batches):
+        for i, (show, batch, rel_dir, filename) in enumerate(self.available_batches):
             self.batch_buttons.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=dummy_rect,

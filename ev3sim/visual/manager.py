@@ -213,7 +213,7 @@ class ScreenObjectManager:
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
 
-    def captureBotImage(self, filename, bg=None):
+    def captureBotImage(self, directory, filename, bg=None):
         self.resetVisualElements()
         from os.path import join
         from ev3sim.simulation.loader import ScriptLoader
@@ -223,7 +223,7 @@ class ScreenObjectManager:
         Randomiser.createGlobalRandomiserWithSeed(0)
         ScriptLoader.instance.startUp()
         elems = {}
-        initialise_bot(elems, filename, "", 0)
+        initialise_bot(elems, find_abs(filename, [directory]), "", 0)
         ScriptLoader.instance.loadElements(elems.get("elements", []))
         for interactor in ScriptLoader.instance.active_scripts:
             if isinstance(interactor, RobotInteractor):
@@ -244,8 +244,13 @@ class ScreenObjectManager:
         cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
         self.resetVisualElements()
         ScriptLoader.instance.reset()
-        dirname = find_abs_directory("package/assets/bots")
-        pygame.image.save(cropped, join(dirname, filename.split("\\")[-1].split(".")[-2] + ".png"))
+        if directory.startswith("workspace"):
+            dirname = find_abs_directory("workspace/images/", create=True)
+        elif directory.startswith("package"):
+            dirname = find_abs_directory("packages/assets/bots")
+        else:
+            raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
+        pygame.image.save(cropped, join(dirname, filename.replace(".yaml", ".png")))
 
 
 screen_settings = {
