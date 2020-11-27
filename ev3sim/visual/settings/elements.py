@@ -55,7 +55,7 @@ class FileEntry(SettingsVisualElement):
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx+1}-file-name", "entry-label"),
             container=container,
-            text=self.current,
+            text=self.current if self.current else "",
         )
         click = pygame_gui.elements.UIButton(
             relative_rect=relative_rect,
