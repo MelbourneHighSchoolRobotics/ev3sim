@@ -8,6 +8,9 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 class BatchMenu(BaseMenu):
+
+    bot_list = []
+
     def sizeObjects(self):
         button_size = self._size[0] / 4, 60
         info_size = self._size[0] / 4 - 20, 15
@@ -18,7 +21,7 @@ class BatchMenu(BaseMenu):
             min(preview_size[0], (preview_size[1] * 4) // 3),
             min(preview_size[1], (preview_size[0] * 3) // 4),
         )
-        settings_size = (preview_size[0] - 20) * 0.45, preview_size[1] * 0.45
+        settings_size = preview_size[0] * 0.45, preview_size[1] * 0.45
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
         bot_size = preview_size[0] * 0.45, preview_size[1] * 0.45
         bot_icon_size = bot_size[1] * 0.6, bot_size[1] * 0.6
@@ -46,7 +49,7 @@ class BatchMenu(BaseMenu):
         )
         self.preview_image.set_dimensions(preview_size)
         self.preview_image.set_position((self._size[0] * 0.9 - preview_size[0], self._size[1] * 0.1))
-        settings_button_pos = (self._size[0] * 0.9 - settings_size[0] - 10, self._size[1] * 0.1 + preview_size[1] + 10)
+        settings_button_pos = (self._size[0] * 0.9 - settings_size[0] - preview_size[0] - 10, self._size[1] * 0.1)
         self.settings_button.set_dimensions(settings_size)
         self.settings_button.set_position(settings_button_pos)
         self.settings_icon.set_dimensions(settings_icon_size)
@@ -56,7 +59,10 @@ class BatchMenu(BaseMenu):
                 settings_button_pos[1] + settings_size[1] * 0.2,
             )
         )
-        bot_button_pos = (self._size[0] * 0.9 - preview_size[0] + 10, self._size[1] * 0.1 + preview_size[1] + 10)
+        bot_button_pos = (
+            self._size[0] * 0.9 - preview_size[0] - bot_size[0] - 10,
+            self._size[1] * 0.1 + preview_size[1] / 2 + 10,
+        )
         self.bot_button.set_dimensions(bot_size)
         self.bot_button.set_position(bot_button_pos)
         self.bot_icon.set_dimensions(bot_icon_size)
@@ -66,6 +72,11 @@ class BatchMenu(BaseMenu):
                 bot_button_pos[1] + bot_size[1] * 0.2,
             )
         )
+
+        n_bot_spots = len(self.bot_list)
+        if n_bot_spots > 0:
+            for i in range(n_bot_spots):
+                self.sizeBotImage(i, big_mode=n_bot_spots < 1)
 
     def generateObjects(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -159,6 +170,12 @@ class BatchMenu(BaseMenu):
         )
         self._all_objs.append(self.bot_button)
         self._all_objs.append(self.bot_icon)
+        n_bot_spots = len(self.bot_list)
+        if n_bot_spots > 0:
+            self.bot_loc_spots = []
+            for i in range(n_bot_spots):
+                self.bot_loc_spots.append(self.createBotImage(i))
+            self._all_objs.extend(self.bot_loc_spots)
 
     def initWithKwargs(self, **kwargs):
         super().initWithKwargs(**kwargs)
@@ -201,6 +218,47 @@ class BatchMenu(BaseMenu):
             batch_file=self.available_batches[self.batch_index][1],
         )
 
+    def createBotImage(self, index):
+
+        fname = find_abs(self.bot_list[index], ["package", "package/robots/", "workspace", "workspace/robots/"])
+        with open(fname, "r") as f:
+            config = yaml.safe_load(f)
+        bot_preview = find_abs(
+            config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
+        )
+        img = pygame.image.load(bot_preview)
+        img = pygame.transform.smoothscale(img, self._size)
+        return pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            image_surface=img,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID(f"bot-image-{self.bot_list[index]}"),
+        )
+
+    def sizeBotImage(self, index, big_mode=False):
+        preview_size = self._size[0] / 4, self._size[1] / 4
+        preview_size = (
+            min(preview_size[0], (preview_size[1] * 4) // 3),
+            min(preview_size[1], (preview_size[0] * 3) // 4),
+        )
+        if big_mode:
+            # beeg
+            self.bot_loc_spots[index].set_dimensions((preview_size[0], preview_size[0]))
+            self.bot_loc_spots[index].set_position(
+                (
+                    self._size[0] * 0.9 - preview_size[0],
+                    self._size[1] * 0.1 + preview_size[1] + 20 + (preview_size[0] * 1.1) * index,
+                )
+            )
+        else:
+            self.bot_loc_spots[index].set_dimensions((preview_size[0] * 0.45, preview_size[0] * 0.45))
+            self.bot_loc_spots[index].set_position(
+                (
+                    self._size[0] * 0.9 - preview_size[0] * (1 if index % 2 == 0 else 0.45),
+                    self._size[1] * 0.1 + preview_size[1] + 20 + (index // 2) * preview_size[0] * 0.55,
+                )
+            )
+
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_object_id.startswith("start-sim"):
@@ -221,6 +279,14 @@ class BatchMenu(BaseMenu):
 
     def setBatchIndex(self, new_index):
         self.batch_index = new_index
+        with open(self.available_batches[self.batch_index][1], "r") as f:
+            config = yaml.safe_load(f)
+        # Trigger regeneration
+        bots = config["bots"]
+        self.bot_list = bots
+        self.clearObjects()
+        self.generateObjects()
+        self.sizeObjects()
         # Update theming.
         self.start_button.enable()
         self.settings_button.enable()
@@ -234,23 +300,18 @@ class BatchMenu(BaseMenu):
                 "button_info_selected" if i == self.batch_index else "button_info"
             )
             self.batch_descriptions[i].rebuild_from_changed_theme_data()
-        try:
-            with open(self.available_batches[self.batch_index][1], "r") as f:
-                config = yaml.safe_load(f)
-            preset_path = find_abs(
-                config["preset_file"], allowed_areas=["local", "local/presets/", "package", "package/presets/"]
-            )
-            with open(preset_path, "r") as f:
-                preset_config = yaml.safe_load(f)
-            preset_preview = find_abs(
-                preset_config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-            )
-            img = pygame.image.load(preset_preview)
-            if img.get_size() != self.preview_image.rect.size:
-                img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))
-            self.preview_image.set_image(img)
-        except:
-            pass
+        preset_path = find_abs(
+            config["preset_file"], allowed_areas=["local", "local/presets/", "package", "package/presets/"]
+        )
+        with open(preset_path, "r") as f:
+            preset_config = yaml.safe_load(f)
+        preset_preview = find_abs(
+            preset_config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
+        )
+        img = pygame.image.load(preset_preview)
+        if img.get_size() != self.preview_image.rect.size:
+            img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))
+        self.preview_image.set_image(img)
 
     def incrementBatchIndex(self, amount):
         if self.batch_index == -1:

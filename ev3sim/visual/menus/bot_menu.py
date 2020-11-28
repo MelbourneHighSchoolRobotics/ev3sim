@@ -264,6 +264,10 @@ class BotMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
 
         ScreenObjectManager.instance.popScreen()
+        # Make sure the batch screen updates.
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BATCH].setBatchIndex(
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BATCH].batch_index
+        )
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
