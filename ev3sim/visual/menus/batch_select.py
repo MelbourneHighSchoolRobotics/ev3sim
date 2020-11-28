@@ -261,4 +261,12 @@ class BatchMenu(BaseMenu):
         self.setBatchIndex(new_index)
 
     def onPop(self):
-        pass
+        self.bot_index = -1
+        self.start_button.disable()
+        self.settings_button.disable()
+        self.bot_button.disable()
+        for i in range(len(self.batch_buttons)):
+            self.batch_buttons[i].combined_element_ids[2] = "list_button"
+            self.batch_buttons[i].rebuild_from_changed_theme_data()
+            self.batch_descriptions[i].combined_element_ids[2] = "button_info"
+            self.batch_descriptions[i].rebuild_from_changed_theme_data()

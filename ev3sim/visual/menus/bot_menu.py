@@ -369,5 +369,7 @@ class BotMenu(BaseMenu):
         else:
             self.select_button.disable()
         for i in range(len(self.bot_buttons)):
-            self.bot_buttons[i].combined_element_ids[1] = "bot_select_button"
+            self.bot_buttons[i].combined_element_ids[2] = "list_button"
             self.bot_buttons[i].rebuild_from_changed_theme_data()
+            self.bot_descriptions[i].combined_element_ids[2] = "button_info"
+            self.bot_descriptions[i].rebuild_from_changed_theme_data()
