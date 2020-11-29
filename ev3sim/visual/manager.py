@@ -16,6 +16,7 @@ class ScreenObjectManager:
     SCREEN_BATCH = "BATCH_SELECT"
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
+    SCREEN_WORKSPACE = "WORKSPACE"
 
     screen_stack = []
 
@@ -68,6 +69,10 @@ class ScreenObjectManager:
 
     def initScreens(self):
         self.screens = {}
+        # Workspace select dialog
+        from ev3sim.visual.menus.workspace_menu import WorkspaceMenu
+
+        self.screens[self.SCREEN_WORKSPACE] = WorkspaceMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Menu screen
         from ev3sim.visual.menus.main import MainMenu
 
@@ -105,6 +110,7 @@ class ScreenObjectManager:
     def startScreen(self):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
+        from ev3sim.simulation.loader import StateHandler
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
@@ -118,7 +124,10 @@ class ScreenObjectManager:
         pygame.display.set_icon(img)
 
         self.initScreens()
-        self.pushScreen(self.SCREEN_MENU)
+        if not StateHandler.WORKSPACE_FOLDER:
+            self.pushScreen(self.SCREEN_WORKSPACE)
+        else:
+            self.pushScreen(self.SCREEN_MENU)
 
     def registerVisual(self, obj: "visual.objects.IVisualElement", key) -> str:  # noqa: F821
         assert (

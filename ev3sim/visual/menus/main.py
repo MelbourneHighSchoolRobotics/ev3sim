@@ -5,12 +5,6 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
 
 
-def on_button_simulate(*args, **kwargs):
-    from ev3sim.visual.manager import ScreenObjectManager
-
-    ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_BATCH)
-
-
 class MainMenu(BaseMenu):
     def sizeObjects(self):
         self.bg.set_dimensions(self._size)
