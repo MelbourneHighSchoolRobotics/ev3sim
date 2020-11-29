@@ -61,6 +61,18 @@
             "border_width": "0"
         }
     },
+    "text_dialog": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "26",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
     "settings-background": {
         "colours": {
             "dark_bg": "#181A25"
