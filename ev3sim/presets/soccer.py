@@ -473,6 +473,7 @@ soccer_settings = {
 from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox
 
 visual_settings = [
+    {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BATCH NAME", None, (lambda s: (0, 20)))]},
     {
         "height": lambda s: 190,
         "objects": [
