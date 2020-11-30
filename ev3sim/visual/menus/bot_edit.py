@@ -36,7 +36,7 @@ class BotEditMenu(BaseMenu):
                     "type": object,
                     "visual": {
                         "name": "Image",
-                        "image_path": 'LogoTransparent.png',
+                        "image_path": "LogoTransparent.png",
                         "scale": 0.7,
                         "zPos": 2.05,
                     },
@@ -50,13 +50,13 @@ class BotEditMenu(BaseMenu):
                         "name": "Rectangle",
                         "width": 1,
                         "height": 6,
-                        "fill": '#878E88',
+                        "fill": "#878E88",
                         "zPos": 2.07,
                     },
                     "position": [8.3, 0],
                     "restitution": 0.2,
                     "friction": 0.8,
-                }
+                },
             ],
             "key": "phys_obj",
         }
@@ -84,7 +84,6 @@ class BotEditMenu(BaseMenu):
                 elem.visual.calculatePoints()
                 new_elems.extend(elem.children)
             elems = new_elems
-            
 
     def sizeObjects(self):
         # Bg

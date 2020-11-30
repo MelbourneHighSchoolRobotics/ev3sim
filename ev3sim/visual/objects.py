@@ -164,7 +164,11 @@ class Colorable(IVisualElement):
         if self.customMap is None:
             return max(
                 1,
-                int(self.stroke_width * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH),
+                int(
+                    self.stroke_width
+                    * ScreenObjectManager.instance.SCREEN_WIDTH
+                    / ScreenObjectManager.instance.MAP_WIDTH
+                ),
             )
         return max(
             1,
@@ -201,7 +205,7 @@ class Image(Colorable):
     def calculatePoints(self):
         if self.customMap is None:
             relative_scale = ScreenObjectManager.instance.relativeScreenScale()
-        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+            # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
             relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
         else:
             relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]
@@ -418,7 +422,7 @@ class Polygon(Colorable):
             return
         for i, v in enumerate(self.verts):
             self.points[i] = utils.worldspace_to_screenspace(
-                local_space_to_world_space(v, self.rotation, self.position), 
+                local_space_to_world_space(v, self.rotation, self.position),
                 self.customMap,
             )
 
@@ -521,12 +525,8 @@ class Circle(Colorable):
                 ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH * self.radius
             )
         else:
-            self.v_radius = int(
-                self.customMap["SCREEN_HEIGHT"] / self.customMap["MAP_HEIGHT"] * self.radius
-            )
-            self.h_radius = int(
-                self.customMap["SCREEN_WIDTH"] / self.customMap["MAP_WIDTH"] * self.radius
-            )
+            self.v_radius = int(self.customMap["SCREEN_HEIGHT"] / self.customMap["MAP_HEIGHT"] * self.radius)
+            self.h_radius = int(self.customMap["SCREEN_WIDTH"] / self.customMap["MAP_WIDTH"] * self.radius)
         self.rect = pygame.Rect(
             self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2
         )
@@ -615,7 +615,7 @@ class Text(Colorable):
     def calculatePoints(self):
         if self.customMap is None:
             relative_scale = ScreenObjectManager.instance.relativeScreenScale()
-        # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
+            # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
             relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
         else:
             relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]

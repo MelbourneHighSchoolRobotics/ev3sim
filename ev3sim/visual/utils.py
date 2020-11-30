@@ -43,15 +43,10 @@ def worldspace_to_screenspace(point, customScreen=None):
             ),
         )
     return (
-        int(
-            point[0] * customScreen["SCREEN_WIDTH"] / customScreen["MAP_WIDTH"]
-            + customScreen["SCREEN_WIDTH"] / 2
-        ),
-        int(
-            -point[1] * customScreen["SCREEN_HEIGHT"] / customScreen["MAP_HEIGHT"]
-            + customScreen["SCREEN_HEIGHT"] / 2
-        ),
+        int(point[0] * customScreen["SCREEN_WIDTH"] / customScreen["MAP_WIDTH"] + customScreen["SCREEN_WIDTH"] / 2),
+        int(-point[1] * customScreen["SCREEN_HEIGHT"] / customScreen["MAP_HEIGHT"] + customScreen["SCREEN_HEIGHT"] / 2),
     )
+
 
 def screenspace_to_worldspace(point, customScreen=None):
     from ev3sim.visual.manager import ScreenObjectManager
@@ -74,9 +69,7 @@ def screenspace_to_worldspace(point, customScreen=None):
     return np.array(
         [
             float(
-                (point[0] - customScreen["SCREEN_WIDTH"] / 2)
-                / customScreen["SCREEN_WIDTH"]
-                * customScreen["MAP_WIDTH"]
+                (point[0] - customScreen["SCREEN_WIDTH"] / 2) / customScreen["SCREEN_WIDTH"] * customScreen["MAP_WIDTH"]
             ),
             float(
                 -(point[1] - customScreen["SCREEN_HEIGHT"] / 2)
