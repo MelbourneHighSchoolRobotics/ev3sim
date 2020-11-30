@@ -73,7 +73,7 @@ class SettingsMenu(BaseMenu):
             relative_rect=dummy_rect,
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
-            text="Save",
+            text="Create" if self.creating else "Save",
         )
         self._all_objs.append(self.save)
         index += 1
