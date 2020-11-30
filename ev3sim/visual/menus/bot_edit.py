@@ -24,14 +24,22 @@ class BotEditMenu(BaseMenu):
 
         # Clickies
         icon_size = side_width / 2
+        self.select_icon.set_dimensions((icon_size, icon_size))
+        self.select_icon.set_position((side_width / 2 - icon_size / 2, 50))
+        self.select_button.set_dimensions((icon_size, icon_size))
+        self.select_button.set_position((side_width / 2 - icon_size / 2, 50))
         self.circle_icon.set_dimensions((icon_size, icon_size))
-        self.circle_icon.set_position((side_width / 2 - icon_size / 2, 50))
+        self.circle_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
         self.circle_button.set_dimensions((icon_size, icon_size))
-        self.circle_button.set_position((side_width / 2 - icon_size / 2, 50))
+        self.circle_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
         self.polygon_icon.set_dimensions((icon_size, icon_size))
-        self.polygon_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.polygon_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 3))
         self.polygon_button.set_dimensions((icon_size, icon_size))
-        self.polygon_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.polygon_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 3))
+        self.device_icon.set_dimensions((icon_size, icon_size))
+        self.device_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
+        self.device_button.set_dimensions((icon_size, icon_size))
+        self.device_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
 
         # Other options
         lock_size = side_width / 4
@@ -74,6 +82,21 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.bot_bar)
 
         # Clickies
+        self.select_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("select-button", "invis_button"),
+        )
+        select_icon_path = find_abs("ui/icon_select.png", allowed_areas=["package/assets/"])
+        self.select_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(select_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("select-icon"),
+        )
+        self._all_objs.append(self.select_button)
+        self._all_objs.append(self.select_icon)
         self.circle_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -104,6 +127,21 @@ class BotEditMenu(BaseMenu):
         )
         self._all_objs.append(self.polygon_button)
         self._all_objs.append(self.polygon_icon)
+        self.device_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("device-button", "invis_button"),
+        )
+        device_icon_path = find_abs("ui/icon_device.png", allowed_areas=["package/assets/"])
+        self.device_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(device_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("device-icon"),
+        )
+        self._all_objs.append(self.device_button)
+        self._all_objs.append(self.device_icon)
 
         # Other options
         self.lock_grid_label = pygame_gui.elements.UILabel(
