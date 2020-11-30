@@ -43,6 +43,19 @@
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
+    "invis_button": {
+        "colours": {
+            "normal_bg": "#00000000",
+            "hovered_bg": "#00000000",
+            "active_bg": "#00000000",
+            "normal_text": "#00000000",
+            "hovered_text": "#00000000",
+            "active_text": "#00000000",
+            "normal_border": "#00000000",
+            "hovered_border": "#00000000",
+            "active_border": "#00000000"
+        }
+    },
     "menu_button": {
         "misc": {
             "shape": "rectangle"
@@ -176,6 +189,27 @@
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
             "active_bg": "#EA8689"
+        }
+    },
+    "bot_edit_bar": {
+        "colours": {
+            "dark_bg": "#141D2A",
+            "normal_border": "#00ff00"
+        },
+        "misc": {
+            "border_width": "2"
+        }
+    },
+    "bot_edit_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     }
 }

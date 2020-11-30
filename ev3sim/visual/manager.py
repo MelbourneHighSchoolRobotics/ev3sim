@@ -17,6 +17,7 @@ class ScreenObjectManager:
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
+    SCREEN_BOT_EDIT = "BOT_EDIT"
 
     screen_stack = []
 
@@ -85,7 +86,10 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.bot_menu import BotMenu
 
         self.screens[self.SCREEN_BOTS] = BotMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Bot edit screen
+        from ev3sim.visual.menus.bot_edit import BotEditMenu
 
+        self.screens[self.SCREEN_BOT_EDIT] = BotEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 

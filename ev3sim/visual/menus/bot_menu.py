@@ -239,12 +239,19 @@ class BotMenu(BaseMenu):
             return
         from ev3sim.visual.manager import ScreenObjectManager
 
+        # TODO: Do this when saving the bot, not here.
+        """
         ScreenObjectManager.instance.captureBotImage(
             self.available_bots[self.bot_index][2],
             self.available_bots[self.bot_index][3],
             bg=pygame.Color(self.bg.background_colour),
         )
         self.blitCurrentBotPreview()
+        """
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOT_EDIT,
+            bot_file=self.available_bots[self.bot_index][2],
+        )
 
     def clickSelect(self):
         # Shouldn't happen but lets be safe.
