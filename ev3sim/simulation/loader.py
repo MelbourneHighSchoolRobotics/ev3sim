@@ -69,7 +69,7 @@ class ScriptLoader:
         self.physics_tick = 0
         self.current_tick = 0
 
-    def loadElements(self, items):
+    def loadElements(self, items, preview_mode=False):
         # Handle any programmatic color references.
         elements = []
         from ev3sim.devices.base import initialise_device
@@ -95,8 +95,8 @@ class ScriptLoader:
                 obj.key = item["key"]
                 for index, device in enumerate(devices):
                     # Instantiate the devices.
-                    initialise_device(device, obj, index)
-                if item.get("physics", False):
+                    initialise_device(device, obj, index, preview_mode=preview_mode)
+                if item.get("physics", False) and not preview_mode:
                     World.instance.registerObject(obj)
                 ScreenObjectManager.instance.registerObject(obj, obj.key)
                 self.object_map[obj.key] = obj

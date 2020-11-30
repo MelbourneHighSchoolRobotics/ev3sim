@@ -1,3 +1,4 @@
+from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.file_helper import find_abs
 import pygame
 import pygame_gui
@@ -5,55 +6,88 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 class BotEditMenu(BaseMenu):
+
+    MODE_DIALOG_DEVICE = "DEVICE_SELECT"
+    MODE_NORMAL = "NORMAL"
+
     def initWithKwargs(self, **kwargs):
         self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
         self.grid_size = 5
+        self.mode = self.MODE_NORMAL
+        self.current_object = {
+            "physics": True,
+            "type": "object",
+            "visual": {
+                "name": "Circle",
+                "radius": 8.5,
+                "fill": "#878E88",
+                "stroke_width": 0.1,
+                "stroke": "#ffffff",
+                "zPos": 2,
+            },
+            "collider": "inherit",
+            "mass": 5,
+            "restitution": 0.2,
+            "friction": 0.8,
+            "children": [],
+            "key": "phys_obj",
+        }
+        self.current_holding = None
         super().initWithKwargs(**kwargs)
+        self.setVisualElements([self.current_object])
+
+    def setVisualElements(self, elements):
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.simulation.loader import ScriptLoader
+
+        ScriptLoader.instance.startUp()
+        ScreenObjectManager.instance.resetVisualElements()
+        ScriptLoader.instance.loadElements(elements, preview_mode=True)
 
     def sizeObjects(self):
         # Bg
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
-        side_width = self._size[0] / 6
-        bot_height = self._size[1] / 6
-        self.sidebar.set_dimensions((side_width, self._size[1] + 10))
+        self.side_width = self._size[0] / 6
+        self.bot_height = self._size[1] / 6
+        self.sidebar.set_dimensions((self.side_width, self._size[1] + 10))
         self.sidebar.set_position((-5, -5))
-        self.bot_bar.set_dimensions((self._size[0] - side_width + 20, bot_height))
-        self.bot_bar.set_position((-10 + side_width, self._size[1] - bot_height + 5))
+        self.bot_bar.set_dimensions((self._size[0] - self.side_width + 20, self.bot_height))
+        self.bot_bar.set_position((-10 + self.side_width, self._size[1] - self.bot_height + 5))
 
         # Clickies
-        icon_size = side_width / 2
+        icon_size = self.side_width / 2
         self.select_icon.set_dimensions((icon_size, icon_size))
-        self.select_icon.set_position((side_width / 2 - icon_size / 2, 50))
+        self.select_icon.set_position((self.side_width / 2 - icon_size / 2, 50))
         self.select_button.set_dimensions((icon_size, icon_size))
-        self.select_button.set_position((side_width / 2 - icon_size / 2, 50))
+        self.select_button.set_position((self.side_width / 2 - icon_size / 2, 50))
         self.circle_icon.set_dimensions((icon_size, icon_size))
-        self.circle_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.circle_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
         self.circle_button.set_dimensions((icon_size, icon_size))
-        self.circle_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.circle_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
         self.polygon_icon.set_dimensions((icon_size, icon_size))
-        self.polygon_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 3))
+        self.polygon_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 3))
         self.polygon_button.set_dimensions((icon_size, icon_size))
-        self.polygon_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 3))
+        self.polygon_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 3))
         self.device_icon.set_dimensions((icon_size, icon_size))
-        self.device_icon.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
+        self.device_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
         self.device_button.set_dimensions((icon_size, icon_size))
-        self.device_button.set_position((side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
+        self.device_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
 
         # Other options
-        lock_size = side_width / 4
-        self.lock_grid_label.set_dimensions(((side_width - 30) - lock_size - 5, lock_size))
+        lock_size = self.side_width / 4
+        self.lock_grid_label.set_dimensions(((self.side_width - 30) - lock_size - 5, lock_size))
         self.lock_grid_label.set_position((10, self._size[1] - lock_size - 60))
         self.lock_grid_image.set_dimensions((lock_size, lock_size))
-        self.lock_grid_image.set_position((side_width - lock_size - 20, self._size[1] - lock_size - 60))
+        self.lock_grid_image.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 60))
         self.lock_grid_button.set_dimensions((lock_size, lock_size))
-        self.lock_grid_button.set_position((side_width - lock_size - 20, self._size[1] - lock_size - 60))
+        self.lock_grid_button.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 60))
         self.updateCheckbox()
-        self.grid_size_label.set_dimensions(((side_width - 30) - lock_size - 5, lock_size))
+        self.grid_size_label.set_dimensions(((self.side_width - 30) - lock_size - 5, lock_size))
         self.grid_size_label.set_position((10, self._size[1] - lock_size - 15))
         self.grid_size_entry.set_dimensions((lock_size, lock_size))
-        self.grid_size_entry.set_position((side_width - lock_size - 20, self._size[1] - lock_size - 15))
+        self.grid_size_entry.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 15))
 
     def generateObjects(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -195,14 +229,26 @@ class BotEditMenu(BaseMenu):
         self.lock_grid_image.set_image(img)
 
     def handleEvent(self, event):
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_object_id.startswith("circle-button"):
-                self.clickCircle()
-            elif event.ui_object_id.startswith("polygon-button"):
-                self.clickPolygon()
-            elif event.ui_object_id.startswith("lock_grid-button"):
-                self.lock_grid = not self.lock_grid
-                self.updateCheckbox()
+        if self.mode == self.MODE_NORMAL:
+            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_object_id.startswith("circle-button"):
+                    self.clickCircle()
+                elif event.ui_object_id.startswith("polygon-button"):
+                    self.clickPolygon()
+                elif event.ui_object_id.startswith("lock_grid-button"):
+                    self.lock_grid = not self.lock_grid
+                    self.updateCheckbox()
+
+    def draw_ui(self, window_surface: pygame.surface.Surface):
+        super().draw_ui(window_surface)
+        surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
+        bot_screen = pygame.Surface(surf_size)
+        ScreenObjectManager.instance.applyToScreen(to_screen=bot_screen)
+        ScreenObjectManager.instance.screen.blit(bot_screen, pygame.Rect(self.side_width - 5, 0, *surf_size))
+
+    def changeMode(self, value):
+        # Remove/Add dialog components if necessary.
+        self.mode = value
 
     def onPop(self):
         pass

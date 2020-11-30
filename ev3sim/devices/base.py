@@ -100,7 +100,7 @@ class IDeviceInteractor(IInteractor):
         return Randomiser.getPortRandom(self.port_key).random()
 
 
-def initialise_device(deviceData, parentObj, index):
+def initialise_device(deviceData, parentObj, index, preview_mode=False):
     classes = find_abs("devices/classes.yaml")
     devices = yaml.safe_load(open(classes, "r"))
     name = deviceData["name"]

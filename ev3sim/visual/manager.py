@@ -179,7 +179,8 @@ class ScreenObjectManager:
                 self.objects[key].applyToScreen(blit_screen)
         else:
             self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
-        pygame.display.update()
+        if to_screen is None:
+            pygame.display.update()
 
     def colourAtPixel(self, screen_position):
         return self.sensorScreen.get_at(screen_position)
