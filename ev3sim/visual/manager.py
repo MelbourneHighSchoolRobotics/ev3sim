@@ -279,7 +279,9 @@ def on_change_bg(new_val):
 
 
 def on_change_theme(new_val):
-    ScreenObjectManager.theme_path = find_abs(new_val, allowed_areas=["workspace/assets", "workspace", "package/assets"])
+    ScreenObjectManager.theme_path = find_abs(
+        new_val, allowed_areas=["workspace/assets", "workspace", "package/assets"]
+    )
 
 
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg
