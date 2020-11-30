@@ -23,6 +23,8 @@ class IVisualElement:
     sensorVisible: bool
     """Specifies whether the visual object should affect the colour sensor readings."""
 
+    customMap = None
+
     def __init__(self, **kwargs):
         self.initFromKwargs(**kwargs)
 
@@ -159,9 +161,14 @@ class Colorable(IVisualElement):
 
     @property
     def scaledStrokeWidth(self):
+        if self.customMap is None:
+            return max(
+                1,
+                int(self.stroke_width * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH),
+            )
         return max(
             1,
-            int(self.stroke_width * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH),
+            int(self.stroke_width * self.customMap["SCREEN_WIDTH"] / self.customMap["MAP_WIDTH"]),
         )
 
 
@@ -192,9 +199,12 @@ class Image(Colorable):
         self.image = pygame.image.load(self._image_path)
 
     def calculatePoints(self):
-        relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        if self.customMap is None:
+            relative_scale = ScreenObjectManager.instance.relativeScreenScale()
         # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
-        relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
+            relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
+        else:
+            relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]
         new_size = [
             int(self.image.get_size()[0] * self.scale * relative_scale),
             int(self.image.get_size()[1] * self.scale * relative_scale),
@@ -202,7 +212,7 @@ class Image(Colorable):
         scaled = pygame.transform.scale(self.image, new_size)
         self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
-        self.screen_location = utils.worldspace_to_screenspace(self.position)
+        self.screen_location = utils.worldspace_to_screenspace(self.position, self.customMap)
         self.screen_size = self.rotated.get_size()
         if self.hAlignment == "l":
             pass
@@ -222,12 +232,22 @@ class Image(Colorable):
             raise ValueError(f"vAlignment is incorrect: {self.vAlignment}")
         from ev3sim.visual.utils import screenspace_to_worldspace
 
-        physics_size = screenspace_to_worldspace(
-            [
-                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
-                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
-            ]
-        )
+        if self.customMap is None:
+            physics_size = screenspace_to_worldspace(
+                [
+                    ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                    ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
+        else:
+            physics_size = screenspace_to_worldspace(
+                [
+                    self.customMap["SCREEN_WIDTH"] / 2 + self.screen_size[0],
+                    self.customMap["SCREEN_HEIGHT"] / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
         self.verts = [
             (physics_size[0] / 2, physics_size[1] / 2),
             (physics_size[0] / 2, -physics_size[1] / 2),
@@ -269,12 +289,22 @@ class Image(Colorable):
         res = np.array([0.0, 0.0])
         from ev3sim.visual.utils import screenspace_to_worldspace
 
-        physics_size = screenspace_to_worldspace(
-            [
-                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
-                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
-            ]
-        )
+        if self.customMap is None:
+            physics_size = screenspace_to_worldspace(
+                [
+                    ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                    ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
+        else:
+            physics_size = screenspace_to_worldspace(
+                [
+                    self.customMap["SCREEN_WIDTH"] / 2 + self.screen_size[0],
+                    self.customMap["SCREEN_HEIGHT"] / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
         if self.hAlignment == "l":
             res += np.array([physics_size[0] / 2, 0.0])
         elif self.hAlignment == "m":
@@ -322,16 +352,16 @@ class Line(Colorable):
             pygame.draw.line(
                 screen,
                 self.fill,
-                utils.worldspace_to_screenspace(self.start),
-                utils.worldspace_to_screenspace(self.end),
+                utils.worldspace_to_screenspace(self.start, self.customMap),
+                utils.worldspace_to_screenspace(self.end, self.customMap),
                 self.scaledStrokeWidth,
             )
         elif self.fill:
             pygame.draw.line(
                 screen,
                 self.fill,
-                utils.worldspace_to_screenspace(self.start),
-                utils.worldspace_to_screenspace(self.end),
+                utils.worldspace_to_screenspace(self.start, self.customMap),
+                utils.worldspace_to_screenspace(self.end, self.customMap),
                 1,
             )
 
@@ -343,16 +373,16 @@ class Line(Colorable):
             pygame.draw.aaline(
                 screen,
                 self.fill,
-                utils.worldspace_to_screenspace(self.start),
-                utils.worldspace_to_screenspace(self.end),
+                utils.worldspace_to_screenspace(self.start, self.customMap),
+                utils.worldspace_to_screenspace(self.end, self.customMap),
                 self.scaledStrokeWidth,
             )
         elif self.fill:
             pygame.draw.aaline(
                 screen,
                 self.fill,
-                utils.worldspace_to_screenspace(self.start),
-                utils.worldspace_to_screenspace(self.end),
+                utils.worldspace_to_screenspace(self.start, self.customMap),
+                utils.worldspace_to_screenspace(self.end, self.customMap),
             )
 
     def applyToScreen(self, screen):
@@ -388,7 +418,8 @@ class Polygon(Colorable):
             return
         for i, v in enumerate(self.verts):
             self.points[i] = utils.worldspace_to_screenspace(
-                local_space_to_world_space(v, self.rotation, self.position)
+                local_space_to_world_space(v, self.rotation, self.position), 
+                self.customMap,
             )
 
     def _applyToScreen(self, screen):
@@ -481,13 +512,21 @@ class Circle(Colorable):
             tmp = self.radius
         except:
             return
-        self.point = utils.worldspace_to_screenspace(self.position)
-        self.v_radius = int(
-            ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT * self.radius
-        )
-        self.h_radius = int(
-            ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH * self.radius
-        )
+        self.point = utils.worldspace_to_screenspace(self.position, self.customMap)
+        if self.customMap is None:
+            self.v_radius = int(
+                ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT * self.radius
+            )
+            self.h_radius = int(
+                ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH * self.radius
+            )
+        else:
+            self.v_radius = int(
+                self.customMap["SCREEN_HEIGHT"] / self.customMap["MAP_HEIGHT"] * self.radius
+            )
+            self.h_radius = int(
+                self.customMap["SCREEN_WIDTH"] / self.customMap["MAP_WIDTH"] * self.radius
+            )
         self.rect = pygame.Rect(
             self.point[0] - self.h_radius, self.point[1] - self.v_radius, self.h_radius * 2, self.v_radius * 2
         )
@@ -574,9 +613,12 @@ class Text(Colorable):
         super().scaleAtPosition(amount, pos=pos)
 
     def calculatePoints(self):
-        relative_scale = ScreenObjectManager.instance.relativeScreenScale()
+        if self.customMap is None:
+            relative_scale = ScreenObjectManager.instance.relativeScreenScale()
         # In order to have a reasonably sized image at all resolutions, calculate the scale to use based on the starting screen scale as well.
-        relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
+            relative_scale = relative_scale * ScreenObjectManager.instance.original_SCREEN_WIDTH / 1280
+        else:
+            relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]
         new_font_size = int(self.font_size * relative_scale)
         # Scale the font size as much as possible
         relative_scale = self.font_size * relative_scale / new_font_size
@@ -593,7 +635,7 @@ class Text(Colorable):
             self.font.get_rect(self.text).width * relative_scale,
             self.font.get_rect(self.text).height * relative_scale,
         )
-        self.anchor = utils.worldspace_to_screenspace(self.position)
+        self.anchor = utils.worldspace_to_screenspace(self.position, self.customMap)
         if self.hAlignment == "l":
             pass
         elif self.hAlignment == "m":
@@ -621,12 +663,22 @@ class Text(Colorable):
         res = np.array([0.0, 0.0])
         from ev3sim.visual.utils import screenspace_to_worldspace
 
-        physics_size = screenspace_to_worldspace(
-            [
-                ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
-                ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
-            ]
-        )
+        if self.customMap is None:
+            physics_size = screenspace_to_worldspace(
+                [
+                    ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2 + self.screen_size[0],
+                    ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
+        else:
+            physics_size = screenspace_to_worldspace(
+                [
+                    self.customMap["SCREEN_WIDTH"] / 2 + self.screen_size[0],
+                    self.customMap["SCREEN_HEIGHT"] / 2 + self.screen_size[1],
+                ],
+                self.customMap,
+            )
         if self.hAlignment == "l":
             res += np.array([physics_size[0] / 2, 0.0])
         elif self.hAlignment == "m":

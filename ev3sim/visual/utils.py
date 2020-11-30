@@ -28,35 +28,60 @@ def hsl_to_rgb(h, s, l):
     return c + m, m, x + m
 
 
-def worldspace_to_screenspace(point):
+def worldspace_to_screenspace(point, customScreen=None):
     from ev3sim.visual.manager import ScreenObjectManager
 
+    if customScreen is None:
+        return (
+            int(
+                point[0] * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH
+                + ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2
+            ),
+            int(
+                -point[1] * ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT
+                + ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2
+            ),
+        )
     return (
         int(
-            point[0] * ScreenObjectManager.instance.SCREEN_WIDTH / ScreenObjectManager.instance.MAP_WIDTH
-            + ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2
+            point[0] * customScreen["SCREEN_WIDTH"] / customScreen["MAP_WIDTH"]
+            + customScreen["SCREEN_WIDTH"] / 2
         ),
         int(
-            -point[1] * ScreenObjectManager.instance.SCREEN_HEIGHT / ScreenObjectManager.instance.MAP_HEIGHT
-            + ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2
+            -point[1] * customScreen["SCREEN_HEIGHT"] / customScreen["MAP_HEIGHT"]
+            + customScreen["SCREEN_HEIGHT"] / 2
         ),
     )
 
-
-def screenspace_to_worldspace(point):
+def screenspace_to_worldspace(point, customScreen=None):
     from ev3sim.visual.manager import ScreenObjectManager
 
+    if customScreen is None:
+        return np.array(
+            [
+                float(
+                    (point[0] - ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2)
+                    / ScreenObjectManager.instance.SCREEN_WIDTH
+                    * ScreenObjectManager.instance.MAP_WIDTH
+                ),
+                float(
+                    -(point[1] - ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2)
+                    / ScreenObjectManager.instance.SCREEN_HEIGHT
+                    * ScreenObjectManager.instance.MAP_HEIGHT
+                ),
+            ]
+        )
     return np.array(
         [
             float(
-                (point[0] - ScreenObjectManager.instance._SCREEN_WIDTH_ACTUAL / 2)
-                / ScreenObjectManager.instance.SCREEN_WIDTH
-                * ScreenObjectManager.instance.MAP_WIDTH
+                (point[0] - customScreen["SCREEN_WIDTH"] / 2)
+                / customScreen["SCREEN_WIDTH"]
+                * customScreen["MAP_WIDTH"]
             ),
             float(
-                -(point[1] - ScreenObjectManager.instance._SCREEN_HEIGHT_ACTUAL / 2)
-                / ScreenObjectManager.instance.SCREEN_HEIGHT
-                * ScreenObjectManager.instance.MAP_HEIGHT
+                -(point[1] - customScreen["SCREEN_HEIGHT"] / 2)
+                / customScreen["SCREEN_HEIGHT"]
+                * customScreen["MAP_HEIGHT"]
             ),
         ]
     )

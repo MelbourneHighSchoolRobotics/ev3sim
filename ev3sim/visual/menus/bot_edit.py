@@ -30,7 +30,34 @@ class BotEditMenu(BaseMenu):
             "mass": 5,
             "restitution": 0.2,
             "friction": 0.8,
-            "children": [],
+            "children": [
+                {
+                    "physics": False,
+                    "type": object,
+                    "visual": {
+                        "name": "Image",
+                        "image_path": 'LogoTransparent.png',
+                        "scale": 0.7,
+                        "zPos": 2.05,
+                    },
+                    "position": [4.5, 3],
+                },
+                {
+                    "physics": True,
+                    "type": object,
+                    "collider": "inherit",
+                    "visual": {
+                        "name": "Rectangle",
+                        "width": 1,
+                        "height": 6,
+                        "fill": '#878E88',
+                        "zPos": 2.07,
+                    },
+                    "position": [8.3, 0],
+                    "restitution": 0.2,
+                    "friction": 0.8,
+                }
+            ],
             "key": "phys_obj",
         }
         self.current_holding = None
@@ -43,7 +70,21 @@ class BotEditMenu(BaseMenu):
 
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
-        ScriptLoader.instance.loadElements(elements, preview_mode=True)
+        mSize = min(*self.surf_size)
+        elems = ScriptLoader.instance.loadElements(elements, preview_mode=True)
+        while elems:
+            new_elems = []
+            for elem in elems:
+                elem.visual.customMap = {
+                    "SCREEN_WIDTH": self.surf_size[0],
+                    "SCREEN_HEIGHT": self.surf_size[1],
+                    "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
+                    "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
+                }
+                elem.visual.calculatePoints()
+                new_elems.extend(elem.children)
+            elems = new_elems
+            
 
     def sizeObjects(self):
         # Bg
@@ -88,6 +129,10 @@ class BotEditMenu(BaseMenu):
         self.grid_size_label.set_position((10, self._size[1] - lock_size - 15))
         self.grid_size_entry.set_dimensions((lock_size, lock_size))
         self.grid_size_entry.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 15))
+
+        # Simulator objects
+        self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
+        self.bot_screen = pygame.Surface(self.surf_size)
 
     def generateObjects(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -241,10 +286,8 @@ class BotEditMenu(BaseMenu):
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         super().draw_ui(window_surface)
-        surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
-        bot_screen = pygame.Surface(surf_size)
-        ScreenObjectManager.instance.applyToScreen(to_screen=bot_screen)
-        ScreenObjectManager.instance.screen.blit(bot_screen, pygame.Rect(self.side_width - 5, 0, *surf_size))
+        ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
+        ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))
 
     def changeMode(self, value):
         # Remove/Add dialog components if necessary.
