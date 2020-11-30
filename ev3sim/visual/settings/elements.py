@@ -120,14 +120,12 @@ class FileEntry(SettingsVisualElement):
 
 
 class TextEntry(SettingsVisualElement):
-
-    num_objs = 2
-
     def setToJson(self, json_obj):
         self.current = self.obj.text
         super().setToJson(json_obj)
 
     def generateVisual(self, relative_rect, container, manager, idx):
+        self.num_objs = 0
         self.container = container
         self.obj = pygame_gui.elements.UITextEntryLine(
             relative_rect=relative_rect,
@@ -136,28 +134,46 @@ class TextEntry(SettingsVisualElement):
             container=container,
         )
         self.obj.set_text(str(self.current))
-        obj2 = pygame_gui.elements.UILabel(
-            relative_rect=relative_rect,
-            manager=manager,
-            object_id=pygame_gui.core.ObjectID(f"{idx+1}-text-label", "entry-label"),
-            container=container,
-            text=self.title,
-        )
-        return [self.obj, obj2]
+        self.num_objs += 1
+        if self.title is not None:
+            self.num_objs += 1
+            obj2 = pygame_gui.elements.UILabel(
+                relative_rect=relative_rect,
+                manager=manager,
+                object_id=pygame_gui.core.ObjectID(f"{idx+1}-text-label", "entry-label"),
+                container=container,
+                text=self.title,
+            )
+            return [self.obj, obj2]
+        return [self.obj]
 
     def resize(self, objs, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        objs[index].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 60))
-        objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 40))
-        objs[index].set_position(
-            (
-                off[0] + self.container.relative_rect.left + 20 + (self.container.relative_rect.width - 40) / 2 + 10,
-                off[1] + self.container.relative_rect.top,
+        if self.title is None:
+            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
+            objs[index].set_dimensions(((self.container.relative_rect.width - 40) - 20, 60))
+            objs[index].set_position(
+                (
+                    off[0] + self.container.relative_rect.left + 20,
+                    off[1] + self.container.relative_rect.top,
+                )
             )
-        )
-        objs[index + 1].set_position(
-            (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-        )
+        else:
+            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
+            objs[index].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 60))
+            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 40))
+            objs[index].set_position(
+                (
+                    off[0]
+                    + self.container.relative_rect.left
+                    + 20
+                    + (self.container.relative_rect.width - 40) / 2
+                    + 10,
+                    off[1] + self.container.relative_rect.top,
+                )
+            )
+            objs[index + 1].set_position(
+                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+            )
 
 
 class NumberEntry(TextEntry):
