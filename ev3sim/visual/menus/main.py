@@ -10,17 +10,17 @@ class MainMenu(BaseMenu):
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
         self.title.set_dimensions((self._size[0] - 60, 50))
-        self.title.set_position((30, 30))
-        button_size = self._size[0] / 4, self._size[1] / 6
+        self.title.set_position((30, 50))
+        button_size = self._size[0] / 4, self._size[1] / 8
         self.simulate_button.set_dimensions(button_size)
         self.simulate_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1] * 1.5)
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1] * 1.5 + 50)
         )
         self.bot_button.set_dimensions(button_size)
-        self.bot_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2))
+        self.bot_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + 50))
         self.settings_button.set_dimensions(button_size)
         self.settings_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1] * 1.5)
+            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1] * 1.5 + 50)
         )
 
     def generateObjects(self):

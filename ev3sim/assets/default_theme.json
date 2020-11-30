@@ -27,12 +27,12 @@
     },
     "title": {
         "colours": {
-            "normal_text": "#66FCF1",
+            "normal_text": "#06d6a0",
             "dark_bg": "#00000000"
         },
         "font": {
             "name": "Roboto",
-            "size": "36",
+            "size": "42",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
@@ -45,17 +45,32 @@
     },
     "menu_button": {
         "misc": {
-            "shape": "rounded_rectangle",
-            "shape_corner_radius": "3"
+            "shape": "rectangle"
         },
         "font": {
             "name": "Roboto",
             "size": "24"
+        },
+        "colours": {
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#EA8689",
+            "normal_text": "#ffffff",
+            "hovered_text": "#ffffff",
+            "active_text": "#ffffff"
         }
     },
     "background": {
         "colours": {
             "dark_bg": "#0B0C10"
+        },
+        "misc": {
+            "border_width": "0"
+        }
+    },
+    "text_background": {
+        "colours": {
+            "dark_bg": "#141D2A"
         },
         "misc": {
             "border_width": "0"
@@ -75,7 +90,7 @@
     },
     "settings-background": {
         "colours": {
-            "dark_bg": "#181A25"
+            "dark_bg": "#141D2A"
         },
         "misc": {
             "border_width": "0"
@@ -83,9 +98,9 @@
     },
     "action_button": {
         "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00",
+            "normal_bg": "#7EB517",
+            "hovered_bg": "#97D91C",
+            "active_bg": "#A9E538",
             "normal_text": "#ffffff",
             "hovered_text": "#ffffff",
             "active_text": "#ffffff"
@@ -94,7 +109,7 @@
     "settings_buttons": {
         "colours": {
             "normal_bg": "#6c757d",
-            "hovered_bg": "#6c757d",
+            "hovered_bg": "#7C858D",
             "active_bg": "#adb5bd"
         }
     },
@@ -119,12 +134,13 @@
     },
     "list_button_highlighted": {
         "colours": {
-            "normal_bg": "#80b918",
-            "hovered_bg": "#80b918",
-            "active_bg": "#aacc00",
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#D0252A",
             "normal_text": "#f7ede2",
             "hovered_text": "#f7ede2",
-            "active_text": "#f7ede2"
+            "active_text": "#f7ede2",
+            "normal_border": "#00000000"
         }
     },
     "text_entry_line": {
@@ -157,9 +173,9 @@
     },
     "cancel-changes": {
         "colours": {
-            "normal_bg": "#EF6E6B",
-            "hovered_bg": "#EF6E6B",
-            "active_bg": "#F39291"
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#EA8689"
         }
     }
 }
