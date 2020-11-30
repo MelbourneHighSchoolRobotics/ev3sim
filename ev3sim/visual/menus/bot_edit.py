@@ -1,9 +1,11 @@
-from ev3sim.visual.manager import ScreenObjectManager
-from ev3sim.file_helper import find_abs
 import pygame
 import pygame_gui
 import yaml
+import numpy as np
 from ev3sim.visual.menus.base_menu import BaseMenu
+from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.visual.utils import screenspace_to_worldspace
+from ev3sim.file_helper import find_abs
 
 
 class BotEditMenu(BaseMenu):
@@ -33,15 +35,16 @@ class BotEditMenu(BaseMenu):
         ScreenObjectManager.instance.resetVisualElements()
         mSize = min(*self.surf_size)
         elems = ScriptLoader.instance.loadElements(elements, preview_mode=True)
+        self.customMap = {
+            "SCREEN_WIDTH": self.surf_size[0],
+            "SCREEN_HEIGHT": self.surf_size[1],
+            "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
+            "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
+        }
         while elems:
             new_elems = []
             for elem in elems:
-                elem.visual.customMap = {
-                    "SCREEN_WIDTH": self.surf_size[0],
-                    "SCREEN_HEIGHT": self.surf_size[1],
-                    "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
-                    "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
-                }
+                elem.visual.customMap = self.customMap
                 elem.visual.calculatePoints()
                 new_elems.extend(elem.children)
             elems = new_elems
@@ -219,11 +222,52 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.grid_size_label)
         self._all_objs.append(self.grid_size_entry)
 
+    def clickSelect(self):
+        if "holding" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("holding")
+        self.current_holding = None
+
     def clickCircle(self):
-        print("Circle!")
+        if "holding" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("holding")
+        from ev3sim.visual.objects import visualFactory
+
+        self.current_holding_kwargs = {
+            "type": "visual",
+            "name": "Circle",
+            "radius": 1,
+            "fill": "#878E88",
+            "stroke_width": 0.1,
+            "stroke": "#ffffff",
+            "zPos": 5,
+        }
+        self.current_holding = visualFactory(**self.current_holding_kwargs)
+        self.current_holding.customMap = self.customMap
+        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
 
     def clickPolygon(self):
-        print("Polygon!")
+        if "holding" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("holding")
+        from ev3sim.visual.objects import visualFactory
+
+        self.current_holding_kwargs = {
+            "type": "visual",
+            "name": "Polygon",
+            "fill": "#878E88",
+            "stroke_width": 0.1,
+            "stroke": "#ffffff",
+            "verts": [
+                (np.sin(0), np.cos(0)),
+                (np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)),
+                (np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)),
+                (np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)),
+                (np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)),
+            ],
+            "zPos": 5,
+        }
+        self.current_holding = visualFactory(**self.current_holding_kwargs)
+        self.current_holding.customMap = self.customMap
+        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
 
     def updateCheckbox(self):
         img = pygame.image.load(
@@ -236,13 +280,20 @@ class BotEditMenu(BaseMenu):
     def handleEvent(self, event):
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_object_id.startswith("circle-button"):
+                if event.ui_object_id.startswith("select-button"):
+                    self.clickSelect()
+                elif event.ui_object_id.startswith("circle-button"):
                     self.clickCircle()
                 elif event.ui_object_id.startswith("polygon-button"):
                     self.clickPolygon()
                 elif event.ui_object_id.startswith("lock_grid-button"):
                     self.lock_grid = not self.lock_grid
                     self.updateCheckbox()
+            if event.type == pygame.MOUSEMOTION:
+                if self.current_holding is not None:
+                    self.current_holding.position = screenspace_to_worldspace(
+                        (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
+                    )
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         super().draw_ui(window_surface)
