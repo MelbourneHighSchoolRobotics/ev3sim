@@ -250,7 +250,7 @@ class BotMenu(BaseMenu):
         """
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_BOT_EDIT,
-            bot_file=self.available_bots[self.bot_index][2],
+            bot_file=self.available_bots[self.bot_index][1],
         )
 
     def clickSelect(self):

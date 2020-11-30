@@ -2,6 +2,7 @@ from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.file_helper import find_abs
 import pygame
 import pygame_gui
+import yaml
 from ev3sim.visual.menus.base_menu import BaseMenu
 
 
@@ -15,51 +16,11 @@ class BotEditMenu(BaseMenu):
         self.lock_grid = True
         self.grid_size = 5
         self.mode = self.MODE_NORMAL
-        self.current_object = {
-            "physics": True,
-            "type": "object",
-            "visual": {
-                "name": "Circle",
-                "radius": 8.5,
-                "fill": "#878E88",
-                "stroke_width": 0.1,
-                "stroke": "#ffffff",
-                "zPos": 2,
-            },
-            "collider": "inherit",
-            "mass": 5,
-            "restitution": 0.2,
-            "friction": 0.8,
-            "children": [
-                {
-                    "physics": False,
-                    "type": object,
-                    "visual": {
-                        "name": "Image",
-                        "image_path": "LogoTransparent.png",
-                        "scale": 0.7,
-                        "zPos": 2.05,
-                    },
-                    "position": [4.5, 3],
-                },
-                {
-                    "physics": True,
-                    "type": object,
-                    "collider": "inherit",
-                    "visual": {
-                        "name": "Rectangle",
-                        "width": 1,
-                        "height": 6,
-                        "fill": "#878E88",
-                        "zPos": 2.07,
-                    },
-                    "position": [8.3, 0],
-                    "restitution": 0.2,
-                    "friction": 0.8,
-                },
-            ],
-            "key": "phys_obj",
-        }
+        with open(self.bot_file, "r") as f:
+            bot = yaml.safe_load(f)
+        self.current_object = bot["base_plate"]
+        self.current_object["type"] = "object"
+        self.current_object["physics"] = True
         self.current_holding = None
         super().initWithKwargs(**kwargs)
         self.setVisualElements([self.current_object])
