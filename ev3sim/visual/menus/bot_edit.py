@@ -19,6 +19,7 @@ class BotEditMenu(BaseMenu):
     SELECTED_NOTHING = "NOTHING"
 
     def initWithKwargs(self, **kwargs):
+        self.current_mpos = (0, 0)
         self.selected_index = -1
         self.selected_type = self.SELECTED_NOTHING
         self.bot_file = kwargs.get("bot_file", None)
@@ -228,6 +229,7 @@ class BotEditMenu(BaseMenu):
 
         self.current_holding = visualFactory(**self.current_holding_kwargs)
         self.current_holding.customMap = self.customMap
+        self.current_holding.position = self.current_mpos
         ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
 
     def clickSelect(self):
@@ -301,10 +303,11 @@ class BotEditMenu(BaseMenu):
                     self.colour_field = "fill"
                     self.addColourPicker("Pick Fill", self.current_holding_kwargs["fill"])
             if event.type == pygame.MOUSEMOTION:
+                self.current_mpos = screenspace_to_worldspace(
+                    (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
+                )
                 if self.current_holding is not None:
-                    self.current_holding.position = screenspace_to_worldspace(
-                        (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
-                    )
+                    self.current_holding.position = self.current_mpos
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
