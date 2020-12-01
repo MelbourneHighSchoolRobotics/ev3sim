@@ -273,6 +273,8 @@ class BotEditMenu(BaseMenu):
         }
         self.selected_index = "holding"
         self.selected_type = self.SELECTED_POLYGON
+        self.clearSelection()
+        self.drawPolygonOptions()
         self.generateHoldingItem()
 
     def updateCheckbox(self):
@@ -363,6 +365,104 @@ class BotEditMenu(BaseMenu):
         self.stroke_img.set_position(
             (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
         )
+
+    def drawPolygonOptions(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
+
+        # Sides
+        self.sides_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Sides",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("sides-label", "bot_edit_label"),
+        )
+        self.sides_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("sides-entry", "num_entry"),
+        )
+        self.sides_entry.set_text(str(len(self.current_holding_kwargs["verts"])))
+        entry_size = self.side_width / 3
+        self.sides_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.sides_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
+        self.sides_entry.set_dimensions((entry_size, entry_size))
+        self.sides_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
+
+        # Size
+        self.size_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Size",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("size-label", "bot_edit_label"),
+        )
+        self.size_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("size-entry", "num_entry"),
+        )
+
+        self.size_entry.set_text(str(np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)))
+        self.size_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.size_label.set_position((self.side_width + 20, self._size[1] - entry_size))
+        self.size_entry.set_dimensions((entry_size, entry_size))
+        self.size_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
+
+        self.generateColourPickers()
+        button_size = entry_size * 0.9
+        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
+        self.fill_img.set_dimensions((button_size, button_size))
+        self.fill_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
+        )
+        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
+        self.stroke_img.set_dimensions((button_size, button_size))
+        self.stroke_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
+        )
+
+        # Rotation
+        self.rotation_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Rotation",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
+        )
+        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
+        )
+        # Takeaway pi/2, so that pointing up is rotation 0.
+        cur_rotation = (
+            np.arctan2(self.current_holding_kwargs["verts"][0][1], self.current_holding_kwargs["verts"][0][0])
+            - np.pi / 2
+        )
+        while cur_rotation < 0:
+            cur_rotation += np.pi
+        self.rotation_entry.set_text(str(180 / np.pi * cur_rotation))
+        self.rotation_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.rotation_label.set_position((3 * self.side_width + 100, self._size[1] - self.bot_height + 15))
+        self.rotation_entry.set_dimensions((entry_size, entry_size))
+        self.rotation_entry.set_position((4 * self.side_width + 70, self._size[1] - self.bot_height + 20))
+        # Stroke width
+        self.stroke_num_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Stroke",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
+        )
+        self.stroke_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
+        )
+        self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
+        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
+        self.stroke_entry.set_dimensions((entry_size, entry_size))
+        self.stroke_entry.set_position((4 * self.side_width + 70, self._size[1] - entry_size + 5))
 
     def generateColourPickers(self):
         # Colour pickers
@@ -473,14 +573,28 @@ class BotEditMenu(BaseMenu):
         try:
             self.radius_label.kill()
             self.radius_entry.kill()
-            self.stroke_label.kill()
+            self.stroke_num_label.kill()
             self.stroke_entry.kill()
+        except:
+            pass
+
+    def removePolygonOptions(self):
+        try:
+            self.sides_label.kill()
+            self.sides_entry.kill()
+            self.size_label.kill()
+            self.size_entry.kill()
+            self.stroke_num_label.kill()
+            self.stroke_entry.kill()
+            self.rotation_label.kill()
+            self.rotation_entry.kill()
         except:
             pass
 
     def clearSelection(self):
         self.removeColourOptions()
         self.removeCircleOptions()
+        self.removePolygonOptions()
 
     def clearObjects(self):
         super().clearObjects()
@@ -497,6 +611,42 @@ class BotEditMenu(BaseMenu):
                         self.generateHoldingItem()
                 except:
                     self.current_holding_kwargs["radius"] = old_radius
+
+                old_stroke_width = self.current_holding_kwargs["stroke_width"]
+                try:
+                    new_stroke_width = float(self.stroke_entry.text)
+                    if old_stroke_width != new_stroke_width:
+                        self.current_holding_kwargs["stroke_width"] = new_stroke_width
+                        self.generateHoldingItem()
+                except:
+                    self.current_holding_kwargs["stroke_width"] = old_stroke_width
+        if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
+            if self.selected_index == "holding":
+                old_sides = len(self.current_holding_kwargs["verts"])
+                old_size = np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)
+                cur_rotation = (
+                    np.arctan2(self.current_holding_kwargs["verts"][0][1], self.current_holding_kwargs["verts"][0][0])
+                    - np.pi / 2
+                )
+                while cur_rotation < 0:
+                    cur_rotation += np.pi
+                cur_rotation *= 180 / np.pi
+                try:
+                    new_sides = int(self.sides_entry.text)
+                    new_size = float(self.size_entry.text)
+                    new_rot = float(self.rotation_entry.text)
+                    assert new_sides > 2
+                    if old_sides != new_sides or old_size != new_size or new_rot != cur_rotation:
+                        self.current_holding_kwargs["verts"] = [
+                            (
+                                new_size * np.sin(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
+                                new_size * np.cos(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
+                            )
+                            for i in range(new_sides)
+                        ]
+                    self.generateHoldingItem()
+                except:
+                    pass
 
                 old_stroke_width = self.current_holding_kwargs["stroke_width"]
                 try:
