@@ -4,6 +4,16 @@ import numpy as np
 GLOBAL_COLOURS = {}
 
 
+def rgb_to_hex(r, g, b):
+    return "#" + "".join(
+        (
+            str(hex(r)).split("x")[-1].rjust(2, "0"),
+            str(hex(g)).split("x")[-1].rjust(2, "0"),
+            str(hex(b)).split("x")[-1].rjust(2, "0"),
+        )
+    )
+
+
 def hex_to_pycolor(hex_str: str) -> Tuple[int]:
     assert len(hex_str) == 6, f"Invalid hex string, #{hex_str}"
     return (int(hex_str[:2], 16), int(hex_str[2:4], 16), int(hex_str[4:], 16))

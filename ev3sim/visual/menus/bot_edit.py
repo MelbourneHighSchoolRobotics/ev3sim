@@ -12,8 +12,15 @@ class BotEditMenu(BaseMenu):
 
     MODE_DIALOG_DEVICE = "DEVICE_SELECT"
     MODE_NORMAL = "NORMAL"
+    MODE_COLOUR_DIALOG = "COLOUR"
+
+    SELECTED_CIRCLE = "CIRCLE"
+    SELECTED_POLYGON = "POLYGON"
+    SELECTED_NOTHING = "NOTHING"
 
     def initWithKwargs(self, **kwargs):
+        self.selected_index = -1
+        self.selected_type = self.SELECTED_NOTHING
         self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
         self.grid_size = 5
@@ -51,8 +58,6 @@ class BotEditMenu(BaseMenu):
 
     def sizeObjects(self):
         # Bg
-        self.bg.set_dimensions(self._size)
-        self.bg.set_position((0, 0))
         self.side_width = self._size[0] / 6
         self.bot_height = self._size[1] / 6
         self.sidebar.set_dimensions((self.side_width, self._size[1] + 10))
@@ -101,13 +106,6 @@ class BotEditMenu(BaseMenu):
         dummy_rect = pygame.Rect(0, 0, *self._size)
 
         # Bg
-        self.bg = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
-            starting_layer_height=-1,
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("background"),
-        )
-        self._all_objs.append(self.bg)
         self.sidebar = pygame_gui.elements.UIPanel(
             relative_rect=dummy_rect,
             starting_layer_height=-0.5,
@@ -222,16 +220,24 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.grid_size_label)
         self._all_objs.append(self.grid_size_entry)
 
+    def generateHoldingItem(self):
+        from ev3sim.visual.objects import visualFactory
+
+        if "holding" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("holding")
+
+        self.current_holding = visualFactory(**self.current_holding_kwargs)
+        self.current_holding.customMap = self.customMap
+        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
+
     def clickSelect(self):
         if "holding" in ScreenObjectManager.instance.objects:
             ScreenObjectManager.instance.unregisterVisual("holding")
         self.current_holding = None
+        self.selected_type = self.SELECTED_NOTHING
+        self.selected_index = -1
 
     def clickCircle(self):
-        if "holding" in ScreenObjectManager.instance.objects:
-            ScreenObjectManager.instance.unregisterVisual("holding")
-        from ev3sim.visual.objects import visualFactory
-
         self.current_holding_kwargs = {
             "type": "visual",
             "name": "Circle",
@@ -241,15 +247,13 @@ class BotEditMenu(BaseMenu):
             "stroke": "#ffffff",
             "zPos": 5,
         }
-        self.current_holding = visualFactory(**self.current_holding_kwargs)
-        self.current_holding.customMap = self.customMap
-        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
+        self.selected_index = "holding"
+        self.selected_type = self.SELECTED_CIRCLE
+        self.clearSelection()
+        self.drawCircleOptions()
+        self.generateHoldingItem()
 
     def clickPolygon(self):
-        if "holding" in ScreenObjectManager.instance.objects:
-            ScreenObjectManager.instance.unregisterVisual("holding")
-        from ev3sim.visual.objects import visualFactory
-
         self.current_holding_kwargs = {
             "type": "visual",
             "name": "Polygon",
@@ -265,9 +269,9 @@ class BotEditMenu(BaseMenu):
             ],
             "zPos": 5,
         }
-        self.current_holding = visualFactory(**self.current_holding_kwargs)
-        self.current_holding.customMap = self.customMap
-        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
+        self.selected_index = "holding"
+        self.selected_type = self.SELECTED_POLYGON
+        self.generateHoldingItem()
 
     def updateCheckbox(self):
         img = pygame.image.load(
@@ -289,16 +293,220 @@ class BotEditMenu(BaseMenu):
                 elif event.ui_object_id.startswith("lock_grid-button"):
                     self.lock_grid = not self.lock_grid
                     self.updateCheckbox()
+                # Colour
+                elif event.ui_object_id.startswith("stroke_colour-button"):
+                    self.colour_field = "stroke"
+                    self.addColourPicker("Pick Stroke", self.current_holding_kwargs["stroke"])
+                elif event.ui_object_id.startswith("fill_colour-button"):
+                    self.colour_field = "fill"
+                    self.addColourPicker("Pick Fill", self.current_holding_kwargs["fill"])
             if event.type == pygame.MOUSEMOTION:
                 if self.current_holding is not None:
                     self.current_holding.position = screenspace_to_worldspace(
                         (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                     )
 
+    def drawCircleOptions(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
+
+        # Radius
+        self.radius_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Radius",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("radius-label", "bot_edit_label"),
+        )
+        self.radius_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("radius-entry", "num_entry"),
+        )
+        self.radius_entry.set_text(str(self.current_holding_kwargs["radius"]))
+        entry_size = self.side_width / 3
+        self.radius_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.radius_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
+        self.radius_entry.set_dimensions((entry_size, entry_size))
+        self.radius_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
+
+        # Stroke width
+        self.stroke_num_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Stroke",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
+        )
+        self.stroke_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
+        )
+        self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
+        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.stroke_num_label.set_position((self.side_width + 20, self._size[1] - entry_size))
+        self.stroke_entry.set_dimensions((entry_size, entry_size))
+        self.stroke_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
+
+        self.generateColourPickers()
+        button_size = entry_size * 0.9
+        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
+        self.fill_img.set_dimensions((button_size, button_size))
+        self.fill_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
+        )
+        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
+        self.stroke_img.set_dimensions((button_size, button_size))
+        self.stroke_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
+        )
+
+    def generateColourPickers(self):
+        # Colour pickers
+        self.stroke_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            text="Stroke Colour",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke_colour-label", "bot_edit_label"),
+        )
+        self.stroke_img = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke_colour-button"),
+        )
+        self.fill_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            text="Fill Colour",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("fill_colour-label", "bot_edit_label"),
+        )
+        self.fill_img = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("fill_colour-button"),
+        )
+        data = {
+            "fill_colour-button": {
+                "colours": {
+                    "normal_bg": self.current_holding_kwargs["fill"],
+                    "hovered_bg": self.current_holding_kwargs["fill"],
+                    "active_bg": self.current_holding_kwargs["fill"],
+                }
+            },
+            "stroke_colour-button": {
+                "colours": {
+                    "normal_bg": self.current_holding_kwargs["stroke"],
+                    "hovered_bg": self.current_holding_kwargs["stroke"],
+                    "active_bg": self.current_holding_kwargs["stroke"],
+                }
+            },
+        }
+        self.ui_theme._load_element_colour_data_from_theme("colours", "fill_colour-button", data)
+        self.fill_img.rebuild_from_changed_theme_data()
+        self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
+        self.stroke_img.rebuild_from_changed_theme_data()
+
+    def addColourPicker(self, title, start_colour):
+        from ev3sim.visual.utils import rgb_to_hex
+
+        self.mode = self.MODE_COLOUR_DIALOG
+
+        class ColourPicker(pygame_gui.windows.UIColourPickerDialog):
+            def process_event(self2, event: pygame.event.Event) -> bool:
+                consumed_event = pygame_gui.elements.UIWindow.process_event(self2, event)
+                if (
+                    event.type == pygame.USEREVENT
+                    and event.user_type == pygame_gui.UI_BUTTON_PRESSED
+                    and event.ui_element == self2.cancel_button
+                ):
+                    self.removeColourPicker()
+                    return consumed_event
+
+                if (
+                    event.type == pygame.USEREVENT
+                    and event.user_type == pygame_gui.UI_BUTTON_PRESSED
+                    and event.ui_element == self2.ok_button
+                ):
+                    self.removeColourPicker()
+                    new_col = rgb_to_hex(
+                        self2.red_channel.current_value,
+                        self2.green_channel.current_value,
+                        self2.blue_channel.current_value,
+                    )
+                    if self.selected_index == "holding":
+                        self.current_holding_kwargs[self.colour_field] = new_col
+                        self.generateHoldingItem()
+                    return consumed_event
+
+                return super().process_event(event)
+
+        self.picker = ColourPicker(
+            rect=pygame.Rect(self._size[0] / 4, self._size[1] / 4, self._size[0] * 0.7, self._size[1] * 0.7),
+            manager=self,
+            initial_colour=pygame.Color(start_colour),
+            window_title=title,
+            object_id=pygame_gui.core.ObjectID("colour_dialog"),
+        )
+
+    def removeColourPicker(self):
+        try:
+            self.picker.kill()
+            self.mode = self.MODE_NORMAL
+        except:
+            pass
+
+    def removeColourOptions(self):
+        try:
+            self.fill_label.kill()
+            self.fill_img.kill()
+            self.stroke_label.kill()
+            self.stroke_img.kill()
+        except:
+            pass
+
+    def removeCircleOptions(self):
+        try:
+            self.radius_label.kill()
+            self.radius_entry.kill()
+            self.stroke_label.kill()
+            self.stroke_entry.kill()
+        except:
+            pass
+
+    def clearSelection(self):
+        self.removeColourOptions()
+        self.removeCircleOptions()
+
+    def clearObjects(self):
+        super().clearObjects()
+        self.clearSelection()
+
     def draw_ui(self, window_surface: pygame.surface.Surface):
-        super().draw_ui(window_surface)
+        if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
+            if self.selected_index == "holding":
+                old_radius = self.current_holding_kwargs["radius"]
+                try:
+                    new_radius = int(self.radius_entry.text)
+                    if old_radius != new_radius:
+                        self.current_holding_kwargs["radius"] = new_radius
+                        self.generateHoldingItem()
+                except:
+                    self.current_holding_kwargs["radius"] = old_radius
+
+                old_stroke_width = self.current_holding_kwargs["stroke_width"]
+                try:
+                    new_stroke_width = float(self.stroke_entry.text)
+                    if old_stroke_width != new_stroke_width:
+                        self.current_holding_kwargs["stroke_width"] = new_stroke_width
+                        self.generateHoldingItem()
+                except:
+                    self.current_holding_kwargs["stroke_width"] = old_stroke_width
+
         ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
         ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))
+        super().draw_ui(window_surface)
 
     def changeMode(self, value):
         # Remove/Add dialog components if necessary.
