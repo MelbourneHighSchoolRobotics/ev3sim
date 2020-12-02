@@ -1,11 +1,13 @@
 import pygame
 import pygame_gui
+import pymunk
 import yaml
 import numpy as np
+from ev3sim.file_helper import find_abs
+from ev3sim.objects.base import STATIC_CATEGORY
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
-from ev3sim.file_helper import find_abs
 
 
 class BotEditMenu(BaseMenu):
@@ -33,16 +35,20 @@ class BotEditMenu(BaseMenu):
         self.current_object["physics"] = True
         self.current_holding = None
         super().initWithKwargs(**kwargs)
-        self.setVisualElements([self.current_object])
+        self.setVisualElements()
 
-    def setVisualElements(self, elements):
+    def setVisualElements(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.simulation.world import World
 
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
+        World.instance.resetWorld()
         mSize = min(*self.surf_size)
-        elems = ScriptLoader.instance.loadElements(elements, preview_mode=True)
+        elems = ScriptLoader.instance.loadElements([self.current_object], preview_mode=True)
+        self.robot = elems[0]
+        World.instance.registerObject(self.robot)
         self.customMap = {
             "SCREEN_WIDTH": self.surf_size[0],
             "SCREEN_HEIGHT": self.surf_size[1],
@@ -67,8 +73,28 @@ class BotEditMenu(BaseMenu):
             "friction": 0.8,
         }
         self.current_object["children"].append(obj)
-        self.setVisualElements([self.current_object])
+        self.setVisualElements()
         self.generateHoldingItem()
+
+    def selectObj(self, pos):
+        from ev3sim.simulation.world import World
+
+        shapes = World.instance.space.point_query(
+            pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
+        )
+        if shapes:
+            top_shape_z = max(map(lambda x: x.shape.actual_obj.visual.zPos, shapes))
+            top_shape = list(filter(lambda x: x.shape.actual_obj.visual.zPos == top_shape_z, shapes))
+            assert len(top_shape) == 1
+            self.selected_index = self.robot.children.index(top_shape[0].shape.actual_obj)
+            if self.current_object["children"][self.selected_index]["visual"]["name"] == "Circle":
+                self.selected_type = self.SELECTED_CIRCLE
+                self.clearSelection()
+                self.drawCircleOptions()
+            elif self.current_object["children"][self.selected_index]["visual"]["name"] == "Polygon":
+                self.selected_type = self.SELECTED_POLYGON
+                self.clearSelection()
+                self.drawPolygonOptions()
 
     def sizeObjects(self):
         # Bg
@@ -251,6 +277,7 @@ class BotEditMenu(BaseMenu):
         self.current_holding = None
         self.selected_type = self.SELECTED_NOTHING
         self.selected_index = -1
+        self.clearSelection()
 
     def clickCircle(self):
         self.current_holding_kwargs = {
@@ -331,7 +358,10 @@ class BotEditMenu(BaseMenu):
                     -self.customMap["MAP_WIDTH"] / 2 <= mpos[0] <= self.customMap["MAP_WIDTH"] / 2
                     and -self.customMap["MAP_HEIGHT"] / 2 <= mpos[1] <= self.customMap["MAP_HEIGHT"] / 2
                 ):
-                    self.placeHolding(mpos)
+                    if self.current_holding is None:
+                        self.selectObj(mpos)
+                    else:
+                        self.placeHolding(mpos)
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -348,7 +378,10 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("radius-entry", "num_entry"),
         )
-        self.radius_entry.set_text(str(self.current_holding_kwargs["radius"]))
+        if self.selected_index == "holding":
+            self.radius_entry.set_text(str(self.current_holding_kwargs["radius"]))
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            self.radius_entry.set_text(str(self.current_object["children"][self.selected_index]["visual"]["radius"]))
         entry_size = self.side_width / 3
         self.radius_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.radius_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
@@ -367,7 +400,10 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
         )
-        self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
+        if self.selected_index == "holding":
+            self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            self.stroke_entry.set_text(str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"]))
         self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.stroke_num_label.set_position((self.side_width + 20, self._size[1] - entry_size))
         self.stroke_entry.set_dimensions((entry_size, entry_size))
@@ -403,7 +439,10 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("sides-entry", "num_entry"),
         )
-        self.sides_entry.set_text(str(len(self.current_holding_kwargs["verts"])))
+        if self.selected_index == "holding":
+            self.sides_entry.set_text(str(len(self.current_holding_kwargs["verts"])))
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            self.sides_entry.set_text(str(len(self.current_object["children"][self.selected_index]["visual"]["verts"])))
         entry_size = self.side_width / 3
         self.sides_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.sides_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
@@ -423,7 +462,10 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("size-entry", "num_entry"),
         )
 
-        self.size_entry.set_text(str(np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)))
+        if self.selected_index == "holding":
+            self.size_entry.set_text(str(np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)))
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            self.size_entry.set_text(str(np.linalg.norm(self.current_object["children"][self.selected_index]["visual"]["verts"][0], 2)))
         self.size_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.size_label.set_position((self.side_width + 20, self._size[1] - entry_size))
         self.size_entry.set_dimensions((entry_size, entry_size))
@@ -457,10 +499,16 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
         )
         # Takeaway pi/2, so that pointing up is rotation 0.
-        cur_rotation = (
-            np.arctan2(self.current_holding_kwargs["verts"][0][1], self.current_holding_kwargs["verts"][0][0])
-            - np.pi / 2
-        )
+        if self.selected_index == "holding":
+            cur_rotation = (
+                np.arctan2(self.current_holding_kwargs["verts"][0][1], self.current_holding_kwargs["verts"][0][0])
+                - np.pi / 2
+            )
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            cur_rotation = (
+                np.arctan2(self.current_object["children"][self.selected_index]["visual"]["verts"][0][1], self.current_object["children"][self.selected_index]["visual"]["verts"][0][0])
+                - np.pi / 2
+            )
         while cur_rotation < 0:
             cur_rotation += np.pi
         self.rotation_entry.set_text(str(180 / np.pi * cur_rotation))
@@ -480,6 +528,10 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
         )
+        if self.selected_index == "holding":
+            self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            self.stroke_entry.set_text(str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"]))
         self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
         self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
@@ -623,31 +675,36 @@ class BotEditMenu(BaseMenu):
         self.clearSelection()
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
-        if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
+        if self.selected_index == "holding" or 0 <= self.selected_index < len(self.current_object["children"]):
             if self.selected_index == "holding":
-                old_radius = self.current_holding_kwargs["radius"]
+                obj = self.current_holding_kwargs
+                generate = lambda: self.generateHoldingItem()
+            else:
+                obj = self.current_object["children"][self.selected_index]["visual"]
+                generate = lambda: self.setVisualElements()
+            if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
+                old_radius = obj["radius"]
                 try:
                     new_radius = int(self.radius_entry.text)
                     if old_radius != new_radius:
-                        self.current_holding_kwargs["radius"] = new_radius
-                        self.generateHoldingItem()
+                        obj["radius"] = new_radius
+                        generate()
                 except:
-                    self.current_holding_kwargs["radius"] = old_radius
+                    obj["radius"] = old_radius
 
-                old_stroke_width = self.current_holding_kwargs["stroke_width"]
+                old_stroke_width = obj["stroke_width"]
                 try:
                     new_stroke_width = float(self.stroke_entry.text)
                     if old_stroke_width != new_stroke_width:
-                        self.current_holding_kwargs["stroke_width"] = new_stroke_width
-                        self.generateHoldingItem()
+                        obj["stroke_width"] = new_stroke_width
+                        generate()
                 except:
-                    self.current_holding_kwargs["stroke_width"] = old_stroke_width
-        if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
-            if self.selected_index == "holding":
-                old_sides = len(self.current_holding_kwargs["verts"])
-                old_size = np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)
+                    obj["stroke_width"] = old_stroke_width
+            if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
+                old_sides = len(obj["verts"])
+                old_size = np.linalg.norm(obj["verts"][0], 2)
                 cur_rotation = (
-                    np.arctan2(self.current_holding_kwargs["verts"][0][1], self.current_holding_kwargs["verts"][0][0])
+                    np.arctan2(obj["verts"][0][1], obj["verts"][0][0])
                     - np.pi / 2
                 )
                 while cur_rotation < 0:
@@ -659,25 +716,25 @@ class BotEditMenu(BaseMenu):
                     new_rot = float(self.rotation_entry.text)
                     assert new_sides > 2
                     if old_sides != new_sides or old_size != new_size or new_rot != cur_rotation:
-                        self.current_holding_kwargs["verts"] = [
+                        obj["verts"] = [
                             (
                                 new_size * np.sin(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
                                 new_size * np.cos(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
                             )
                             for i in range(new_sides)
                         ]
-                    self.generateHoldingItem()
+                    generate()
                 except:
                     pass
 
-                old_stroke_width = self.current_holding_kwargs["stroke_width"]
+                old_stroke_width = obj["stroke_width"]
                 try:
                     new_stroke_width = float(self.stroke_entry.text)
                     if old_stroke_width != new_stroke_width:
-                        self.current_holding_kwargs["stroke_width"] = new_stroke_width
-                        self.generateHoldingItem()
+                        obj["stroke_width"] = new_stroke_width
+                        generate()
                 except:
-                    self.current_holding_kwargs["stroke_width"] = old_stroke_width
+                    obj["stroke_width"] = old_stroke_width
 
         ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
         ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))

@@ -103,6 +103,7 @@ class PhysicsObject(BaseObject):
         self.body, self.shape = self.visual.generateBodyAndShape(self)
         self.shapes = [self.shape]
         self.shape.obj = self
+        self.shape.actual_obj = self
         self.body.position = self.position + self.visual.getPositionAnchorOffset()
         for child in self.children:
             if isinstance(child, PhysicsObject):
@@ -110,6 +111,7 @@ class PhysicsObject(BaseObject):
                     child, body=self.body, rel_pos=child.position
                 )
                 child.shape.obj = self
+                child.shape.actual_obj = child
                 self.shapes.append(child.shape)
 
     def update(self):
