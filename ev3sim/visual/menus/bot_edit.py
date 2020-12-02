@@ -39,7 +39,7 @@ class BotEditMenu(BaseMenu):
         self.current_devices = bot["devices"]
         self.current_holding = None
         super().initWithKwargs(**kwargs)
-        self.setVisualElements()
+        self.resetBotVisual()
 
     def getSelectedAttribute(self, attr, fallback=None):
         if self.selected_index is None:
@@ -68,7 +68,7 @@ class BotEditMenu(BaseMenu):
         else:
             raise ValueError(f"Unknown selection {self.selected_index}")
 
-    def setVisualElements(self):
+    def resetBotVisual(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
         from ev3sim.simulation.world import World
@@ -124,7 +124,7 @@ class BotEditMenu(BaseMenu):
             "friction": 0.8,
         }
         self.current_object["children"].append(obj)
-        self.setVisualElements()
+        self.resetBotVisual()
         self.generateHoldingItem()
 
     def selectObj(self, pos):
@@ -651,7 +651,7 @@ class BotEditMenu(BaseMenu):
                         self2.blue_channel.current_value,
                     )
                     self.setSelectedAttribute(self.colour_field, new_col)
-                    self.setVisualElements()
+                    self.resetBotVisual()
                     if self.selected_index == "Holding":
                         self.generateHoldingItem()
                     self.removeColourPicker()
@@ -720,7 +720,7 @@ class BotEditMenu(BaseMenu):
             if self.selected_index == "Holding":
                 generate = lambda: self.generateHoldingItem()
             else:
-                generate = lambda: self.setVisualElements()
+                generate = lambda: self.resetBotVisual()
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
                 old_radius = self.getSelectedAttribute("radius")
                 try:
