@@ -14,7 +14,7 @@ from ev3sim.visual.utils import screenspace_to_worldspace
 
 class BotEditMenu(BaseMenu):
 
-    MODE_DIALOG_DEVICE = "DEVICE_SELECT"
+    MODE_DEVICE_DIALOG = "DEVICE_SELECT"
     MODE_NORMAL = "NORMAL"
     MODE_COLOUR_DIALOG = "COLOUR"
 
@@ -389,6 +389,9 @@ class BotEditMenu(BaseMenu):
         self.drawOptions()
         self.generateHoldingItem()
 
+    def clickDevice(self):
+        self.addDevicePicker()
+
     def updateCheckbox(self):
         img = pygame.image.load(
             find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=["package/assets/"])
@@ -406,6 +409,8 @@ class BotEditMenu(BaseMenu):
                     self.clickCircle()
                 elif event.ui_object_id.startswith("polygon-button"):
                     self.clickPolygon()
+                elif event.ui_object_id.startswith("device-button"):
+                    self.clickDevice()
                 elif event.ui_object_id.startswith("lock_grid-button"):
                     self.lock_grid = not self.lock_grid
                     self.updateCheckbox()
@@ -687,7 +692,7 @@ class BotEditMenu(BaseMenu):
                     and event.user_type == pygame_gui.UI_BUTTON_PRESSED
                     and event.ui_element == self2.cancel_button
                 ):
-                    self.removeColourPicker()
+                    self2.kill()
                     return consumed_event
 
                 if (
@@ -704,22 +709,48 @@ class BotEditMenu(BaseMenu):
                     self.resetBotVisual()
                     if self.selected_index == "Holding":
                         self.generateHoldingItem()
-                    self.removeColourPicker()
+                    self2.kill()
                     return consumed_event
 
                 return super().process_event(event)
 
+            def kill(self2):
+                super().kill()
+                self.removeColourPicker()
+
         self.picker = ColourPicker(
-            rect=pygame.Rect(self._size[0] / 4, self._size[1] / 4, self._size[0] * 0.7, self._size[1] * 0.7),
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, self._size[0] * 0.7, self._size[1] * 0.7),
             manager=self,
             initial_colour=pygame.Color(start_colour),
             window_title=title,
             object_id=pygame_gui.core.ObjectID("colour_dialog"),
         )
 
+    def addDevicePicker(self):
+
+        self.mode = self.MODE_DEVICE_DIALOG
+
+        class DevicePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removeDevicePicker()
+
+        self.picker = DevicePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, self._size[0] * 0.7, self._size[1] * 0.7),
+            manager=self,
+            window_display_title="Pick Device",
+            object_id=pygame_gui.core.ObjectID("device_dialog"),
+        )
+
+    def removeDevicePicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+        except:
+            pass
+
     def removeColourPicker(self):
         try:
-            self.picker.kill()
             self.mode = self.MODE_NORMAL
             self.drawOptions()
         except:
