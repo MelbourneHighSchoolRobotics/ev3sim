@@ -131,6 +131,9 @@ def initialise_device(deviceData, parentObj, index, preview_mode=False):
                         "port": deviceData["port"],
                     }
                 )
+                if preview_mode:
+                    for i in range(len(res.get("elements", []))):
+                        res["elements"][i]["physics"] = True
                 opt["kwargs"] = res
                 interactor = fromOptions(opt)
                 if not hasattr(parentObj, "device_interactors"):
