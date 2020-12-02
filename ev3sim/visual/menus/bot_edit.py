@@ -22,7 +22,7 @@ class BotEditMenu(BaseMenu):
 
     def initWithKwargs(self, **kwargs):
         self.current_mpos = (0, 0)
-        self.selected_index = -1
+        self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
         self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
@@ -89,12 +89,9 @@ class BotEditMenu(BaseMenu):
             self.selected_index = self.robot.children.index(top_shape[0].shape.actual_obj)
             if self.current_object["children"][self.selected_index]["visual"]["name"] == "Circle":
                 self.selected_type = self.SELECTED_CIRCLE
-                self.clearSelection()
-                self.drawCircleOptions()
             elif self.current_object["children"][self.selected_index]["visual"]["name"] == "Polygon":
                 self.selected_type = self.SELECTED_POLYGON
-                self.clearSelection()
-                self.drawPolygonOptions()
+            self.drawOptions()
 
     def sizeObjects(self):
         # Bg
@@ -291,8 +288,7 @@ class BotEditMenu(BaseMenu):
         }
         self.selected_index = "holding"
         self.selected_type = self.SELECTED_CIRCLE
-        self.clearSelection()
-        self.drawCircleOptions()
+        self.drawOptions()
         self.generateHoldingItem()
 
     def clickPolygon(self):
@@ -313,8 +309,7 @@ class BotEditMenu(BaseMenu):
         }
         self.selected_index = "holding"
         self.selected_type = self.SELECTED_POLYGON
-        self.clearSelection()
-        self.drawPolygonOptions()
+        self.drawOptions()
         self.generateHoldingItem()
 
     def updateCheckbox(self):
@@ -363,6 +358,19 @@ class BotEditMenu(BaseMenu):
                     else:
                         self.placeHolding(mpos)
 
+    def drawOptions(self):
+        self.clearSelection()
+        if self.selected_index == "holding":
+            obj = self.current_holding_kwargs["name"]
+        elif 0 <= self.selected_index < len(self.current_object["children"]):
+            obj = self.current_object["children"][self.selected_index]["visual"]["name"]
+        else:
+            obj = ""
+        if obj == "Circle":
+            self.drawCircleOptions()
+        elif obj == "Polygon":
+            self.drawPolygonOptions()
+
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
 
@@ -403,7 +411,9 @@ class BotEditMenu(BaseMenu):
         if self.selected_index == "holding":
             self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
         elif 0 <= self.selected_index < len(self.current_object["children"]):
-            self.stroke_entry.set_text(str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"]))
+            self.stroke_entry.set_text(
+                str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"])
+            )
         self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.stroke_num_label.set_position((self.side_width + 20, self._size[1] - entry_size))
         self.stroke_entry.set_dimensions((entry_size, entry_size))
@@ -465,7 +475,9 @@ class BotEditMenu(BaseMenu):
         if self.selected_index == "holding":
             self.size_entry.set_text(str(np.linalg.norm(self.current_holding_kwargs["verts"][0], 2)))
         elif 0 <= self.selected_index < len(self.current_object["children"]):
-            self.size_entry.set_text(str(np.linalg.norm(self.current_object["children"][self.selected_index]["visual"]["verts"][0], 2)))
+            self.size_entry.set_text(
+                str(np.linalg.norm(self.current_object["children"][self.selected_index]["visual"]["verts"][0], 2))
+            )
         self.size_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.size_label.set_position((self.side_width + 20, self._size[1] - entry_size))
         self.size_entry.set_dimensions((entry_size, entry_size))
@@ -506,7 +518,10 @@ class BotEditMenu(BaseMenu):
             )
         elif 0 <= self.selected_index < len(self.current_object["children"]):
             cur_rotation = (
-                np.arctan2(self.current_object["children"][self.selected_index]["visual"]["verts"][0][1], self.current_object["children"][self.selected_index]["visual"]["verts"][0][0])
+                np.arctan2(
+                    self.current_object["children"][self.selected_index]["visual"]["verts"][0][1],
+                    self.current_object["children"][self.selected_index]["visual"]["verts"][0][0],
+                )
                 - np.pi / 2
             )
         while cur_rotation < 0:
@@ -531,7 +546,9 @@ class BotEditMenu(BaseMenu):
         if self.selected_index == "holding":
             self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
         elif 0 <= self.selected_index < len(self.current_object["children"]):
-            self.stroke_entry.set_text(str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"]))
+            self.stroke_entry.set_text(
+                str(self.current_object["children"][self.selected_index]["visual"]["stroke_width"])
+            )
         self.stroke_entry.set_text(str(self.current_holding_kwargs["stroke_width"]))
         self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
         self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
@@ -606,7 +623,6 @@ class BotEditMenu(BaseMenu):
                     and event.user_type == pygame_gui.UI_BUTTON_PRESSED
                     and event.ui_element == self2.ok_button
                 ):
-                    self.removeColourPicker()
                     new_col = rgb_to_hex(
                         self2.red_channel.current_value,
                         self2.green_channel.current_value,
@@ -615,6 +631,7 @@ class BotEditMenu(BaseMenu):
                     if self.selected_index == "holding":
                         self.current_holding_kwargs[self.colour_field] = new_col
                         self.generateHoldingItem()
+                    self.removeColourPicker()
                     return consumed_event
 
                 return super().process_event(event)
@@ -631,6 +648,7 @@ class BotEditMenu(BaseMenu):
         try:
             self.picker.kill()
             self.mode = self.MODE_NORMAL
+            self.drawOptions()
         except:
             pass
 
@@ -675,7 +693,7 @@ class BotEditMenu(BaseMenu):
         self.clearSelection()
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
-        if self.selected_index == "holding" or 0 <= self.selected_index < len(self.current_object["children"]):
+        if self.selected_index is not None:
             if self.selected_index == "holding":
                 obj = self.current_holding_kwargs
                 generate = lambda: self.generateHoldingItem()
@@ -703,10 +721,7 @@ class BotEditMenu(BaseMenu):
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
                 old_sides = len(obj["verts"])
                 old_size = np.linalg.norm(obj["verts"][0], 2)
-                cur_rotation = (
-                    np.arctan2(obj["verts"][0][1], obj["verts"][0][0])
-                    - np.pi / 2
-                )
+                cur_rotation = np.arctan2(obj["verts"][0][1], obj["verts"][0][0]) - np.pi / 2
                 while cur_rotation < 0:
                     cur_rotation += np.pi
                 cur_rotation *= 180 / np.pi
