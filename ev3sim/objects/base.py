@@ -25,7 +25,7 @@ class BaseObject:
         self.parent = None
         if "visual" in kwargs:
             self.visual = visualFactory(**kwargs["visual"])
-        self.position = kwargs.get("position", (0.5, 0.5))
+        self.position = kwargs.get("position", (0, 0))
         self.rotation = kwargs.get("rotation", 0)
         for i, child in enumerate(kwargs.get("children", [])):
             child["key"] = kwargs["key"] + f"-child-{i}"

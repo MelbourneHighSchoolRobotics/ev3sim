@@ -57,6 +57,19 @@ class BotEditMenu(BaseMenu):
                 new_elems.extend(elem.children)
             elems = new_elems
 
+    def placeHolding(self, pos):
+        obj = {
+            "physics": True,
+            "type": "object",
+            "visual": self.current_holding_kwargs.copy(),
+            "position": pos,
+            "restitution": 0.2,
+            "friction": 0.8,
+        }
+        self.current_object["children"].append(obj)
+        self.setVisualElements([self.current_object])
+        self.generateHoldingItem()
+
     def sizeObjects(self):
         # Bg
         self.side_width = self._size[0] / 6
@@ -304,12 +317,21 @@ class BotEditMenu(BaseMenu):
                 elif event.ui_object_id.startswith("fill_colour-button"):
                     self.colour_field = "fill"
                     self.addColourPicker("Pick Fill", self.current_holding_kwargs["fill"])
-            if event.type == pygame.MOUSEMOTION:
+            elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                 )
                 if self.current_holding is not None:
                     self.current_holding.position = self.current_mpos
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mpos = screenspace_to_worldspace(
+                    (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
+                )
+                if (
+                    -self.customMap["MAP_WIDTH"] / 2 <= mpos[0] <= self.customMap["MAP_WIDTH"] / 2
+                    and -self.customMap["MAP_HEIGHT"] / 2 <= mpos[1] <= self.customMap["MAP_HEIGHT"] / 2
+                ):
+                    self.placeHolding(mpos)
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
