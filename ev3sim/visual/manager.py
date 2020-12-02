@@ -2,7 +2,9 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
 import pygame
 import pygame.freetype
+import yaml
 from typing import Dict, List, Tuple
+from os.path import join
 
 import ev3sim.visual.utils as utils
 
@@ -235,6 +237,7 @@ class ScreenObjectManager:
         from ev3sim.simulation.randomisation import Randomiser
 
         Randomiser.createGlobalRandomiserWithSeed(0)
+        ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         elems = {}
         initialise_bot(elems, find_abs(filename, [directory]), "", 0)
@@ -259,12 +262,21 @@ class ScreenObjectManager:
         self.resetVisualElements()
         ScriptLoader.instance.reset()
         if directory.startswith("workspace"):
-            dirname = find_abs_directory("workspace/images/", create=True)
+            show_dir = "images/"
+            rel_dir = "workspace/images/"
         elif directory.startswith("package"):
-            dirname = find_abs_directory("packages/assets/bots")
+            show_dir = "bots/"
+            rel_dir = "packages/assets/bots"
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
+        dirname = find_abs_directory(rel_dir, create=True)
         pygame.image.save(cropped, join(dirname, filename.replace(".yaml", ".png")))
+        actual_bot_path = find_abs(filename, [directory])
+        with open(actual_bot_path, "r") as f:
+            conf = yaml.safe_load(f)
+        conf["preview_path"] = join(show_dir, filename.replace(".yaml", ".png"))
+        with open(actual_bot_path, "w") as f:
+            f.write(yaml.dump(conf))
 
 
 screen_settings = {

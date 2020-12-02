@@ -267,9 +267,7 @@ class BatchMenu(BaseMenu):
         fname = find_abs(self.bot_list[index], ["package", "package/robots/", "workspace", "workspace/robots/"])
         with open(fname, "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(
-            config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-        )
+        bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
         img = pygame.image.load(bot_preview)
         img = pygame.transform.smoothscale(img, self._size)
         return pygame_gui.elements.UIImage(

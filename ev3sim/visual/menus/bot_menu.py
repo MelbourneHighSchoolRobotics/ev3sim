@@ -239,18 +239,10 @@ class BotMenu(BaseMenu):
             return
         from ev3sim.visual.manager import ScreenObjectManager
 
-        # TODO: Do this when saving the bot, not here.
-        """
-        ScreenObjectManager.instance.captureBotImage(
-            self.available_bots[self.bot_index][2],
-            self.available_bots[self.bot_index][3],
-            bg=pygame.Color(self.bg.background_colour),
-        )
-        self.blitCurrentBotPreview()
-        """
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_BOT_EDIT,
             bot_file=self.available_bots[self.bot_index][1],
+            bot_dir_file=self.available_bots[self.bot_index][2:4],
         )
 
     def clickSelect(self):
@@ -324,9 +316,7 @@ class BotMenu(BaseMenu):
         else:
             with open(self.available_bots[self.bot_index][1], "r") as f:
                 config = yaml.safe_load(f)
-            bot_preview = find_abs(
-                config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-            )
+            bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
             img = pygame.image.load(bot_preview)
         if img.get_size() != self.preview_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))
@@ -346,9 +336,7 @@ class BotMenu(BaseMenu):
         )
         with open(self.available_bots[self.bot_index][1], "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(
-            config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-        )
+        bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
         img = pygame.image.load(bot_preview)
         if img.get_size() != self.bot_loc_spots[index].rect.size:
             img = pygame.transform.smoothscale(

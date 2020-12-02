@@ -27,12 +27,14 @@ class BotEditMenu(BaseMenu):
         self.current_mpos = (0, 0)
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
+        self.bot_dir_file = kwargs.get("bot_dir_file", None)
         self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
         self.grid_size = 5
         self.mode = self.MODE_NORMAL
         with open(self.bot_file, "r") as f:
             bot = yaml.safe_load(f)
+        self.previous_info = bot
         self.current_object = bot["base_plate"]
         self.current_object["type"] = "object"
         self.current_object["physics"] = True
@@ -189,6 +191,11 @@ class BotEditMenu(BaseMenu):
         self.grid_size_entry.set_dimensions((lock_size, lock_size))
         self.grid_size_entry.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 15))
 
+        self.save_button.set_dimensions((self.side_width * 0.8, self.bot_height * 0.35))
+        self.save_button.set_position((self._size[0] - self.side_width * 0.9, self._size[1] - self.bot_height * 0.9))
+        self.cancel_button.set_dimensions((self.side_width * 0.8, self.bot_height * 0.4))
+        self.cancel_button.set_position((self._size[0] - self.side_width * 0.9, self._size[1] - self.bot_height * 0.45))
+
         # Simulator objects
         self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
         self.bot_screen = pygame.Surface(self.surf_size)
@@ -311,6 +318,22 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.grid_size_label)
         self._all_objs.append(self.grid_size_entry)
 
+        # Save/Cancel
+        self.save_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="Save",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
+        )
+        self.cancel_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="Cancel",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
+        )
+        self._all_objs.append(self.save_button)
+        self._all_objs.append(self.cancel_button)
+
     def generateHoldingItem(self):
         from ev3sim.visual.objects import visualFactory
 
@@ -353,11 +376,11 @@ class BotEditMenu(BaseMenu):
             "stroke_width": 0.1,
             "stroke": "#ffffff",
             "verts": [
-                (np.sin(0), np.cos(0)),
-                (np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)),
-                (np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)),
-                (np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)),
-                (np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)),
+                [np.sin(0), np.cos(0)],
+                [np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)],
+                [np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)],
+                [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
+                [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
             ],
             "zPos": 5,
         }
@@ -395,6 +418,33 @@ class BotEditMenu(BaseMenu):
                     self.colour_field = "fill"
                     start_colour = self.getSelectedAttribute("fill", "")
                     self.addColourPicker("Pick Fill", start_colour)
+                # Saving
+                elif event.ui_object_id.startswith("save-changes"):
+                    self.previous_info["base_plate"] = self.current_object
+                    del self.previous_info["base_plate"]["type"]
+                    del self.previous_info["base_plate"]["physics"]
+                    verts = [
+                        [float(v2) for v2 in v1]
+                        for v1 in self.previous_info["base_plate"].get("visual", {}).get("verts", [])
+                    ]
+                    if verts:
+                        self.previous_info["base_plate"]["visual"]["verts"] = verts
+                    for child in self.previous_info["base_plate"]["children"]:
+                        child["position"] = [float(v) for v in child["position"]]
+                        verts = [[float(v2) for v2 in v1] for v1 in child.get("verts", [])]
+                        if verts:
+                            child["verts"] = verts
+                        verts = [[float(v2) for v2 in v1] for v1 in child.get("visual", {}).get("verts", [])]
+                        if verts:
+                            child["visual"]["verts"] = verts
+
+                    self.previous_info["devices"] = self.current_devices
+                    with open(self.bot_file, "w") as f:
+                        f.write(yaml.dump(self.previous_info))
+                    ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
+                    ScreenObjectManager.instance.popScreen()
+                elif event.ui_object_id.startswith("cancel-changes"):
+                    ScreenObjectManager.instance.popScreen()
             elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
@@ -758,10 +808,10 @@ class BotEditMenu(BaseMenu):
                         self.setSelectedAttribute(
                             "verts",
                             [
-                                (
+                                [
                                     new_size * np.sin(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
                                     new_size * np.cos(i * 2 * np.pi / new_sides + new_rot * np.pi / 180),
-                                )
+                                ]
                                 for i in range(new_sides)
                             ],
                         )
