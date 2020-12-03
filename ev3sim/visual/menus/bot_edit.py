@@ -53,7 +53,9 @@ class BotEditMenu(BaseMenu):
         elif self.selected_index[0] == "Children":
             return self.current_object["children"][self.selected_index[1]]["visual"].get(attr, fallback)
         elif self.selected_index[0] == "Devices":
-            return self.current_devices[self.selected_index[1]].get(attr, fallback)
+            # Just one key in this dict.
+            for key in self.current_devices[self.selected_index[1]]:
+                return self.current_devices[self.selected_index[1]][key].get(attr, fallback)
         raise ValueError(f"Unknown selection {self.selected_index}")
 
     def setSelectedAttribute(self, attr, val):
@@ -66,7 +68,9 @@ class BotEditMenu(BaseMenu):
         elif self.selected_index[0] == "Children":
             self.current_object["children"][self.selected_index[1]]["visual"][attr] = val
         elif self.selected_index[0] == "Devices":
-            self.current_devices[self.selected_index[1]][attr] = val
+            # Just one key in this dict.
+            for key in self.current_devices[self.selected_index[1]]:
+                self.current_devices[self.selected_index[1]][key][attr] = val
         else:
             raise ValueError(f"Unknown selection {self.selected_index}")
 
@@ -551,8 +555,7 @@ class BotEditMenu(BaseMenu):
         elif name == "Polygon":
             self.drawPolygonOptions()
         elif name == "Device":
-            # TODO: Draw device options
-            pass
+            self.drawDeviceOptions()
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -705,6 +708,58 @@ class BotEditMenu(BaseMenu):
         self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
         self.stroke_entry.set_dimensions((entry_size, entry_size))
         self.stroke_entry.set_position((4 * self.side_width + 70, self._size[1] - entry_size + 5))
+
+    def drawDeviceOptions(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
+        entry_size = self.side_width / 2
+        entry_height = self.bot_height * 0.3
+
+        # Rotation
+        self.rotation_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Rotation",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
+        )
+        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
+        )
+        # Takeaway pi/2, so that pointing up is rotation 0.
+        cur_rotation = self.getSelectedAttribute("rotation", 0)
+        self.rotation_entry.set_text(str(cur_rotation))
+        self.rotation_label.set_dimensions(((self.side_width * 1.5 - 30) - entry_size - 5, entry_height))
+        self.rotation_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 20))
+        self.rotation_entry.set_dimensions((entry_size, entry_height))
+        self.rotation_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
+
+        # Port
+        self.port_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Port",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("port-label", "bot_edit_label"),
+        )
+        self.port_show = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("port-show", "bot_show_label"),
+        )
+        self.port_show.set_text(self.getSelectedAttribute("port"))
+        self.port_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("port-button", "invis_button"),
+        )
+        self.port_label.set_dimensions(((self.side_width * 1.5 - 30) - entry_size - 5, entry_height))
+        self.port_label.set_position((self.side_width + 20, self._size[1] - entry_height - 10))
+        self.port_show.set_dimensions((entry_size, entry_height))
+        self.port_show.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
+        self.port_button.set_dimensions((entry_size, entry_size))
+        self.port_button.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
 
     def generateColourPickers(self):
         # Colour pickers
@@ -937,10 +992,18 @@ class BotEditMenu(BaseMenu):
         except:
             pass
 
+    def removeDeviceOptions(self):
+        try:
+            self.rotation_label.kill()
+            self.rotation_entry.kill()
+        except:
+            pass
+
     def clearSelection(self):
         self.removeColourOptions()
         self.removeCircleOptions()
         self.removePolygonOptions()
+        self.removeDeviceOptions()
 
     def clearObjects(self):
         super().clearObjects()
@@ -1008,6 +1071,15 @@ class BotEditMenu(BaseMenu):
                         generate()
                 except:
                     self.setSelectedAttribute("stroke_width", old_stroke_width)
+            if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_DEVICE:
+                old_rot = self.getSelectedAttribute("rotation", 0)
+                try:
+                    new_rot = float(self.rotation_entry.text)
+                    if new_rot != old_rot:
+                        self.setSelectedAttribute("rotation", new_rot)
+                        generate()
+                except:
+                    pass
 
         ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
         ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))
