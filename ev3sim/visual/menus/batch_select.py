@@ -136,13 +136,15 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch", "action_button"),
         )
-        new_batch_path = start_icon_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
+        new_batch_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
         self.new_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(new_batch_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch-icon"),
         )
+        self._all_objs.append(self.new_batch)
+        self._all_objs.append(self.new_icon)
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
