@@ -413,7 +413,10 @@ class BotEditMenu(BaseMenu):
                     for i, obj in enumerate(self.current_holding):
                         obj.visual.customMap = self.customMap
                         obj.visual.offset_position = interactor.relative_positions[i]
-                        obj.visual.position = self.current_mpos + obj.visual.offset_position
+                        obj.visual.position = [
+                            self.current_mpos[0] + obj.visual.offset_position[0],
+                            self.current_mpos[1] + obj.visual.offset_position[1],
+                        ]
                     break
         else:
             self.current_holding = visualFactory(**self.current_holding_kwargs)
@@ -555,7 +558,10 @@ class BotEditMenu(BaseMenu):
                 if self.current_holding is not None:
                     if self.current_holding_kwargs["type"] == "device":
                         for obj in self.current_holding:
-                            obj.visual.position = self.current_mpos + obj.visual.offset_position
+                            obj.visual.position = [
+                                self.current_mpos[0] + obj.visual.offset_position[0],
+                                self.current_mpos[1] + obj.visual.offset_position[1],
+                            ]
                     else:
                         self.current_holding.position = self.current_mpos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -948,9 +954,7 @@ class BotEditMenu(BaseMenu):
                             }
                             self.selected_type = self.SELECTED_DEVICE
                             self.selected_index = "Holding"
-                            self.clearOptions()
                             self.generateHoldingItem()
-                            self.drawOptions()
                             self2.kill()
                 return super().process_event(event)
 
