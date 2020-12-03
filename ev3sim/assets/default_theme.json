@@ -36,7 +36,7 @@
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
-    "button": {
+    "any_button": {
         "font": {
             "name": "Roboto",
             "size": "18",
@@ -110,6 +110,7 @@
         }
     },
     "action_button": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#7EB517",
             "hovered_bg": "#97D91C",
@@ -120,6 +121,7 @@
         }
     },
     "settings_buttons": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#6c757d",
             "hovered_bg": "#7C858D",
@@ -143,9 +145,10 @@
         }
     },
     "list_button": {
-        "prototype": "button"
+        "prototype": "any_button"
     },
     "list_button_highlighted": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
@@ -185,6 +188,7 @@
         }
     },
     "cancel-changes": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
