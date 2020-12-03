@@ -62,6 +62,18 @@ class BotMenu(BaseMenu):
             done_button_pos = (self._size[0] * 0.9 - select_size[0] - 5, self._size[1] * 0.9 - select_size[1])
             self.select_button.set_position(select_button_pos)
             self.done_button.set_position(done_button_pos)
+        new_size = self._size[0] / 8, min(self._size[1] / 6, 90)
+        new_icon_size = new_size[1] * 0.6, new_size[1] * 0.6
+        self.new_bot.set_dimensions(new_size)
+        new_bot_pos = (bot_rect(0)[0] + button_size[0] - new_size[0], self._size[1] * 0.9 - new_size[1])
+        self.new_bot.set_position(new_bot_pos)
+        self.new_icon.set_dimensions(new_icon_size)
+        self.new_icon.set_position(
+            (
+                new_bot_pos[0] + new_size[0] / 2 - new_icon_size[0] / 2,
+                new_bot_pos[1] + new_size[1] * 0.2,
+            )
+        )
 
     def generateObjects(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -147,6 +159,21 @@ class BotMenu(BaseMenu):
                 object_id=pygame_gui.core.ObjectID("select-done", "action_button"),
             )
             self._all_objs.append(self.done_button)
+        self.new_bot = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("new_bot", "action_button"),
+        )
+        new_bot_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
+        self.new_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(new_bot_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("new_bot-icon"),
+        )
+        self._all_objs.append(self.new_bot)
+        self._all_objs.append(self.new_icon)
 
     def createBotImage(self, index, bg=None):
         from ev3sim.visual.manager import ScreenObjectManager
@@ -268,6 +295,11 @@ class BotMenu(BaseMenu):
             ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BATCH].batch_index
         )
 
+    def clickNew(self):
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOT_EDIT)
+
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_object_id.startswith("bot-settings"):
@@ -276,6 +308,8 @@ class BotMenu(BaseMenu):
                 self.clickSelect()
             elif event.ui_object_id.startswith("select-done"):
                 self.clickDone()
+            elif event.ui_object_id.startswith("new_bot"):
+                self.clickNew()
             else:
                 self.setBotIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:

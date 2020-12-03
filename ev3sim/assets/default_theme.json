@@ -227,5 +227,8 @@
             "size": "18",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
+    },
+    "baseplate_label": {
+        "prototype": "device_label"
     }
 }

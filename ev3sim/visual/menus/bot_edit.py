@@ -17,6 +17,7 @@ class BotEditMenu(BaseMenu):
     MODE_DEVICE_DIALOG = "DEVICE_SELECT"
     MODE_NORMAL = "NORMAL"
     MODE_COLOUR_DIALOG = "COLOUR"
+    MODE_BASEPLATE_DIALOG = "BASEPLATE"
 
     SELECTED_CIRCLE = "CIRCLE"
     SELECTED_POLYGON = "POLYGON"
@@ -27,22 +28,32 @@ class BotEditMenu(BaseMenu):
         self.current_mpos = (0, 0)
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
-        self.bot_dir_file = kwargs.get("bot_dir_file", None)
-        self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
         self.grid_size = 1
-        self.mode = self.MODE_NORMAL
         self.dragging = False
-        with open(self.bot_file, "r") as f:
-            bot = yaml.safe_load(f)
-        self.previous_info = bot
-        self.current_object = bot["base_plate"]
-        self.current_object["type"] = "object"
-        self.current_object["physics"] = True
-        self.current_devices = bot["devices"]
+        self.bot_dir_file = kwargs.get("bot_dir_file", None)
+        self.bot_file = kwargs.get("bot_file", None)
         self.current_holding = None
+        if self.bot_dir_file is None or self.bot_file is None:
+            if (self.bot_dir_file is not None) or (self.bot_dir_file is not None):
+                raise ValueError(f"bot_dir_file and bot_file are required here. Got {self.bot_dir_file} and {self.bot_file}.")
+            self.mode = self.MODE_BASEPLATE_DIALOG
+            self.previous_info = {}
+            self.current_object = {}
+            self.current_devices = []
+        else:
+            self.mode = self.MODE_NORMAL
+            with open(self.bot_file, "r") as f:
+                bot = yaml.safe_load(f)
+            self.previous_info = bot
+            self.current_object = bot["base_plate"]
+            self.current_object["type"] = "object"
+            self.current_object["physics"] = True
+            self.current_devices = bot["devices"]
         super().initWithKwargs(**kwargs)
         self.resetBotVisual()
+        if self.mode == self.MODE_BASEPLATE_DIALOG:
+            self.addBaseplatePicker()
 
     def getSelectedAttribute(self, attr, fallback=None):
         if self.selected_index is None:
@@ -85,41 +96,42 @@ class BotEditMenu(BaseMenu):
         ScreenObjectManager.instance.resetVisualElements()
         World.instance.resetWorld()
         mSize = min(*self.surf_size)
-        copy_obj = self.current_object.copy()
-        copy_obj["children"] = self.current_object["children"].copy()
-        add_devices(copy_obj, self.current_devices)
-        elems = ScriptLoader.instance.loadElements([copy_obj], preview_mode=True)
-        self.robot = elems[0]
-        self.robot.identifier = "Baseplate"
-        for i, child in enumerate(self.robot.children):
-            child.identifier = ("Children", i)
-        # Just create it so we can use it.
-        r = Randomiser(seed=0)
-        for i, interactor in enumerate(ScriptLoader.instance.active_scripts):
-            interactor.port_key = str(i)
-            Randomiser.createPortRandomiserWithSeed(interactor.port_key)
-            interactor.startUp()
-            interactor.device_class.generateBias()
-            interactor.tick(0)
-            interactor.afterPhysics()
-            for gen in interactor.generated:
-                gen.identifier = ("Devices", i)
-        World.instance.registerObject(self.robot)
-        self.customMap = {
-            "SCREEN_WIDTH": self.surf_size[0],
-            "SCREEN_HEIGHT": self.surf_size[1],
-            "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
-            "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
-        }
-        while elems:
-            new_elems = []
-            for elem in elems:
-                elem.visual.customMap = self.customMap
-                elem.visual.calculatePoints()
-                new_elems.extend(elem.children)
-            elems = new_elems
-        # We need this for the device positions to be correctly set.
-        World.instance.tick(1 / 60)
+        if self.current_object:
+            copy_obj = self.current_object.copy()
+            copy_obj["children"] = self.current_object["children"].copy()
+            add_devices(copy_obj, self.current_devices)
+            elems = ScriptLoader.instance.loadElements([copy_obj], preview_mode=True)
+            self.robot = elems[0]
+            self.robot.identifier = "Baseplate"
+            for i, child in enumerate(self.robot.children):
+                child.identifier = ("Children", i)
+            # Just create it so we can use it.
+            r = Randomiser(seed=0)
+            for i, interactor in enumerate(ScriptLoader.instance.active_scripts):
+                interactor.port_key = str(i)
+                Randomiser.createPortRandomiserWithSeed(interactor.port_key)
+                interactor.startUp()
+                interactor.device_class.generateBias()
+                interactor.tick(0)
+                interactor.afterPhysics()
+                for gen in interactor.generated:
+                    gen.identifier = ("Devices", i)
+            World.instance.registerObject(self.robot)
+            self.customMap = {
+                "SCREEN_WIDTH": self.surf_size[0],
+                "SCREEN_HEIGHT": self.surf_size[1],
+                "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
+                "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
+            }
+            while elems:
+                new_elems = []
+                for elem in elems:
+                    elem.visual.customMap = self.customMap
+                    elem.visual.calculatePoints()
+                    new_elems.extend(elem.children)
+                elems = new_elems
+            # We need this for the device positions to be correctly set.
+            World.instance.tick(1 / 60)
 
     def placeHolding(self, pos):
         if self.current_holding_kwargs["type"] == "device":
@@ -1014,6 +1026,139 @@ class BotEditMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(f"{device}_button", "invis_button"),
                 ),
             )
+
+    def addBaseplatePicker(self):
+        self.mode = self.MODE_BASEPLATE_DIALOG
+
+        baseplate_options = [
+            ("Circle", {
+                "name": "Circle",
+                "radius": 1,
+                "fill": "#878E88",
+                "stroke_width": 0.1,
+                "stroke": "#ffffff",
+                "zPos": 5,
+            }, "circle", self.SELECTED_CIRCLE),
+            ("Polygon", {
+                "name": "Polygon",
+                "fill": "#878E88",
+                "stroke_width": 0.1,
+                "stroke": "#ffffff",
+                "verts": [
+                    [np.sin(0), np.cos(0)],
+                    [np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)],
+                    [np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)],
+                    [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
+                    [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
+                ],
+                "zPos": 5,
+            }, "polygon", self.SELECTED_POLYGON),
+        ]
+
+        class BaseplatePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                if self.selected_index != "Baseplate":
+                    # We cannot close this until a baseplate has been selected.
+                    return
+                super().kill()
+                self.removeBaseplatePicker()
+
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    for show, obj, name, select in baseplate_options:
+                        if f"{name}_button" in event.ui_object_id:
+                            # Select that baseplate
+                            self.selected_type = select
+                            self.selected_index = "Baseplate"
+                            self.current_object = {
+                                "type": "object",
+                                "physics": True,
+                                "visual": obj,
+                                "mass": 5,
+                                "restitution": 0.2,
+                                "friction": 0.8,
+                                "children": [],
+                                "key": "phys_obj",
+                            }
+                            self2.kill()
+                return super().process_event(event)
+            
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+
+        self.picker = BaseplatePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Pick Device",
+            object_id=pygame_gui.core.ObjectID("device_dialog"),
+        )
+
+        self.text = pygame_gui.elements.UITextBox(
+            html_text="""\
+All bots require a <font color="#06d6a0">baseplate</font>.<br><br>\
+All other objects are placed on this baseplate. After creating it, the baseplate type <font color="#e63946">cannot</font> be changed. (Although it's characteristics can).\
+""",
+            relative_rect=pygame.Rect(30, 10, picker_size[0] - 60, 140),
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("text_dialog_baseplate", "text_dialog"),
+        )
+
+        for i, (show, obj, name, select) in enumerate(baseplate_options):
+            setattr(
+                self,
+                f"{name}_label",
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(
+                        30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),
+                        150 + (picker_size[1] - 250 + 20) * (i // 2),
+                        (picker_size[0] - 120) / 2,
+                        25,
+                    ),
+                    text=show,
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{name}_label", "baseplate_label"),
+                ),
+            )
+            img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=["package/assets/"]))
+            img.set_colorkey((0, 255, 0))
+            but_rect = pygame.Rect(
+                30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),
+                180 + (picker_size[1] - 250 + 20) * (i // 2),
+                (picker_size[0] - 120) / 2,
+                picker_size[1] - 250 - 30,
+            )
+            setattr(
+                self,
+                f"{name}_img",
+                pygame_gui.elements.UIImage(
+                    relative_rect=but_rect,
+                    image_surface=img,
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{name}_img", "baseplate_img"),
+                ),
+            )
+            setattr(
+                self,
+                f"{name}_button",
+                pygame_gui.elements.UIButton(
+                    relative_rect=but_rect,
+                    text="",
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{name}_button", "invis_button"),
+                ),
+            )
+
+    def removeBaseplatePicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+            self.resetBotVisual()
+        except:
+            pass
+
 
     def removeDevicePicker(self):
         try:
