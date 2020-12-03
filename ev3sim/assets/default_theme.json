@@ -230,5 +230,17 @@
     },
     "baseplate_label": {
         "prototype": "device_label"
+    },
+    "colour_channel_editor.label": {
+        "colours": {
+            "normal_text": "#f7ede2"
+        }
+    },
+    "colour_channel_editor.text_entry_line": {
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
     }
 }
