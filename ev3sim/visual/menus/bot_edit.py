@@ -30,7 +30,7 @@ class BotEditMenu(BaseMenu):
         self.bot_dir_file = kwargs.get("bot_dir_file", None)
         self.bot_file = kwargs.get("bot_file", None)
         self.lock_grid = True
-        self.grid_size = 5
+        self.grid_size = 1
         self.mode = self.MODE_NORMAL
         self.dragging = False
         with open(self.bot_file, "r") as f:
@@ -532,6 +532,11 @@ class BotEditMenu(BaseMenu):
                 self.current_mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                 )
+                if self.lock_grid and not self.dragging:
+                    self.current_mpos = [
+                        ((self.current_mpos[0] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                        ((self.current_mpos[1] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                    ]
                 if self.current_holding is not None:
                     if self.current_holding_kwargs["type"] == "device":
                         for obj in self.current_holding:
@@ -555,6 +560,11 @@ class BotEditMenu(BaseMenu):
                                 pos = self.current_object["children"][self.selected_index[1]]["position"]
                             self.offset_position = [pos[0] - mpos[0], pos[1] - mpos[1]]
                     else:
+                        if self.lock_grid:
+                            mpos = [
+                                ((mpos[0] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                                ((mpos[1] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                            ]
                         self.placeHolding(mpos)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 self.dragging = False
@@ -1109,12 +1119,23 @@ class BotEditMenu(BaseMenu):
                 except:
                     pass
                 self.setSelectedAttribute("port", self.port_entry.text)
+            if self.mode == self.MODE_NORMAL:
+                try:
+                    self.grid_size = float(self.grid_size_entry.text)
+                except:
+                    pass
             if self.dragging:
                 if not isinstance(self.selected_index, str):
                     new_pos = [
                         self.current_mpos[0] + self.offset_position[0],
                         self.current_mpos[1] + self.offset_position[1],
                     ]
+                    # We need to relock position.
+                    if self.lock_grid:
+                        new_pos = [
+                            ((new_pos[0] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                            ((new_pos[1] + self.grid_size / 2) // self.grid_size) * self.grid_size,
+                        ]
                     if self.selected_index[0] == "Children":
                         old_pos = self.current_object["children"][self.selected_index[1]]["position"]
                         if old_pos[0] != new_pos[0] or old_pos[1] != new_pos[1]:
