@@ -32,6 +32,7 @@ class BotEditMenu(BaseMenu):
         self.lock_grid = True
         self.grid_size = 5
         self.mode = self.MODE_NORMAL
+        self.dragging = False
         with open(self.bot_file, "r") as f:
             bot = yaml.safe_load(f)
         self.previous_info = bot
@@ -152,14 +153,16 @@ class BotEditMenu(BaseMenu):
             top_shape = list(filter(lambda x: x.shape.actual_obj.visual.zPos == top_shape_z, shapes))
             assert len(top_shape) == 1
             self.selected_index = top_shape[0].shape.actual_obj.identifier
-            name = self.getSelectedAttribute("name", "Device")
+            name = self.getSelectedAttribute("name", None)
             if name == "Circle":
                 self.selected_type = self.SELECTED_CIRCLE
             elif name == "Polygon":
                 self.selected_type = self.SELECTED_POLYGON
-            elif name == "Device":
+            else:
                 self.selected_type = self.SELECTED_DEVICE
             self.drawOptions()
+        else:
+            self.selected_index = None
 
     def sizeObjects(self):
         # Bg
@@ -545,8 +548,16 @@ class BotEditMenu(BaseMenu):
                 ):
                     if self.current_holding is None:
                         self.selectObj(mpos)
+                        if self.selected_index is not None:
+                            self.dragging = True
+                            pos = self.getSelectedAttribute("position", [0, 0])
+                            if isinstance(self.selected_index, (tuple, list)) and self.selected_index[0] == "Children":
+                                pos = self.current_object["children"][self.selected_index[1]]["position"]
+                            self.offset_position = [pos[0] - mpos[0], pos[1] - mpos[1]]
                     else:
                         self.placeHolding(mpos)
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                self.dragging = False
             elif event.type == pygame.MOUSEWHEEL:
                 for attr, conv, inc in [
                     ("rotation_entry", float, 1),
@@ -575,7 +586,7 @@ class BotEditMenu(BaseMenu):
             self.drawCircleOptions()
         elif name == "Polygon":
             self.drawPolygonOptions()
-        elif name is not None:
+        else:
             self.drawDeviceOptions()
 
     def drawCircleOptions(self):
@@ -1098,6 +1109,24 @@ class BotEditMenu(BaseMenu):
                 except:
                     pass
                 self.setSelectedAttribute("port", self.port_entry.text)
+            if self.dragging:
+                if not isinstance(self.selected_index, str):
+                    new_pos = [
+                        self.current_mpos[0] + self.offset_position[0],
+                        self.current_mpos[1] + self.offset_position[1],
+                    ]
+                    if self.selected_index[0] == "Children":
+                        old_pos = self.current_object["children"][self.selected_index[1]]["position"]
+                        if old_pos[0] != new_pos[0] or old_pos[1] != new_pos[1]:
+                            self.current_object["children"][self.selected_index[1]]["position"] = [
+                                float(v) for v in new_pos
+                            ]
+                            generate()
+                    elif self.selected_index[0] == "Devices":
+                        old_pos = self.getSelectedAttribute("position", [0, 0])
+                        if old_pos[0] != new_pos[0] or old_pos[1] != new_pos[1]:
+                            self.setSelectedAttribute("position", [float(v) for v in new_pos])
+                            generate()
 
         ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
         ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))
