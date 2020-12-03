@@ -36,7 +36,9 @@ class BotEditMenu(BaseMenu):
         self.current_holding = None
         if self.bot_dir_file is None or self.bot_file is None:
             if (self.bot_dir_file is not None) or (self.bot_dir_file is not None):
-                raise ValueError(f"bot_dir_file and bot_file are required here. Got {self.bot_dir_file} and {self.bot_file}.")
+                raise ValueError(
+                    f"bot_dir_file and bot_file are required here. Got {self.bot_dir_file} and {self.bot_file}."
+                )
             self.mode = self.MODE_BASEPLATE_DIALOG
             self.previous_info = {}
             self.current_object = {}
@@ -1031,28 +1033,38 @@ class BotEditMenu(BaseMenu):
         self.mode = self.MODE_BASEPLATE_DIALOG
 
         baseplate_options = [
-            ("Circle", {
-                "name": "Circle",
-                "radius": 1,
-                "fill": "#878E88",
-                "stroke_width": 0.1,
-                "stroke": "#ffffff",
-                "zPos": 5,
-            }, "circle", self.SELECTED_CIRCLE),
-            ("Polygon", {
-                "name": "Polygon",
-                "fill": "#878E88",
-                "stroke_width": 0.1,
-                "stroke": "#ffffff",
-                "verts": [
-                    [np.sin(0), np.cos(0)],
-                    [np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)],
-                    [np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)],
-                    [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
-                    [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
-                ],
-                "zPos": 5,
-            }, "polygon", self.SELECTED_POLYGON),
+            (
+                "Circle",
+                {
+                    "name": "Circle",
+                    "radius": 1,
+                    "fill": "#878E88",
+                    "stroke_width": 0.1,
+                    "stroke": "#ffffff",
+                    "zPos": 5,
+                },
+                "circle",
+                self.SELECTED_CIRCLE,
+            ),
+            (
+                "Polygon",
+                {
+                    "name": "Polygon",
+                    "fill": "#878E88",
+                    "stroke_width": 0.1,
+                    "stroke": "#ffffff",
+                    "verts": [
+                        [np.sin(0), np.cos(0)],
+                        [np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)],
+                        [np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)],
+                        [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
+                        [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
+                    ],
+                    "zPos": 5,
+                },
+                "polygon",
+                self.SELECTED_POLYGON,
+            ),
         ]
 
         class BaseplatePicker(pygame_gui.elements.UIWindow):
@@ -1082,7 +1094,7 @@ class BotEditMenu(BaseMenu):
                             }
                             self2.kill()
                 return super().process_event(event)
-            
+
         picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
 
         self.picker = BaseplatePicker(
@@ -1158,7 +1170,6 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             self.resetBotVisual()
         except:
             pass
-
 
     def removeDevicePicker(self):
         try:
