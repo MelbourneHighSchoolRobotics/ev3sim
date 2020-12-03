@@ -151,7 +151,7 @@ class BotEditMenu(BaseMenu):
             del self.current_devices[self.selected_index[1]]
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
-        self.clearSelection()
+        self.clearOptions()
         self.resetBotVisual()
 
     def selectObj(self, pos):
@@ -440,7 +440,7 @@ class BotEditMenu(BaseMenu):
         self.current_holding = None
         self.selected_type = self.SELECTED_NOTHING
         self.selected_index = None
-        self.clearSelection()
+        self.clearOptions()
 
     def clickCircle(self):
         self.current_holding_kwargs = {
@@ -605,7 +605,7 @@ class BotEditMenu(BaseMenu):
                                 pass
 
     def drawOptions(self):
-        self.clearSelection()
+        self.clearOptions()
         name = self.getSelectedAttribute("name", None)
         if name == "Circle":
             self.drawCircleOptions()
@@ -948,7 +948,7 @@ class BotEditMenu(BaseMenu):
                             }
                             self.selected_type = self.SELECTED_DEVICE
                             self.selected_index = "Holding"
-                            self.clearSelection()
+                            self.clearOptions()
                             self.generateHoldingItem()
                             self.drawOptions()
                             self2.kill()
@@ -1065,7 +1065,7 @@ class BotEditMenu(BaseMenu):
         except:
             pass
 
-    def clearSelection(self):
+    def clearOptions(self):
         try:
             self.remove_button.kill()
         except:
@@ -1077,7 +1077,7 @@ class BotEditMenu(BaseMenu):
 
     def clearObjects(self):
         super().clearObjects()
-        self.clearSelection()
+        self.clearOptions()
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         if self.selected_index is not None:
