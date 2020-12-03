@@ -525,6 +525,7 @@ class BotEditMenu(BaseMenu):
                 elif event.ui_object_id.startswith("cancel-changes"):
                     ScreenObjectManager.instance.popScreen()
             elif event.type == pygame.MOUSEMOTION:
+                self.actual_mpos = event.pos
                 self.current_mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                 )
@@ -534,7 +535,7 @@ class BotEditMenu(BaseMenu):
                             obj.visual.position = self.current_mpos + obj.visual.offset_position
                     else:
                         self.current_holding.position = self.current_mpos
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                 )
@@ -546,15 +547,35 @@ class BotEditMenu(BaseMenu):
                         self.selectObj(mpos)
                     else:
                         self.placeHolding(mpos)
+            elif event.type == pygame.MOUSEWHEEL:
+                for attr, conv, inc in [
+                    ("rotation_entry", float, 1),
+                    ("radius_entry", float, 0.1),
+                    ("size_entry", float, 0.1),
+                    ("stroke_entry", float, 0.05),
+                    ("sides_entry", int, 1),
+                ]:
+                    if hasattr(self, attr):
+                        rect = getattr(self, attr).get_relative_rect()
+                        if (
+                            rect.left <= self.actual_mpos[0] <= rect.right
+                            and rect.top <= self.actual_mpos[1] <= rect.bottom
+                        ):
+                            try:
+                                val = conv(getattr(self, attr).text)
+                                val += event.y * inc
+                                getattr(self, attr).set_text(str(val))
+                            except:
+                                pass
 
     def drawOptions(self):
         self.clearSelection()
-        name = self.getSelectedAttribute("name", "Device")
+        name = self.getSelectedAttribute("name", None)
         if name == "Circle":
             self.drawCircleOptions()
         elif name == "Polygon":
             self.drawPolygonOptions()
-        elif name == "Device":
+        elif name is not None:
             self.drawDeviceOptions()
 
     def drawCircleOptions(self):
@@ -877,7 +898,10 @@ class BotEditMenu(BaseMenu):
                                 "rotation": 0,
                             }
                             self.selected_type = self.SELECTED_DEVICE
+                            self.selected_index = "Holding"
+                            self.clearSelection()
                             self.generateHoldingItem()
+                            self.drawOptions()
                             self2.kill()
                 return super().process_event(event)
 
@@ -1011,7 +1035,7 @@ class BotEditMenu(BaseMenu):
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
                 old_radius = self.getSelectedAttribute("radius")
                 try:
-                    new_radius = int(self.radius_entry.text)
+                    new_radius = float(self.radius_entry.text)
                     if old_radius != new_radius:
                         self.setSelectedAttribute("radius", new_radius)
                         generate()
