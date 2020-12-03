@@ -741,25 +741,16 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("port-label", "bot_edit_label"),
         )
-        self.port_show = pygame_gui.elements.UILabel(
+        self.port_entry = pygame_gui.elements.UITextEntryLine(
             relative_rect=dummy_rect,
-            text="",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("port-show", "bot_show_label"),
+            object_id=pygame_gui.core.ObjectID("port-entry", "num_entry"),
         )
-        self.port_show.set_text(self.getSelectedAttribute("port"))
-        self.port_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
-            text="",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("port-button", "invis_button"),
-        )
+        self.port_entry.set_text(self.getSelectedAttribute("port"))
         self.port_label.set_dimensions(((self.side_width * 1.5 - 30) - entry_size - 5, entry_height))
         self.port_label.set_position((self.side_width + 20, self._size[1] - entry_height - 10))
-        self.port_show.set_dimensions((entry_size, entry_height))
-        self.port_show.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
-        self.port_button.set_dimensions((entry_size, entry_size))
-        self.port_button.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
+        self.port_entry.set_dimensions((entry_size, entry_height))
+        self.port_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
 
     def generateColourPickers(self):
         # Colour pickers
@@ -996,6 +987,8 @@ class BotEditMenu(BaseMenu):
         try:
             self.rotation_label.kill()
             self.rotation_entry.kill()
+            self.port_label.kill()
+            self.port_entry.kill()
         except:
             pass
 
@@ -1080,6 +1073,7 @@ class BotEditMenu(BaseMenu):
                         generate()
                 except:
                     pass
+                self.setSelectedAttribute("port", self.port_entry.text)
 
         ScreenObjectManager.instance.applyToScreen(to_screen=self.bot_screen)
         ScreenObjectManager.instance.screen.blit(self.bot_screen, pygame.Rect(self.side_width - 5, 0, *self.surf_size))
