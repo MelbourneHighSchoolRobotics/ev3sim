@@ -211,5 +211,17 @@
             "size": "18",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
+    },
+    "device_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
     }
 }

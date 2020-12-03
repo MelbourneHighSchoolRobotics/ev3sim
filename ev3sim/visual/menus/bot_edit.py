@@ -845,7 +845,7 @@ class BotEditMenu(BaseMenu):
                         30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
                         20 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
                         (picker_size[0] - 150) / 3,
-                        20,
+                        25,
                     ),
                     text=show,
                     manager=self,
