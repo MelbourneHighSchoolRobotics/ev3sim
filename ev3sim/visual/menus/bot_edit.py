@@ -340,14 +340,76 @@ class BotEditMenu(BaseMenu):
         if "holding" in ScreenObjectManager.instance.objects:
             ScreenObjectManager.instance.unregisterVisual("holding")
 
-        self.current_holding = visualFactory(**self.current_holding_kwargs)
-        self.current_holding.customMap = self.customMap
-        self.current_holding.position = self.current_mpos
-        ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
+        if self.current_holding_kwargs["type"] == "device":
+            from ev3sim.simulation.loader import ScriptLoader
+
+            if "holding_bot" in ScriptLoader.instance.object_map:
+                ScreenObjectManager.instance.unregisterVisual("holding_bot")
+                for child in ScriptLoader.instance.object_map["holding_bot"].children:
+                    ScreenObjectManager.instance.unregisterVisual(child.key)
+                del ScriptLoader.instance.object_map["holding_bot"]
+                to_remove = []
+                for i, interactor in enumerate(ScriptLoader.instance.active_scripts):
+                    if interactor.physical_object.key == "holding_bot":
+                        to_remove.append(i)
+                for index in to_remove[::-1]:
+                    del ScriptLoader.instance.active_scripts[index]
+            ScriptLoader.instance.loadElements(
+                [
+                    {
+                        "type": "object",
+                        "physics": True,
+                        "visual": {
+                            "name": "Circle",
+                            "stroke": None,
+                            "fill": None,
+                            "stroke_width": 0,
+                            "radius": 0,
+                            "zPos": 20,
+                        },
+                        "children": [self.current_holding_kwargs],
+                        "key": "holding_bot",
+                    }
+                ],
+                preview_mode=True,
+            )
+            for interactor in ScriptLoader.instance.active_scripts:
+                if interactor.physical_object.key == "holding_bot":
+                    interactor.port_key = "holding"
+                    if "holding" not in Randomiser.instance.port_randomisers:
+                        Randomiser.createPortRandomiserWithSeed(interactor.port_key)
+                    interactor.startUp()
+                    interactor.device_class.generateBias()
+                    interactor.tick(0)
+                    interactor.afterPhysics()
+                    self.current_holding = interactor.generated
+                    for i, obj in enumerate(self.current_holding):
+                        obj.visual.customMap = self.customMap
+                        obj.visual.offset_position = interactor.relative_positions[i]
+                        obj.visual.position = self.current_mpos + obj.visual.offset_position
+                    break
+        else:
+            self.current_holding = visualFactory(**self.current_holding_kwargs)
+            self.current_holding.customMap = self.customMap
+            self.current_holding.position = self.current_mpos
+            ScreenObjectManager.instance.registerVisual(self.current_holding, "holding")
 
     def clickSelect(self):
+        from ev3sim.simulation.loader import ScriptLoader
+
         if "holding" in ScreenObjectManager.instance.objects:
             ScreenObjectManager.instance.unregisterVisual("holding")
+        if "holding_bot" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("holding_bot")
+            for child in ScriptLoader.instance.object_map["holding_bot"].children:
+                ScreenObjectManager.instance.unregisterVisual(child.key)
+            del ScriptLoader.instance.object_map["holding_bot"]
+            to_remove = []
+            for i, interactor in enumerate(ScriptLoader.instance.active_scripts):
+                if interactor.physical_object.key == "holding_bot":
+                    to_remove.append(i)
+            for index in to_remove[::-1]:
+                del ScriptLoader.instance.active_scripts[index]
         self.current_holding = None
         self.selected_type = self.SELECTED_NOTHING
         self.selected_index = None
@@ -455,7 +517,11 @@ class BotEditMenu(BaseMenu):
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
                 )
                 if self.current_holding is not None:
-                    self.current_holding.position = self.current_mpos
+                    if self.current_holding_kwargs["type"] == "device":
+                        for obj in self.current_holding:
+                            obj.visual.position = self.current_mpos + obj.visual.offset_position
+                    else:
+                        self.current_holding.position = self.current_mpos
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
@@ -730,17 +796,93 @@ class BotEditMenu(BaseMenu):
 
         self.mode = self.MODE_DEVICE_DIALOG
 
+        device_data = [
+            ("Ultrasonic", "ultrasonic", "ultrasonic", "UltrasonicSensor"),
+            ("Colour", "colour", "colour", "ColorSensor"),
+            ("Infrared", "infrared", "infrared", "InfraredSensor"),
+            ("Compass", "compass", "compass", "CompassSensor"),
+            ("Large Motor", "large_motor", "motor", "LargeMotor"),
+            ("Medium Motor", "medium_motor", "motor", "MediumMotor"),
+            ("Button", "button", "button", "Button"),
+        ]
+
         class DevicePicker(pygame_gui.elements.UIWindow):
             def kill(self2):
                 super().kill()
                 self.removeDevicePicker()
 
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    for device in device_data:
+                        if f"{device[1]}_button" in event.ui_object_id:
+                            # Select that device.
+                            self.current_holding_kwargs = {
+                                "type": "device",
+                                "name": device[3],
+                                "port": "in1" if device[2] != "motor" else "outA",
+                                "rotation": 0,
+                            }
+                            self.selected_type = self.SELECTED_DEVICE
+                            self.generateHoldingItem()
+                            self2.kill()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+
         self.picker = DevicePicker(
-            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, self._size[0] * 0.7, self._size[1] * 0.7),
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
             manager=self,
             window_display_title="Pick Device",
             object_id=pygame_gui.core.ObjectID("device_dialog"),
         )
+
+        for i, (show, device, file, sensor_name) in enumerate(device_data):
+            setattr(
+                self,
+                f"{device}_label",
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(
+                        30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
+                        20 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
+                        (picker_size[0] - 150) / 3,
+                        20,
+                    ),
+                    text=show,
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{device}_label", "device_label"),
+                ),
+            )
+            img = pygame.image.load(find_abs(f"{file}.png", ["package/assets/ui/devices"]))
+            img.set_colorkey((0, 255, 0))
+            but_rect = pygame.Rect(
+                30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
+                50 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
+                (picker_size[0] - 150) / 3,
+                (picker_size[1] - 160) / 3 - 30,
+            )
+            setattr(
+                self,
+                f"{device}_img",
+                pygame_gui.elements.UIImage(
+                    relative_rect=but_rect,
+                    image_surface=img,
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{device}_img", "device_img"),
+                ),
+            )
+            setattr(
+                self,
+                f"{device}_button",
+                pygame_gui.elements.UIButton(
+                    relative_rect=but_rect,
+                    text="",
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{device}_button", "invis_button"),
+                ),
+            )
 
     def removeDevicePicker(self):
         try:
