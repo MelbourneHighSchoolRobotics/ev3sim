@@ -142,6 +142,18 @@ class BotEditMenu(BaseMenu):
         self.resetBotVisual()
         self.generateHoldingItem()
 
+    def removeSelected(self):
+        if self.selected_index in ["Holding", None, "Baseplate"]:
+            raise ValueError("The remove button should not be visible at the moment.")
+        if self.selected_index[0] == "Children":
+            del self.current_object["children"][self.selected_index[1]]
+        elif self.selected_index[0] == "Devices":
+            del self.current_devices[self.selected_index[1]]
+        self.selected_index = None
+        self.selected_type = self.SELECTED_NOTHING
+        self.clearSelection()
+        self.resetBotVisual()
+
     def selectObj(self, pos):
         from ev3sim.simulation.world import World
 
@@ -500,6 +512,9 @@ class BotEditMenu(BaseMenu):
                     self.colour_field = "fill"
                     start_colour = self.getSelectedAttribute("fill", "")
                     self.addColourPicker("Pick Fill", start_colour)
+                # Removing
+                elif event.ui_object_id.startswith("remove_button"):
+                    self.removeSelected()
                 # Saving
                 elif event.ui_object_id.startswith("save-changes"):
                     self.previous_info["base_plate"] = self.current_object
@@ -598,6 +613,19 @@ class BotEditMenu(BaseMenu):
             self.drawPolygonOptions()
         else:
             self.drawDeviceOptions()
+        if self.selected_index not in ["Holding", "Baseplate", None]:
+            self.drawRemove()
+
+    def drawRemove(self):
+        icon_size = self.side_width / 2
+        self.remove_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                self.side_width * 0.2, 50 + icon_size * 5.8, self.side_width * 0.6, self.side_width * 0.4
+            ),
+            text="Remove",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
+        )
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -1038,6 +1066,10 @@ class BotEditMenu(BaseMenu):
             pass
 
     def clearSelection(self):
+        try:
+            self.remove_button.kill()
+        except:
+            pass
         self.removeColourOptions()
         self.removeCircleOptions()
         self.removePolygonOptions()
