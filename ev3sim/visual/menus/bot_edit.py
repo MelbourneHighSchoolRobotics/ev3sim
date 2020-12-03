@@ -117,15 +117,23 @@ class BotEditMenu(BaseMenu):
         World.instance.tick(1 / 60)
 
     def placeHolding(self, pos):
-        obj = {
-            "physics": True,
-            "type": "object",
-            "visual": self.current_holding_kwargs.copy(),
-            "position": pos,
-            "restitution": 0.2,
-            "friction": 0.8,
-        }
-        self.current_object["children"].append(obj)
+        if self.current_holding_kwargs["type"] == "device":
+            dev_name = self.current_holding_kwargs["name"]
+            rest = self.current_holding_kwargs.copy()
+            rest["position"] = [float(self.current_mpos[0]), float(self.current_mpos[1])]
+            del rest["type"]
+            del rest["name"]
+            self.current_devices.append({dev_name: rest})
+        else:
+            obj = {
+                "physics": True,
+                "type": "object",
+                "visual": self.current_holding_kwargs.copy(),
+                "position": pos,
+                "restitution": 0.2,
+                "friction": 0.8,
+            }
+            self.current_object["children"].append(obj)
         self.resetBotVisual()
         self.generateHoldingItem()
 
