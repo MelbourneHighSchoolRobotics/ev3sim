@@ -13,6 +13,7 @@ class SimulatorMenu:
 
         # We need to close all previous communications with the bots.
         StateHandler.instance.closeProcesses()
+        StateHandler.instance.is_simulating = False
         # We also need to reset the objects registered to the Screen.
         from ev3sim.visual.manager import ScreenObjectManager
 

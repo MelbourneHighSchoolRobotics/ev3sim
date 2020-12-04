@@ -1,6 +1,7 @@
-from ev3sim.file_helper import find_abs
+import os
 import pygame
 import pygame_gui
+from ev3sim.file_helper import find_abs, find_abs_directory
 
 
 class SettingsVisualElement:
@@ -40,6 +41,11 @@ class SettingsVisualElement:
 class FileEntry(SettingsVisualElement):
 
     num_objs = 4
+
+    def __init__(self, json_keys, default_value, is_directory, relative_paths, title, offset):
+        super().__init__(json_keys, default_value, title, offset)
+        self.is_directory = is_directory
+        self.relative_paths = relative_paths
 
     def generateVisual(self, relative_rect, container, manager, idx):
         self.container = container
@@ -111,23 +117,38 @@ class FileEntry(SettingsVisualElement):
         assert idx == 2, f"{idx} expected to be 2."
         # Open file dialog.
         from tkinter import Tk
-        from tkinter.filedialog import askdirectory
+        from tkinter.filedialog import askdirectory, askopenfilename
 
         Tk().withdraw()
-        directory = askdirectory()
-        self.current = directory
-        self.filename.set_text(self.current)
+        if self.is_directory:
+            directory = askdirectory()
+            self.current = directory
+            self.filename.set_text(self.current)
+        else:
+            filename = askopenfilename().replace("/", "\\")
+            for pathname in self.relative_paths:
+                dirpath = find_abs_directory(pathname, create=True)
+                if filename.startswith(dirpath):
+                    actual_filename = filename[len(dirpath) :]
+                    break
+            else:
+                # TODO: Make this an error modal in the settings.
+                print("This file must be contained in one of the following directories:")
+                for pathname in self.relative_paths:
+                    dirpath = find_abs_directory(pathname, create=True)
+                    print("\t" + dirpath)
+                return
+            self.current = actual_filename
+            self.filename.set_text(self.current)
 
 
 class TextEntry(SettingsVisualElement):
-
-    num_objs = 2
-
     def setToJson(self, json_obj):
         self.current = self.obj.text
         super().setToJson(json_obj)
 
     def generateVisual(self, relative_rect, container, manager, idx):
+        self.num_objs = 0
         self.container = container
         self.obj = pygame_gui.elements.UITextEntryLine(
             relative_rect=relative_rect,
@@ -136,28 +157,46 @@ class TextEntry(SettingsVisualElement):
             container=container,
         )
         self.obj.set_text(str(self.current))
-        obj2 = pygame_gui.elements.UILabel(
-            relative_rect=relative_rect,
-            manager=manager,
-            object_id=pygame_gui.core.ObjectID(f"{idx+1}-text-label", "entry-label"),
-            container=container,
-            text=self.title,
-        )
-        return [self.obj, obj2]
+        self.num_objs += 1
+        if self.title is not None:
+            self.num_objs += 1
+            obj2 = pygame_gui.elements.UILabel(
+                relative_rect=relative_rect,
+                manager=manager,
+                object_id=pygame_gui.core.ObjectID(f"{idx+1}-text-label", "entry-label"),
+                container=container,
+                text=self.title,
+            )
+            return [self.obj, obj2]
+        return [self.obj]
 
     def resize(self, objs, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        objs[index].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 60))
-        objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 40))
-        objs[index].set_position(
-            (
-                off[0] + self.container.relative_rect.left + 20 + (self.container.relative_rect.width - 40) / 2 + 10,
-                off[1] + self.container.relative_rect.top,
+        if self.title is None:
+            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
+            objs[index].set_dimensions(((self.container.relative_rect.width - 40) - 20, 60))
+            objs[index].set_position(
+                (
+                    off[0] + self.container.relative_rect.left + 20,
+                    off[1] + self.container.relative_rect.top,
+                )
             )
-        )
-        objs[index + 1].set_position(
-            (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-        )
+        else:
+            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
+            objs[index].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 60))
+            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 40))
+            objs[index].set_position(
+                (
+                    off[0]
+                    + self.container.relative_rect.left
+                    + 20
+                    + (self.container.relative_rect.width - 40) / 2
+                    + 10,
+                    off[1] + self.container.relative_rect.top,
+                )
+            )
+            objs[index + 1].set_position(
+                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+            )
 
 
 class NumberEntry(TextEntry):

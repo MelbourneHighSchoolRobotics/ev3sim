@@ -14,6 +14,8 @@ class BatchMenu(BaseMenu):
     def sizeObjects(self):
         button_size = self._size[0] / 4, 60
         info_size = self._size[0] / 4 - 20, 15
+        new_size = self._size[0] / 8, min(self._size[1] / 6, 90)
+        new_icon_size = new_size[1] * 0.6, new_size[1] * 0.6
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
         preview_size = self._size[0] / 4, self._size[1] / 4
@@ -37,6 +39,16 @@ class BatchMenu(BaseMenu):
             self.batch_buttons[i].set_position(batch_rect(i))
             self.batch_descriptions[i].set_dimensions(info_size)
             self.batch_descriptions[i].set_position(info_rect(batch_rect(i)))
+        self.new_batch.set_dimensions(new_size)
+        new_batch_pos = (batch_rect(0)[0] + button_size[0] - new_size[0], self._size[1] * 0.9 - new_size[1])
+        self.new_batch.set_position(new_batch_pos)
+        self.new_icon.set_dimensions(new_icon_size)
+        self.new_icon.set_position(
+            (
+                new_batch_pos[0] + new_size[0] / 2 - new_icon_size[0] / 2,
+                new_batch_pos[1] + new_size[1] * 0.2,
+            )
+        )
         self.start_button.set_dimensions(start_size)
         start_button_pos = (self._size[0] * 0.9 - start_size[0], self._size[1] * 0.9 - start_size[1])
         self.start_button.set_position(start_button_pos)
@@ -118,6 +130,21 @@ class BatchMenu(BaseMenu):
             )
         self._all_objs.extend(self.batch_buttons)
         self._all_objs.extend(self.batch_descriptions)
+        self.new_batch = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("new_batch", "action_button"),
+        )
+        new_batch_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
+        self.new_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(new_batch_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("new_batch-icon"),
+        )
+        self._all_objs.append(self.new_batch)
+        self._all_objs.append(self.new_icon)
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -205,7 +232,42 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_SETTINGS,
             file=self.available_batches[self.batch_index][1],
             settings=visual_settings,
+            allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
         )
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+
+    def clickNew(self):
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.presets.soccer import visual_settings
+
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SETTINGS,
+            settings=visual_settings,
+            creating=True,
+            creation_area="workspace/batched_commands/",
+            starting_data={
+                "preset_file": "soccer.yaml",
+                "bots": [],
+                "settings": {
+                    "soccer": {},
+                },
+            },
+        )
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
 
     def clickBots(self):
         # Shouldn't happen but lets be safe.
@@ -223,9 +285,7 @@ class BatchMenu(BaseMenu):
         fname = find_abs(self.bot_list[index], ["package", "package/robots/", "workspace", "workspace/robots/"])
         with open(fname, "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(
-            config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-        )
+        bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
         img = pygame.image.load(bot_preview)
         img = pygame.transform.smoothscale(img, self._size)
         return pygame_gui.elements.UIImage(
@@ -267,6 +327,8 @@ class BatchMenu(BaseMenu):
                 self.clickSettings()
             elif event.ui_object_id.startswith("batch-bots"):
                 self.clickBots()
+            elif event.ui_object_id.startswith("new_batch"):
+                self.clickNew()
             else:
                 self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:
@@ -276,6 +338,8 @@ class BatchMenu(BaseMenu):
                 self.incrementBatchIndex(-1)
             elif event.key == pygame.K_RETURN:
                 self.clickStart()
+            elif event.key == pygame.K_n:
+                self.clickNew()
 
     def setBatchIndex(self, new_index):
         self.batch_index = new_index
