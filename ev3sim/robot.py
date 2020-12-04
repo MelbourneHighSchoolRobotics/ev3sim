@@ -191,7 +191,7 @@ visual_settings = [
     {
         "height": (lambda s: 90),
         "objects": [
-            FileEntry(["script"], None, "Bot script", (lambda s: (0, 20))),
+            FileEntry(["script"], None, False, ["workspace/code/", "workspace", "package/robots/"], "Bot script", (lambda s: (0, 20))),
         ],
     },
 ]
