@@ -1,4 +1,3 @@
-from pygame_gui.elements import text
 import yaml
 import os.path
 import pygame
@@ -49,6 +48,19 @@ class BotMenu(BaseMenu):
                 (
                     settings_button_pos[0] + settings_size[0] / 2 - settings_icon_size[0] / 2,
                     settings_button_pos[1] + settings_size[1] * 0.2,
+                )
+            )
+            edit_button_pos = (
+                self._size[0] * 0.9 - preview_size[0],
+                self._size[1] * 0.1 + preview_size[1] + 10,
+            )
+            self.edit_button.set_dimensions(settings_size)
+            self.edit_button.set_position(edit_button_pos)
+            self.edit_icon.set_dimensions(settings_icon_size)
+            self.edit_icon.set_position(
+                (
+                    edit_button_pos[0] + settings_size[0] / 2 - settings_icon_size[0] / 2,
+                    edit_button_pos[1] + settings_size[1] * 0.2,
                 )
             )
         else:
@@ -114,6 +126,7 @@ class BotMenu(BaseMenu):
                 )
             )
         self._all_objs.extend(self.bot_buttons)
+        self._all_objs.extend(self.bot_descriptions)
         image = pygame.Surface(self._size)
         image.fill(pygame.Color(self.bg.background_colour))
         self.preview_image = pygame_gui.elements.UIImage(
@@ -139,6 +152,21 @@ class BotMenu(BaseMenu):
             )
             self._all_objs.append(self.settings_button)
             self._all_objs.append(self.settings_icon)
+            self.edit_button = pygame_gui.elements.UIButton(
+                relative_rect=dummy_rect,
+                text="",
+                manager=self,
+                object_id=pygame_gui.core.ObjectID("bot-edit", "settings_buttons"),
+            )
+            edit_icon_path = find_abs("ui/edit.png", allowed_areas=["package/assets/"])
+            self.edit_icon = pygame_gui.elements.UIImage(
+                relative_rect=dummy_rect,
+                image_surface=pygame.image.load(edit_icon_path),
+                manager=self,
+                object_id=pygame_gui.core.ObjectID("edit-icon"),
+            )
+            self._all_objs.append(self.edit_button)
+            self._all_objs.append(self.edit_icon)
         else:
             # Bot key locations, for selecting bots in batch files.
             self.bot_loc_spots = []
@@ -259,8 +287,9 @@ class BotMenu(BaseMenu):
             self.select_button.disable()
         else:
             self.settings_button.disable()
+            self.edit_button.disable()
 
-    def clickSettings(self):
+    def clickEdit(self):
         # Shouldn't happen but lets be safe.
         if self.bot_index == -1:
             return
@@ -271,6 +300,28 @@ class BotMenu(BaseMenu):
             bot_file=self.available_bots[self.bot_index][1],
             bot_dir_file=self.available_bots[self.bot_index][2:4],
         )
+
+    def clickSettings(self):
+        # Shouldn't happen but lets be safe.
+        if self.bot_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.robot import visual_settings
+
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SETTINGS,
+            file=self.available_bots[self.bot_index][1],
+            settings=visual_settings,
+            allows_filename_change=not self.available_bots[self.bot_index][2].startswith("package"),
+        )
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
 
     def clickSelect(self):
         # Shouldn't happen but lets be safe.
@@ -304,6 +355,8 @@ class BotMenu(BaseMenu):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_object_id.startswith("bot-settings"):
                 self.clickSettings()
+            elif event.ui_object_id.startswith("bot-edit"):
+                self.clickEdit()
             elif event.ui_object_id.startswith("select-bot"):
                 self.clickSelect()
             elif event.ui_object_id.startswith("select-done"):
@@ -325,8 +378,10 @@ class BotMenu(BaseMenu):
         if len(self.bot_keys) == 0:
             if new_index == -1:
                 self.settings_button.disable()
+                self.edit_button.disable()
             else:
                 self.settings_button.enable()
+                self.edit_button.enable()
         else:
             if new_index == -1:
                 self.select_button.disable()
@@ -399,6 +454,7 @@ class BotMenu(BaseMenu):
         self.bot_index = -1
         if len(self.bot_keys) == 0:
             self.settings_button.disable()
+            self.edit_button.disable()
         else:
             self.select_button.disable()
         for i in range(len(self.bot_buttons)):

@@ -39,11 +39,13 @@ class BotEditMenu(BaseMenu):
                 raise ValueError(
                     f"bot_dir_file and bot_file are required here. Got {self.bot_dir_file} and {self.bot_file}."
                 )
+            self.creating = True
             self.mode = self.MODE_BASEPLATE_DIALOG
             self.previous_info = {}
             self.current_object = {}
             self.current_devices = []
         else:
+            self.creating = False
             self.mode = self.MODE_NORMAL
             with open(self.bot_file, "r") as f:
                 bot = yaml.safe_load(f)
@@ -362,7 +364,7 @@ class BotEditMenu(BaseMenu):
         # Save/Cancel
         self.save_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
-            text="Save",
+            text="Create" if self.creating else "Save",
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
         )
@@ -506,6 +508,27 @@ class BotEditMenu(BaseMenu):
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
         self.lock_grid_image.set_image(img)
 
+    def saveBot(self):
+        self.previous_info["base_plate"] = self.current_object
+        del self.previous_info["base_plate"]["type"]
+        del self.previous_info["base_plate"]["physics"]
+        verts = [[float(v2) for v2 in v1] for v1 in self.previous_info["base_plate"].get("visual", {}).get("verts", [])]
+        if verts:
+            self.previous_info["base_plate"]["visual"]["verts"] = verts
+        for child in self.previous_info["base_plate"]["children"]:
+            child["position"] = [float(v) for v in child["position"]]
+            verts = [[float(v2) for v2 in v1] for v1 in child.get("verts", [])]
+            if verts:
+                child["verts"] = verts
+            verts = [[float(v2) for v2 in v1] for v1 in child.get("visual", {}).get("verts", [])]
+            if verts:
+                child["visual"]["verts"] = verts
+
+        self.previous_info["devices"] = self.current_devices
+        with open(self.bot_file, "w") as f:
+            f.write(yaml.dump(self.previous_info))
+        ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
+
     def handleEvent(self, event):
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -534,29 +557,28 @@ class BotEditMenu(BaseMenu):
                     self.removeSelected()
                 # Saving
                 elif event.ui_object_id.startswith("save-changes"):
-                    self.previous_info["base_plate"] = self.current_object
-                    del self.previous_info["base_plate"]["type"]
-                    del self.previous_info["base_plate"]["physics"]
-                    verts = [
-                        [float(v2) for v2 in v1]
-                        for v1 in self.previous_info["base_plate"].get("visual", {}).get("verts", [])
-                    ]
-                    if verts:
-                        self.previous_info["base_plate"]["visual"]["verts"] = verts
-                    for child in self.previous_info["base_plate"]["children"]:
-                        child["position"] = [float(v) for v in child["position"]]
-                        verts = [[float(v2) for v2 in v1] for v1 in child.get("verts", [])]
-                        if verts:
-                            child["verts"] = verts
-                        verts = [[float(v2) for v2 in v1] for v1 in child.get("visual", {}).get("verts", [])]
-                        if verts:
-                            child["visual"]["verts"] = verts
+                    from ev3sim.robot import visual_settings
 
-                    self.previous_info["devices"] = self.current_devices
-                    with open(self.bot_file, "w") as f:
-                        f.write(yaml.dump(self.previous_info))
-                    ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
-                    ScreenObjectManager.instance.popScreen()
+                    if self.creating:
+                        ScreenObjectManager.instance.pushScreen(
+                            ScreenObjectManager.SCREEN_SETTINGS,
+                            settings=visual_settings,
+                            creating=True,
+                            creation_area="workspace/robots/",
+                            starting_data={},
+                        )
+
+                        def onSave(filename):
+                            self.bot_file = find_abs(filename, ["workspace/robots/"])
+                            self.bot_dir_file = ["workspace/robots/", filename]
+                            self.saveBot()
+                            ScreenObjectManager.instance.popScreen()
+
+                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+                    else:
+                        self.saveBot()
+                        ScreenObjectManager.instance.popScreen()
                 elif event.ui_object_id.startswith("cancel-changes"):
                     ScreenObjectManager.instance.popScreen()
             elif event.type == pygame.MOUSEMOTION:
