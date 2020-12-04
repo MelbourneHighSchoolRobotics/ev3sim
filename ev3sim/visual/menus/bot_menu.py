@@ -301,6 +301,17 @@ class BotMenu(BaseMenu):
             bot_dir_file=self.available_bots[self.bot_index][2:4],
         )
 
+        bot_index = self.bot_index
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+            self.setBotIndex(bot_index)
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].onSave = onSave
+
     def clickSettings(self):
         # Shouldn't happen but lets be safe.
         if self.bot_index == -1:
@@ -350,6 +361,15 @@ class BotMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
 
         ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOT_EDIT)
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+            self.setBotIndex(len(self.bot_descriptions) - 1)
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].onSave = onSave
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:

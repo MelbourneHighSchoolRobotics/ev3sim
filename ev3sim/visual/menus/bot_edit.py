@@ -14,6 +14,8 @@ from ev3sim.visual.utils import screenspace_to_worldspace
 
 class BotEditMenu(BaseMenu):
 
+    onSave = None
+
     MODE_DEVICE_DIALOG = "DEVICE_SELECT"
     MODE_NORMAL = "NORMAL"
     MODE_COLOUR_DIALOG = "COLOUR"
@@ -23,6 +25,9 @@ class BotEditMenu(BaseMenu):
     SELECTED_POLYGON = "POLYGON"
     SELECTED_NOTHING = "NOTHING"
     SELECTED_DEVICE = "DEVICE"
+
+    def clearEvents(self):
+        self.onSave = None
 
     def initWithKwargs(self, **kwargs):
         self.current_mpos = (0, 0)
@@ -528,6 +533,8 @@ class BotEditMenu(BaseMenu):
         with open(self.bot_file, "w") as f:
             f.write(yaml.dump(self.previous_info))
         ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
+        if self.onSave is not None:
+            self.onSave(self.bot_dir_file[1])
 
     def handleEvent(self, event):
         if self.mode == self.MODE_NORMAL:
