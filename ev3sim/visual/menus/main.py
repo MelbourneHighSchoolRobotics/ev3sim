@@ -73,6 +73,7 @@ class MainMenu(BaseMenu):
                     file=find_abs("user_config.yaml", ["package"]),
                     settings=main_settings,
                 )
+                ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
 
     def onPop(self):
         pass

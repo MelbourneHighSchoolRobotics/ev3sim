@@ -36,11 +36,24 @@
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     },
-    "button": {
+    "any_button": {
         "font": {
             "name": "Roboto",
             "size": "18",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "invis_button": {
+        "colours": {
+            "normal_bg": "#00000000",
+            "hovered_bg": "#00000000",
+            "active_bg": "#00000000",
+            "normal_text": "#00000000",
+            "hovered_text": "#00000000",
+            "active_text": "#00000000",
+            "normal_border": "#00000000",
+            "hovered_border": "#00000000",
+            "active_border": "#00000000"
         }
     },
     "menu_button": {
@@ -97,6 +110,7 @@
         }
     },
     "action_button": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#7EB517",
             "hovered_bg": "#97D91C",
@@ -107,6 +121,7 @@
         }
     },
     "settings_buttons": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#6c757d",
             "hovered_bg": "#7C858D",
@@ -130,9 +145,10 @@
         }
     },
     "list_button": {
-        "prototype": "button"
+        "prototype": "any_button"
     },
     "list_button_highlighted": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
@@ -172,10 +188,59 @@
         }
     },
     "cancel-changes": {
+        "prototype": "any_button",
         "colours": {
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
             "active_bg": "#EA8689"
+        }
+    },
+    "bot_edit_bar": {
+        "colours": {
+            "dark_bg": "#141D2A",
+            "normal_border": "#00ff00"
+        },
+        "misc": {
+            "border_width": "2"
+        }
+    },
+    "bot_edit_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "device_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "baseplate_label": {
+        "prototype": "device_label"
+    },
+    "colour_channel_editor.label": {
+        "colours": {
+            "normal_text": "#f7ede2"
+        }
+    },
+    "colour_channel_editor.text_entry_line": {
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
     }
 }

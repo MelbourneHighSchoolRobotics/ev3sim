@@ -136,13 +136,15 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch", "action_button"),
         )
-        new_batch_path = start_icon_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
+        new_batch_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
         self.new_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(new_batch_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch-icon"),
         )
+        self._all_objs.append(self.new_batch)
+        self._all_objs.append(self.new_icon)
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -233,6 +235,14 @@ class BatchMenu(BaseMenu):
             allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
         )
 
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+
     def clickNew(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.presets.soccer import visual_settings
@@ -251,6 +261,14 @@ class BatchMenu(BaseMenu):
             },
         )
 
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+
     def clickBots(self):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
@@ -267,9 +285,7 @@ class BatchMenu(BaseMenu):
         fname = find_abs(self.bot_list[index], ["package", "package/robots/", "workspace", "workspace/robots/"])
         with open(fname, "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(
-            config["preview_path"], allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-        )
+        bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
         img = pygame.image.load(bot_preview)
         img = pygame.transform.smoothscale(img, self._size)
         return pygame_gui.elements.UIImage(

@@ -1,6 +1,7 @@
-from ev3sim.file_helper import find_abs
+import os
 import pygame
 import pygame_gui
+from ev3sim.file_helper import find_abs, find_abs_directory
 
 
 class SettingsVisualElement:
@@ -40,6 +41,11 @@ class SettingsVisualElement:
 class FileEntry(SettingsVisualElement):
 
     num_objs = 4
+
+    def __init__(self, json_keys, default_value, is_directory, relative_paths, title, offset):
+        super().__init__(json_keys, default_value, title, offset)
+        self.is_directory = is_directory
+        self.relative_paths = relative_paths
 
     def generateVisual(self, relative_rect, container, manager, idx):
         self.container = container
@@ -111,12 +117,29 @@ class FileEntry(SettingsVisualElement):
         assert idx == 2, f"{idx} expected to be 2."
         # Open file dialog.
         from tkinter import Tk
-        from tkinter.filedialog import askdirectory
+        from tkinter.filedialog import askdirectory, askopenfilename
 
         Tk().withdraw()
-        directory = askdirectory()
-        self.current = directory
-        self.filename.set_text(self.current)
+        if self.is_directory:
+            directory = askdirectory()
+            self.current = directory
+            self.filename.set_text(self.current)
+        else:
+            filename = askopenfilename().replace("/", "\\")
+            for pathname in self.relative_paths:
+                dirpath = find_abs_directory(pathname, create=True)
+                if filename.startswith(dirpath):
+                    actual_filename = filename[len(dirpath) :]
+                    break
+            else:
+                # TODO: Make this an error modal in the settings.
+                print("This file must be contained in one of the following directories:")
+                for pathname in self.relative_paths:
+                    dirpath = find_abs_directory(pathname, create=True)
+                    print("\t" + dirpath)
+                return
+            self.current = actual_filename
+            self.filename.set_text(self.current)
 
 
 class TextEntry(SettingsVisualElement):

@@ -100,7 +100,7 @@ class IDeviceInteractor(IInteractor):
         return Randomiser.getPortRandom(self.port_key).random()
 
 
-def initialise_device(deviceData, parentObj, index):
+def initialise_device(deviceData, parentObj, index, preview_mode=False):
     classes = find_abs("devices/classes.yaml")
     devices = yaml.safe_load(open(classes, "r"))
     name = deviceData["name"]
@@ -131,6 +131,9 @@ def initialise_device(deviceData, parentObj, index):
                         "port": deviceData["port"],
                     }
                 )
+                if preview_mode:
+                    for i in range(len(res.get("elements", []))):
+                        res["elements"][i]["physics"] = True
                 opt["kwargs"] = res
                 interactor = fromOptions(opt)
                 if not hasattr(parentObj, "device_interactors"):

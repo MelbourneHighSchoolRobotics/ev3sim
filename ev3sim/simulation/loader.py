@@ -69,7 +69,7 @@ class ScriptLoader:
         self.physics_tick = 0
         self.current_tick = 0
 
-    def loadElements(self, items):
+    def loadElements(self, items, preview_mode=False):
         # Handle any programmatic color references.
         elements = []
         from ev3sim.devices.base import initialise_device
@@ -95,8 +95,8 @@ class ScriptLoader:
                 obj.key = item["key"]
                 for index, device in enumerate(devices):
                     # Instantiate the devices.
-                    initialise_device(device, obj, index)
-                if item.get("physics", False):
+                    initialise_device(device, obj, index, preview_mode=preview_mode)
+                if item.get("physics", False) and not preview_mode:
                     World.instance.registerObject(obj)
                 ScreenObjectManager.instance.registerObject(obj, obj.key)
                 self.object_map[obj.key] = obj
@@ -298,7 +298,7 @@ def initialiseFromConfig(config, send_queues, recv_queues):
     # Keep track of index w.r.t. filename.
     robot_paths = defaultdict(lambda: 0)
     for index, robot in enumerate(config.get("robots", [])):
-        robot_path = find_abs(robot, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
+        robot_path = find_abs(robot, allowed_areas=["workspace/robots/", "workspace", "package", "package/robots/"])
         initialise_bot(config, robot_path, f"Robot-{index}", robot_paths[robot_path])
         robot_paths[robot_path] += 1
         ScriptLoader.instance.setRobotQueues(f"Robot-{index}", send_queues[index], recv_queues[index])

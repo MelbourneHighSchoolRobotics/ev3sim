@@ -2,7 +2,9 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
 import pygame
 import pygame.freetype
+import yaml
 from typing import Dict, List, Tuple
+from os.path import join
 
 import ev3sim.visual.utils as utils
 
@@ -17,6 +19,7 @@ class ScreenObjectManager:
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
+    SCREEN_BOT_EDIT = "BOT_EDIT"
 
     screen_stack = []
 
@@ -85,7 +88,10 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.bot_menu import BotMenu
 
         self.screens[self.SCREEN_BOTS] = BotMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Bot edit screen
+        from ev3sim.visual.menus.bot_edit import BotEditMenu
 
+        self.screens[self.SCREEN_BOT_EDIT] = BotEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
@@ -175,7 +181,8 @@ class ScreenObjectManager:
                 self.objects[key].applyToScreen(blit_screen)
         else:
             self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
-        pygame.display.update()
+        if to_screen is None:
+            pygame.display.update()
 
     def colourAtPixel(self, screen_position):
         return self.sensorScreen.get_at(screen_position)
@@ -230,6 +237,7 @@ class ScreenObjectManager:
         from ev3sim.simulation.randomisation import Randomiser
 
         Randomiser.createGlobalRandomiserWithSeed(0)
+        ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         elems = {}
         initialise_bot(elems, find_abs(filename, [directory]), "", 0)
@@ -254,12 +262,21 @@ class ScreenObjectManager:
         self.resetVisualElements()
         ScriptLoader.instance.reset()
         if directory.startswith("workspace"):
-            dirname = find_abs_directory("workspace/images/", create=True)
+            show_dir = "images/"
+            rel_dir = "workspace/images/"
         elif directory.startswith("package"):
-            dirname = find_abs_directory("packages/assets/bots")
+            show_dir = "bots/"
+            rel_dir = "packages/assets/bots"
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
+        dirname = find_abs_directory(rel_dir, create=True)
         pygame.image.save(cropped, join(dirname, filename.replace(".yaml", ".png")))
+        actual_bot_path = find_abs(filename, [directory])
+        with open(actual_bot_path, "r") as f:
+            conf = yaml.safe_load(f)
+        conf["preview_path"] = join(show_dir, filename.replace(".yaml", ".png"))
+        with open(actual_bot_path, "w") as f:
+            f.write(yaml.dump(conf))
 
 
 screen_settings = {
