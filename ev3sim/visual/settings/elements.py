@@ -129,14 +129,14 @@ class FileEntry(SettingsVisualElement):
             for pathname in self.relative_paths:
                 dirpath = find_abs_directory(pathname, create=True)
                 if filename.startswith(dirpath):
-                    actual_filename = filename[len(dirpath):]
+                    actual_filename = filename[len(dirpath) :]
                     break
             else:
                 # TODO: Make this an error modal in the settings.
                 print("This file must be contained in one of the following directories:")
                 for pathname in self.relative_paths:
                     dirpath = find_abs_directory(pathname, create=True)
-                    print("\t"+dirpath)
+                    print("\t" + dirpath)
                 return
             self.current = actual_filename
             self.filename.set_text(self.current)

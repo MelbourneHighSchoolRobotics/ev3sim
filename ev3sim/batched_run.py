@@ -56,7 +56,9 @@ def batched_run(batch_file, bind_addr, seed):
         with open(p, "r") as f:
             conf = yaml.safe_load(f)
         if conf.get("script", None) is not None:
-            fname = find_abs(conf["script"], allowed_areas=["workspace/code/", "workspace", "package", "package/robots/"])
+            fname = find_abs(
+                conf["script"], allowed_areas=["workspace/code/", "workspace", "package", "package/robots/"]
+            )
             bot_processes.append(
                 Process(
                     target=attach_bot,
