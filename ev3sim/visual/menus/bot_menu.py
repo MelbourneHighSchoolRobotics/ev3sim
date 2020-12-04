@@ -1,5 +1,5 @@
 import yaml
-import os.path
+import os
 import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs, find_abs_directory

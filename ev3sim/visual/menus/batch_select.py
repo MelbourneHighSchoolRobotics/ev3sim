@@ -1,5 +1,5 @@
 import yaml
-import os.path
+import os
 import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs, find_abs_directory
@@ -47,6 +47,16 @@ class BatchMenu(BaseMenu):
             (
                 new_batch_pos[0] + new_size[0] / 2 - new_icon_size[0] / 2,
                 new_batch_pos[1] + new_size[1] * 0.2,
+            )
+        )
+        self.remove_batch.set_dimensions(new_size)
+        remove_batch_pos = (batch_rect(0)[0], self._size[1] * 0.9 - new_size[1])
+        self.remove_batch.set_position(remove_batch_pos)
+        self.remove_icon.set_dimensions(new_icon_size)
+        self.remove_icon.set_position(
+            (
+                remove_batch_pos[0] + new_size[0] / 2 - new_icon_size[0] / 2,
+                remove_batch_pos[1] + new_size[1] * 0.2,
             )
         )
         self.start_button.set_dimensions(start_size)
@@ -145,6 +155,21 @@ class BatchMenu(BaseMenu):
         )
         self._all_objs.append(self.new_batch)
         self._all_objs.append(self.new_icon)
+        self.remove_batch = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("remove_batch", "cancel-changes"),
+        )
+        remove_batch_path = find_abs("ui/bin.png", allowed_areas=["package/assets/"])
+        self.remove_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(remove_batch_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("remove_batch-icon"),
+        )
+        self._all_objs.append(self.remove_batch)
+        self._all_objs.append(self.remove_icon)
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -209,6 +234,7 @@ class BatchMenu(BaseMenu):
         self.batch_index = -1
         self.start_button.disable()
         self.settings_button.disable()
+        self.remove_batch.disable()
         self.bot_button.disable()
 
     def clickStart(self):
@@ -280,6 +306,16 @@ class BatchMenu(BaseMenu):
             batch_file=self.available_batches[self.batch_index][1],
         )
 
+    def clickRemove(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        os.remove(self.available_batches[self.batch_index][1])
+        self.batch_index = -1
+        self.clearObjects()
+        self.generateObjects()
+        self.sizeObjects()
+
     def createBotImage(self, index):
 
         fname = find_abs(self.bot_list[index], ["package", "package/robots/", "workspace", "workspace/robots/"])
@@ -329,6 +365,8 @@ class BatchMenu(BaseMenu):
                 self.clickBots()
             elif event.ui_object_id.startswith("new_batch"):
                 self.clickNew()
+            elif event.ui_object_id.startswith("remove_batch"):
+                self.clickRemove()
             else:
                 self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:
@@ -354,6 +392,10 @@ class BatchMenu(BaseMenu):
         # Update theming.
         self.start_button.enable()
         self.settings_button.enable()
+        if self.available_batches[self.batch_index][2].startswith("package"):
+            self.remove_batch.disable()
+        else:
+            self.remove_batch.enable()
         self.bot_button.enable()
         for i in range(len(self.batch_buttons)):
             self.batch_buttons[i].combined_element_ids[2] = (
@@ -385,13 +427,17 @@ class BatchMenu(BaseMenu):
         new_index %= len(self.batch_buttons)
         self.setBatchIndex(new_index)
 
-    def onPop(self):
-        self.bot_index = -1
+    def resetVisual(self):
         self.start_button.disable()
         self.settings_button.disable()
+        self.remove_batch.disable()
         self.bot_button.disable()
         for i in range(len(self.batch_buttons)):
             self.batch_buttons[i].combined_element_ids[2] = "list_button"
             self.batch_buttons[i].rebuild_from_changed_theme_data()
             self.batch_descriptions[i].combined_element_ids[2] = "button_info"
             self.batch_descriptions[i].rebuild_from_changed_theme_data()
+
+    def onPop(self):
+        self.bot_index = -1
+        self.resetVisual()
