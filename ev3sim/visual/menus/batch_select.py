@@ -235,6 +235,14 @@ class BatchMenu(BaseMenu):
             allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
         )
 
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+
     def clickNew(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.presets.soccer import visual_settings
@@ -252,6 +260,14 @@ class BatchMenu(BaseMenu):
                 },
             },
         )
+
+        def onSave(filename):
+            self.clearObjects()
+            self.generateObjects()
+            self.sizeObjects()
+
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
 
     def clickBots(self):
         # Shouldn't happen but lets be safe.

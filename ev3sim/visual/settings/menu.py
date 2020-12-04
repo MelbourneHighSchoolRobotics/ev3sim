@@ -9,6 +9,13 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 class SettingsMenu(BaseMenu):
     # TODO: Make this scroll. Maybe fix the height of save/cancel to bottom.
 
+    onSave = None
+    onCancel = None
+
+    def clearEvents(self):
+        self.onSave = None
+        self.onCancel = None
+
     def sizeObjects(self):
         yPadding = 20
         yOffset = 0
@@ -107,6 +114,7 @@ class SettingsMenu(BaseMenu):
                 else:
                     json_obj = self.starting_data
                 current_filepath = None
+                rel_file = None
                 if not self.creating:
                     current_filepath = self.filename
                 for group in self.settings_obj:
@@ -116,6 +124,7 @@ class SettingsMenu(BaseMenu):
                                 # Make sure the name can be used.
                                 creation_dir = find_abs_directory(self.creation_area, create=True)
                                 current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.yaml")
+                                rel_file = f"{obj.obj.text}.yaml"
                                 if os.path.exists(current_filepath):
                                     raise ValueError("A file with this name already exists.")
                             else:
@@ -135,10 +144,14 @@ class SettingsMenu(BaseMenu):
                 from ev3sim.visual.manager import ScreenObjectManager
 
                 ScreenObjectManager.instance.popScreen()
+                if self.onSave is not None:
+                    self.onSave(rel_file)
             elif event.ui_object_id == "cancel-changes":
                 from ev3sim.visual.manager import ScreenObjectManager
 
                 ScreenObjectManager.instance.popScreen()
+                if self.onCancel is not None:
+                    self.onCancel()
 
     def onPop(self):
         pass
