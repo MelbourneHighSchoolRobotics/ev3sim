@@ -1,5 +1,6 @@
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
+from ev3sim.search_locations import theme_locations
 import pygame
 import pygame.freetype
 import yaml
@@ -266,7 +267,7 @@ class ScreenObjectManager:
             rel_dir = "workspace/images/"
         elif directory.startswith("package"):
             show_dir = "bots/"
-            rel_dir = "packages/assets/bots"
+            rel_dir = "packages/assets/bots/"
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
         dirname = find_abs_directory(rel_dir, create=True)
@@ -296,9 +297,7 @@ def on_change_bg(new_val):
 
 
 def on_change_theme(new_val):
-    ScreenObjectManager.theme_path = find_abs(
-        new_val, allowed_areas=["workspace/assets", "workspace", "package/assets"]
-    )
+    ScreenObjectManager.theme_path = find_abs(new_val, allowed_areas=theme_locations)
 
 
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg

@@ -6,6 +6,7 @@ import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process
 from ev3sim.utils import Queue, recursive_merge
+from ev3sim.search_locations import preset_locations, batch_locations, bot_locations, code_locations
 
 
 def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, bot_processes, *queues_sizes):
@@ -24,7 +25,7 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, bo
 
     Randomiser.createGlobalRandomiserWithSeed(seed)
 
-    preset_file = find_abs(preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+    preset_file = find_abs(preset_filename, allowed_areas=preset_locations)
     with open(preset_file, "r") as f:
         config = yaml.safe_load(f)
     recursive_merge(config["settings"], override_settings)
@@ -36,9 +37,7 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, bo
 
 def batched_run(batch_file, bind_addr, seed):
 
-    batch_path = find_abs(
-        batch_file, allowed_areas=["local", "local/batched_commands/", "package", "package/batched_commands/"]
-    )
+    batch_path = find_abs(batch_file, allowed_areas=batch_locations)
     with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 
@@ -52,13 +51,11 @@ def batched_run(batch_file, bind_addr, seed):
 
     bot_processes = []
     for i, bot in enumerate(bot_paths):
-        p = find_abs(bot, allowed_areas=["workspace/robots/", "workspace", "package", "package/robots/"])
+        p = find_abs(bot, allowed_areas=bot_locations)
         with open(p, "r") as f:
             conf = yaml.safe_load(f)
         if conf.get("script", None) is not None:
-            fname = find_abs(
-                conf["script"], allowed_areas=["workspace/code/", "workspace", "package", "package/robots/"]
-            )
+            fname = find_abs(conf["script"], allowed_areas=code_locations)
             bot_processes.append(
                 Process(
                     target=attach_bot,

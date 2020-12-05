@@ -5,6 +5,7 @@ import pygame_gui
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.bot_files import BotValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
+from ev3sim.search_locations import asset_locations, bot_locations, preset_locations
 
 
 class BotMenu(BaseMenu):
@@ -108,7 +109,7 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all bot files and show them
         self.available_bots = []
-        for rel_dir in ["package", "package/robots/", "workspace", "workspace/robots/"]:
+        for rel_dir in bot_locations:
             try:
                 actual_dir = find_abs_directory(rel_dir)
             except:
@@ -153,7 +154,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-settings", "settings_buttons"),
             )
-            settings_icon_path = find_abs("ui/settings.png", allowed_areas=["package/assets/"])
+            settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations)
             self.settings_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
                 image_surface=pygame.image.load(settings_icon_path),
@@ -168,7 +169,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-edit", "settings_buttons"),
             )
-            edit_icon_path = find_abs("ui/edit.png", allowed_areas=["package/assets/"])
+            edit_icon_path = find_abs("ui/edit.png", allowed_areas=asset_locations)
             self.edit_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
                 image_surface=pygame.image.load(edit_icon_path),
@@ -183,7 +184,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("new_bot", "action_button"),
             )
-            new_bot_path = find_abs("ui/add.png", allowed_areas=["package/assets/"])
+            new_bot_path = find_abs("ui/add.png", allowed_areas=asset_locations)
             self.new_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
                 image_surface=pygame.image.load(new_bot_path),
@@ -198,7 +199,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("remove_bot", "cancel-changes"),
             )
-            remove_bot_path = find_abs("ui/bin.png", allowed_areas=["package/assets/"])
+            remove_bot_path = find_abs("ui/bin.png", allowed_areas=asset_locations)
             self.remove_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
                 image_surface=pygame.image.load(remove_bot_path),
@@ -301,7 +302,7 @@ class BotMenu(BaseMenu):
             with open(batch, "r") as f:
                 b_config = yaml.safe_load(f)
             preset = b_config["preset_file"]
-            fname = find_abs(preset, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+            fname = find_abs(preset, allowed_areas=preset_locations)
             with open(fname, "r") as f:
                 p_config = yaml.safe_load(f)
             self.bot_keys = p_config["bot_names"]
@@ -468,7 +469,7 @@ class BotMenu(BaseMenu):
         else:
             with open(self.available_bots[self.bot_index][1], "r") as f:
                 config = yaml.safe_load(f)
-            bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
+            bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations)
             img = pygame.image.load(bot_preview)
         if img.get_size() != self.preview_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))
@@ -488,7 +489,7 @@ class BotMenu(BaseMenu):
         )
         with open(self.available_bots[self.bot_index][1], "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(config["preview_path"], allowed_areas=["workspace", "package/assets/", "package"])
+        bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations)
         img = pygame.image.load(bot_preview)
         if img.get_size() != self.bot_loc_spots[index].rect.size:
             img = pygame.transform.smoothscale(

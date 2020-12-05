@@ -8,6 +8,7 @@ from ev3sim.objects.base import objectFactory
 from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.file_helper import find_abs
+from ev3sim.search_locations import device_locations
 
 
 class Device:
@@ -106,7 +107,7 @@ def initialise_device(deviceData, parentObj, index, preview_mode=False):
     name = deviceData["name"]
     if name not in devices:
         raise ValueError(f"Unknown device type {name}")
-    fname = find_abs(devices[name], allowed_areas=["local/devices/", "package/devices/"])
+    fname = find_abs(devices[name], allowed_areas=device_locations)
     with open(fname, "r") as f:
         try:
             config = yaml.safe_load(f)

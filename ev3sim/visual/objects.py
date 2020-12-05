@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 from ev3sim.visual.manager import ScreenObjectManager
 import ev3sim.visual.utils as utils
 from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.search_locations import asset_locations
 
 USE_PYGAME_GFX = True
 
@@ -199,7 +200,7 @@ class Image(Colorable):
     def image_path(self, value):
         from ev3sim.file_helper import find_abs
 
-        self._image_path = find_abs(value, allowed_areas=["local", "local/assets/", "package", "package/assets/"])
+        self._image_path = find_abs(value, allowed_areas=asset_locations)
         self.image = pygame.image.load(self._image_path)
         try:
             self.calculatePoints()
@@ -604,9 +605,7 @@ class Text(Colorable):
         from ev3sim.file_helper import find_abs
 
         self.font_style = kwargs.get("font_style", "OpenSans-SemiBold.ttf")
-        self.font_path = find_abs(
-            self.font_style, allowed_areas=["local/assets/", "local", "package/assets/", "package"]
-        )
+        self.font_path = find_abs(self.font_style, allowed_areas=asset_locations)
         self.font_size = kwargs.get("font_size", 30)
         self.hAlignment = kwargs.get("hAlignment", "l")
         self.vAlignment = kwargs.get("vAlignment", "t")

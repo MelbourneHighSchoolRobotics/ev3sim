@@ -185,6 +185,7 @@ class Robot:
 
 
 from ev3sim.visual.settings.elements import TextEntry, FileEntry
+from ev3sim.search_locations import code_locations
 
 visual_settings = [
     {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BOT NAME", None, (lambda s: (0, 20)))]},
@@ -195,7 +196,7 @@ visual_settings = [
                 ["script"],
                 None,
                 False,
-                ["workspace/code/", "workspace", "package/robots/"],
+                code_locations,
                 "Bot script",
                 (lambda s: (0, 20)),
             ),
