@@ -22,11 +22,17 @@ class BotMenu(BaseMenu):
         )
         settings_size = preview_size[0] * 0.4, preview_size[1] * 0.4
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
+        new_size = self._size[0] / 8, min(self._size[1] / 6, 90)
+        new_icon_size = new_size[1] * 0.6, new_size[1] * 0.6
         bot_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
         info_rect = lambda b_r: (
             b_r[0] + button_size[0] - info_size[0] - 10,
             b_r[1] + button_size[1] - info_size[1] - 5,
         )
+        size = (self._size[0] / 4 + self._size[0] / 10, self._size[1] * 0.9 - new_size[1])
+        # Setting dimensions and positions on a UIScrollingContainer seems buggy. This works.
+        self.scrolling_container.set_dimensions(size)
+        self.scrolling_container.set_position(size)
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
         for i in range(len(self.bot_buttons)):
@@ -64,8 +70,6 @@ class BotMenu(BaseMenu):
                     edit_button_pos[1] + settings_size[1] * 0.2,
                 )
             )
-            new_size = self._size[0] / 8, min(self._size[1] / 6, 90)
-            new_icon_size = new_size[1] * 0.6, new_size[1] * 0.6
             self.new_bot.set_dimensions(new_size)
             new_bot_pos = (bot_rect(0)[0] + button_size[0] - new_size[0], self._size[1] * 0.9 - new_size[1])
             self.new_bot.set_position(new_bot_pos)
@@ -122,12 +126,41 @@ class BotMenu(BaseMenu):
                 self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot), rel_dir, bot))
         self.bot_buttons = []
         self.bot_descriptions = []
+
+        class CustomScroll(pygame_gui.elements.UIScrollingContainer):
+            """This is very hacky but the pygame_gui Scrolling Container doesn't seem much better/extensible :/"""
+
+            cur_y = 0
+
+            def _check_scroll_bars_and_adjust(self2):
+                super()._check_scroll_bars_and_adjust()
+                return False, False
+
+            def process_event(self2, event: pygame.event.Event) -> bool:
+                consumed_event = False
+
+                if self2.is_enabled and event.type == pygame.MOUSEWHEEL:
+                    self2.cur_y += event.y * 10
+                    self2.cur_y = min(0, max(self2.cur_y, -60 * 1.5 * (len(self.bot_buttons) - 5)))
+                    if event.y != 0:
+                        self2.scrollable_container.set_relative_position(
+                            (self2.scrollable_container.relative_rect.x, self2.cur_y)
+                        )
+                        consumed_event = True
+                return consumed_event and super().process_event(event)
+
+        self.scrolling_container = CustomScroll(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("scroll_container"),
+        )
         for i, (show, bot, rel_dir, filename) in enumerate(self.available_bots):
             self.bot_buttons.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=dummy_rect,
                     text=show,
                     manager=self,
+                    container=self.scrolling_container,
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
@@ -136,6 +169,7 @@ class BotMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=rel_dir,
                     manager=self,
+                    container=self.scrolling_container,
                     object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "button_info"),
                 )
             )
@@ -426,7 +460,8 @@ class BotMenu(BaseMenu):
             elif event.ui_object_id.startswith("remove_bot"):
                 self.clickRemove()
             else:
-                self.setBotIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
+                if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
+                    self.setBotIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_DOWN, pygame.K_w]:
                 self.incrementBotIndex(1)
