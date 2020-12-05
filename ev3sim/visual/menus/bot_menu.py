@@ -109,7 +109,10 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all bot files and show them
         self.available_bots = []
-        for rel_dir in bot_locations:
+        bot_search_locations = (
+            [b for b in bot_locations if "package" not in b] if len(self.bot_keys) == 0 else bot_locations
+        )
+        for rel_dir in bot_search_locations:
             try:
                 actual_dir = find_abs_directory(rel_dir)
             except:
