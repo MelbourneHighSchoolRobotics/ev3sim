@@ -100,12 +100,30 @@ class BotEditMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
         from ev3sim.simulation.world import World
+        from ev3sim.visual.objects import visualFactory
 
         ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
         World.instance.resetWorld()
         mSize = min(*self.surf_size)
+        self.customMap = {
+            "SCREEN_WIDTH": self.surf_size[0],
+            "SCREEN_HEIGHT": self.surf_size[1],
+            "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
+            "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
+        }
+        bg_circ = visualFactory(
+            name="Circle",
+            radius=11,
+            position=(0, 0),
+            zPos=-1,
+            fill="#404040",
+            stroke_width=0,
+        )
+        bg_circ.customMap = self.customMap
+        bg_circ.calculatePoints()
+        ScreenObjectManager.instance.registerVisual(bg_circ, key="bg_circle")
         if self.current_object:
             copy_obj = self.current_object.copy()
             copy_obj["children"] = self.current_object["children"].copy()
@@ -127,12 +145,6 @@ class BotEditMenu(BaseMenu):
                 for gen in interactor.generated:
                     gen.identifier = ("Devices", i)
             World.instance.registerObject(self.robot)
-            self.customMap = {
-                "SCREEN_WIDTH": self.surf_size[0],
-                "SCREEN_HEIGHT": self.surf_size[1],
-                "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
-                "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
-            }
             while elems:
                 new_elems = []
                 for elem in elems:
