@@ -29,7 +29,7 @@ class ScreenObjectManager:
     SCREEN_HEIGHT: int = 960
     MAP_WIDTH: float = 200
     MAP_HEIGHT: float = 200
-    BACKGROUND_COLOUR = "#000000"
+    BACKGROUND_COLOUR = "#1f1f1f"
 
     _background_colour: Tuple[int]
 
@@ -230,7 +230,7 @@ class ScreenObjectManager:
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
 
-    def captureBotImage(self, directory, filename, bg=None):
+    def captureBotImage(self, directory, filename):
         self.resetVisualElements()
         from os.path import join
         from ev3sim.simulation.loader import ScriptLoader
@@ -255,11 +255,17 @@ class ScreenObjectManager:
         SCALE_AMOUNT = 5
         for elem in self.objects.values():
             elem.scaleAtPosition(SCALE_AMOUNT)
-        self.applyToScreen(screen, bg=bg)
+        self.applyToScreen(screen, bg=pygame.Color(self.instance.background_colour))
         top_left = utils.worldspace_to_screenspace((-11 * SCALE_AMOUNT, 11 * SCALE_AMOUNT))
         bot_right = utils.worldspace_to_screenspace((11 * SCALE_AMOUNT, -11 * SCALE_AMOUNT))
-        cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
+        cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]), pygame.SRCALPHA)
         cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
+        colorkey = pygame.Color(self.instance.background_colour)
+        for x in range(bot_right[0] - top_left[0]):
+            for y in range(bot_right[1] - top_left[1]):
+                val = cropped.get_at((x, y))
+                val.a = 0 if (val.r == colorkey.r and val.g == colorkey.g and val.b == colorkey.b) else 255
+                cropped.set_at((x, y), val)
         self.resetVisualElements()
         ScriptLoader.instance.reset()
         if directory.startswith("workspace"):
