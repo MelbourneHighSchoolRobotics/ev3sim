@@ -10,7 +10,7 @@ base_plate:
       image_path: LogoTransparent.png
       name: Image
       scale: 0.7
-      zPos: 2.05
+      zPos: 2
   collider: inherit
   friction: 0.8
   key: phys_obj
@@ -22,7 +22,7 @@ base_plate:
     radius: 8.5
     stroke: '#ffffff'
     stroke_width: 0.1
-    zPos: 2
+    zPos: 1
 devices:
 - LargeMotor:
     port: outB
@@ -30,29 +30,34 @@ devices:
     - 0
     - 4
     rotation: 0
+    zPos: 3
 - LargeMotor:
     port: outC
     position:
     - 0
     - -4
     rotation: 0
+    zPos: 3.5
 - LargeMotor:
     port: outA
     position:
     - 4
     - 0
     rotation: 90
+    zPos: 3.75
 - LargeMotor:
     port: outD
     position:
     - -4
     - 0
     rotation: 90
+    zPos: 3.875
 - CompassSensor:
     port: in4
     position:
     - 0
     - 0
     rotation: 0
+    zPos: 3.9375
 preview_path: bots/controllable.png
 robot_class: ev3sim.robots.scripts.controllable.ControllableBot
