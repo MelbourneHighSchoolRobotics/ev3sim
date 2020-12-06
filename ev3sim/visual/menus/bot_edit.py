@@ -680,6 +680,10 @@ class BotEditMenu(BaseMenu):
                                 getattr(self, attr).set_text(str(val))
                             except:
                                 pass
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                    if self.selected_type not in [None, "Holding", "Baseplate"]:
+                        self.removeSelected()
 
     def drawOptions(self):
         self.clearOptions()
