@@ -251,21 +251,23 @@ class ScreenObjectManager:
             interactor.startUp()
             interactor.tick(0)
             interactor.afterPhysics()
-        screen = pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        SCALE_AMOUNT = 5
+        screen = pygame.Surface((480, 480), pygame.SRCALPHA)
+        custom_map = {
+            "SCREEN_WIDTH": 480,
+            "SCREEN_HEIGHT": 480,
+            "MAP_WIDTH": 25,
+            "MAP_HEIGHT": 25,
+        }
         for elem in self.objects.values():
-            elem.scaleAtPosition(SCALE_AMOUNT)
+            elem.customMap = custom_map
+            elem.calculatePoints()
         self.applyToScreen(screen, bg=pygame.Color(self.instance.background_colour))
-        top_left = utils.worldspace_to_screenspace((-11 * SCALE_AMOUNT, 11 * SCALE_AMOUNT))
-        bot_right = utils.worldspace_to_screenspace((11 * SCALE_AMOUNT, -11 * SCALE_AMOUNT))
-        cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]), pygame.SRCALPHA)
-        cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
         colorkey = pygame.Color(self.instance.background_colour)
-        for x in range(bot_right[0] - top_left[0]):
-            for y in range(bot_right[1] - top_left[1]):
-                val = cropped.get_at((x, y))
+        for x in range(480):
+            for y in range(480):
+                val = screen.get_at((x, y))
                 val.a = 0 if (val.r == colorkey.r and val.g == colorkey.g and val.b == colorkey.b) else 255
-                cropped.set_at((x, y), val)
+                screen.set_at((x, y), val)
         self.resetVisualElements()
         ScriptLoader.instance.reset()
         if directory.startswith("workspace"):
@@ -277,7 +279,7 @@ class ScreenObjectManager:
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
         dirname = find_abs_directory(rel_dir, create=True)
-        pygame.image.save(cropped, join(dirname, filename.replace(".yaml", ".png")))
+        pygame.image.save(screen, join(dirname, filename.replace(".yaml", ".png")))
         actual_bot_path = find_abs(filename, [directory])
         with open(actual_bot_path, "r") as f:
             conf = yaml.safe_load(f)
