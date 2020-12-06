@@ -1380,4 +1380,10 @@ All other objects are placed on this baseplate. After creating it, the baseplate
         self.mode = value
 
     def onPop(self):
-        pass
+        from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.simulation.world import World
+
+        ScreenObjectManager.instance.resetVisualElements()
+        World.instance.resetWorld()
+        ScriptLoader.instance.reset()
