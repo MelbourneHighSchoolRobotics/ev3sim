@@ -34,7 +34,7 @@ class BatchMenu(BaseMenu):
             b_r[0] + button_size[0] - info_size[0] - 10,
             b_r[1] + button_size[1] - info_size[1] - 5,
         )
-        size = (self._size[0] / 4 + self._size[0] / 10, self._size[1] * 0.9 - new_size[1])
+        size = (self._size[0] / 4 + self._size[0] / 5, self._size[1] * 0.9 - new_size[1])
         # Setting dimensions and positions on a UIScrollingContainer seems buggy. This works.
         self.scrolling_container.set_dimensions(size)
         self.scrolling_container.set_position(size)
