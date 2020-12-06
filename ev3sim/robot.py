@@ -85,14 +85,14 @@ class RobotInteractor(IInteractor):
 
     def connectDevices(self):
         self.devices = {}
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             self.devices[interactor.port] = interactor.device_class
             interactor.port_key = f"{self.filename}-{self.path_index}-{interactor.port}"
             Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
     def initialiseDevices(self):
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             interactor.device_class.generateBias()
 
     def startUp(self):
