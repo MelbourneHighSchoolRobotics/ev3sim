@@ -1,3 +1,4 @@
+from ev3sim.visual.menus.utils import CustomScroll
 import yaml
 import os
 import pygame
@@ -127,33 +128,12 @@ class BotMenu(BaseMenu):
         self.bot_buttons = []
         self.bot_descriptions = []
 
-        class CustomScroll(pygame_gui.elements.UIScrollingContainer):
-            """This is very hacky but the pygame_gui Scrolling Container doesn't seem much better/extensible :/"""
-
-            cur_y = 0
-
-            def _check_scroll_bars_and_adjust(self2):
-                super()._check_scroll_bars_and_adjust()
-                return False, False
-
-            def process_event(self2, event: pygame.event.Event) -> bool:
-                consumed_event = False
-
-                if self2.is_enabled and event.type == pygame.MOUSEWHEEL:
-                    self2.cur_y += event.y * 10
-                    self2.cur_y = min(0, max(self2.cur_y, -60 * 1.5 * (len(self.bot_buttons) - 5)))
-                    if event.y != 0:
-                        self2.scrollable_container.set_relative_position(
-                            (self2.scrollable_container.relative_rect.x, self2.cur_y)
-                        )
-                        consumed_event = True
-                return consumed_event and super().process_event(event)
-
         self.scrolling_container = CustomScroll(
             relative_rect=dummy_rect,
             manager=self,
             object_id=pygame_gui.core.ObjectID("scroll_container"),
         )
+        self.scrolling_container.num_elems = len(self.available_bots)
         for i, (show, bot, rel_dir, filename) in enumerate(self.available_bots):
             self.bot_buttons.append(
                 pygame_gui.elements.UIButton(

@@ -1,3 +1,4 @@
+from ev3sim.visual.menus.utils import CustomScroll
 import yaml
 import os
 import pygame
@@ -33,6 +34,10 @@ class BatchMenu(BaseMenu):
             b_r[0] + button_size[0] - info_size[0] - 10,
             b_r[1] + button_size[1] - info_size[1] - 5,
         )
+        size = (self._size[0] / 4 + self._size[0] / 10, self._size[1] * 0.9 - new_size[1])
+        # Setting dimensions and positions on a UIScrollingContainer seems buggy. This works.
+        self.scrolling_container.set_dimensions(size)
+        self.scrolling_container.set_position(size)
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
         for i in range(len(self.batch_buttons)):
@@ -122,12 +127,20 @@ class BatchMenu(BaseMenu):
                 self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch), rel_dir, batch))
         self.batch_buttons = []
         self.batch_descriptions = []
+
+        self.scrolling_container = CustomScroll(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("scroll_container"),
+        )
+        self.scrolling_container.num_elems = len(self.available_batches)
         for i, (show, batch, rel_dir, filename) in enumerate(self.available_batches):
             self.batch_buttons.append(
                 pygame_gui.elements.UIButton(
                     relative_rect=dummy_rect,
                     text=show,
                     manager=self,
+                    container=self.scrolling_container,
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
@@ -136,6 +149,7 @@ class BatchMenu(BaseMenu):
                     relative_rect=dummy_rect,
                     text=rel_dir,
                     manager=self,
+                    container=self.scrolling_container,
                     object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "button_info"),
                 )
             )
@@ -369,7 +383,8 @@ class BatchMenu(BaseMenu):
             elif event.ui_object_id.startswith("remove_batch"):
                 self.clickRemove()
             else:
-                self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
+                if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
+                    self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_DOWN, pygame.K_w]:
                 self.incrementBatchIndex(1)
