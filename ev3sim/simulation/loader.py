@@ -3,7 +3,6 @@ from queue import Empty
 import time
 from typing import List
 
-from luddite import get_version_pypi
 from ev3sim.objects.base import objectFactory
 from ev3sim.simulation.bot_comms import BotCommService
 from ev3sim.simulation.interactor import IInteractor, fromOptions
@@ -13,6 +12,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
+from multiprocessing import Process, Queue
 
 
 class ScriptLoader:
@@ -231,9 +231,6 @@ class StateHandler:
     def startUp(self, **kwargs):
         self.setConfig(**kwargs)
         man = ScreenObjectManager()
-        # Check for a new version of the simulator.
-        latest_version = get_version_pypi("ev3sim")
-        ScreenObjectManager.NEW_VERSION = latest_version != ev3sim.__version__
         man.startScreen()
 
     def beginSimulation(self, **kwargs):
