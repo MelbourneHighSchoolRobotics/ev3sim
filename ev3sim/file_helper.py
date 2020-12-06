@@ -40,7 +40,7 @@ def find_abs(filepath, allowed_areas=None):
 
     fnames = split_names(filepath)
     if allowed_areas is None:
-        allowed_areas = ["local", "package"]
+        allowed_areas = ["workspace", "local", "package"]
     for area in allowed_areas:
         if area == "package":
             path = os.path.join(ROOT, *fnames)

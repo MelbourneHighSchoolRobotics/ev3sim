@@ -10,6 +10,7 @@ from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
+from ev3sim.search_locations import asset_locations
 
 
 class BotEditMenu(BaseMenu):
@@ -25,6 +26,11 @@ class BotEditMenu(BaseMenu):
     SELECTED_POLYGON = "POLYGON"
     SELECTED_NOTHING = "NOTHING"
     SELECTED_DEVICE = "DEVICE"
+
+    BASE_ZPOS = 1
+    OBJ_ZPOS = 2
+    DEV_ZPOS = 3
+    HOLD_ZPOS = 4
 
     def clearEvents(self):
         self.onSave = None
@@ -99,12 +105,30 @@ class BotEditMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
         from ev3sim.simulation.world import World
+        from ev3sim.visual.objects import visualFactory
 
         ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
         World.instance.resetWorld()
         mSize = min(*self.surf_size)
+        self.customMap = {
+            "SCREEN_WIDTH": self.surf_size[0],
+            "SCREEN_HEIGHT": self.surf_size[1],
+            "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
+            "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
+        }
+        bg_circ = visualFactory(
+            name="Circle",
+            radius=11,
+            position=(0, 0),
+            zPos=-1,
+            fill="#404040",
+            stroke_width=0,
+        )
+        bg_circ.customMap = self.customMap
+        bg_circ.calculatePoints()
+        ScreenObjectManager.instance.registerVisual(bg_circ, key="bg_circle")
         if self.current_object:
             copy_obj = self.current_object.copy()
             copy_obj["children"] = self.current_object["children"].copy()
@@ -126,12 +150,6 @@ class BotEditMenu(BaseMenu):
                 for gen in interactor.generated:
                     gen.identifier = ("Devices", i)
             World.instance.registerObject(self.robot)
-            self.customMap = {
-                "SCREEN_WIDTH": self.surf_size[0],
-                "SCREEN_HEIGHT": self.surf_size[1],
-                "MAP_WIDTH": int(self.surf_size[0] / mSize * 24),
-                "MAP_HEIGHT": int(self.surf_size[1] / mSize * 24),
-            }
             while elems:
                 new_elems = []
                 for elem in elems:
@@ -141,6 +159,14 @@ class BotEditMenu(BaseMenu):
                 elems = new_elems
             # We need this for the device positions to be correctly set.
             World.instance.tick(1 / 60)
+
+    def updateZpos(self):
+        for i in range(len(self.current_devices)):
+            for key in self.current_devices[i]:
+                self.current_devices[i][key]["zPos"] = self.DEV_ZPOS + 1 - pow(2, -i)
+        for i in range(len(self.current_object["children"])):
+            self.current_object["children"][i]["visual"]["zPos"] = self.OBJ_ZPOS + 1 - pow(2, -i)
+        self.current_object["visual"]["zPos"] = self.BASE_ZPOS
 
     def placeHolding(self, pos):
         if self.current_holding_kwargs["type"] == "device":
@@ -160,6 +186,7 @@ class BotEditMenu(BaseMenu):
                 "friction": 0.8,
             }
             self.current_object["children"].append(obj)
+        self.updateZpos()
         self.resetBotVisual()
         self.generateHoldingItem()
 
@@ -170,6 +197,7 @@ class BotEditMenu(BaseMenu):
             del self.current_object["children"][self.selected_index[1]]
         elif self.selected_index[0] == "Devices":
             del self.current_devices[self.selected_index[1]]
+        self.updateZpos()
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
         self.clearOptions()
@@ -274,7 +302,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("select-button", "invis_button"),
         )
-        select_icon_path = find_abs("ui/icon_select.png", allowed_areas=["package/assets/"])
+        select_icon_path = find_abs("ui/icon_select.png", allowed_areas=asset_locations)
         self.select_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(select_icon_path),
@@ -289,7 +317,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("circle-button", "invis_button"),
         )
-        circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=["package/assets/"])
+        circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=asset_locations)
         self.circle_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(circ_icon_path),
@@ -304,7 +332,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("polygon-button", "invis_button"),
         )
-        polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=["package/assets/"])
+        polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=asset_locations)
         self.polygon_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(polygon_icon_path),
@@ -319,7 +347,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("device-button", "invis_button"),
         )
-        device_icon_path = find_abs("ui/icon_device.png", allowed_areas=["package/assets/"])
+        device_icon_path = find_abs("ui/icon_device.png", allowed_areas=asset_locations)
         self.device_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(device_icon_path),
@@ -474,7 +502,7 @@ class BotEditMenu(BaseMenu):
             "fill": "#878E88",
             "stroke_width": 0.1,
             "stroke": "#ffffff",
-            "zPos": 5,
+            "zPos": self.HOLD_ZPOS,
         }
         self.selected_index = "Holding"
         self.selected_type = self.SELECTED_CIRCLE
@@ -495,7 +523,7 @@ class BotEditMenu(BaseMenu):
                 [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
                 [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
             ],
-            "zPos": 5,
+            "zPos": self.HOLD_ZPOS,
         }
         self.selected_index = "Holding"
         self.selected_type = self.SELECTED_POLYGON
@@ -507,7 +535,7 @@ class BotEditMenu(BaseMenu):
 
     def updateCheckbox(self):
         img = pygame.image.load(
-            find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=["package/assets/"])
+            find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=asset_locations)
         )
         if img.get_size() != self.lock_grid_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
@@ -652,6 +680,10 @@ class BotEditMenu(BaseMenu):
                                 getattr(self, attr).set_text(str(val))
                             except:
                                 pass
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                    if self.selected_type not in [None, "Holding", "Baseplate"]:
+                        self.removeSelected()
 
     def drawOptions(self):
         self.clearOptions()
@@ -1027,7 +1059,7 @@ class BotEditMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(f"{device}_label", "device_label"),
                 ),
             )
-            img = pygame.image.load(find_abs(f"{file}.png", ["package/assets/ui/devices"]))
+            img = pygame.image.load(find_abs(f"ui/devices/{file}.png", asset_locations))
             img.set_colorkey((0, 255, 0))
             but_rect = pygame.Rect(
                 30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
@@ -1070,7 +1102,7 @@ class BotEditMenu(BaseMenu):
                     "fill": "#878E88",
                     "stroke_width": 0.1,
                     "stroke": "#ffffff",
-                    "zPos": 5,
+                    "zPos": self.BASE_ZPOS,
                 },
                 "circle",
                 self.SELECTED_CIRCLE,
@@ -1089,7 +1121,7 @@ class BotEditMenu(BaseMenu):
                         [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
                         [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
                     ],
-                    "zPos": 5,
+                    "zPos": self.BASE_ZPOS,
                 },
                 "polygon",
                 self.SELECTED_POLYGON,
@@ -1121,6 +1153,7 @@ class BotEditMenu(BaseMenu):
                                 "children": [],
                                 "key": "phys_obj",
                             }
+                            self.updateZpos()
                             self2.kill()
                 return super().process_event(event)
 
@@ -1161,7 +1194,7 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     object_id=pygame_gui.core.ObjectID(f"{name}_label", "baseplate_label"),
                 ),
             )
-            img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=["package/assets/"]))
+            img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=asset_locations))
             img.set_colorkey((0, 255, 0))
             but_rect = pygame.Rect(
                 30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),
@@ -1379,4 +1412,10 @@ All other objects are placed on this baseplate. After creating it, the baseplate
         self.mode = value
 
     def onPop(self):
-        pass
+        from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.simulation.world import World
+
+        ScreenObjectManager.instance.resetVisualElements()
+        World.instance.resetWorld()
+        ScriptLoader.instance.reset()

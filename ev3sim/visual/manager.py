@@ -1,5 +1,6 @@
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
+from ev3sim.search_locations import theme_locations
 import pygame
 import pygame.freetype
 import yaml
@@ -28,7 +29,7 @@ class ScreenObjectManager:
     SCREEN_HEIGHT: int = 960
     MAP_WIDTH: float = 200
     MAP_HEIGHT: float = 200
-    BACKGROUND_COLOUR = "#000000"
+    BACKGROUND_COLOUR = "#1f1f1f"
 
     _background_colour: Tuple[int]
 
@@ -229,7 +230,7 @@ class ScreenObjectManager:
         # We maintain aspect ratio so no tuple is required.
         return self.SCREEN_WIDTH / self.original_SCREEN_WIDTH
 
-    def captureBotImage(self, directory, filename, bg=None):
+    def captureBotImage(self, directory, filename):
         self.resetVisualElements()
         from os.path import join
         from ev3sim.simulation.loader import ScriptLoader
@@ -250,15 +251,23 @@ class ScreenObjectManager:
             interactor.startUp()
             interactor.tick(0)
             interactor.afterPhysics()
-        screen = pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        SCALE_AMOUNT = 5
+        screen = pygame.Surface((480, 480), pygame.SRCALPHA)
+        custom_map = {
+            "SCREEN_WIDTH": 480,
+            "SCREEN_HEIGHT": 480,
+            "MAP_WIDTH": 25,
+            "MAP_HEIGHT": 25,
+        }
         for elem in self.objects.values():
-            elem.scaleAtPosition(SCALE_AMOUNT)
-        self.applyToScreen(screen, bg=bg)
-        top_left = utils.worldspace_to_screenspace((-11 * SCALE_AMOUNT, 11 * SCALE_AMOUNT))
-        bot_right = utils.worldspace_to_screenspace((11 * SCALE_AMOUNT, -11 * SCALE_AMOUNT))
-        cropped = pygame.Surface((bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
-        cropped.blit(screen, (0, 0), (top_left[0], top_left[1], bot_right[0] - top_left[0], bot_right[1] - top_left[1]))
+            elem.customMap = custom_map
+            elem.calculatePoints()
+        self.applyToScreen(screen, bg=pygame.Color(self.instance.background_colour))
+        colorkey = pygame.Color(self.instance.background_colour)
+        for x in range(480):
+            for y in range(480):
+                val = screen.get_at((x, y))
+                val.a = 0 if (val.r == colorkey.r and val.g == colorkey.g and val.b == colorkey.b) else 255
+                screen.set_at((x, y), val)
         self.resetVisualElements()
         ScriptLoader.instance.reset()
         if directory.startswith("workspace"):
@@ -266,11 +275,11 @@ class ScreenObjectManager:
             rel_dir = "workspace/images/"
         elif directory.startswith("package"):
             show_dir = "bots/"
-            rel_dir = "packages/assets/bots"
+            rel_dir = "packages/assets/bots/"
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
         dirname = find_abs_directory(rel_dir, create=True)
-        pygame.image.save(cropped, join(dirname, filename.replace(".yaml", ".png")))
+        pygame.image.save(screen, join(dirname, filename.replace(".yaml", ".png")))
         actual_bot_path = find_abs(filename, [directory])
         with open(actual_bot_path, "r") as f:
             conf = yaml.safe_load(f)
@@ -296,9 +305,7 @@ def on_change_bg(new_val):
 
 
 def on_change_theme(new_val):
-    ScreenObjectManager.theme_path = find_abs(
-        new_val, allowed_areas=["workspace/assets", "workspace", "package/assets"]
-    )
+    ScreenObjectManager.theme_path = find_abs(new_val, allowed_areas=theme_locations)
 
 
 screen_settings["BACKGROUND_COLOUR"].on_change = on_change_bg

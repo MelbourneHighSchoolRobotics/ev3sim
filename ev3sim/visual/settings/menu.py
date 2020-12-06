@@ -57,6 +57,7 @@ class SettingsMenu(BaseMenu):
             self._all_objs.append(container)
             index += 1
             for obj in group["objects"]:
+                obj.set_menu(self)
                 for obj2 in obj.generateVisual(dummy_rect, container, self, index):
                     self._all_objs.append(obj2)
                 index += obj.num_objs
@@ -92,6 +93,25 @@ class SettingsMenu(BaseMenu):
         )
         self._all_objs.append(self.cancel)
         index += 1
+
+    def addErrorDialog(self, msg):
+
+        dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+
+        self.dialog = pygame_gui.elements.UIWindow(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
+            manager=self,
+            window_display_title="An error occured",
+            object_id=pygame_gui.core.ObjectID("error_dialog"),
+        )
+
+        self.error_msg = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
+            html_text=msg,
+            manager=self,
+            container=self.dialog,
+            object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
+        )
 
     def handleEvent(self, event):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:

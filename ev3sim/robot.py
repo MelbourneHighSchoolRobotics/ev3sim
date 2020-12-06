@@ -85,14 +85,14 @@ class RobotInteractor(IInteractor):
 
     def connectDevices(self):
         self.devices = {}
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             self.devices[interactor.port] = interactor.device_class
             interactor.port_key = f"{self.filename}-{self.path_index}-{interactor.port}"
             Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
     def initialiseDevices(self):
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             interactor.device_class.generateBias()
 
     def startUp(self):
@@ -185,6 +185,7 @@ class Robot:
 
 
 from ev3sim.visual.settings.elements import TextEntry, FileEntry
+from ev3sim.search_locations import code_locations
 
 visual_settings = [
     {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BOT NAME", None, (lambda s: (0, 20)))]},
@@ -195,7 +196,7 @@ visual_settings = [
                 ["script"],
                 None,
                 False,
-                ["workspace/code/", "workspace", "package/robots/"],
+                code_locations,
                 "Bot script",
                 (lambda s: (0, 20)),
             ),

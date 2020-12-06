@@ -6,6 +6,7 @@ from os.path import join
 
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
+from ev3sim.search_locations import config_locations
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
 parser.add_argument(
@@ -33,17 +34,17 @@ def main(passed_args=None):
 
     # Try loading a user config. If one does not exist, then generate one.
     try:
-        conf_file = find_abs("user_config.yaml", allowed_areas=["package"])
+        conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
         with open(conf_file, "r") as f:
             conf = yaml.safe_load(f)
     except:
         with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
             conf = yaml.safe_load(fr)
-        with open(join(find_abs_directory("package"), "user_config.yaml"), "w") as fw:
+        with open(join(find_abs_directory(config_locations[-1]), "user_config.yaml"), "w") as fw:
             fw.write(yaml.dump(conf))
 
     if args.config is not None:
-        config_path = find_abs(args.config, allowed_areas=["local", "local/presets/", "package", "package/presets/"])
+        config_path = find_abs(args.config, allowed_areas=config_locations)
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
         conf.update(config)

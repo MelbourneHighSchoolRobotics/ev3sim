@@ -3,6 +3,7 @@ import pygame_gui
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
+from ev3sim.search_locations import config_locations
 
 
 class MainMenu(BaseMenu):
@@ -70,7 +71,7 @@ class MainMenu(BaseMenu):
             if event.ui_object_id.startswith("main_settings_button"):
                 ScreenObjectManager.instance.pushScreen(
                     ScreenObjectManager.SCREEN_SETTINGS,
-                    file=find_abs("user_config.yaml", ["package"]),
+                    file=find_abs("user_config.yaml", config_locations),
                     settings=main_settings,
                 )
                 ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()

@@ -3,6 +3,7 @@ import pygame_gui
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
+from ev3sim.search_locations import config_locations
 
 
 class WorkspaceMenu(BaseMenu):
@@ -87,7 +88,7 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
                 directory = askdirectory()
                 if not directory:
                     return
-                conf_file = find_abs("user_config.yaml", allowed_areas=["package"])
+                conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
                 with open(conf_file, "r") as f:
                     conf = yaml.safe_load(f)
                 conf["app"]["workspace_folder"] = directory

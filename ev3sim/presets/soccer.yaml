@@ -522,7 +522,7 @@ elements:
 # UI Elements
 - type: visual
   name: Image
-  image_path: 'assets/ui/left_bg.png'
+  image_path: 'ui/left_bg.png'
   position: [-145, 110]
   hAlignment: l
   vAlignment: t
@@ -530,7 +530,7 @@ elements:
   key: team1UI
 - type: visual
   name: Image
-  image_path: 'assets/ui/right_bg.png'
+  image_path: 'ui/right_bg.png'
   position: [145, 110]
   hAlignment: r
   vAlignment: t
@@ -562,7 +562,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_plus.png"
+    image_path: "ui/goal_plus.png"
     hAlignment: r
     vAlignment: t
     scale: 0.5
@@ -575,7 +575,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_minus.png"
+    image_path: "ui/goal_minus.png"
     hAlignment: r
     vAlignment: t
     scale: 0.5
@@ -588,7 +588,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_plus.png"
+    image_path: "ui/goal_plus.png"
     hAlignment: l
     vAlignment: t
     scale: 0.5
@@ -601,7 +601,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_minus.png"
+    image_path: "ui/goal_minus.png"
     hAlignment: l
     vAlignment: t
     scale: 0.5
@@ -633,7 +633,7 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_pause_released.png'
+    image_path: 'ui/controls_pause_released.png'
     hAlignment: r
     vAlignment: t
     zPos: 5
@@ -645,14 +645,14 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_reset_released.png'
+    image_path: 'ui/controls_reset_released.png'
     hAlignment: l
     vAlignment: t
     zPos: 5
   key: controlsReset
 - type: visual
   name: Image
-  image_path: 'assets/ui/timer_bg.png'
+  image_path: 'ui/timer_bg.png'
   position: [0,110]
   hAlignment: m
   vAlignment: t

@@ -20,6 +20,7 @@ Robot icon created by Freepik: https://www.flaticon.com/authors/freepik
 Settings icon created by D Hendrik Mulyana https://www.iconfinder.com/diehendrick
 Folder icon created by amoghdesign https://www.iconfinder.com/amoghdesign
 Draw icon created by DailyYouth https://www.iconfinder.com/iconofoxy
+Bin icon created by Popcic https://www.iconfinder.com/popcic
 
 ## Contributing
 

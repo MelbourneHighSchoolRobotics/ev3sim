@@ -242,5 +242,19 @@
             "size": "14",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
+    },
+    "error_msg": {
+        "font": {
+            "name": "Roboto",
+            "size": "16",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
+    },
+    "window.#title_bar": {
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
     }
 }

@@ -45,10 +45,8 @@ class PauseInteractor(IInteractor):
 
     def tick(self, tick):
         if self._pressed:
-            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = "assets/ui/controls_pause_pressed.png"
+            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = "ui/controls_pause_pressed.png"
         elif World.instance.paused:
-            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = "assets/ui/controls_pause_hold.png"
+            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = "ui/controls_pause_hold.png"
         else:
-            ScriptLoader.instance.object_map[
-                "controlsPause"
-            ].visual.image_path = "assets/ui/controls_pause_released.png"
+            ScriptLoader.instance.object_map["controlsPause"].visual.image_path = "ui/controls_pause_released.png"

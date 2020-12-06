@@ -2,6 +2,7 @@ import os
 import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.search_locations import asset_locations
 
 
 class SettingsVisualElement:
@@ -14,6 +15,10 @@ class SettingsVisualElement:
         self.default = default_value
         self.current = self.default
         self.title = title
+        self.menu = None
+
+    def set_menu(self, menu):
+        self.menu = menu
 
     def getFromJson(self, json_obj):
         try:
@@ -108,7 +113,7 @@ class FileEntry(SettingsVisualElement):
                 off[1] + self.container.relative_rect.top - 2,
             )
         )
-        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=["package/assets/"]))
+        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=asset_locations))
         if img.get_size() != objs[index + 3].rect.size:
             img = pygame.transform.smoothscale(img, (objs[index + 3].rect.width, objs[index + 3].rect.height))
         objs[index + 3].set_image(img)
@@ -132,11 +137,12 @@ class FileEntry(SettingsVisualElement):
                     actual_filename = filename[len(dirpath) :]
                     break
             else:
-                # TODO: Make this an error modal in the settings.
-                print("This file must be contained in one of the following directories:")
+                msg = '<font color="#DD4045">This file must be contained in one of the following directories:</font>'
                 for pathname in self.relative_paths:
                     dirpath = find_abs_directory(pathname, create=True)
-                    print("\t" + dirpath)
+                    msg = msg + "<br><br>" + dirpath
+                msg = msg + "</font>"
+                self.menu.addErrorDialog(msg)
                 return
             self.current = actual_filename
             self.filename.set_text(self.current)
@@ -277,7 +283,7 @@ class Checkbox(SettingsVisualElement):
 
     def setCheckboxBg(self, value, obj):
         img = pygame.image.load(
-            find_abs("ui/box_check.png" if value else "ui/box_clear.png", allowed_areas=["package/assets/"])
+            find_abs("ui/box_check.png" if value else "ui/box_clear.png", allowed_areas=asset_locations)
         )
         if img.get_size() != obj.rect.size:
             img = pygame.transform.smoothscale(img, (obj.rect.width, obj.rect.height))

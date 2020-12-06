@@ -266,11 +266,9 @@ class SoccerInteractor(IInteractor):
 
         # UI Tick
         if self._pressed:
-            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "assets/ui/controls_reset_pressed.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_pressed.png"
         else:
-            ScriptLoader.instance.object_map[
-                "controlsReset"
-            ].visual.image_path = "assets/ui/controls_reset_released.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_released.png"
         self.update_time()
 
     def afterPhysics(self):
