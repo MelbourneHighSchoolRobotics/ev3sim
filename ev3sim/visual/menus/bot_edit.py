@@ -27,6 +27,11 @@ class BotEditMenu(BaseMenu):
     SELECTED_NOTHING = "NOTHING"
     SELECTED_DEVICE = "DEVICE"
 
+    BASE_ZPOS = 1
+    OBJ_ZPOS = 2
+    DEV_ZPOS = 3
+    HOLD_ZPOS = 4
+
     def clearEvents(self):
         self.onSave = None
 
@@ -155,6 +160,14 @@ class BotEditMenu(BaseMenu):
             # We need this for the device positions to be correctly set.
             World.instance.tick(1 / 60)
 
+    def updateZpos(self):
+        for i in range(len(self.current_devices)):
+            for key in self.current_devices[i]:
+                self.current_devices[i][key]["zPos"] = self.DEV_ZPOS + 1 - pow(2, -i)
+        for i in range(len(self.current_object["children"])):
+            self.current_object["children"][i]["visual"]["zPos"] = self.OBJ_ZPOS + 1 - pow(2, -i)
+        self.current_object["visual"]["zPos"] = self.BASE_ZPOS
+
     def placeHolding(self, pos):
         if self.current_holding_kwargs["type"] == "device":
             dev_name = self.current_holding_kwargs["name"]
@@ -173,6 +186,7 @@ class BotEditMenu(BaseMenu):
                 "friction": 0.8,
             }
             self.current_object["children"].append(obj)
+        self.updateZpos()
         self.resetBotVisual()
         self.generateHoldingItem()
 
@@ -183,6 +197,7 @@ class BotEditMenu(BaseMenu):
             del self.current_object["children"][self.selected_index[1]]
         elif self.selected_index[0] == "Devices":
             del self.current_devices[self.selected_index[1]]
+        self.updateZpos()
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
         self.clearOptions()
@@ -487,7 +502,7 @@ class BotEditMenu(BaseMenu):
             "fill": "#878E88",
             "stroke_width": 0.1,
             "stroke": "#ffffff",
-            "zPos": 5,
+            "zPos": self.HOLD_ZPOS,
         }
         self.selected_index = "Holding"
         self.selected_type = self.SELECTED_CIRCLE
@@ -508,7 +523,7 @@ class BotEditMenu(BaseMenu):
                 [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
                 [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
             ],
-            "zPos": 5,
+            "zPos": self.HOLD_ZPOS,
         }
         self.selected_index = "Holding"
         self.selected_type = self.SELECTED_POLYGON
@@ -1083,7 +1098,7 @@ class BotEditMenu(BaseMenu):
                     "fill": "#878E88",
                     "stroke_width": 0.1,
                     "stroke": "#ffffff",
-                    "zPos": 5,
+                    "zPos": self.BASE_ZPOS,
                 },
                 "circle",
                 self.SELECTED_CIRCLE,
@@ -1102,7 +1117,7 @@ class BotEditMenu(BaseMenu):
                         [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
                         [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
                     ],
-                    "zPos": 5,
+                    "zPos": self.BASE_ZPOS,
                 },
                 "polygon",
                 self.SELECTED_POLYGON,
@@ -1134,6 +1149,7 @@ class BotEditMenu(BaseMenu):
                                 "children": [],
                                 "key": "phys_obj",
                             }
+                            self.updateZpos()
                             self2.kill()
                 return super().process_event(event)
 
