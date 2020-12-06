@@ -1,5 +1,5 @@
 preset_locations = ["workspace/presets/", "workspace", "package/presets/"]
-batch_locations = ["workspace/batched_commands/", "workspace", "package/examples/batched_commands/"]
+batch_locations = ["workspace/sims/", "workspace", "package/examples/sims/"]
 bot_locations = ["workspace/robots/", "workspace", "package/examples/robots/"]
 code_locations = ["workspace/code/", "workspace", "package/examples/robots/"]
 config_locations = ["workspace", "package"]

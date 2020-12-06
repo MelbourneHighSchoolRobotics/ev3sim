@@ -292,7 +292,7 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_SETTINGS,
             settings=visual_settings,
             creating=True,
-            creation_area="workspace/batched_commands/",
+            creation_area="workspace/sims/",
             starting_data={
                 "preset_file": "soccer.yaml",
                 "bots": [],
