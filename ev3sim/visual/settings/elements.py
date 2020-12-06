@@ -15,6 +15,10 @@ class SettingsVisualElement:
         self.default = default_value
         self.current = self.default
         self.title = title
+        self.menu = None
+
+    def set_menu(self, menu):
+        self.menu = menu
 
     def getFromJson(self, json_obj):
         try:
@@ -133,11 +137,12 @@ class FileEntry(SettingsVisualElement):
                     actual_filename = filename[len(dirpath) :]
                     break
             else:
-                # TODO: Make this an error modal in the settings.
-                print("This file must be contained in one of the following directories:")
+                msg = '<font color="#DD4045">This file must be contained in one of the following directories:</font>'
                 for pathname in self.relative_paths:
                     dirpath = find_abs_directory(pathname, create=True)
-                    print("\t" + dirpath)
+                    msg = msg + "<br><br>" + dirpath
+                msg = msg + "</font>"
+                self.menu.addErrorDialog(msg)
                 return
             self.current = actual_filename
             self.filename.set_text(self.current)
