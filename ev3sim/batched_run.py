@@ -1,103 +1,61 @@
 from queue import Empty
-from unittest import mock
-from ev3sim.simulation.loader import runFromConfig
+from ev3sim.simulation.loader import StateHandler, initialiseFromConfig
 from ev3sim.simulation.randomisation import Randomiser
-from luddite import get_version_pypi
-from ev3sim.visual.manager import ScreenObjectManager
 import yaml
 import time
 from ev3sim.file_helper import find_abs
 from multiprocessing import Process
-from ev3sim.utils import Queue
+from ev3sim.utils import Queue, recursive_merge
+from ev3sim.search_locations import preset_locations, batch_locations, bot_locations, code_locations
 
 
-def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *queues_sizes):
+def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, bot_processes, *queues_sizes):
     result_queue = queues_sizes[0][0]
     result_queue._internal_size = queues_sizes[0][1]
+    StateHandler.instance.shared_info = {
+        "result_queue": result_queue,
+        "processes": bot_processes,
+    }
     send_queues = [q for q, _ in queues_sizes[1::2]]
     for i, (_, size) in enumerate(queues_sizes[1::2]):
         send_queues[i]._internal_size = size
     recv_queues = [q for q, _ in queues_sizes[2::2]]
     for i, (_, size) in enumerate(queues_sizes[2::2]):
         recv_queues[i]._internal_size = size
-    try:
-        ScreenObjectManager.BATCH_FILE = batch_file
-        ScreenObjectManager.PRESET_FILE = preset_filename
 
-        import ev3sim
+    Randomiser.createGlobalRandomiserWithSeed(seed)
 
-        try:
-            latest_version = get_version_pypi("ev3sim")
-            ScreenObjectManager.NEW_VERSION = latest_version != ev3sim.__version__
-            if ScreenObjectManager.NEW_VERSION:
-                update_message = f"""\
+    preset_file = find_abs(preset_filename, allowed_areas=preset_locations)
+    with open(preset_file, "r") as f:
+        config = yaml.safe_load(f)
+    recursive_merge(config["settings"], override_settings)
 
-    ==========================================================================================
-    There is a new version of ev3sim available ({latest_version}).
-    Keeping an up to date version of ev3sim ensures you have the latest bugfixes and features.
-    Please update ev3sim by running the following command:
-        python -m pip install -U ev3sim
-    ==========================================================================================
+    config["robots"] = config.get("robots", []) + bot_paths
 
-    """
-                print(update_message)
-        except:
-            ScreenObjectManager.NEW_VERSION = False
-
-        Randomiser.createGlobalRandomiserWithSeed(seed)
-
-        preset_file = find_abs(
-            preset_filename, allowed_areas=["local", "local/presets/", "package", "package/presets/"]
-        )
-        with open(preset_file, "r") as f:
-            config = yaml.safe_load(f)
-
-        config["robots"] = config.get("robots", []) + bot_paths
-
-        def run():
-            runFromConfig(config, send_queues, recv_queues)
-
-        # Handle any other settings modified by the preset.
-        settings = config.get("settings", {})
-        settings.update(override_settings)
-        for keyword, value in settings.items():
-            run = mock.patch(keyword, value)(run)
-
-        run()
-    except Exception as e:
-        import traceback
-
-        result_queue.put(("Simulation", traceback.format_exc()))
-        return
-    result_queue.put(True)
+    initialiseFromConfig(config, send_queues, recv_queues)
 
 
 def batched_run(batch_file, bind_addr, seed):
 
-    batch_path = find_abs(
-        batch_file, allowed_areas=["local", "local/batched_commands/", "package", "package/batched_commands/"]
-    )
+    batch_path = find_abs(batch_file, allowed_areas=batch_locations)
     with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 
-    bot_paths = [x["name"] for x in config["bots"]]
+    bot_paths = [x for x in config["bots"]]
     sim_args = [batch_file, config["preset_file"], bot_paths, seed, config.get("settings", {})]
     queues = [Queue() for _ in range(2 * len(bot_paths) + 1)]
     queue_with_count = [(q, q._internal_size) for q in queues]
-    sim_args.extend(queue_with_count)
     result_queue = queues[0]
-
-    sim_process = Process(
-        target=simulate,
-        args=sim_args,
-    )
 
     from ev3sim.attach_bot import attach_bot
 
     bot_processes = []
-    for i, bot in enumerate(config["bots"]):
-        for script in bot.get("scripts", []):
-            fname = find_abs(script, allowed_areas=["local", "local/robots/", "package", "package/robots/"])
+    for i, bot in enumerate(bot_paths):
+        p = find_abs(bot, allowed_areas=bot_locations)
+        with open(p, "r") as f:
+            conf = yaml.safe_load(f)
+        if conf.get("script", None) is not None:
+            fname = find_abs(conf["script"], allowed_areas=code_locations)
             bot_processes.append(
                 Process(
                     target=attach_bot,
@@ -113,24 +71,10 @@ def batched_run(batch_file, bind_addr, seed):
                     ),
                 )
             )
+    sim_args.append(bot_processes)
+    sim_args.extend(queue_with_count)
 
-    sim_process.start()
+    # Begin the sim process.
+    simulate(*sim_args)
     for p in bot_processes:
         p.start()
-
-    try:
-        while True:
-            try:
-                r = result_queue.get_nowait()
-                break
-            except Empty:
-                time.sleep(0.05)
-    except KeyboardInterrupt:
-        r = True
-        pass
-    sim_process.terminate()
-    for p in bot_processes:
-        p.terminate()
-    if r is not True:
-        print(f"An error occurred in the {r[0]} process. Printing the error now...")
-        print(r[1])

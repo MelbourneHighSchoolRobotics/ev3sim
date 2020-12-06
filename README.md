@@ -14,6 +14,14 @@ To get up and running with the simulator, see the docs: https://ev3sim.mhscsr.cl
 
 Find any issues with the simulator? Feel free to make an issue here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/issues
 
+## Attribution
+
+Robot icon created by Freepik: https://www.flaticon.com/authors/freepik
+Settings icon created by D Hendrik Mulyana https://www.iconfinder.com/diehendrick
+Folder icon created by amoghdesign https://www.iconfinder.com/amoghdesign
+Draw icon created by DailyYouth https://www.iconfinder.com/iconofoxy
+Bin icon created by Popcic https://www.iconfinder.com/popcic
+
 ## Contributing
 
 To contribute to ev3sim, see the contributing page of the docs: https://ev3sim.mhscsr.club/contributing

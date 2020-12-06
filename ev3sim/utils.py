@@ -31,3 +31,15 @@ class Queue(BaseQueue):
 
     def empty(self):
         return not self.qsize()
+
+
+def recursive_merge(dict1, dict2):
+    # Recursively merge two dictionaries into dict1.
+    for key in dict2:
+        if key not in dict1 or type(dict1[key]) != type(dict2[key]):
+            dict1[key] = dict2[key]
+        elif isinstance(dict2[key], dict):
+            # Recursively merge.
+            recursive_merge(dict1[key], dict2[key])
+        else:
+            dict1[key] = dict2[key]

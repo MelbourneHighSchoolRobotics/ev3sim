@@ -28,6 +28,9 @@ class World:
 
     def __init__(self):
         World.instance = self
+        self.resetWorld()
+
+    def resetWorld(self):
         self.space = pymunk.Space()
         self.space.gravity = 0, 0
         self.objects = []

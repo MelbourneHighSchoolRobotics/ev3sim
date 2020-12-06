@@ -39,7 +39,7 @@ setup(
     install_requires=REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "ev3sim=ev3sim.sim:main",
+            "ev3sim=ev3sim.gui:main",
         ]
     },
 )

@@ -142,3 +142,6 @@ cython_debug/
 
 # asset files
 *.ai
+
+# Generated config files
+ev3sim/user_config.yaml
