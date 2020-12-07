@@ -1,4 +1,5 @@
 import datetime
+from ev3sim.settings import ObjectSetting
 import numpy as np
 import math
 import pymunk
@@ -32,7 +33,7 @@ class RescueInteractor(IInteractor):
     BOT_SPAWN_RADIUS = 2
     BOT_SPAWN_ANGLE = [-10, 10]
 
-    START_TIME = datetime.timedelta(minutes=5)
+    GAME_LENGTH_MINUTES = 5
 
     TILE_LENGTH = 30
     _pressed = False
@@ -296,6 +297,7 @@ class RescueInteractor(IInteractor):
             raise ValueError("No robots loaded.")
 
     def startUp(self):
+        self.START_TIME = datetime.timedelta(minutes=self.GAME_LENGTH_MINUTES)
         self.spawnTiles()
         self.spawnFollowPointPhysics()
         self.spawnTileUI()
@@ -494,3 +496,39 @@ class RescueInteractor(IInteractor):
     def touchesChanged(self):
         ScriptLoader.instance.object_map["touchesCount"].text = str(self._touches)
         ScriptLoader.instance.object_map["touchesScore"].text = str(-self._touch_points)
+
+
+rescue_settings = {
+    attr: ObjectSetting(RescueInteractor, attr)
+    for attr in [
+        "SHOW_FOLLOW_POINTS",
+        "SHOW_ROBOT_COLLIDER",
+        "ROBOT_CENTRE_RADIUS",
+        "FOLLOW_POINT_RADIUS",
+        "MAX_FOLLOW_DIST",
+        "BOT_SPAWN_RADIUS",
+        "BOT_SPAWN_ANGLE",
+        "GAME_LENGTH_MINUTES",
+    ]
+}
+
+from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox
+
+visual_settings = [
+    {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BATCH NAME", None, (lambda s: (0, 20)))]},
+    {
+        "height": (lambda s: 240 if s[0] < 540 else 140),
+        "objects": [
+            NumberEntry(["settings", "rescue", "GAME_LENGTH_MINUTES"], 5, "Time allowed", (lambda s: (0, 20))),
+            NumberEntry(["settings", "rescue", "ROBOT_CENTRE_RADIUS"], 3, "Collision Radius", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20))),
+            NumberEntry(["settings", "rescue", "MAX_FOLLOW_DIST"], 8, "Lack of Progress", (lambda s: (0, 120) if s[0] < 540 else (0, 70))),
+            NumberEntry(["settings", "rescue", "FOLLOW_POINT_RADIUS"], 1, "Follow Radius", (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70))),
+        ],
+    },
+    {
+        "height": lambda s: 70,
+        "objects": [
+            Checkbox(["settings", "rescue", "SHOW_FOLLOW_POINTS"], False, "Show Follow Points", (lambda s: (0, 20))),
+        ],
+    },
+]

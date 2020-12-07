@@ -1,3 +1,10 @@
 bots:
-- controllable.yaml
+- rescue_bot.yaml
 preset_file: rescue.yaml
+settings:
+  rescue:
+    FOLLOW_POINT_RADIUS: 1
+    GAME_LENGTH_MINUTES: 5
+    MAX_FOLLOW_DIST: 8
+    ROBOT_CENTRE_RADIUS: 3
+    SHOW_FOLLOW_POINTS: false

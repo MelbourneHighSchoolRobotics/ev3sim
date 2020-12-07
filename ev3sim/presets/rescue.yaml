@@ -1,3 +1,10 @@
+preview_path: "rescue_preview.png"
+
+bot_names:
+  - "Bot"
+
+visual_settings: ev3sim.presets.rescue.visual_settings
+
 colours:
   line_color: "#1f1f1f"
   floor_color: "#dddedf"
@@ -46,6 +53,8 @@ interactors:
     - path: tiles/definitions/water_tower.yaml
       position: [1, 2]
       rotation: 90
+  settings_name: rescue
+  settings_defn: ev3sim.presets.rescue.rescue_settings
 
 settings:
   app:
