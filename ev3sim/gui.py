@@ -77,9 +77,11 @@ def main(passed_args=None):
     handler.startUp(**conf)
 
     if args.batch:
-        args.simulation_kwargs.update({
-            "batch": args.batch,
-        })
+        args.simulation_kwargs.update(
+            {
+                "batch": args.batch,
+            }
+        )
         handler.beginSimulation(**args.simulation_kwargs)
         # We want to start on the simulation screen.
         ScreenObjectManager.instance.screen_stack = [ScreenObjectManager.instance.SCREEN_SIM]

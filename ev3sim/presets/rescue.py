@@ -44,7 +44,7 @@ class RescueInteractor(IInteractor):
         self.spawns = kwargs.get("spawns")
         self.time_tick = 0
         self.tile_args = kwargs["tiles"]
-        
+
     def spawnTiles(self):
         self.tiles = []
         for i, tile in enumerate(self.tile_args):
@@ -232,6 +232,7 @@ class RescueInteractor(IInteractor):
             self.tiles[i]["ui_spawned"] = spawned
             self.tiles[i]["checker"].onSpawn()
         ScriptLoader.instance.object_map["rescueBGMid"].scale = (1, self.tileUIHeight / self.TILE_UI_INITIAL_HEIGHT)
+        ScriptLoader.instance.object_map["rescueBGMid"].calculatePoints()
         ScriptLoader.instance.object_map["rescueBGTop"].position = (-146.6, self.tileUIHeight / 2)
         ScriptLoader.instance.object_map["rescueBGBottom"].position = (-146.6, -self.tileUIHeight / 2)
         ScriptLoader.instance.object_map["rescueScoreSum"].position = (
@@ -448,9 +449,7 @@ class RescueInteractor(IInteractor):
         if self._pressed:
             ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_pressed.png"
         else:
-            ScriptLoader.instance.object_map[
-                "controlsReset"
-            ].visual.image_path = "ui/controls_reset_released.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_released.png"
         self.update_time()
 
     @stop_on_pause
