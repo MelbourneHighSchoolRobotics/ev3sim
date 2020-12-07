@@ -1,3 +1,4 @@
+from ev3sim.visual.settings.elements import TextEntry
 import os
 import pygame
 import pygame_gui
@@ -28,7 +29,8 @@ class SettingsMenu(BaseMenu):
             for obj in group["objects"]:
                 obj.resize(self._all_objs, index)
                 if obj.json_keys == "__filename__" and not self.allows_filename_change:
-                    obj.obj.disable()
+                    if isinstance(obj, TextEntry):
+                        obj.obj.disable()
                 index += obj.num_objs
             yOffset += group["height"](self._size)
         yOffset += yPadding

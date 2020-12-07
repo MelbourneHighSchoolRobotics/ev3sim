@@ -1,9 +1,9 @@
 import datetime
 from ev3sim.settings import ObjectSetting
 import numpy as np
-import math
 import pymunk
 import pygame
+from ev3sim.search_locations import batch_locations
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
@@ -532,7 +532,17 @@ rescue_settings = {
     ]
 }
 
-from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox
+from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox, Button
+
+
+def onClickMapEditor(filename):
+    from ev3sim.visual.manager import ScreenObjectManager
+
+    ScreenObjectManager.instance.pushScreen(
+        ScreenObjectManager.SCREEN_RESCUE_EDIT,
+        batch_file=find_abs(f"{filename}.yaml", batch_locations),
+    )
+
 
 visual_settings = [
     {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BATCH NAME", None, (lambda s: (0, 20)))]},
@@ -561,9 +571,10 @@ visual_settings = [
         ],
     },
     {
-        "height": lambda s: 70,
+        "height": (lambda s: 120 if s[0] < 540 else 70),
         "objects": [
             Checkbox(["settings", "rescue", "SHOW_FOLLOW_POINTS"], False, "Show Follow Points", (lambda s: (0, 20))),
+            Button("Map Editor", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)), onClickMapEditor),
         ],
     },
 ]

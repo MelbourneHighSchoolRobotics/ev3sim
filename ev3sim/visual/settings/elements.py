@@ -43,6 +43,56 @@ class SettingsVisualElement:
         raise NotImplementedError()
 
 
+class Button(SettingsVisualElement):
+
+    num_objs = 1
+
+    def __init__(self, title, offset, onClick):
+        self.title = title
+        self.offset = offset
+        self.menu = None
+        self.onClick = onClick
+        # We want the filename in current.
+        self.json_keys = "__filename__"
+
+    def getFromJson(self, json_obj):
+        pass
+
+    def setToJson(self, json_obj):
+        pass
+
+    def generateVisual(self, relative_rect, container, manager, idx):
+        self.container = container
+        self.button = pygame_gui.elements.UIButton(
+            relative_rect=relative_rect,
+            manager=manager,
+            object_id=pygame_gui.core.ObjectID(f"{idx}-button", "option-button"),
+            container=container,
+            text=self.title,
+        )
+        return [self.button]
+
+    def resize(self, objects, index):
+        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
+        if self.container.relative_rect.width < 540:
+            button_size = (self.container.relative_rect.width - 40, 40)
+            objects[index].set_dimensions(button_size)
+            objects[index].set_position(
+                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+            )
+        else:
+            button_size = ((self.container.relative_rect.width - 40) * 0.5 - 20, 40)
+            objects[index].set_dimensions(button_size)
+            objects[index].set_position(
+                (off[0] + self.container.relative_rect.left + 30, off[1] + self.container.relative_rect.top)
+            )
+
+    def handlePressed(self, idx):
+        assert idx == 0, f"{idx} expected to be 0."
+        if self.onClick is not None:
+            self.onClick(self.current)
+
+
 class FileEntry(SettingsVisualElement):
 
     num_objs = 4
