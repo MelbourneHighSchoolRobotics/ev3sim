@@ -43,8 +43,11 @@ class RescueInteractor(IInteractor):
         super().__init__(*args, **kwargs)
         self.spawns = kwargs.get("spawns")
         self.time_tick = 0
+        self.tile_args = kwargs["tiles"]
+        
+    def spawnTiles(self):
         self.tiles = []
-        for i, tile in enumerate(kwargs["tiles"]):
+        for i, tile in enumerate(self.tile_args):
             self.tiles.append({})
             import yaml
 
@@ -292,6 +295,7 @@ class RescueInteractor(IInteractor):
             raise ValueError("No robots loaded.")
 
     def startUp(self):
+        self.spawnTiles()
         self.spawnFollowPointPhysics()
         self.spawnTileUI()
         self.locateBots()
