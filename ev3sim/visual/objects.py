@@ -190,7 +190,16 @@ class Image(Colorable):
         self.calculatePoints()
 
     def scaleAtPosition(self, amount, pos=(0, 0)):
-        self.scale *= amount
+        if isinstance(self.scale, (tuple, list)):
+            if isinstance(amount, (tuple, list)):
+                self.scale = (self.scale[0] * amount[0], self.scale[1] * amount[1])
+            else:
+                self.scale = (self.scale[0] * amount, self.scale[1] * amount)
+        else:
+            if isinstance(amount, (tuple, list)):
+                self.scale = (self.scale * amount[0], self.scale * amount[1])
+            else:
+                self.scale *= amount
         super().scaleAtPosition(amount, pos=pos)
 
     @property
@@ -218,8 +227,16 @@ class Image(Colorable):
         else:
             relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]
         new_size = [
-            int(self.image.get_size()[0] * self.scale * relative_scale),
-            int(self.image.get_size()[1] * self.scale * relative_scale),
+            int(
+                self.image.get_size()[0]
+                * (self.scale[0] if isinstance(self.scale, (list, tuple)) else self.scale)
+                * relative_scale
+            ),
+            int(
+                self.image.get_size()[1]
+                * (self.scale[1] if isinstance(self.scale, (list, tuple)) else self.scale)
+                * relative_scale
+            ),
         ]
         scaled = pygame.transform.scale(self.image, new_size)
         flipped = pygame.transform.flip(scaled, self.flip[0], self.flip[1])
