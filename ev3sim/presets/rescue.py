@@ -93,6 +93,7 @@ class RescueInteractor(IInteractor):
             self.tiles[-1]["roam_status"] = []
             self.tiles[-1]["world_pos"] = base_pos
             self.tiles[-1]["rotation"] = base_rotation
+            self.tiles[-1]["flip"] = flip
             mname, cname = t.get("checker").rsplit(".", 1)
             import importlib
 
@@ -284,6 +285,7 @@ class RescueInteractor(IInteractor):
                     "key": f"Robot-{bot_index}-follow",
                 }
             )
+            obj.shape.filter = pymunk.ShapeFilter(categories=self.FOLLOW_POINT_CATEGORY)
             obj.shape.sensor = True
             obj.shape.collision_type = self.ROBOT_CENTRE_COLLISION_TYPE
             obj.shape._robot_index = bot_index
@@ -340,6 +342,8 @@ class RescueInteractor(IInteractor):
         spawn_point = self.tiles[tileIndex]["follows"][0]
         for i in range(len(self.robots)):
             self.robots[i].body.angle = self.tiles[tileIndex]["rotation"]
+            if self.tiles[tileIndex]["flip"]:
+                self.robots[i].body.angle = self.robots[i].body.angle + np.pi
             self.bot_follows[i].body.position = local_space_to_world_space(
                 ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
                 self.robots[i].body.angle,
