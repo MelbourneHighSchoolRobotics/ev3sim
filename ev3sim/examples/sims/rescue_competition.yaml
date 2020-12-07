@@ -8,3 +8,32 @@ settings:
     MAX_FOLLOW_DIST: 8
     ROBOT_CENTRE_RADIUS: 3
     SHOW_FOLLOW_POINTS: false
+    BOT_SPAWN_POSITION: [[[-2, -2], 0]]
+    TILE_DEFINITIONS:
+    - path: tiles/definitions/city_limits.yaml
+      position: [-2, -2]
+    - path: tiles/definitions/right_angle.yaml
+      position: [-1, -2]
+    - path: tiles/definitions/tunnel.yaml
+      position: [-1, -1]
+      rotation: 90
+    - path: tiles/definitions/right_angle.yaml
+      position: [-1, 0]
+      flip: true
+      rotation: 270
+    - path: tiles/definitions/ramp.yaml
+      position: [0, 0]
+    - path: tiles/definitions/rough.yaml
+      position: [1, 0]
+    - path: tiles/definitions/right_angle.yaml
+      position: [2, 0]
+    - path: tiles/definitions/color_left.yaml
+      position: [2, 1]
+      flip: true
+      rotation: 270
+    - path: tiles/definitions/left_circle_green.yaml
+      position: [1, 1]
+      flip: true
+    - path: tiles/definitions/water_tower.yaml
+      position: [1, 2]
+      rotation: 90

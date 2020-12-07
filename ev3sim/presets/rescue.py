@@ -33,6 +33,16 @@ class RescueInteractor(IInteractor):
     BOT_SPAWN_RADIUS = 2
     BOT_SPAWN_ANGLE = [-10, 10]
 
+    BOT_SPAWN_POSITION = [[[0, 0], 2]]
+    TILE_DEFINITIONS = [
+        {
+            "path": "tiles/definitions/city_limits.yaml",
+            "position": [-2, -2],
+            "rotation": 0,
+            "flip": False,
+        },
+    ]
+
     GAME_LENGTH_MINUTES = 5
 
     TILE_LENGTH = 30
@@ -42,13 +52,11 @@ class RescueInteractor(IInteractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.spawns = kwargs.get("spawns")
         self.time_tick = 0
-        self.tile_args = kwargs["tiles"]
 
     def spawnTiles(self):
         self.tiles = []
-        for i, tile in enumerate(self.tile_args):
+        for i, tile in enumerate(self.TILE_DEFINITIONS):
             self.tiles.append({})
             import yaml
 
@@ -304,7 +312,7 @@ class RescueInteractor(IInteractor):
         self.spawnFollowPointPhysics()
         self.spawnTileUI()
         self.locateBots()
-        assert len(self.robots) <= len(self.spawns), "Not enough spawning locations specified."
+        assert len(self.robots) <= len(self.BOT_SPAWN_POSITION), "Not enough spawning locations specified."
         self.scores = [0] * len(self.robots)
 
         self.reset()
@@ -396,12 +404,18 @@ class RescueInteractor(IInteractor):
         for i, robot in enumerate(self.robots):
             diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
             diff_angle = Randomiser.random() * 2 * np.pi
-            robot.body.position = np.array(
-                [self.spawns[i][0][0] * self.TILE_LENGTH, self.spawns[i][0][1] * self.TILE_LENGTH]
-            ) + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
+            robot.body.position = (
+                np.array(
+                    [
+                        self.BOT_SPAWN_POSITION[i][0][0] * self.TILE_LENGTH,
+                        self.BOT_SPAWN_POSITION[i][0][1] * self.TILE_LENGTH,
+                    ]
+                )
+                + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
+            )
             robot.body.angle = (
                 (
-                    self.spawns[i][1]
+                    self.BOT_SPAWN_POSITION[i][1]
                     + self.BOT_SPAWN_ANGLE[0]
                     + Randomiser.random() * (self.BOT_SPAWN_ANGLE[1] - self.BOT_SPAWN_ANGLE[0])
                 )
@@ -513,6 +527,8 @@ rescue_settings = {
         "BOT_SPAWN_RADIUS",
         "BOT_SPAWN_ANGLE",
         "GAME_LENGTH_MINUTES",
+        "BOT_SPAWN_POSITION",
+        "TILE_DEFINITIONS",
     ]
 }
 
