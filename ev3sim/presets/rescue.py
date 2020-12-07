@@ -16,6 +16,9 @@ from ev3sim.visual.utils import screenspace_to_worldspace
 
 class RescueInteractor(IInteractor):
 
+    # Must occur before device interactors.
+    SORT_ORDER = -10
+
     FOLLOW_POINT_CATEGORY = 0b1000
     SHOW_FOLLOW_POINTS = True
     SHOW_ROBOT_COLLIDER = False
@@ -439,11 +442,11 @@ class RescueInteractor(IInteractor):
             self.tiles[i]["checker"].tick(tick)
         # UI Tick
         if self._pressed:
-            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "assets/ui/controls_reset_pressed.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_pressed.png"
         else:
             ScriptLoader.instance.object_map[
                 "controlsReset"
-            ].visual.image_path = "assets/ui/controls_reset_released.png"
+            ].visual.image_path = "ui/controls_reset_released.png"
         self.update_time()
 
     @stop_on_pause

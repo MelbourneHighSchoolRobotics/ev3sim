@@ -1,0 +1,3 @@
+bots:
+- controllable.yaml
+preset_file: rescue.yaml

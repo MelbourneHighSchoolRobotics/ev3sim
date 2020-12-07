@@ -48,21 +48,18 @@ interactors:
       rotation: 90
 
 settings:
-  # ScriptLoader
-  ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
-  # ScreenManager
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
-  ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
-  ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
-  ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#264653"
+  app:
+    tick_rate: 30
+    timescale: 1
+  screen:
+    MAP_WIDTH: 293.3
+    MAP_HEIGHT: 220
+    BACKGROUND_COLOUR: "#264653"
 
 elements:
 - type: visual
   name: Image
-  image_path: 'assets/ui/timer_bg.png'
+  image_path: 'ui/timer_bg.png'
   position: [0,110]
   hAlignment: m
   vAlignment: t
@@ -85,7 +82,7 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_pause_released.png'
+    image_path: 'ui/controls_pause_released.png'
     hAlignment: r
     vAlignment: t
     zPos: 4.5
@@ -97,7 +94,7 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_reset_released.png'
+    image_path: 'ui/controls_reset_released.png'
     hAlignment: l
     vAlignment: t
     zPos: 4.5
