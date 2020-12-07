@@ -13,6 +13,7 @@ from ev3sim.objects.utils import magnitude_sq
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
 from ev3sim.objects.base import DYNAMIC_CATEGORY, STATIC_CATEGORY
+from ev3sim.settings import ObjectSetting
 
 
 class SoccerInteractor(IInteractor):
@@ -30,7 +31,8 @@ class SoccerInteractor(IInteractor):
     BOT_OUT_ON_WHITE_PENALTY_SECONDS = 30
     BALL_RESET_WHITE_DELAY_SECONDS = 5
 
-    TEAM_NAMES = []
+    TEAM_NAME_1 = ""
+    TEAM_NAME_2 = ""
     SPAWN_LOCATIONS = []
     PENALTY_LOCATIONS = []
     GOALS = []
@@ -50,11 +52,6 @@ class SoccerInteractor(IInteractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
-        self.names = self.TEAM_NAMES[:]
-        self.spawns = self.SPAWN_LOCATIONS[:]
-        self.penalty = self.PENALTY_LOCATIONS[:]
-        self.goals = self.GOALS[:]
         self.current_goal_score_tick = -1
         self.out_on_white_tick = 0
         self.time_tick = 0
@@ -82,6 +79,11 @@ class SoccerInteractor(IInteractor):
             raise ValueError("No robots loaded.")
 
     def startUp(self):
+        self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
+        self.names = [self.TEAM_NAME_1, self.TEAM_NAME_2]
+        self.spawns = self.SPAWN_LOCATIONS[:]
+        self.penalty = self.PENALTY_LOCATIONS[:]
+        self.goals = self.GOALS[:]
         assert len(self.names) == len(self.spawns) and len(self.spawns) == len(
             self.goals
         ), "All player related arrays should be of equal size."
@@ -158,6 +160,7 @@ class SoccerInteractor(IInteractor):
 
         for x in range(len(self.names)):
             # Set up goal collider.
+            self.goals[x]["zPos"] = 6
             pos = self.goals[x]["position"]
             del self.goals[x]["position"]
             obj = {
@@ -191,7 +194,7 @@ class SoccerInteractor(IInteractor):
             ScriptLoader.instance.object_map[f"score{x+1}Text"].text = str(self.team_scores[x])
 
     def reset(self):
-        self.team_scores = [0 for x in self.names]
+        self.team_scores = [0 for _ in self.names]
         self.updateScoreText()
         self.resetPositions()
         self.time_tick = 0
@@ -202,7 +205,7 @@ class SoccerInteractor(IInteractor):
     def resetPositions(self):
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
-                actual_index = team * self.BOTS_PER_TEAM + index
+                actual_index = team + index * len(self.names)
                 if actual_index >= len(self.robots):
                     break
                 # Generate a uniformly random point in radius of spawn for bot.
@@ -263,17 +266,15 @@ class SoccerInteractor(IInteractor):
 
         # UI Tick
         if self._pressed:
-            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "assets/ui/controls_reset_pressed.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_pressed.png"
         else:
-            ScriptLoader.instance.object_map[
-                "controlsReset"
-            ].visual.image_path = "assets/ui/controls_reset_released.png"
+            ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_released.png"
         self.update_time()
 
     def afterPhysics(self):
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
-                actual_index = team * self.BOTS_PER_TEAM + index
+                actual_index = team + index * len(self.names)
                 if actual_index >= len(self.robots):
                     break
                 if self.bot_penalties[actual_index] > 0:
@@ -321,7 +322,7 @@ class SoccerInteractor(IInteractor):
         self.current_goal_score_tick = self.cur_tick
         for team in range(len(self.names)):
             for index in range(self.BOTS_PER_TEAM):
-                actual_index = team * self.BOTS_PER_TEAM + index
+                actual_index = team + index * len(self.names)
                 if actual_index >= len(self.robots):
                     break
                 ScriptLoader.instance.sendEvent(
@@ -332,16 +333,17 @@ class SoccerInteractor(IInteractor):
         self.bot_penalties[botIndex] = self.BOT_OUT_ON_WHITE_PENALTY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
         self.robots[botIndex].clickable = False
         ScriptLoader.instance.sendEvent(f"Robot-{botIndex}", START_PENALTY, {})
-        graphic = self.generatePenaltyGraphic(botIndex)
+        self.generatePenaltyGraphic(botIndex)
 
     def generatePenaltyGraphic(self, botIndex):
-        team = botIndex // self.BOTS_PER_TEAM
+        team = botIndex % len(self.names)
         penaltyIndex = (
             len(
                 [
-                    x
-                    for x in range(team * self.BOTS_PER_TEAM, (team + 1) * self.BOTS_PER_TEAM)
-                    if x < len(self.bot_penalties) and self.bot_penalties[x] != 0
+                    team + x * len(self.names)
+                    for x in range(self.BOTS_PER_TEAM)
+                    if team + x * len(self.names) < len(self.bot_penalties)
+                    and self.bot_penalties[team + x * len(self.names)] != 0
                 ]
             )
             - 1
@@ -386,11 +388,9 @@ class SoccerInteractor(IInteractor):
     def finishPenalty(self, botIndex):
         self.bot_penalties[botIndex] = 0
         self.robots[botIndex].clickable = True
-        self.robots[botIndex].body.position = self.spawns[botIndex // self.BOTS_PER_TEAM][
-            botIndex % self.BOTS_PER_TEAM
-        ][0]
+        self.robots[botIndex].body.position = self.spawns[botIndex % len(self.names)][botIndex // len(self.names)][0]
         self.robots[botIndex].body.angle = (
-            self.spawns[botIndex // self.BOTS_PER_TEAM][botIndex % self.BOTS_PER_TEAM][1] * np.pi / 180
+            self.spawns[botIndex // len(self.names)][botIndex % len(self.names)][1] * np.pi / 180
         )
         self.robots[botIndex].body.velocity = np.array([0.0, 0.0])
         self.robots[botIndex].body.angular_velocity = 0
@@ -418,9 +418,10 @@ class SoccerInteractor(IInteractor):
                             raise ValueError(f"Unknown team action {action}")
                         self.updateScoreText()
                     for index in range(self.BOTS_PER_TEAM):
-                        if team * self.BOTS_PER_TEAM + index < len(self.robots):
-                            if shape.shape.obj.key == f"UI-penalty-{team * self.BOTS_PER_TEAM + index}":
-                                self.finishPenalty(team * self.BOTS_PER_TEAM + index)
+                        actual_index = team + index * len(self.names)
+                        if actual_index < len(self.robots):
+                            if shape.shape.obj.key == f"UI-penalty-{actual_index}":
+                                self.finishPenalty(actual_index)
                 if shape.shape.obj.key == "controlsReset":
                     self._pressed = True
 
@@ -429,12 +430,13 @@ class SoccerInteractor(IInteractor):
             shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
             for team in range(len(self.names)):
                 for index in range(self.BOTS_PER_TEAM):
+                    actual_index = team + index * len(self.names)
                     for shape in shapes:
-                        if shape.shape.obj.key == f"UI-penalty-{team * self.BOTS_PER_TEAM + index}":
+                        if shape.shape.obj.key == f"UI-penalty-{team + index * len(self.names)}":
                             shape.shape.obj.visual.fill = "penalty_ui_bg_hover"
                             break
                     else:
-                        key = f"UI-penalty-{team * self.BOTS_PER_TEAM + index}"
+                        key = f"UI-penalty-{team + index * len(self.names)}"
                         if key in ScriptLoader.instance.object_map:
                             ScriptLoader.instance.object_map[key].visual.fill = "penalty_ui_bg"
 
@@ -447,3 +449,59 @@ class SoccerInteractor(IInteractor):
                 self._pressed = False
             if len(shapes) == 0:
                 self._pressed = False
+
+
+soccer_settings = {
+    attr: ObjectSetting(SoccerInteractor, attr)
+    for attr in [
+        "TEAM_NAME_1",
+        "TEAM_NAME_2",
+        "SPAWN_LOCATIONS",
+        "PENALTY_LOCATIONS",
+        "GOALS",
+        "GAME_HALF_LENGTH_MINUTES",
+        "SHOW_GOAL_COLLIDERS",
+        "ENFORCE_OUT_ON_WHITE",
+        "BALL_RESET_ON_WHITE",
+        "BALL_RESET_WHITE_DELAY_SECONDS",
+        "BOT_OUT_ON_WHITE_PENALTY_SECONDS",
+    ]
+}
+
+from ev3sim.visual.settings.elements import NumberEntry, TextEntry, Checkbox
+
+visual_settings = [
+    {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BATCH NAME", None, (lambda s: (0, 20)))]},
+    {
+        "height": lambda s: 190,
+        "objects": [
+            TextEntry(["settings", "soccer", "TEAM_NAME_1"], "Team 1", "Team 1 Name", (lambda s: (0, 20))),
+            TextEntry(["settings", "soccer", "TEAM_NAME_2"], "Team 2", "Team 2 Name", (lambda s: (0, 70))),
+            NumberEntry(["settings", "soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120))),
+        ],
+    },
+    {
+        "height": lambda s: 240 if s[0] < 580 else 140,
+        "objects": [
+            Checkbox(["settings", "soccer", "ENFORCE_OUT_ON_WHITE"], True, "Out on white", (lambda s: (0, 20))),
+            Checkbox(
+                ["settings", "soccer", "BALL_RESET_ON_WHITE"],
+                True,
+                "Ball reset on white",
+                (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)),
+            ),
+            NumberEntry(
+                ["settings", "soccer", "BOT_OUT_ON_WHITE_PENALTY_SECONDS"],
+                30,
+                "Bot out penalty",
+                (lambda s: (0, 120) if s[0] < 540 else (0, 70)),
+            ),
+            NumberEntry(
+                ["settings", "soccer", "BALL_RESET_WHITE_DELAY_SECONDS"],
+                5,
+                "Ball reset delay",
+                (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+            ),
+        ],
+    },
+]

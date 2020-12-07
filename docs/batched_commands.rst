@@ -48,8 +48,8 @@ The batched command file looks like the following:
       ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
       ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
       # ScreenObjectManager
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 960
+      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 720
       # Soccer
       ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
         - Team 1

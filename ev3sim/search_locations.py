@@ -1,0 +1,8 @@
+preset_locations = ["workspace/presets/", "workspace", "package/presets/"]
+batch_locations = ["workspace/sims/", "workspace", "package/examples/sims/"]
+bot_locations = ["workspace/robots/", "workspace", "package/examples/robots/"]
+code_locations = ["workspace/code/", "workspace", "package/examples/robots/"]
+config_locations = ["workspace", "package"]
+device_locations = ["workspace/devices/", "package/devices/"]
+theme_locations = ["workspace/assets/", "workspace", "package/assets"]
+asset_locations = ["workspace/assets/", "workspace", "package/assets/"]

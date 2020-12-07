@@ -15,9 +15,9 @@ jobs:
     # Standard drop-in approach that should work for most people.
 
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.x
+        python-version: 3.8
 
     - name: Install dependencies
       run: |

@@ -1,5 +1,5 @@
 numpy>=1.19.0
-pygame>=1.9.6
+pygame>=2.0.0
 PyYAML>=3.13
 pymunk>=5.6.0
 pyperclip>=1.8.0
@@ -10,3 +10,4 @@ wheel>=0.35.0
 black>=20.8b1
 opensimplex>=0.3
 luddite>=1.0.1
+pygame-gui>=0.5.7

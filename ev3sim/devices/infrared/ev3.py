@@ -9,16 +9,18 @@ class InfraredInteractor(IDeviceInteractor):
 
     name = "INFRARED"
 
+    functional = True
+
     def startUp(self):
         super().startUp()
         try:
             self.tracking_ball = ScriptLoader.instance.object_map["IR_BALL"]
         except:
-            raise ValueError("IR sensors should not be used in presets with no IR ball!")
+            self.functional = False
 
     def tick(self, tick):
-        ball_pos = self.tracking_ball.position
         sensor = ScriptLoader.instance.object_map[self.getPrefix() + "light_up_2"]
+        ball_pos = self.tracking_ball.position if self.functional else sensor.position
         distance = np.sqrt(magnitude_sq(ball_pos - sensor.position))
         vector = ball_pos - sensor.position
         relative_bearing = np.arctan2(vector[1], vector[0]) - sensor.rotation

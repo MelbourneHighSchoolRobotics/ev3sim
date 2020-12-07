@@ -1,0 +1,6 @@
+app:
+  FPS: 30
+screen:
+  SCREEN_WIDTH: 960
+  SCREEN_HEIGHT: 720
+  theme: default_theme.json

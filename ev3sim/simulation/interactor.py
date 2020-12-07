@@ -1,3 +1,6 @@
+from ev3sim.settings import SettingsManager
+
+
 class IInteractor:
     """
     An interactor can be thought of as a robot in the simulation which has much more access to the inner workings of the system, and no physical presence.
@@ -63,4 +66,15 @@ def fromOptions(options):
     import importlib
 
     klass = getattr(importlib.import_module(mname), cname)
-    return klass(*options.get("args", []), **options.get("kwargs", {}))
+    topObj = klass(*options.get("args", []), **options.get("kwargs", {}))
+    # Add any settings for this interactor, if applicable.
+    if "settings_name" in options:
+        name = options["settings_name"]
+        if "settings_defn" not in options:
+            raise ValueError(f"Expected a settings object to add with group name {name}")
+        mname, cname = options["settings_defn"].rsplit(".", 1)
+        obj = getattr(importlib.import_module(mname), cname)
+        SettingsManager.instance.addSettingGroup(name, obj)
+        # We need to remove this setting once the simulation ends, so save the name.
+        topObj._settings_name = name
+    return topObj

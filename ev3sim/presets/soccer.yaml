@@ -1,3 +1,11 @@
+preview_path: "soccer_preview.png"
+
+bot_names:
+  - "Team 1\nBot 1"
+  - "Team 2\nBot 1"
+  - "Team 1\nBot 2"
+  - "Team 2\nBot 2"
+
 colours:
   wall_color: "#2a9d8f"
   strip_color: "#f1faee"
@@ -18,46 +26,44 @@ interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
 - class_path: ev3sim.presets.pause_interactor.PauseInteractor
 - class_path: ev3sim.presets.soccer.SoccerInteractor
+  settings_name: soccer
+  settings_defn: ev3sim.presets.soccer.soccer_settings
 
 settings:
-  # ScriptLoader
-  ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
-  ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
-  # ScreenManager
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 1280
-  ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 960
-  ev3sim.visual.manager.ScreenObjectManager.MAP_WIDTH: 293.3
-  ev3sim.visual.manager.ScreenObjectManager.MAP_HEIGHT: 220
-  ev3sim.visual.manager.ScreenObjectManager.BACKGROUND_COLOUR: "#1f1f1f"
-  # Soccer
-  ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
-    - Team 1
-    - Team 2
-  ev3sim.presets.soccer.SoccerInteractor.SPAWN_LOCATIONS:
-    - [[[-80, -18], 0], [[-50, -18], 0]]
-    - [[[80, -18], 180], [[50, -18], 180]]
-  ev3sim.presets.soccer.SoccerInteractor.PENALTY_LOCATIONS:
-    - [[[-110, -10], 0], [[-125, -26], 0]]
-    - [[[110, -26], 180], [[125, -10], 180]]
-  ev3sim.presets.soccer.SoccerInteractor.GOALS:
-    - name: Rectangle
-      width: 7.4
-      height: 45
-      position: [-95.2, -18]
-      fill: goal_fill
-    - name: Rectangle
-      width: 7.4
-      height: 45
-      position: [95.2, -18]
-      fill: goal_fill
-  # Soccer referee game settings
-  ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
-  ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
-  ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
-  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
-  ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 5
-  ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
+  app:
+    tick_rate: 30
+    timescale: 1
+  screen:
+    MAP_WIDTH: 293.3
+    MAP_HEIGHT: 220
+    BACKGROUND_COLOUR: "#1f1f1f"
+  soccer:
+    TEAM_NAME_1: Team 1
+    TEAM_NAME_2: Team 2
+    SPAWN_LOCATIONS:
+      - [[[-80, -18], 0], [[-50, -18], 0]]
+      - [[[80, -18], 180], [[50, -18], 180]]
+    PENALTY_LOCATIONS:
+      - [[[-110, -10], 0], [[-125, -26], 0]]
+      - [[[110, -26], 180], [[125, -10], 180]]
+    GOALS:
+      - name: Rectangle
+        width: 7.4
+        height: 45
+        position: [-95.2, -18]
+        fill: goal_fill
+      - name: Rectangle
+        width: 7.4
+        height: 45
+        position: [95.2, -18]
+        fill: goal_fill
+    # Soccer referee game settings
+    GAME_HALF_LENGTH_MINUTES: 5
+    SHOW_GOAL_COLLIDERS: true
+    ENFORCE_OUT_ON_WHITE: true
+    BALL_RESET_ON_WHITE: true
+    BALL_RESET_WHITE_DELAY_SECONDS: 5
+    BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
 
 elements:
 - type: visual
@@ -78,6 +84,16 @@ elements:
   stroke_width: 0
   position: [-115.75, -18]
   zPos: 3
+  key: leftGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [-115.75, -18]
+  zPos: 2
   key: leftGrass
   sensorVisible: true
 - type: visual
@@ -88,8 +104,18 @@ elements:
   stroke_width: 0
   position: [115.75, -18]
   zPos: 3
+  key: rightGrassPenalty
+  sensorVisible: false
+- type: visual
+  name: Rectangle
+  width: 48.5
+  height: 48
+  fill: 'grass_color'
+  stroke_width: 0
+  position: [115.75, -18]
+  zPos: 2
   key: rightGrass
-  sensorVisible: true
+  sensorVisible: false
 - type: object
   physics: true
   collider: inherit
@@ -434,8 +460,8 @@ elements:
   static: true
   visual:
     name: Rectangle
-    width: 182
-    height: 126
+    width: 192
+    height: 136
     fill: null
     stroke_width: 0
     zPos: 5.2
@@ -496,7 +522,7 @@ elements:
 # UI Elements
 - type: visual
   name: Image
-  image_path: 'assets/ui/left_bg.png'
+  image_path: 'ui/left_bg.png'
   position: [-145, 110]
   hAlignment: l
   vAlignment: t
@@ -504,7 +530,7 @@ elements:
   key: team1UI
 - type: visual
   name: Image
-  image_path: 'assets/ui/right_bg.png'
+  image_path: 'ui/right_bg.png'
   position: [145, 110]
   hAlignment: r
   vAlignment: t
@@ -536,7 +562,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_plus.png"
+    image_path: "ui/goal_plus.png"
     hAlignment: r
     vAlignment: t
     scale: 0.5
@@ -549,7 +575,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_minus.png"
+    image_path: "ui/goal_minus.png"
     hAlignment: r
     vAlignment: t
     scale: 0.5
@@ -562,7 +588,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_plus.png"
+    image_path: "ui/goal_plus.png"
     hAlignment: l
     vAlignment: t
     scale: 0.5
@@ -575,7 +601,7 @@ elements:
   static: true
   visual:
     name: Image
-    image_path: "assets/ui/goal_minus.png"
+    image_path: "ui/goal_minus.png"
     hAlignment: l
     vAlignment: t
     scale: 0.5
@@ -607,7 +633,7 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_pause_released.png'
+    image_path: 'ui/controls_pause_released.png'
     hAlignment: r
     vAlignment: t
     zPos: 5
@@ -619,14 +645,14 @@ elements:
   position: [0, 96]
   visual:
     name: Image
-    image_path: 'assets/ui/controls_reset_released.png'
+    image_path: 'ui/controls_reset_released.png'
     hAlignment: l
     vAlignment: t
     zPos: 5
   key: controlsReset
 - type: visual
   name: Image
-  image_path: 'assets/ui/timer_bg.png'
+  image_path: 'ui/timer_bg.png'
   position: [0,110]
   hAlignment: m
   vAlignment: t
@@ -671,7 +697,7 @@ elements:
     fill: '#ff0000'
     stroke_width: 0.2
     stroke: '#ffffff'
-    zPos: 2
+    zPos: 6.5
   friction: 0.99
   mass: 0.1
   restitution: 0.3
