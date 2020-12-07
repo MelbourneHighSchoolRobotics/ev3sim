@@ -520,9 +520,24 @@ visual_settings = [
         "height": (lambda s: 240 if s[0] < 540 else 140),
         "objects": [
             NumberEntry(["settings", "rescue", "GAME_LENGTH_MINUTES"], 5, "Time allowed", (lambda s: (0, 20))),
-            NumberEntry(["settings", "rescue", "ROBOT_CENTRE_RADIUS"], 3, "Collision Radius", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20))),
-            NumberEntry(["settings", "rescue", "MAX_FOLLOW_DIST"], 8, "Lack of Progress", (lambda s: (0, 120) if s[0] < 540 else (0, 70))),
-            NumberEntry(["settings", "rescue", "FOLLOW_POINT_RADIUS"], 1, "Follow Radius", (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70))),
+            NumberEntry(
+                ["settings", "rescue", "ROBOT_CENTRE_RADIUS"],
+                3,
+                "Collision Radius",
+                (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)),
+            ),
+            NumberEntry(
+                ["settings", "rescue", "MAX_FOLLOW_DIST"],
+                8,
+                "Lack of Progress",
+                (lambda s: (0, 120) if s[0] < 540 else (0, 70)),
+            ),
+            NumberEntry(
+                ["settings", "rescue", "FOLLOW_POINT_RADIUS"],
+                1,
+                "Follow Radius",
+                (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+            ),
         ],
     },
     {
