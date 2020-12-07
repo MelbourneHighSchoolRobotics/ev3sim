@@ -266,13 +266,21 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
+        import importlib
         from ev3sim.visual.manager import ScreenObjectManager
-        from ev3sim.presets.soccer import visual_settings
+
+        with open(self.available_batches[self.batch_index][1], "r") as f:
+            conf = yaml.safe_load(f)
+        with open(find_abs(conf["preset_file"], preset_locations)) as f:
+            preset = yaml.safe_load(f)
+        mname, cname = preset["visual_settings"].rsplit(".", 1)
+
+        klass = getattr(importlib.import_module(mname), cname)
 
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_SETTINGS,
             file=self.available_batches[self.batch_index][1],
-            settings=visual_settings,
+            settings=klass,
             allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
         )
 

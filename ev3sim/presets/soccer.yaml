@@ -6,6 +6,8 @@ bot_names:
   - "Team 1\nBot 2"
   - "Team 2\nBot 2"
 
+visual_settings: ev3sim.presets.soccer.visual_settings
+
 colours:
   wall_color: "#2a9d8f"
   strip_color: "#f1faee"
