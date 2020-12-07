@@ -256,5 +256,13 @@
             "size": "14",
             "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
         }
+    },
+    "option-button": {
+        "prototype": "any_button",
+        "font": {
+            "name": "Roboto",
+            "size": "24",
+            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+        }
     }
 }
