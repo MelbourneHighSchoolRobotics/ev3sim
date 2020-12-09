@@ -176,6 +176,25 @@ class RescueMapEditMenu(BaseMenu):
             self.selected_type = self.SELECTED_EMPTY
         self.drawOptions()
 
+    def placeTile(self, tile_index):
+        assert self.selected_index is not None
+        for i, tile in enumerate(self.current_tiles):
+            if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
+                index = i
+                break
+        else:
+            index = len(self.current_tiles)
+            self.current_tiles.append({})
+        self.current_tiles[index] = {
+            "path": f"tiles/definitions/{self.tile_locations[tile_index]}",
+            "position": self.selected_index,
+            "rotation": 0,
+            "flip": False,
+        }
+        self.selected_type = self.SELECTED_GENERIC_TILE
+        self.resetRescueVisual()
+        self.drawOptions()
+
     def removeSelected(self):
         for i, tile in enumerate(self.current_tiles):
             if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
@@ -201,6 +220,8 @@ class RescueMapEditMenu(BaseMenu):
                     ScreenObjectManager.instance.popScreen()
                 elif event.ui_object_id.startswith("cancel-changes"):
                     ScreenObjectManager.instance.popScreen()
+                elif event.ui_object_id.startswith("tile_type"):
+                    self.drawTileDialog()
             elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -276,6 +297,88 @@ class RescueMapEditMenu(BaseMenu):
     def clearObjects(self):
         super().clearObjects()
         self.clearOptions()
+
+    tile_locations = [
+        "city_limits.yaml",
+        "color_right.yaml",
+        "left_circle_green.yaml",
+        "ramp.yaml",
+        "right_angle.yaml",
+        "rough.yaml",
+        "straight.yaml",
+        "tunnel.yaml",
+        "Water_tower.yaml",
+    ]
+
+    def drawTileDialog(self):
+        self.mode = self.MODE_TILE_DIALOG
+
+        class TilePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removeTileDialog()
+
+            def process_event(self2, event: pygame.event.Event) -> bool:
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_object_id.split(".")[-1].startswith("tile-"):
+                        index = int(event.ui_object_id.split(".")[-1].split("-")[1])
+                        self.placeTile(index)
+                        self2.kill()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+        self.picker = TilePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Pick Tile Type",
+            object_id=pygame_gui.core.ObjectID("tile_dialog"),
+        )
+
+        button_size = (picker_size[0] - 120) / 3
+        button_pos = lambda i: ((button_size + 15) * (i % 3), 10 + (button_size + 15) * (i // 3))
+
+        self.tile_buttons = []
+        self.tile_images = []
+        self.scroll_container = pygame_gui.elements.UIScrollingContainer(
+            relative_rect=pygame.Rect(20, 10, picker_size[0] - 60, picker_size[1] - 80),
+            container=self.picker,
+            manager=self,
+        )
+        for i in range(len(self.tile_locations)):
+            rect = pygame.Rect(*button_pos(i), button_size, button_size)
+            self.tile_buttons.append(
+                pygame_gui.elements.UIButton(
+                    relative_rect=rect,
+                    text=f"{i}",
+                    manager=self,
+                    container=self.scroll_container,
+                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-button", "invis_button"),
+                )
+            )
+            with open(find_abs(f"tiles/definitions/{self.tile_locations[i]}", preset_locations), "r") as f:
+                conf = yaml.safe_load(f)
+            self.tile_images.append(
+                pygame_gui.elements.UIImage(
+                    relative_rect=rect,
+                    image_surface=pygame.image.load(find_abs(conf["preview"], preset_locations)),
+                    manager=self,
+                    container=self.scroll_container,
+                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-image"),
+                )
+            )
+        self.scroll_container.set_scrollable_area_dimensions(
+            (picker_size[0] - 80, (button_size + 15) * ((len(self.tile_locations) + 2) // 3))
+        )
+
+    def removeTileDialog(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.scroll_container.kill()
+            for but, img in zip(self.tile_buttons, self.tile_images):
+                but.kill()
+                img.kill()
+        except:
+            pass
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         if self.selected_index is not None:
