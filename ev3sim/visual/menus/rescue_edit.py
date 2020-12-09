@@ -1,10 +1,13 @@
 import pygame
 import pygame_gui
 import yaml
+import ev3sim.visual.utils as utils
+from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.manager import ScreenObjectManager
-from ev3sim.visual.objects import visualFactory
-from ev3sim.visual.utils import screenspace_to_worldspace
+from ev3sim.visual.objects import IVisualElement, visualFactory
+from ev3sim.objects.base import BaseObject
+from ev3sim.search_locations import preset_locations
 
 
 class RescueMapEditMenu(BaseMenu):
@@ -43,18 +46,24 @@ class RescueMapEditMenu(BaseMenu):
     tile_offset = (8, 16)
 
     def toTilePos(self, mpos):
-        new_pos = screenspace_to_worldspace(mpos, self.customMap)
+        new_pos = utils.screenspace_to_worldspace(mpos, self.customMap)
         new_pos = [new_pos[0] - self.tile_offset[0], new_pos[1] - self.tile_offset[1]]
         return int((new_pos[0] + 105) // 30 - 3), int((new_pos[1] + 105) // 30 - 3)
 
     def resetRescueVisual(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.presets.rescue import RescueInteractor, rescue_settings
 
         ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
+        with open(find_abs("rescue.yaml", preset_locations), "r") as f:
+            conf = yaml.safe_load(f)
+        utils.GLOBAL_COLOURS.update(conf.get("colours", {}))
 
+        r = RescueInteractor()
+        r.TILE_DEFINITIONS = self.current_tiles
         self.customMap = {
             "SCREEN_WIDTH": self._size[0],
             "SCREEN_HEIGHT": self._size[1],
@@ -72,6 +81,19 @@ class RescueMapEditMenu(BaseMenu):
         placeableArea.customMap = self.customMap
         placeableArea.calculatePoints()
         ScreenObjectManager.instance.registerVisual(placeableArea, "placeableArea")
+        r.spawnTiles()
+        for tile in r.tiles:
+            for obj in tile["all_elems"]:
+                obj.position = [
+                    obj.position[0] + self.tile_offset[0],
+                    obj.position[1] + self.tile_offset[1],
+                ]
+                if isinstance(obj, IVisualElement):
+                    obj.customMap = self.customMap
+                    obj.calculatePoints()
+                elif isinstance(obj, BaseObject):
+                    obj.visual.customMap = self.customMap
+                    obj.visual.calculatePoints()
 
     def sizeObjects(self):
         # Bg
