@@ -160,7 +160,7 @@ class RescueMapEditMenu(BaseMenu):
     def saveBatch(self):
         for i in range(len(self.current_tiles)):
             pos = self.getSelectedAttribute("position", index=i, fallback=[0, 0])
-            pos = [float(v) for v in pos]
+            pos = [int(v) for v in pos]
             self.setSelectedAttribute("position", pos, index=i)
         self.previous_info["settings"]["rescue"]["TILE_DEFINITIONS"] = self.current_tiles
         with open(self.batch_file, "w") as f:
