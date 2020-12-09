@@ -13,6 +13,7 @@ from ev3sim.objects.utils import local_space_to_world_space, magnitude_sq
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import screenspace_to_worldspace
+from ev3sim.search_locations import preset_locations
 
 
 class RescueInteractor(IInteractor):
@@ -60,7 +61,7 @@ class RescueInteractor(IInteractor):
             self.tiles.append({})
             import yaml
 
-            path = find_abs(tile["path"], allowed_areas=["local/presets/", "local", "package/presets/", "package"])
+            path = find_abs(tile["path"], allowed_areas=preset_locations)
             with open(path, "r") as f:
                 t = yaml.safe_load(f)
             self.maxZpos = 0
@@ -106,9 +107,7 @@ class RescueInteractor(IInteractor):
             import importlib
 
             klass = getattr(importlib.import_module(mname), cname)
-            with open(
-                find_abs(t["ui"], allowed_areas=["local/presets/", "local", "package/presets/", "package"]), "r"
-            ) as f:
+            with open(find_abs(t["ui"], allowed_areas=preset_locations), "r") as f:
                 self.tiles[-1]["ui_elem"] = yaml.safe_load(f)
             for j, point in enumerate(t["follow_points"]):
                 if isinstance(point[0], (list, tuple)):
