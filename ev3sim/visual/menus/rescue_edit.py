@@ -16,6 +16,7 @@ class RescueMapEditMenu(BaseMenu):
     MODE_TILE_DIALOG = "TILE_SELECT"
 
     SELECTED_NOTHING = "Nothing"
+    SELECTED_EMPTY = "Empty"
     SELECTED_GENERIC_TILE = "Tile"
 
     def initWithKwargs(self, **kwargs):
@@ -32,15 +33,28 @@ class RescueMapEditMenu(BaseMenu):
         self.current_tiles = batch.get("settings", {}).get("rescue", {}).get("TILE_DEFINITIONS", [])
         super().initWithKwargs(**kwargs)
         self.resetRescueVisual()
+        self.drawOptions()
 
     def getSelectedAttribute(self, attr, fallback=None, index=None):
         if index is None:
-            index = self.selected_index
+            assert self.selected_type == self.SELECTED_GENERIC_TILE
+            for i, tile in enumerate(self.current_tiles):
+                if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
+                    index = i
+                    break
+            else:
+                raise ValueError(f"Expected existing tile in position {self.selected_index}")
         return self.current_tiles[index].get(attr, fallback)
 
     def setSelectedAttribute(self, attr, val, index=None):
         if index is None:
-            index = self.selected_index
+            assert self.selected_type == self.SELECTED_GENERIC_TILE
+            for i, tile in enumerate(self.current_tiles):
+                if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
+                    index = i
+                    break
+            else:
+                raise ValueError(f"Expected existing tile in position {self.selected_index}")
         self.current_tiles[index][attr] = val
 
     tile_offset = (8, 16)
@@ -53,7 +67,7 @@ class RescueMapEditMenu(BaseMenu):
     def resetRescueVisual(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
-        from ev3sim.presets.rescue import RescueInteractor, rescue_settings
+        from ev3sim.presets.rescue import RescueInteractor
 
         ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
@@ -152,6 +166,29 @@ class RescueMapEditMenu(BaseMenu):
         with open(self.batch_file, "w") as f:
             f.write(yaml.dump(self.previous_info))
 
+    def selectTile(self, pos):
+        self.selected_index = pos
+        for tile in self.current_tiles:
+            if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
+                self.selected_type = self.SELECTED_GENERIC_TILE
+                break
+        else:
+            self.selected_type = self.SELECTED_EMPTY
+        self.drawOptions()
+
+    def removeSelected(self):
+        for i, tile in enumerate(self.current_tiles):
+            if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
+                index = i
+                break
+        else:
+            raise ValueError("No existing tile is selected!")
+        del self.current_tiles[index]
+        self.selected_index = None
+        self.selected_type = self.SELECTED_NOTHING
+        self.resetRescueVisual()
+        self.drawOptions()
+
     def handleEvent(self, event):
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -168,7 +205,7 @@ class RescueMapEditMenu(BaseMenu):
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.current_mpos[0] > self.side_width:
-                    print(self.toTilePos(self.current_mpos))
+                    self.selectTile(self.toTilePos(self.current_mpos))
             elif event.type == pygame.MOUSEWHEEL:
                 for attr, conv, inc in [
                     ("rotation_entry", int, 90),
@@ -191,7 +228,22 @@ class RescueMapEditMenu(BaseMenu):
 
     def drawOptions(self):
         self.clearOptions()
-        # TODO: show side options for nothing selected, nothing on the tile, or a tile.
+        if self.selected_type != self.SELECTED_NOTHING:
+            self.drawTileTypeOptions()
+        if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
+            self.drawRemove()
+
+    def drawTileTypeOptions(self):
+        self.tile_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30,
+                *self.action_size,
+            ),
+            text="Tile Type",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
+        )
 
     def drawRemove(self):
         self.remove_button = pygame_gui.elements.UIButton(
@@ -205,11 +257,21 @@ class RescueMapEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
         )
 
-    def clearOptions(self):
+    def clearTileTypeOptions(self):
+        try:
+            self.tile_button.kill()
+        except:
+            pass
+
+    def clearRemove(self):
         try:
             self.remove_button.kill()
         except:
             pass
+
+    def clearOptions(self):
+        self.clearTileTypeOptions()
+        self.clearRemove()
 
     def clearObjects(self):
         super().clearObjects()
