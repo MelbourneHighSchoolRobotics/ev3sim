@@ -276,7 +276,8 @@ class RescueMapEditMenu(BaseMenu):
             self.drawTileTypeOptions()
         if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
             self.drawRemove()
-            self.drawGenericTileOptions()
+            if "city_limits" in self.getSelectedAttribute("path"):
+                self.drawSpawnOptions()
 
     def drawTileTypeOptions(self):
         self.tile_button = pygame_gui.elements.UIButton(
@@ -290,7 +291,7 @@ class RescueMapEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
         )
 
-    def drawGenericTileOptions(self):
+    def drawSpawnOptions(self):
         total_width = self.action_size[0]
         label_width = total_width * 0.7 - 10
         button_size = total_width - label_width - 10
@@ -356,7 +357,7 @@ class RescueMapEditMenu(BaseMenu):
         except:
             pass
 
-    def clearGenericTileOptions(self):
+    def clearSpawnOptions(self):
         try:
             self.spawn_label.kill()
             self.spawn_button.kill()
@@ -372,7 +373,7 @@ class RescueMapEditMenu(BaseMenu):
 
     def clearOptions(self):
         self.clearTileTypeOptions()
-        self.clearGenericTileOptions()
+        self.clearSpawnOptions()
         self.clearRemove()
 
     def clearObjects(self):
