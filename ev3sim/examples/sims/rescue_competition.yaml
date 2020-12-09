@@ -44,12 +44,12 @@ settings:
       position:
       - 2
       - 0
-    - flip: true
-      path: tiles/definitions/color_left.yaml
+    - flip: false
+      path: tiles/definitions/color_right.yaml
       position:
       - 2
       - 1
-      rotation: 270
+      rotation: 90
     - flip: true
       path: tiles/definitions/left_circle_green.yaml
       position:

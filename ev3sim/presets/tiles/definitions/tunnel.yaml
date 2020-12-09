@@ -59,3 +59,4 @@ elements:
   key: botTunnel
 ui: tiles/ui/completable.yaml
 checker: ev3sim.presets.tiles.checkers.TunnelChecker.TunnelChecker
+preview: tiles/previews/tunnel.png

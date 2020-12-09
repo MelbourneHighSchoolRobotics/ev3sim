@@ -45,3 +45,4 @@ elements:
   key: waterTower
 ui: tiles/ui/completable.yaml
 checker: ev3sim.presets.tiles.checkers.WaterChecker.WaterChecker
+preview: tiles/previews/water_tower.png

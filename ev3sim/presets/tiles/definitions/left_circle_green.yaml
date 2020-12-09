@@ -38,3 +38,4 @@ checker_kwargs:
   shortcut_paths:
   - [0, 0, 'enter']
   - [0, 0, 'exit']
+preview: tiles/previews/green_right.png

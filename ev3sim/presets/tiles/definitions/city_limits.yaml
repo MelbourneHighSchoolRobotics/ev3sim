@@ -32,3 +32,4 @@ elements:
   position: [5, 0]
 ui: tiles/ui/blank.yaml
 checker: ev3sim.presets.tiles.checkers.RescueChecker.BaseRescueChecker
+preview: tiles/previews/city_limits.png
