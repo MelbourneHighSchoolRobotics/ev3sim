@@ -7,7 +7,7 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.objects import IVisualElement, visualFactory
 from ev3sim.objects.base import BaseObject
-from ev3sim.search_locations import preset_locations
+from ev3sim.search_locations import asset_locations, preset_locations
 
 
 class RescueMapEditMenu(BaseMenu):
@@ -158,11 +158,27 @@ class RescueMapEditMenu(BaseMenu):
         self._all_objs.append(self.cancel_button)
 
     def saveBatch(self):
+
         for i in range(len(self.current_tiles)):
             pos = self.getSelectedAttribute("position", index=i, fallback=[0, 0])
             pos = [int(v) for v in pos]
             self.setSelectedAttribute("position", pos, index=i)
         self.previous_info["settings"]["rescue"]["TILE_DEFINITIONS"] = self.current_tiles
+        # Update the spawn rotation related to the tile.
+        for i in range(len(self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"])):
+            self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][i][1] = 0
+            for obj in self.previous_info["settings"]["rescue"]["TILE_DEFINITIONS"]:
+                if (
+                    obj["position"][0] != self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][i][0][0]
+                    or obj["position"][1] != self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][i][0][1]
+                ):
+                    continue
+                rot = obj.get("rotation", 0)
+                flip = obj.get("flip", False)
+                # All tiles are by default from left to being with. Flip does so on the horizontal.
+                if flip:
+                    rot = 180 - rot
+                self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][i][1] = rot
         with open(self.batch_file, "w") as f:
             f.write(yaml.dump(self.previous_info))
 
@@ -208,6 +224,10 @@ class RescueMapEditMenu(BaseMenu):
         self.resetRescueVisual()
         self.drawOptions()
 
+    def setSpawnAtSelected(self):
+        pos = self.getSelectedAttribute("position")
+        self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0] = pos
+
     def handleEvent(self, event):
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -222,6 +242,9 @@ class RescueMapEditMenu(BaseMenu):
                     ScreenObjectManager.instance.popScreen()
                 elif event.ui_object_id.startswith("tile_type"):
                     self.drawTileDialog()
+                elif event.ui_object_id.startswith("spawn_button"):
+                    self.setSpawnAtSelected()
+                    self.updateSpawnCheckbox()
             elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -253,6 +276,7 @@ class RescueMapEditMenu(BaseMenu):
             self.drawTileTypeOptions()
         if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
             self.drawRemove()
+            self.drawGenericTileOptions()
 
     def drawTileTypeOptions(self):
         self.tile_button = pygame_gui.elements.UIButton(
@@ -265,6 +289,54 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
         )
+
+    def drawGenericTileOptions(self):
+        total_width = self.action_size[0]
+        label_width = total_width * 0.7 - 10
+        button_size = total_width - label_width - 10
+        self.spawn_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - total_width / 2 - 2.5,
+                30 + (self.action_size[1] + 20),
+                label_width,
+                button_size,
+            ),
+            text="Spawn",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("is_spawn", "entry-label"),
+        )
+        but_rect = pygame.Rect(
+            self.side_width / 2 - total_width / 2 - 2.5 + label_width + 10,
+            30 + (self.action_size[1] + 20),
+            button_size,
+            button_size,
+        )
+        self.spawn_image = pygame_gui.elements.UIImage(
+            relative_rect=but_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("spawn_image"),
+            image_surface=pygame.Surface((button_size, button_size)),
+        )
+        self.spawn_button = pygame_gui.elements.UIButton(
+            relative_rect=but_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("spawn_button", "invis_button"),
+        )
+        self.updateSpawnCheckbox()
+
+    def updateSpawnCheckbox(self):
+        tile_pos = self.getSelectedAttribute("position")
+        spawn = self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0]
+        img = pygame.image.load(
+            find_abs(
+                "ui/box_check.png" if tile_pos[0] == spawn[0] and tile_pos[1] == spawn[1] else "ui/box_clear.png",
+                allowed_areas=asset_locations,
+            )
+        )
+        if img.get_size() != self.spawn_image.rect.size:
+            img = pygame.transform.smoothscale(img, (self.spawn_image.rect.width, self.spawn_image.rect.height))
+        self.spawn_image.set_image(img)
 
     def drawRemove(self):
         self.remove_button = pygame_gui.elements.UIButton(
@@ -284,6 +356,14 @@ class RescueMapEditMenu(BaseMenu):
         except:
             pass
 
+    def clearGenericTileOptions(self):
+        try:
+            self.spawn_label.kill()
+            self.spawn_button.kill()
+            self.spawn_image.kill()
+        except:
+            pass
+
     def clearRemove(self):
         try:
             self.remove_button.kill()
@@ -292,6 +372,7 @@ class RescueMapEditMenu(BaseMenu):
 
     def clearOptions(self):
         self.clearTileTypeOptions()
+        self.clearGenericTileOptions()
         self.clearRemove()
 
     def clearObjects(self):
