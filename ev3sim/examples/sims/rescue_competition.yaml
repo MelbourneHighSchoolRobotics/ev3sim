@@ -17,10 +17,12 @@ settings:
       position:
       - -2
       - -2
-    - path: tiles/definitions/right_angle.yaml
+    - flip: false
+      path: tiles/definitions/right_angle.yaml
       position:
       - -1
       - -2
+      rotation: 0
     - path: tiles/definitions/tunnel.yaml
       position:
       - -1

@@ -245,6 +245,10 @@ class RescueMapEditMenu(BaseMenu):
                 elif event.ui_object_id.startswith("spawn_button"):
                     self.setSpawnAtSelected()
                     self.updateSpawnCheckbox()
+                elif event.ui_object_id.startswith("flip_button"):
+                    self.setSelectedAttribute("flip", not self.getSelectedAttribute("flip", False))
+                    self.updateFlipCheckbox()
+                    self.resetRescueVisual()
             elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -257,8 +261,8 @@ class RescueMapEditMenu(BaseMenu):
                     if hasattr(self, attr):
                         rect = getattr(self, attr).get_relative_rect()
                         if (
-                            rect.left <= self.actual_mpos[0] <= rect.right
-                            and rect.top <= self.actual_mpos[1] <= rect.bottom
+                            rect.left <= self.current_mpos[0] <= rect.right
+                            and rect.top <= self.current_mpos[1] <= rect.bottom
                         ):
                             try:
                                 val = conv(getattr(self, attr).text)
@@ -275,6 +279,7 @@ class RescueMapEditMenu(BaseMenu):
         if self.selected_type != self.SELECTED_NOTHING:
             self.drawTileTypeOptions()
         if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
+            self.drawRotationFlip()
             self.drawRemove()
             if "city_limits" in self.getSelectedAttribute("path"):
                 self.drawSpawnOptions()
@@ -339,6 +344,75 @@ class RescueMapEditMenu(BaseMenu):
             img = pygame.transform.smoothscale(img, (self.spawn_image.rect.width, self.spawn_image.rect.height))
         self.spawn_image.set_image(img)
 
+    def drawRotationFlip(self):
+        total_height = self.action_size[1]
+        label_height = total_height / 2 - 5
+        entry_height = total_height / 2 - 5
+        entry_width = self.action_size[0] / 2
+        self.rotation_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30 + 2 * (self.action_size[1] + 20),
+                self.action_size[0],
+                label_height,
+            ),
+            text="Rotation",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation_label", "entry-label"),
+        )
+        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 + self.action_size[0] / 2 - entry_width - 2.5,
+                30 + 2 * (self.action_size[1] + 20) + label_height + 10,
+                entry_width,
+                entry_height,
+            ),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation_entry", "text_entry_line"),
+        )
+        self.rotation_entry.set_text(str(self.getSelectedAttribute("rotation", 0)))
+        self.flip_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30 + 3 * (self.action_size[1] + 20),
+                self.action_size[0],
+                label_height,
+            ),
+            text="Flipped",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("is_flip", "entry-label"),
+        )
+        but_rect = pygame.Rect(
+            self.side_width / 2 + self.action_size[0] / 2 - 2.5 - entry_height,
+            30 + 3 * (self.action_size[1] + 20) + entry_height + 10,
+            entry_height,
+            entry_height,
+        )
+        self.flip_image = pygame_gui.elements.UIImage(
+            relative_rect=but_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("flip_image"),
+            image_surface=pygame.Surface((entry_height, entry_height)),
+        )
+        self.flip_button = pygame_gui.elements.UIButton(
+            relative_rect=but_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("flip_button", "invis_button"),
+        )
+        self.updateFlipCheckbox()
+
+    def updateFlipCheckbox(self):
+        img = pygame.image.load(
+            find_abs(
+                "ui/box_check.png" if self.getSelectedAttribute("flip", False) else "ui/box_clear.png",
+                allowed_areas=asset_locations,
+            )
+        )
+        if img.get_size() != self.flip_image.rect.size:
+            img = pygame.transform.smoothscale(img, (self.flip_image.rect.width, self.flip_image.rect.height))
+        self.flip_image.set_image(img)
+
     def drawRemove(self):
         self.remove_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
@@ -365,6 +439,16 @@ class RescueMapEditMenu(BaseMenu):
         except:
             pass
 
+    def clearRotationFlip(self):
+        try:
+            self.rotation_label.kill()
+            self.rotation_entry.kill()
+            self.flip_label.kill()
+            self.flip_button.kill()
+            self.flip_image.kill()
+        except:
+            pass
+
     def clearRemove(self):
         try:
             self.remove_button.kill()
@@ -374,6 +458,7 @@ class RescueMapEditMenu(BaseMenu):
     def clearOptions(self):
         self.clearTileTypeOptions()
         self.clearSpawnOptions()
+        self.clearRotationFlip()
         self.clearRemove()
 
     def clearObjects(self):
@@ -464,8 +549,15 @@ class RescueMapEditMenu(BaseMenu):
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         if self.selected_index is not None:
-            # TODO: Update tile rotation
-            pass
+            if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_GENERIC_TILE:
+                try:
+                    rot = int(self.rotation_entry.text)
+                    old_rot = self.getSelectedAttribute("rotation", 0)
+                    if rot != old_rot:
+                        self.setSelectedAttribute("rotation", rot)
+                        self.resetRescueVisual()
+                except:
+                    pass
 
         ScreenObjectManager.instance.applyToScreen(to_screen=window_surface)
         super().draw_ui(window_surface)
