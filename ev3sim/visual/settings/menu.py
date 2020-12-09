@@ -141,7 +141,7 @@ class SettingsMenu(BaseMenu):
                     current_filepath = self.filename
                 for group in self.settings_obj:
                     for obj in group["objects"]:
-                        if obj.json_keys == "__filename__":
+                        if obj.json_keys == "__filename__" and isinstance(obj, TextEntry):
                             if self.creating:
                                 # Make sure the name can be used.
                                 creation_dir = find_abs_directory(self.creation_area, create=True)
