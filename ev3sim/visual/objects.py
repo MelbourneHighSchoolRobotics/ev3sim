@@ -631,16 +631,16 @@ class Arc(Polygon):
         # But actually, we want to double back so we draw the stroke correctly.
         self.verts = [
             [
-                (self.radius + self.stroke_width / 2) * np.cos(x * np.pi / 180),
-                (self.radius + self.stroke_width / 2) * np.sin(x * np.pi / 180),
+                (self.radius + self.stroke_width / 2) * np.cos(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+                (self.radius + self.stroke_width / 2) * np.sin(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
             ]
-            for x in range(int(self.angle_span) + 1)
+            for x in range(abs(self.angle_span) + 1)
         ] + [
             [
-                (self.radius - self.stroke_width / 2) * np.cos(x * np.pi / 180),
-                (self.radius - self.stroke_width / 2) * np.sin(x * np.pi / 180),
+                (self.radius - self.stroke_width / 2) * np.cos(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+                (self.radius - self.stroke_width / 2) * np.sin(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
             ]
-            for x in range(int(self.angle_span), -1, -1)
+            for x in range(abs(self.angle_span), -1, -1)
         ]
         self.points = [None] * len(self.verts)
         self.calculatePoints()

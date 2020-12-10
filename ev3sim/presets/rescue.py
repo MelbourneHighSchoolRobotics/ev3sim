@@ -76,6 +76,9 @@ class RescueInteractor(IInteractor):
                     rel_pos[0] = -rel_pos[0]
                     if obj.get("name", "") == "Image":
                         obj["flip"] = [True, False]
+                    if obj.get("name", "") == "Arc":
+                        obj["rotation"] = 180 - obj.get("rotation", 0)
+                        obj["angle"] = -obj["angle"]
                 obj["rotation"] = (obj.get("rotation", 0)) * np.pi / 180 + base_rotation
                 obj["position"] = local_space_to_world_space(rel_pos, base_rotation, base_pos)
                 obj["sensorVisible"] = True

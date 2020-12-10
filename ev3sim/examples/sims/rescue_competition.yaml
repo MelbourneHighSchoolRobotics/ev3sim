@@ -86,9 +86,9 @@ settings:
       - 2
       - -1
       rotation: 0
-    - flip: false
+    - flip: true
       path: tiles/definitions/double_curve.yaml
       position:
       - 0
       - 1
-      rotation: 90
+      rotation: 180
