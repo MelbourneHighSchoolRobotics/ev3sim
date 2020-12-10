@@ -498,6 +498,7 @@ class RescueMapEditMenu(BaseMenu):
         "double_curve.yaml",
         "tunnel.yaml",
         "water_tower.yaml",
+        "curved_straight.yaml",
     ]
 
     def drawTileDialog(self):
