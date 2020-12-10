@@ -582,6 +582,9 @@ class Circle(Colorable):
         elif self.fill:
             pygame.gfxdraw.aaellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
             pygame.gfxdraw.filled_ellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
+        elif self.stroke and self.stroke_width:
+            # No fill but still stroke and stroke width. Can't use gfxdraw.
+            pygame.draw.ellipse(screen, self.stroke, self.rect, self.scaledStrokeWidth)
 
     def applyToScreen(self, screen):
         if USE_PYGAME_GFX:
