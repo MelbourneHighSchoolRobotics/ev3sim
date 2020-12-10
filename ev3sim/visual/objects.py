@@ -584,7 +584,7 @@ class Circle(Colorable):
             pygame.gfxdraw.filled_ellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
         elif self.stroke and self.stroke_width:
             # No fill but still stroke and stroke width. Can't use gfxdraw.
-            pygame.draw.ellipse(screen, self.stroke, self.rect, self.scaledStrokeWidth)
+            self._applyToScreen(screen)
 
     def applyToScreen(self, screen):
         if USE_PYGAME_GFX:
@@ -607,6 +607,43 @@ class Circle(Colorable):
 
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
+
+
+class Arc(Polygon):
+    """
+    An Arc is just a circle which only has a pie portion drawn.
+
+    However pygame filled arcs (or thick arcs) aren't drawn well. So just use a polygon!
+    """
+
+    def initFromKwargs(self, **kwargs):
+        self.radius = kwargs.get("radius", 1)
+        self.angle_span = kwargs.get("angle", 90)
+        kwargs["verts"] = [
+            [self.radius * np.cos(x * np.pi / 180), self.radius * np.sin(x * np.pi / 180)]
+            for x in range(int(self.angle_span))
+        ]
+        super().initFromKwargs(**kwargs)
+        if self.fill is not None:
+            raise ValueError("Arcs are only for strokes.")
+        # Actually fill it though.
+        self.stroke, self.fill = self.fill, self.stroke
+        # But actually, we want to double back so we draw the stroke correctly.
+        self.verts = [
+            [
+                (self.radius + self.stroke_width / 2) * np.cos(x * np.pi / 180),
+                (self.radius + self.stroke_width / 2) * np.sin(x * np.pi / 180),
+            ]
+            for x in range(int(self.angle_span) + 1)
+        ] + [
+            [
+                (self.radius - self.stroke_width / 2) * np.cos(x * np.pi / 180),
+                (self.radius - self.stroke_width / 2) * np.sin(x * np.pi / 180),
+            ]
+            for x in range(int(self.angle_span), -1, -1)
+        ]
+        self.points = [None] * len(self.verts)
+        self.calculatePoints()
 
 
 class Text(Colorable):
@@ -728,7 +765,7 @@ class Text(Colorable):
 def visualFactory(**options):
     if "name" not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
-    for klass in (Polygon, Rectangle, Circle, Text, Image):
+    for klass in (Polygon, Rectangle, Circle, Arc, Text, Image):
         if options["name"] == klass.__name__:
             r = klass(**options)
             return r
