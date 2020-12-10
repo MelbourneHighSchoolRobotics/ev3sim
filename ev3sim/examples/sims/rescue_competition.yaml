@@ -11,7 +11,7 @@ settings:
     GAME_LENGTH_MINUTES: 5
     MAX_FOLLOW_DIST: 8
     ROBOT_CENTRE_RADIUS: 3
-    SHOW_FOLLOW_POINTS: false
+    SHOW_FOLLOW_POINTS: true
     TILE_DEFINITIONS:
     - path: tiles/definitions/city_limits.yaml
       position:
@@ -68,12 +68,6 @@ settings:
       - -1
       - 1
       rotation: 270
-    - flip: true
-      path: tiles/definitions/right_angle.yaml
-      position:
-      - 0
-      - 1
-      rotation: 180
     - flip: false
       path: tiles/definitions/rough.yaml
       position:
@@ -92,3 +86,9 @@ settings:
       - 2
       - -1
       rotation: 0
+    - flip: false
+      path: tiles/definitions/double_curve.yaml
+      position:
+      - 0
+      - 1
+      rotation: 90

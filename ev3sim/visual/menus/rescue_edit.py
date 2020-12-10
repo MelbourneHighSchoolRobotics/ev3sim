@@ -495,6 +495,7 @@ class RescueMapEditMenu(BaseMenu):
         "zig_zag.yaml",
         "dotted.yaml",
         "sharp_straight.yaml",
+        "double_curve.yaml",
         "tunnel.yaml",
         "water_tower.yaml",
     ]
