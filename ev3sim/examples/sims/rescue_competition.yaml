@@ -23,29 +23,23 @@ settings:
       - -1
       - -2
       rotation: 0
-    - path: tiles/definitions/tunnel.yaml
+    - flip: false
+      path: tiles/definitions/sharp_straight.yaml
       position:
       - -1
       - -1
       rotation: 90
-    - flip: true
-      path: tiles/definitions/right_angle.yaml
-      position:
-      - -1
-      - 0
-      rotation: 270
     - path: tiles/definitions/ramp.yaml
       position:
       - 0
       - 0
-    - path: tiles/definitions/rough.yaml
-      position:
-      - 1
-      - 0
-    - path: tiles/definitions/right_angle.yaml
+      rotation: 270
+    - flip: false
+      path: tiles/definitions/tunnel.yaml
       position:
       - 2
       - 0
+      rotation: 90
     - flip: false
       path: tiles/definitions/color_right.yaml
       position:
@@ -62,3 +56,39 @@ settings:
       - 1
       - 2
       rotation: 90
+    - flip: false
+      path: tiles/definitions/zig_zag.yaml
+      position:
+      - -1
+      - 0
+      rotation: 90
+    - flip: true
+      path: tiles/definitions/color_right.yaml
+      position:
+      - -1
+      - 1
+      rotation: 270
+    - flip: true
+      path: tiles/definitions/right_angle.yaml
+      position:
+      - 0
+      - 1
+      rotation: 180
+    - flip: false
+      path: tiles/definitions/rough.yaml
+      position:
+      - 1
+      - -1
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/color_right.yaml
+      position:
+      - 0
+      - -1
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/right_angle.yaml
+      position:
+      - 2
+      - -1
+      rotation: 0

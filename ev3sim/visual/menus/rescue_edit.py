@@ -492,8 +492,11 @@ class RescueMapEditMenu(BaseMenu):
         "right_angle.yaml",
         "rough.yaml",
         "straight.yaml",
+        "zig_zag.yaml",
+        "dotted.yaml",
+        "sharp_straight.yaml",
         "tunnel.yaml",
-        "Water_tower.yaml",
+        "water_tower.yaml",
     ]
 
     def drawTileDialog(self):
