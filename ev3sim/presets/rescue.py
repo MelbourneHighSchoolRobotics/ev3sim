@@ -346,7 +346,11 @@ class RescueInteractor(IInteractor):
 
     def spawnAt(self, tileIndex):
         self.resetFollows()
-        spawn_point = self.tiles[tileIndex]["follows"][0]
+        spawn_point = (
+            self.tiles[tileIndex]["follows"][0][0][0]
+            if isinstance(self.tiles[tileIndex]["follows"][0], (list, tuple))
+            else self.tiles[tileIndex]["follows"][0]
+        )
         for i in range(len(self.robots)):
             self.robots[i].body.angle = self.tiles[tileIndex]["rotation"]
             if self.tiles[tileIndex]["flip"]:

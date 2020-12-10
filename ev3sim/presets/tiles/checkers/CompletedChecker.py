@@ -31,8 +31,13 @@ class CompletedChecker(BaseRescueChecker):
             total_complete = 0
             total_start = 0
             total_end = 0
+            first_path = -1
+            last_path = -1
             for x in range(len(completed)):
                 if isinstance(completed[x], (list, tuple)):
+                    if first_path == -1:
+                        first_path = x
+                    last_path = x
                     for path in completed[x]:
                         path_amount = 0
                         for p in path:
@@ -52,11 +57,30 @@ class CompletedChecker(BaseRescueChecker):
                         total_start += 1
                     if len(completed) - x - 1 < self.FOLLOW_POINT_START_END:
                         total_end += 1
-            if (
-                total_complete >= self.FOLLOW_POINT_PERCENT * len(completed)
-                and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED
-                and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
-            ):
+            completed_start = (
+                (first_path == -1 and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
+                or (first_path > self.FOLLOW_POINT_START_END and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
+                or (
+                    # If we don't have enough space, just mark the start as completed.
+                    0
+                    <= first_path
+                    <= self.FOLLOW_POINT_START_END
+                )
+            )
+            completed_end = (
+                (last_path == -1 and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
+                or (
+                    last_path >= 0
+                    and (len(completed) - last_path - 1) > self.FOLLOW_POINT_START_END
+                    and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+                )
+                or (
+                    # If we don't have enough space, just mark the end as completed.
+                    last_path >= 0
+                    and (len(completed) - last_path - 1) <= self.FOLLOW_POINT_START_END
+                )
+            )
+            if total_complete >= self.FOLLOW_POINT_PERCENT * len(completed) and completed_start and completed_end:
                 self.rescue.tiles[self.index]["ui_spawned"].children[0].visual.fill = "#00ff00"
                 self.incrementScore(self.COMPLETE_SCORE)
                 self.completed = True
