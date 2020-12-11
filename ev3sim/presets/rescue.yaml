@@ -5,6 +5,8 @@ bot_names:
 
 visual_settings: ev3sim.presets.rescue.visual_settings
 
+preset_description: "1 bot works its way through a set of tiles in order to rescue a can from a toxic spill."
+
 colours:
   line_color: "#1f1f1f"
   floor_color: "#dddedf"
