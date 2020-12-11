@@ -1,4 +1,5 @@
 import datetime
+from ev3sim.visual.objects import visualFactory
 from ev3sim.settings import ObjectSetting
 import numpy as np
 import pymunk
@@ -54,6 +55,17 @@ class RescueInteractor(IInteractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.time_tick = 0
+        self.hover_rect = visualFactory(
+            name="Rectangle",
+            width=30,
+            height=30,
+            position=(0, 0),
+            fill=None,
+            stroke="#ff0000",
+            stroke_width=1,
+            zPos=20,
+        )
+        self.hover_rect.key = "hover_rect"
 
     def spawnTiles(self):
         self.tiles = []
@@ -506,6 +518,21 @@ class RescueInteractor(IInteractor):
                 if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()
             self._pressed = False
+        if event.type == pygame.MOUSEMOTION:
+            m_pos = screenspace_to_worldspace(event.pos)
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            for shape in shapes:
+                words = shape.shape.obj.key.split("-")
+                if len(words) == 3 and words[0] == "Tile" and words[2] == "UI":
+                    tile_index = int(words[1])
+                    # Highlight at tile.
+                    if self.hover_rect.key not in ScreenObjectManager.instance.objects:
+                        ScreenObjectManager.instance.registerVisual(self.hover_rect, self.hover_rect.key)
+                    self.hover_rect.position = self.tiles[tile_index]["world_pos"]
+                    break
+            else:
+                if self.hover_rect.key in ScreenObjectManager.instance.objects:
+                    ScreenObjectManager.instance.unregisterVisual(self.hover_rect.key)
 
     TOUCH_PENALTY = 5
     MAX_TOUCH_PENALTY = 20
