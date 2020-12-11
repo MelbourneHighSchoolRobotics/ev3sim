@@ -51,3 +51,5 @@ elements:
 ui: tiles/ui/completable.yaml
 checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
 preview: tiles/previews/zig_zag.png
+entries: [left]
+exits: [right]

@@ -30,3 +30,5 @@ elements:
 ui: tiles/ui/completable.yaml
 checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
 preview: tiles/previews/straight.png
+entries: [left]
+exits: [right]

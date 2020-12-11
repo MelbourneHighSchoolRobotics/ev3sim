@@ -46,3 +46,5 @@ elements:
 ui: tiles/ui/completable.yaml
 checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
 preview: tiles/previews/dotted.png
+entries: [left]
+exits: [right]

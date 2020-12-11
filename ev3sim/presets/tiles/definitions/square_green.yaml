@@ -159,3 +159,5 @@ checker_kwargs:
   - [0, 0, 'enter']
   - [0, 0, 'exit']
 preview: tiles/previews/square_green.png
+entries: [left]
+exits: [down]
