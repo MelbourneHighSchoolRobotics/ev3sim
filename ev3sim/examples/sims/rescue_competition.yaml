@@ -11,7 +11,7 @@ settings:
     GAME_LENGTH_MINUTES: 5
     MAX_FOLLOW_DIST: 8
     ROBOT_CENTRE_RADIUS: 3
-    SHOW_FOLLOW_POINTS: true
+    SHOW_FOLLOW_POINTS: false
     TILE_DEFINITIONS:
     - path: tiles/definitions/city_limits.yaml
       position:
@@ -29,11 +29,47 @@ settings:
       - -1
       - -1
       rotation: 90
+    - flip: false
+      path: tiles/definitions/curved_straight.yaml
+      position:
+      - -1
+      - 0
+      rotation: 90
+    - flip: true
+      path: tiles/definitions/color_right.yaml
+      position:
+      - -1
+      - 1
+      rotation: 270
+    - flip: true
+      path: tiles/definitions/double_curve.yaml
+      position:
+      - 0
+      - 1
+      rotation: 180
     - path: tiles/definitions/ramp.yaml
       position:
       - 0
       - 0
       rotation: 270
+    - flip: true
+      path: tiles/definitions/square_green.yaml
+      position:
+      - 0
+      - -1
+      rotation: 90
+    - flip: false
+      path: tiles/definitions/rough.yaml
+      position:
+      - 1
+      - -1
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/right_angle.yaml
+      position:
+      - 2
+      - -1
+      rotation: 0
     - flip: false
       path: tiles/definitions/tunnel.yaml
       position:
@@ -56,39 +92,3 @@ settings:
       - 1
       - 2
       rotation: 90
-    - flip: false
-      path: tiles/definitions/curved_straight.yaml
-      position:
-      - -1
-      - 0
-      rotation: 90
-    - flip: true
-      path: tiles/definitions/color_right.yaml
-      position:
-      - -1
-      - 1
-      rotation: 270
-    - flip: false
-      path: tiles/definitions/rough.yaml
-      position:
-      - 1
-      - -1
-      rotation: 0
-    - flip: true
-      path: tiles/definitions/square_green.yaml
-      position:
-      - 0
-      - -1
-      rotation: 90
-    - flip: false
-      path: tiles/definitions/right_angle.yaml
-      position:
-      - 2
-      - -1
-      rotation: 0
-    - flip: true
-      path: tiles/definitions/double_curve.yaml
-      position:
-      - 0
-      - 1
-      rotation: 180

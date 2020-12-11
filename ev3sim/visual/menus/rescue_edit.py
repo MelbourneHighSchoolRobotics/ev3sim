@@ -1,6 +1,8 @@
+import math
 import pygame
 import pygame_gui
 import yaml
+import numpy as np
 import ev3sim.visual.utils as utils
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
@@ -66,6 +68,35 @@ class RescueMapEditMenu(BaseMenu):
         new_pos = [new_pos[0] - self.tile_offset[0], new_pos[1] - self.tile_offset[1]]
         return int((new_pos[0] + 105) // 30 - 3), int((new_pos[1] + 105) // 30 - 3)
 
+    def getDirsAndRotations(self, tile):
+        direction = {
+            "left": (-1, 0),
+            "right": (1, 0),
+            "up": (0, 1),
+            "down": (0, -1),
+        }
+        rotation = {
+            "left": 0,
+            "right": np.pi,
+            "up": -np.pi / 2,
+            "down": np.pi,
+        }
+        if tile["flip"]:
+            for key in direction:
+                direction[key] = (-direction[key][0], direction[key][1])
+            rotation["left"], rotation["right"] = rotation["right"], rotation["left"]
+        for key in direction:
+            direction[key] = (
+                math.floor(
+                    0.5 + direction[key][0] * np.cos(tile["rotation"]) - direction[key][1] * np.sin(tile["rotation"])
+                ),
+                math.floor(
+                    0.5 + direction[key][0] * np.sin(tile["rotation"]) + direction[key][1] * np.cos(tile["rotation"])
+                ),
+            )
+            rotation[key] += tile["rotation"]
+        return direction, rotation
+
     def resetRescueVisual(self):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.simulation.loader import ScriptLoader
@@ -97,8 +128,43 @@ class RescueMapEditMenu(BaseMenu):
         placeableArea.customMap = self.customMap
         placeableArea.calculatePoints()
         ScreenObjectManager.instance.registerVisual(placeableArea, "placeableArea")
+        remove = []
+        for key in ScreenObjectManager.instance.objects:
+            if key.startswith("tile-entry"):
+                remove.append(key)
+        for key in remove:
+            ScreenObjectManager.instance.unregisterVisual(key)
         r.spawnTiles()
-        for tile in r.tiles:
+        for index, tile in enumerate(r.tiles):
+            direction, rotation = self.getDirsAndRotations(tile)
+            for i, entry_dir in enumerate(tile["entries"]):
+                startArrow = visualFactory(
+                    name="Polygon",
+                    verts=[
+                        [1.96, 0],
+                        [0.21, 1.75],
+                        [0.21, 0.5],
+                        [-1.4, 0.5],
+                        [-1.4, -0.5],
+                        [0.21, -0.5],
+                        [0.21, -1.75],
+                        [1.96, 0],
+                    ],
+                    fill="#219ebc",
+                    stroke_width=0,
+                    zPos=0.1,
+                    sensorVisible=False,
+                    rotation=rotation[entry_dir],
+                )
+                startArrow.key = f"tile-{index}-entry-{i}"
+                startArrow.position = [
+                    tile["world_pos"][0] + self.tile_offset[0] + direction[entry_dir][0] * 11,
+                    tile["world_pos"][1] + self.tile_offset[1] + direction[entry_dir][1] * 11,
+                ]
+                startArrow.customMap = self.customMap
+                startArrow.calculatePoints()
+                ScreenObjectManager.instance.registerVisual(startArrow, startArrow.key)
+
             for obj in tile["all_elems"]:
                 obj.position = [
                     obj.position[0] + self.tile_offset[0],
@@ -110,6 +176,7 @@ class RescueMapEditMenu(BaseMenu):
                 elif isinstance(obj, BaseObject):
                     obj.visual.customMap = self.customMap
                     obj.visual.calculatePoints()
+        self.current_tile_objects = r.tiles
         # Add an extra border around selected tile
         if self.selected_index is not None:
             hoverRect = visualFactory(
@@ -178,6 +245,58 @@ class RescueMapEditMenu(BaseMenu):
         self._all_objs.append(self.cancel_button)
 
     def saveBatch(self):
+        # Reorder the tiles so it follows a path.
+        # Use the selection code to achieve this.
+        self.selected_type = self.SELECTED_GENERIC_TILE
+        self.selected_index = self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0]
+        for i in range(len(self.current_tiles)):
+            self.current_tiles[i]["current_index"] = i
+        entry_index = 0
+        i = 0
+        loops = 0
+        while True:
+            try:
+                if self.getSelectedAttribute("list_index", None) is None:
+                    self.setSelectedAttribute("list_index", i)
+                    i += 1
+            except:
+                break
+            index = self.getSelectedAttribute("current_index")
+            # Move to the next tile
+            dirs, _ = self.getDirsAndRotations(self.current_tile_objects[index])
+            exit = self.current_tile_objects[index]["exits"][entry_index]
+            self.selected_index = (
+                self.selected_index[0] + dirs[exit][0],
+                self.selected_index[1] + dirs[exit][1],
+            )
+            try:
+                nindex = self.getSelectedAttribute("current_index")
+            except:
+                break
+            ndirs, _ = self.getDirsAndRotations(self.current_tile_objects[nindex])
+            for key in ndirs:
+                if ndirs[key][0] == -dirs[exit][0] and ndirs[key][1] == -dirs[exit][1]:
+                    entry_index = self.current_tile_objects[nindex]["entries"].index(key)
+                    break
+            else:
+                break
+            loops += 1
+            if loops > len(self.current_tiles):
+                break
+
+        new_tiles = [None] * len(self.current_tiles)
+        end_index = len(self.current_tiles) - 1
+        for i, tile in enumerate(self.current_tiles):
+            new_index = self.getSelectedAttribute("list_index", None, i)
+            for delkey in ["current_index", "list_index"]:
+                del tile[delkey]
+            if new_index is None:
+                new_tiles[end_index] = tile
+                end_index -= 1
+            else:
+                new_tiles[new_index] = tile
+
+        self.current_tiles = new_tiles
 
         for i in range(len(self.current_tiles)):
             pos = self.getSelectedAttribute("position", index=i, fallback=[0, 0])

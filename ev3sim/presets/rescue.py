@@ -118,6 +118,8 @@ class RescueInteractor(IInteractor):
             self.tiles[-1]["world_pos"] = base_pos
             self.tiles[-1]["rotation"] = base_rotation
             self.tiles[-1]["flip"] = flip
+            self.tiles[-1]["entries"] = t["entries"]
+            self.tiles[-1]["exits"] = t["exits"]
             mname, cname = t.get("checker").rsplit(".", 1)
             import importlib
 
