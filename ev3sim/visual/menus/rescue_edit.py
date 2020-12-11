@@ -30,6 +30,8 @@ class RescueMapEditMenu(BaseMenu):
         with open(self.batch_file, "r") as f:
             batch = yaml.safe_load(f)
         self.previous_info = batch
+        if "BOT_SPAWN_POSITION" not in self.previous_info["settings"]["rescue"]:
+            self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"] = [[[0, 0], 0]]
         self.current_tiles = batch.get("settings", {}).get("rescue", {}).get("TILE_DEFINITIONS", [])
         super().initWithKwargs(**kwargs)
         self.resetRescueVisual()
@@ -244,7 +246,7 @@ class RescueMapEditMenu(BaseMenu):
         self.drawOptions()
 
     def setSpawnAtSelected(self):
-        pos = self.getSelectedAttribute("position")
+        pos = [int(v) for v in self.getSelectedAttribute("position")]
         self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0] = pos
 
     def handleEvent(self, event):
