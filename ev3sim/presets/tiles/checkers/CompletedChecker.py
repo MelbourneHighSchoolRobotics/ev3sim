@@ -3,9 +3,9 @@ from ev3sim.presets.tiles.checkers.RescueChecker import BaseRescueChecker
 
 class CompletedChecker(BaseRescueChecker):
 
-    # You need 2/3 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
-    FOLLOW_POINT_START_END = 3
-    FOLLOW_POINT_AMOUNT_REQUIRED = 2
+    # You need 4/5 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
+    FOLLOW_POINT_START_END = 5
+    FOLLOW_POINT_AMOUNT_REQUIRED = 4
     FOLLOW_POINT_PERCENT = 0.8
 
     COMPLETE_SCORE = 10
@@ -29,15 +29,8 @@ class CompletedChecker(BaseRescueChecker):
         if not self.completed:
             total_points = len(completed)
             total_complete = 0
-            total_start = 0
-            total_end = 0
-            first_path = -1
-            last_path = -1
             for x in range(len(completed)):
                 if isinstance(completed[x], (list, tuple)):
-                    if first_path == -1:
-                        first_path = x
-                    last_path = x
                     for path in completed[x]:
                         path_amount = 0
                         for p in path:
@@ -53,34 +46,61 @@ class CompletedChecker(BaseRescueChecker):
                         return
                 elif completed[x]:
                     total_complete += 1
-                    if x < self.FOLLOW_POINT_START_END:
+            total_start = 0
+            points_seen = 0
+            for x in range(len(completed)):
+                if isinstance(completed[x], (list, tuple)):
+                    best_completed = total_start
+                    path_index = -1
+                    for y, path in enumerate(completed[x]):
+                        saved_points = points_seen
+                        saved_completed = total_start
+                        for p in path:
+                            saved_points += 1
+                            saved_completed += p
+                            if saved_points >= self.FOLLOW_POINT_START_END:
+                                break
+                        if best_completed <= saved_completed:
+                            best_completed = saved_completed
+                            path_index = y
+                    total_start = best_completed
+                    points_seen += len(completed[x][path_index])
+                else:
+                    points_seen += 1
+                    if completed[x]:
                         total_start += 1
-                    if len(completed) - x - 1 < self.FOLLOW_POINT_START_END:
+                if points_seen >= self.FOLLOW_POINT_START_END:
+                    break
+            total_end = 0
+            points_seen = 0
+            for x in range(len(completed) - 1, -1, -1):
+                if isinstance(completed[x], (list, tuple)):
+                    best_completed = total_end
+                    path_index = -1
+                    for y, path in enumerate(completed[x]):
+                        saved_points = points_seen
+                        saved_completed = total_end
+                        for p in path[::-1]:
+                            saved_points += 1
+                            saved_completed += p
+                            if saved_points >= self.FOLLOW_POINT_START_END:
+                                break
+                        if best_completed <= saved_completed:
+                            best_completed = saved_completed
+                            path_index = y
+                    total_end = best_completed
+                    points_seen += len(completed[x][path_index])
+                else:
+                    points_seen += 1
+                    if completed[x]:
                         total_end += 1
-            completed_start = (
-                (first_path == -1 and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
-                or (first_path > self.FOLLOW_POINT_START_END and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
-                or (
-                    # If we don't have enough space, just mark the start as completed.
-                    0
-                    <= first_path
-                    <= self.FOLLOW_POINT_START_END
-                )
-            )
-            completed_end = (
-                (last_path == -1 and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED)
-                or (
-                    last_path >= 0
-                    and (len(completed) - last_path - 1) > self.FOLLOW_POINT_START_END
-                    and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
-                )
-                or (
-                    # If we don't have enough space, just mark the end as completed.
-                    last_path >= 0
-                    and (len(completed) - last_path - 1) <= self.FOLLOW_POINT_START_END
-                )
-            )
-            if total_complete >= self.FOLLOW_POINT_PERCENT * len(completed) and completed_start and completed_end:
+                if points_seen >= self.FOLLOW_POINT_START_END:
+                    break
+            if (
+                total_complete >= self.FOLLOW_POINT_PERCENT * len(completed)
+                and total_start >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+                and total_end >= self.FOLLOW_POINT_AMOUNT_REQUIRED
+            ):
                 self.rescue.tiles[self.index]["ui_spawned"].children[0].visual.fill = "#00ff00"
                 self.incrementScore(self.COMPLETE_SCORE)
                 self.completed = True
