@@ -178,24 +178,6 @@ class RescueMapEditMenu(BaseMenu):
                     obj.visual.customMap = self.customMap
                     obj.visual.calculatePoints()
         self.current_tile_objects = r.tiles
-        # Add an extra border around selected tile
-        if self.selected_index is not None:
-            hoverRect = visualFactory(
-                name="Rectangle",
-                width=30,
-                height=30,
-                position=(
-                    self.tile_offset[0] + 30 * self.selected_index[0],
-                    self.tile_offset[1] + 30 * self.selected_index[1],
-                ),
-                fill=None,
-                stroke="#ff0000",
-                stroke_width=1,
-                zPos=20,
-            )
-            hoverRect.customMap = self.customMap
-            hoverRect.calculatePoints()
-            ScreenObjectManager.instance.registerVisual(hoverRect, "hoverRect")
 
     def sizeObjects(self):
         # Bg
@@ -337,7 +319,24 @@ class RescueMapEditMenu(BaseMenu):
         else:
             self.selected_type = self.SELECTED_EMPTY
         self.drawOptions()
-        self.resetRescueVisual()
+        hoverRect = visualFactory(
+            name="Rectangle",
+            width=30,
+            height=30,
+            position=(
+                self.tile_offset[0] + 30 * self.selected_index[0],
+                self.tile_offset[1] + 30 * self.selected_index[1],
+            ),
+            fill=None,
+            stroke="#ff0000",
+            stroke_width=1,
+            zPos=20,
+        )
+        hoverRect.customMap = self.customMap
+        hoverRect.calculatePoints()
+        if "hoverRect" in ScreenObjectManager.instance.objects:
+            ScreenObjectManager.instance.unregisterVisual("hoverRect")
+        ScreenObjectManager.instance.registerVisual(hoverRect, "hoverRect")
 
     def placeTile(self, tile_index):
         assert self.selected_index is not None
