@@ -608,22 +608,22 @@ class RescueMapEditMenu(BaseMenu):
 
     tile_locations = [
         "city_limits.yaml",
-        "color_right.yaml",
-        "left_circle_green.yaml",
-        "ramp.yaml",
-        "right_angle.yaml",
-        "rough.yaml",
         "straight.yaml",
         "zig_zag.yaml",
-        "dotted.yaml",
-        "sharp_straight.yaml",
+        "right_angle.yaml",
         "double_curve.yaml",
+        "strict_turns1.yaml",
+        "curved_straight.yaml",
+        "strict_turns2.yaml",
+        "sharp_straight.yaml",
+        "dotted.yaml",
+        "rough.yaml",
+        "ramp.yaml",
+        "color_right.yaml",
+        "left_circle_green.yaml",
+        "square_green.yaml",
         "tunnel.yaml",
         "water_tower.yaml",
-        "curved_straight.yaml",
-        "square_green.yaml",
-        "strict_turns1.yaml",
-        "strict_turns2.yaml",
     ]
 
     def drawTileDialog(self):
@@ -635,11 +635,33 @@ class RescueMapEditMenu(BaseMenu):
                 self.removeTileDialog()
 
             def process_event(self2, event: pygame.event.Event) -> bool:
+                if event.type == pygame.MOUSEWHEEL:
+                    self.scroll_container.vert_scroll_bar.scroll_position -= event.y * 10
+                    self.scroll_container.vert_scroll_bar.scroll_position = min(
+                        max(
+                            self.scroll_container.vert_scroll_bar.scroll_position,
+                            self.scroll_container.vert_scroll_bar.top_limit,
+                        ),
+                        self.scroll_container.vert_scroll_bar.bottom_limit
+                        - self.scroll_container.vert_scroll_bar.sliding_button.relative_rect.height,
+                    )
+                    x_pos = 0
+                    y_pos = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        + self.scroll_container.vert_scroll_bar.arrow_button_height
+                    )
+                    self.scroll_container.vert_scroll_bar.sliding_button.set_relative_position((x_pos, y_pos))
+                    self.scroll_container.vert_scroll_bar.start_percentage = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        / self.scroll_container.vert_scroll_bar.scrollable_height
+                    )
+                    self.scroll_container.vert_scroll_bar.has_moved_recently = True
                 if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_object_id.split(".")[-1].startswith("tile-"):
                         index = int(event.ui_object_id.split(".")[-1].split("-")[1])
                         self.placeTile(index)
                         self2.kill()
+                        return True
                 return super().process_event(event)
 
         picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
