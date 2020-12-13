@@ -289,7 +289,8 @@ class RescueMapEditMenu(BaseMenu):
         for i, tile in enumerate(self.current_tiles):
             new_index = self.getSelectedAttribute("list_index", None, i)
             for delkey in ["current_index", "list_index"]:
-                del tile[delkey]
+                if delkey in tile:
+                    del tile[delkey]
             if new_index is None:
                 new_tiles[end_index] = tile
                 end_index -= 1
