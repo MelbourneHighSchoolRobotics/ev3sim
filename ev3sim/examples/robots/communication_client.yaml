@@ -7,7 +7,7 @@ base_plate:
     - 3.0
     type: object
     visual:
-      image_path: LogoTransparent.png
+      image_path: Logo.png
       name: Image
       scale: 0.7
       zPos: 2
