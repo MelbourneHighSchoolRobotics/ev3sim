@@ -10,12 +10,14 @@ from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.objects import IVisualElement, visualFactory
 from ev3sim.objects.base import BaseObject
 from ev3sim.search_locations import asset_locations, preset_locations
+from ev3sim.objects.utils import magnitude_sq
 
 
 class RescueMapEditMenu(BaseMenu):
 
     MODE_NORMAL = "NORMAL"
     MODE_TILE_DIALOG = "TILE_SELECT"
+    MODE_CAN_DRAGGING = "CAN_DRAGGING"
 
     SELECTED_NOTHING = "Nothing"
     SELECTED_EMPTY = "Empty"
@@ -111,6 +113,7 @@ class RescueMapEditMenu(BaseMenu):
 
         r = RescueInteractor()
         r.TILE_DEFINITIONS = self.current_tiles
+        r.CAN_SPAWN_POSITION = self.previous_info["settings"]["rescue"]["CAN_SPAWN_POSITION"]
         self.customMap = {
             "SCREEN_WIDTH": self._size[0],
             "SCREEN_HEIGHT": self._size[1],
@@ -183,6 +186,15 @@ class RescueMapEditMenu(BaseMenu):
                 obj.position[0] + self.tile_offset[0],
                 obj.position[1] + self.tile_offset[1],
             ]
+        r.spawnCan()
+        r.can_obj.visual.customMap = self.customMap
+        r.can_obj.body.position = [
+            r.can_obj.body.position[0] + self.tile_offset[0],
+            r.can_obj.body.position[1] + self.tile_offset[1],
+        ]
+        r.can_obj.position = r.can_obj.body.position
+        r.can_obj.visual.calculatePoints()
+        self.can_obj = r.can_obj
         self.current_tile_objects = r.tiles
 
     def sizeObjects(self):
@@ -404,6 +416,16 @@ class RescueMapEditMenu(BaseMenu):
             elif event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                world_mpos = utils.screenspace_to_worldspace(self.current_mpos, self.customMap)
+                vec = [
+                    self.can_obj.position[0] - world_mpos[0],
+                    self.can_obj.position[1] - world_mpos[1],
+                ]
+                d = magnitude_sq(vec)
+                if d <= pow(2.5, 2):
+                    self.mode = self.MODE_CAN_DRAGGING
+                    self.rel_pos = vec
+                    return
                 if self.current_mpos[0] > self.side_width:
                     self.selectTile(self.toTilePos(self.current_mpos))
             elif event.type == pygame.MOUSEWHEEL:
@@ -425,6 +447,21 @@ class RescueMapEditMenu(BaseMenu):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                     self.removeSelected()
+        elif self.mode == self.MODE_CAN_DRAGGING:
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                self.mode = self.MODE_NORMAL
+                return
+            elif event.type == pygame.MOUSEMOTION:
+                self.current_mpos = event.pos
+                world_mpos = utils.screenspace_to_worldspace(self.current_mpos, self.customMap)
+                self.can_obj.position = [
+                    self.rel_pos[0] + world_mpos[0],
+                    self.rel_pos[1] + world_mpos[1],
+                ]
+                self.previous_info["settings"]["rescue"]["CAN_SPAWN_POSITION"] = [
+                    float(self.can_obj.position[0] - self.tile_offset[0]),
+                    float(self.can_obj.position[1] - self.tile_offset[1]),
+                ]
 
     def drawOptions(self):
         self.clearOptions()
