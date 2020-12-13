@@ -7,6 +7,9 @@ settings:
     - - - -2
         - -2
       - 0
+    CAN_SPAWN_POSITION:
+    - 63.242812500000014
+    - -88.05555555555554
     FOLLOW_POINT_RADIUS: 1
     GAME_LENGTH_MINUTES: 5
     MAX_FOLLOW_DIST: 8
@@ -124,20 +127,20 @@ settings:
       - -1
       rotation: -90
     - flip: false
-      path: tiles/definitions/oil_spill.yaml
-      position:
-      - 1
-      - -3
-      rotation: 0
-    - flip: false
-      path: tiles/definitions/oil_spill.yaml
-      position:
-      - 2
-      - -3
-      rotation: 0
-    - flip: false
       path: tiles/definitions/oil_spill_entry.yaml
       position:
       - 2
       - -2
       rotation: -90
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 2
+      - -3
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 1
+      - -3
+      rotation: 0

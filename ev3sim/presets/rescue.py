@@ -52,6 +52,11 @@ class RescueInteractor(IInteractor):
     _touches = 0
     _touch_points = 0
 
+    CAN_SPAWN_POSITION = (0, 0)
+
+    MODE_FOLLOW = "FOLLOW"
+    MODE_RESCUE = "RESCUE"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.time_tick = 0
@@ -168,27 +173,7 @@ class RescueInteractor(IInteractor):
             # We need to add connections between green tiles if they exist.
             if tile["type"] == "follow":
                 continue
-            under = False
-            right = False
-            under_right = False
-            for tile2 in self.tiles:
-                if tile2["type"] == "follow":
-                    continue
-                if (
-                    tile2["world_pos"][0] - tile["world_pos"][0] == self.TILE_LENGTH
-                    and tile2["world_pos"][1] - tile["world_pos"][1] == 0
-                ):
-                    right = True
-                if (
-                    tile2["world_pos"][0] - tile["world_pos"][0] == 0
-                    and tile2["world_pos"][1] - tile["world_pos"][1] == self.TILE_LENGTH
-                ):
-                    under = True
-                if (
-                    tile2["world_pos"][0] - tile["world_pos"][0] == self.TILE_LENGTH
-                    and tile2["world_pos"][1] - tile["world_pos"][1] == self.TILE_LENGTH
-                ):
-                    under_right = True
+            under, right, under_right = self._checkConnectingRescueTiles(tile["world_pos"])
             if under_right and under and right:
                 # Draw a big square connecting all 4 tiles.
                 key = "c1-" + str(tile["world_pos"][0]) + "-" + str(tile["world_pos"][1])
@@ -240,6 +225,30 @@ class RescueInteractor(IInteractor):
                         }
                     )
         self.connecting_objs = ScriptLoader.instance.loadElements(connecting_objs)
+
+    def _checkConnectingRescueTiles(self, world_pos, sx=1, sy=1):
+        under = False
+        right = False
+        under_right = False
+        for tile in self.tiles:
+            if tile["type"] == "follow":
+                continue
+            if (
+                tile["world_pos"][0] - world_pos[0] == self.TILE_LENGTH * sx
+                and tile["world_pos"][1] - world_pos[1] == 0
+            ):
+                right = True
+            if (
+                tile["world_pos"][0] - world_pos[0] == 0
+                and tile["world_pos"][1] - world_pos[1] == self.TILE_LENGTH * sy
+            ):
+                under = True
+            if (
+                tile["world_pos"][0] - world_pos[0] == self.TILE_LENGTH * sx
+                and tile["world_pos"][1] - world_pos[1] == self.TILE_LENGTH * sy
+            ):
+                under_right = True
+        return under, right, under_right
 
     def _recurseObj(self, obj, indicies):
         for index in indicies:
@@ -349,6 +358,28 @@ class RescueInteractor(IInteractor):
         for i, spawned in enumerate(ScriptLoader.instance.loadElements(elems)):
             self.tiles[i]["ui_spawned"] = spawned
             self.tiles[i]["checker"].onSpawn()
+        self.can_complete_box = visualFactory(
+            name="Rectangle",
+            width=6,
+            height=6,
+            fill="UI_tilebox_not_complete",
+            stroke="#ffffff",
+            stroke_width=0.1,
+            zPos=5,
+            position=(-138, -self.tileUIHeight / 2 + self.TILE_UI_PADDING / 2 + 3),
+        )
+        self.line_reentry_box = visualFactory(
+            name="Rectangle",
+            width=6,
+            height=6,
+            fill="UI_tilebox_not_complete",
+            stroke="#ffffff",
+            stroke_width=0.1,
+            zPos=5,
+            position=(-128, -self.tileUIHeight / 2 + self.TILE_UI_PADDING / 2 + 3),
+        )
+        ScreenObjectManager.instance.registerVisual(self.can_complete_box, "can_complete")
+        ScreenObjectManager.instance.registerVisual(self.line_reentry_box, "line_reentry")
         ScriptLoader.instance.object_map["rescueBGMid"].scale = (1, self.tileUIHeight / self.TILE_UI_INITIAL_HEIGHT)
         ScriptLoader.instance.object_map["rescueBGMid"].calculatePoints()
         ScriptLoader.instance.object_map["rescueBGTop"].position = (-146.6, self.tileUIHeight / 2)
@@ -370,6 +401,25 @@ class RescueInteractor(IInteractor):
             self.tileUIHeight / 2 - self.TILE_UI_PADDING / 2,
         )
         self.touchesChanged()
+
+    def spawnCan(self):
+        can_vis = {
+            "type": "object",
+            "physics": True,
+            "visual": {
+                "name": "Circle",
+                "radius": 2.5,
+                "fill": "#e85d04",
+                "stroke_width": 0.1,
+                "stroke": "#eae2b7",
+                "zPos": 5,
+            },
+            "position": self.CAN_SPAWN_POSITION,
+            "key": "can",
+            "friction": 0.7,
+            "restitution": 0.2,
+        }
+        self.can_obj = ScriptLoader.instance.loadElements([can_vis])[0]
 
     def locateBots(self):
         self.robots = []
@@ -421,7 +471,7 @@ class RescueInteractor(IInteractor):
         self.spawnTileUI()
         self.locateBots()
         assert len(self.robots) <= len(self.BOT_SPAWN_POSITION), "Not enough spawning locations specified."
-        self.scores = [0] * len(self.robots)
+        self.spawnCan()
 
         self.reset()
         for i in range(len(self.robots)):
@@ -454,6 +504,7 @@ class RescueInteractor(IInteractor):
         handler.begin = handle_collide
 
     def spawnAt(self, tileIndex):
+        self.can_scored_this_spawn = False
         self.resetFollows()
         spawn_point = (
             self.tiles[tileIndex]["follows"][0][0][0]
@@ -492,6 +543,7 @@ class RescueInteractor(IInteractor):
         self.roam_tile = [-1] * len(self.robots)
 
     def reset(self):
+        self.modes = [self.MODE_FOLLOW] * len(self.robots)
         self.resetPositions()
         self.time_tick = 0
         self._touches = 0
@@ -499,6 +551,7 @@ class RescueInteractor(IInteractor):
         self.touchesChanged()
         self.setScore(0)
         self.resetFollows()
+        self.resetCanUI()
         for x in range(len(self.tiles)):
             if self.tiles[x]["type"] == "follow":
                 self.tiles[x]["checker"].onReset()
@@ -512,6 +565,31 @@ class RescueInteractor(IInteractor):
 
     def decrementScore(self, val):
         self.setScore(self.score - val)
+
+    def resetCanUI(self):
+        self.can_scored_this_spawn = False
+        self.can_scored = False
+        self.can_obj.body.position = self.CAN_SPAWN_POSITION
+        self.can_obj.position = self.can_obj.body.position
+        self.reentered = False
+        self.canStateChanged()
+
+    def canStateChanged(self):
+        self.can_complete_box.fill = "#00ff00" if self.can_scored else "#000000"
+        self.line_reentry_box.fill = "#00ff00" if self.reentered else "#000000"
+
+    def scoreCan(self):
+        self.can_scored_this_spawn = True
+        if not self.can_scored:
+            self.can_scored = True
+            self.incrementScore(50)
+            self.canStateChanged()
+
+    def scoreReEntry(self):
+        if not self.reentered:
+            self.reentered = True
+            self.incrementScore(20)
+            self.canStateChanged()
 
     def resetPositions(self):
         for i, robot in enumerate(self.robots):
@@ -576,6 +654,61 @@ class RescueInteractor(IInteractor):
                     self.ROBOT_CENTRE_RADIUS + self.FOLLOW_POINT_RADIUS + 0.05
                 ):
                     self.lackOfProgress(i)
+            if not World.instance.paused:
+                x = (self.bot_follows[i].position[0] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                y = (self.bot_follows[i].position[1] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                for tile in self.tiles:
+                    tx = (tile["world_pos"][0] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                    ty = (tile["world_pos"][1] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                    if tx == x and ty == y:
+                        if tile["type"] == "rescue" and self.modes[i] == self.MODE_FOLLOW:
+                            self.modes[i] = self.MODE_RESCUE
+                            # For reentry.
+                            self.resetFollows()
+                            self.current_follow = None
+                        elif tile["type"] == "follow" and self.modes[i] == self.MODE_RESCUE:
+                            self.modes[i] = self.MODE_FOLLOW
+                            if self.can_scored_this_spawn:
+                                self.scoreReEntry()
+                        break
+                else:
+                    self.lackOfProgress(i)
+                if not self.can_scored_this_spawn:
+                    cx = (self.can_obj.position[0] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                    cy = (self.can_obj.position[1] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                    for tile in self.tiles:
+                        tx = (tile["world_pos"][0] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                        ty = (tile["world_pos"][1] + self.TILE_LENGTH / 2) // self.TILE_LENGTH
+                        if tx == cx and ty == cy:
+                            if tile["type"] != "rescue":
+                                self.scoreCan()
+                            rel_pos_x = self.can_obj.position[0] - tile["world_pos"][0]
+                            rel_pos_y = self.can_obj.position[1] - tile["world_pos"][1]
+                            sx = 1
+                            sy = 1
+                            if rel_pos_x < 0:
+                                rel_pos_x = -rel_pos_x
+                                sx = -1
+                            if rel_pos_y < 0:
+                                rel_pos_y = -rel_pos_y
+                                sy = -1
+                            if rel_pos_y < self.TILE_LENGTH / 3 and rel_pos_x < self.TILE_LENGTH / 3:
+                                break
+                            under, right, under_right = self._checkConnectingRescueTiles(tile["world_pos"], sx, sy)
+                            if under_right and under and right:
+                                # We can't be outside of the area.
+                                break
+                            if under:
+                                if rel_pos_x < self.TILE_LENGTH / 3:
+                                    break
+                            if right:
+                                if rel_pos_y < self.TILE_LENGTH / 3:
+                                    break
+                            self.scoreCan()
+                            break
+                    else:
+                        self.scoreCan()
+
         for i in range(len(self.tiles)):
             if self.tiles[i]["type"] == "follow":
                 self.tiles[i]["checker"].tick(tick)
@@ -657,6 +790,7 @@ rescue_settings = {
         "BOT_SPAWN_ANGLE",
         "GAME_LENGTH_MINUTES",
         "BOT_SPAWN_POSITION",
+        "CAN_SPAWN_POSITION",
         "TILE_DEFINITIONS",
     ]
 }
