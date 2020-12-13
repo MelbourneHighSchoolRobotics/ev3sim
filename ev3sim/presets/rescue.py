@@ -163,6 +163,83 @@ class RescueInteractor(IInteractor):
             else:
                 self.tiles[-1]["green_conns"] = t.get("green_conns", [])
             self.tiles[-1]["all_elems"] = ScriptLoader.instance.loadElements(t["elements"])
+        connecting_objs = []
+        for tile in self.tiles:
+            # We need to add connections between green tiles if they exist.
+            if tile["type"] == "follow":
+                continue
+            under = False
+            right = False
+            under_right = False
+            for tile2 in self.tiles:
+                if tile2["type"] == "follow":
+                    continue
+                if (
+                    tile2["world_pos"][0] - tile["world_pos"][0] == self.TILE_LENGTH
+                    and tile2["world_pos"][1] - tile["world_pos"][1] == 0
+                ):
+                    right = True
+                if (
+                    tile2["world_pos"][0] - tile["world_pos"][0] == 0
+                    and tile2["world_pos"][1] - tile["world_pos"][1] == self.TILE_LENGTH
+                ):
+                    under = True
+                if (
+                    tile2["world_pos"][0] - tile["world_pos"][0] == self.TILE_LENGTH
+                    and tile2["world_pos"][1] - tile["world_pos"][1] == self.TILE_LENGTH
+                ):
+                    under_right = True
+            if under_right and under and right:
+                # Draw a big square connecting all 4 tiles.
+                key = "c1-" + str(tile["world_pos"][0]) + "-" + str(tile["world_pos"][1])
+                connecting_objs.append(
+                    {
+                        "type": "visual",
+                        "name": "Rectangle",
+                        "width": 50,
+                        "height": 50,
+                        "fill": "grass_color",
+                        "zPos": 0.3,
+                        "key": key,
+                        "position": [
+                            tile["world_pos"][0] + self.TILE_LENGTH / 2,
+                            tile["world_pos"][1] + self.TILE_LENGTH / 2,
+                        ],
+                        "sensorVisible": True,
+                    }
+                )
+            else:
+                if under:
+                    key = "c2-" + str(tile["world_pos"][0]) + "-" + str(tile["world_pos"][1])
+                    connecting_objs.append(
+                        {
+                            "type": "visual",
+                            "name": "Rectangle",
+                            "width": 20,
+                            "height": 50,
+                            "fill": "grass_color",
+                            "zPos": 0.3,
+                            "key": key,
+                            "position": [tile["world_pos"][0], tile["world_pos"][1] + self.TILE_LENGTH / 2],
+                            "sensorVisible": True,
+                        }
+                    )
+                if right:
+                    key = "c3-" + str(tile["world_pos"][0]) + "-" + str(tile["world_pos"][1])
+                    connecting_objs.append(
+                        {
+                            "type": "visual",
+                            "name": "Rectangle",
+                            "width": 50,
+                            "height": 20,
+                            "fill": "grass_color",
+                            "zPos": 0.3,
+                            "key": key,
+                            "position": [tile["world_pos"][0] + self.TILE_LENGTH / 2, tile["world_pos"][1]],
+                            "sensorVisible": True,
+                        }
+                    )
+        self.connecting_objs = ScriptLoader.instance.loadElements(connecting_objs)
 
     def _recurseObj(self, obj, indicies):
         for index in indicies:

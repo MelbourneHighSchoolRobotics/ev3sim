@@ -177,6 +177,12 @@ class RescueMapEditMenu(BaseMenu):
                 elif isinstance(obj, BaseObject):
                     obj.visual.customMap = self.customMap
                     obj.visual.calculatePoints()
+        for obj in r.connecting_objs:
+            obj.customMap = self.customMap
+            obj.position = [
+                obj.position[0] + self.tile_offset[0],
+                obj.position[1] + self.tile_offset[1],
+            ]
         self.current_tile_objects = r.tiles
 
     def sizeObjects(self):
