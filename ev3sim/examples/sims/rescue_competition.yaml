@@ -35,12 +35,12 @@ settings:
       - -1
       - 0
       rotation: 90
-    - flip: true
-      path: tiles/definitions/color_right.yaml
+    - flip: false
+      path: tiles/definitions/strict_turns1.yaml
       position:
       - -1
       - 1
-      rotation: 270
+      rotation: 90
     - flip: true
       path: tiles/definitions/double_curve.yaml
       position:
