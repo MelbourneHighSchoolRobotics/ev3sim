@@ -13,6 +13,8 @@ colours:
   turn_color: "#00ff00"
   strip_dark_color: "#000000"
   rescue_outline_color: "#ffffff"
+  grass_color: "#3F841F"
+  rescue_start_color: "#A8A8A8"
   UI_bg: "#efedee"
   UI_bg_2: "#dddedf"
   UI_fg: "#efedee"

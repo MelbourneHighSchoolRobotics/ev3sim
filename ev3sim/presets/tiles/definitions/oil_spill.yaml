@@ -1,0 +1,94 @@
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Circle
+  radius: 12
+  fill: grass_color
+  zPos: 0.1
+  key: ground1
+  position: [0, 0]
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: grass_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc_top_left
+  position: [-8.5, 8.5]
+  rotation: 90
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: grass_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc_bot_left
+  position: [-8.5, -8.5]
+  rotation: 180
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: grass_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc_top_right
+  position: [8.5, 8.5]
+  rotation: 0
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: grass_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc_bot_right
+  position: [8.5, -8.5]
+  rotation: 270
+  angle: 90
+- type: visual
+  name: Rectangle
+  width: 17
+  height: 2
+  fill: grass_color
+  zPos: 0.1
+  key: top_bar
+  position: [0, 9.5]
+- type: visual
+  name: Rectangle
+  width: 17
+  height: 2
+  fill: grass_color
+  zPos: 0.1
+  key: bot_bar
+  position: [0, -9.5]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 17
+  fill: grass_color
+  zPos: 0.1
+  key: left_bar
+  position: [-9.5, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 17
+  fill: grass_color
+  zPos: 0.1
+  key: right_bar
+  position: [9.5, 0]
+preview: tiles/previews/rescue_normal.png
+type: rescue

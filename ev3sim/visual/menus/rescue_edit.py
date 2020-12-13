@@ -137,33 +137,34 @@ class RescueMapEditMenu(BaseMenu):
         r.spawnTiles()
         for index, tile in enumerate(r.tiles):
             direction, rotation = self.getDirsAndRotations(tile)
-            for i, entry_dir in enumerate(tile["entries"]):
-                startArrow = visualFactory(
-                    name="Polygon",
-                    verts=[
-                        [1.96, 0],
-                        [0.21, 1.75],
-                        [0.21, 0.5],
-                        [-1.4, 0.5],
-                        [-1.4, -0.5],
-                        [0.21, -0.5],
-                        [0.21, -1.75],
-                        [1.96, 0],
-                    ],
-                    fill="#219ebc",
-                    stroke_width=0,
-                    zPos=0.1,
-                    sensorVisible=False,
-                    rotation=rotation[entry_dir],
-                )
-                startArrow.key = f"tile-{index}-entry-{i}"
-                startArrow.position = [
-                    tile["world_pos"][0] + self.tile_offset[0] + direction[entry_dir][0] * 11,
-                    tile["world_pos"][1] + self.tile_offset[1] + direction[entry_dir][1] * 11,
-                ]
-                startArrow.customMap = self.customMap
-                startArrow.calculatePoints()
-                ScreenObjectManager.instance.registerVisual(startArrow, startArrow.key)
+            if tile["type"] == "follow":
+                for i, entry_dir in enumerate(tile["entries"]):
+                    startArrow = visualFactory(
+                        name="Polygon",
+                        verts=[
+                            [1.96, 0],
+                            [0.21, 1.75],
+                            [0.21, 0.5],
+                            [-1.4, 0.5],
+                            [-1.4, -0.5],
+                            [0.21, -0.5],
+                            [0.21, -1.75],
+                            [1.96, 0],
+                        ],
+                        fill="#219ebc",
+                        stroke_width=0,
+                        zPos=0.1,
+                        sensorVisible=False,
+                        rotation=rotation[entry_dir],
+                    )
+                    startArrow.key = f"tile-{index}-entry-{i}"
+                    startArrow.position = [
+                        tile["world_pos"][0] + self.tile_offset[0] + direction[entry_dir][0] * 11,
+                        tile["world_pos"][1] + self.tile_offset[1] + direction[entry_dir][1] * 11,
+                    ]
+                    startArrow.customMap = self.customMap
+                    startArrow.calculatePoints()
+                    ScreenObjectManager.instance.registerVisual(startArrow, startArrow.key)
 
             for obj in tile["all_elems"]:
                 obj.position = [
@@ -276,9 +277,14 @@ class RescueMapEditMenu(BaseMenu):
             ndirs, _ = self.getDirsAndRotations(self.current_tile_objects[nindex])
             for key in ndirs:
                 if ndirs[key][0] == -dirs[exit][0] and ndirs[key][1] == -dirs[exit][1]:
+                    if self.current_tile_objects[nindex]["type"] == "rescue":
+                        entry_index = -1
+                        break
                     entry_index = self.current_tile_objects[nindex]["entries"].index(key)
                     break
             else:
+                break
+            if entry_index == -1:
                 break
             loops += 1
             if loops > len(self.current_tiles):
@@ -624,6 +630,8 @@ class RescueMapEditMenu(BaseMenu):
         "square_green.yaml",
         "tunnel.yaml",
         "water_tower.yaml",
+        "oil_spill_entry.yaml",
+        "oil_spill.yaml",
     ]
 
     def drawTileDialog(self):

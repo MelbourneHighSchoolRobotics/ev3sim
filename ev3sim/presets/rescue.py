@@ -113,49 +113,55 @@ class RescueInteractor(IInteractor):
                     "sensorVisible": False,
                 }
             )
+            self.tiles[-1]["type"] = t.get("type", "follow")
             self.tiles[-1]["follows"] = []
             self.tiles[-1]["roam_status"] = []
             self.tiles[-1]["world_pos"] = base_pos
             self.tiles[-1]["rotation"] = base_rotation
             self.tiles[-1]["flip"] = flip
-            self.tiles[-1]["entries"] = t["entries"]
-            self.tiles[-1]["exits"] = t["exits"]
-            mname, cname = t.get("checker").rsplit(".", 1)
-            import importlib
+            if self.tiles[-1]["type"] == "follow":
+                self.tiles[-1]["entries"] = t["entries"]
+                self.tiles[-1]["exits"] = t["exits"]
+                mname, cname = t.get("checker").rsplit(".", 1)
+                import importlib
 
-            klass = getattr(importlib.import_module(mname), cname)
-            with open(find_abs(t["ui"], allowed_areas=preset_locations), "r") as f:
-                self.tiles[-1]["ui_elem"] = yaml.safe_load(f)
-            for j, point in enumerate(t["follow_points"]):
-                if isinstance(point[0], (list, tuple)):
-                    self.tiles[-1]["follows"].append([])
-                    self.tiles[-1]["roam_status"].append([])
-                    for path in point:
-                        self.tiles[-1]["follows"][-1].append([])
-                        self.tiles[-1]["roam_status"][-1].append([])
-                        for point2 in path:
-                            if isinstance(point2, str):
-                                self.tiles[-1]["roam_status"][-1][-1][-1] = point2
-                            else:
-                                if flip:
-                                    point2[0] = -point2[0]
-                                self.tiles[-1]["follows"][-1][-1].append(
-                                    local_space_to_world_space(
-                                        np.array(point2), tile.get("rotation", 0) * np.pi / 180, base_pos
+                klass = getattr(importlib.import_module(mname), cname)
+                with open(find_abs(t["ui"], allowed_areas=preset_locations), "r") as f:
+                    self.tiles[-1]["ui_elem"] = yaml.safe_load(f)
+                for j, point in enumerate(t["follow_points"]):
+                    if isinstance(point[0], (list, tuple)):
+                        self.tiles[-1]["follows"].append([])
+                        self.tiles[-1]["roam_status"].append([])
+                        for path in point:
+                            self.tiles[-1]["follows"][-1].append([])
+                            self.tiles[-1]["roam_status"][-1].append([])
+                            for point2 in path:
+                                if isinstance(point2, str):
+                                    self.tiles[-1]["roam_status"][-1][-1][-1] = point2
+                                else:
+                                    if flip:
+                                        point2[0] = -point2[0]
+                                    self.tiles[-1]["follows"][-1][-1].append(
+                                        local_space_to_world_space(
+                                            np.array(point2), tile.get("rotation", 0) * np.pi / 180, base_pos
+                                        )
                                     )
-                                )
-                                self.tiles[-1]["roam_status"][-1][-1].append(None)
-                else:
-                    if isinstance(point, str):
-                        self.tiles[-1]["roam_status"][-1] = point
+                                    self.tiles[-1]["roam_status"][-1][-1].append(None)
                     else:
-                        if flip:
-                            point[0] = -point[0]
-                        self.tiles[-1]["follows"].append(
-                            local_space_to_world_space(np.array(point), tile.get("rotation", 0) * np.pi / 180, base_pos)
-                        )
-                        self.tiles[-1]["roam_status"].append(None)
-            self.tiles[-1]["checker"] = klass(self.tiles[-1]["follows"], i, self, **t.get("checker_kwargs", {}))
+                        if isinstance(point, str):
+                            self.tiles[-1]["roam_status"][-1] = point
+                        else:
+                            if flip:
+                                point[0] = -point[0]
+                            self.tiles[-1]["follows"].append(
+                                local_space_to_world_space(
+                                    np.array(point), tile.get("rotation", 0) * np.pi / 180, base_pos
+                                )
+                            )
+                            self.tiles[-1]["roam_status"].append(None)
+                self.tiles[-1]["checker"] = klass(self.tiles[-1]["follows"], i, self, **t.get("checker_kwargs", {}))
+            else:
+                self.tiles[-1]["green_conns"] = t.get("green_conns", [])
             self.tiles[-1]["all_elems"] = ScriptLoader.instance.loadElements(t["elements"])
 
     def _recurseObj(self, obj, indicies):
@@ -245,15 +251,24 @@ class RescueInteractor(IInteractor):
 
     @property
     def tileUIHeight(self):
-        return self.TILE_UI_PADDING * 2 + self.TILE_UI_ELEM_HEIGHT * len(self.tiles)
+        return self.TILE_UI_PADDING * 2 + self.TILE_UI_ELEM_HEIGHT * len(
+            [tile for tile in self.tiles if tile["type"] == "follow"]
+        )
 
     def spawnTileUI(self):
         elems = []
-        for i, tile in enumerate(self.tiles):
-            elem = tile["ui_elem"]
-            elem["key"] = f"Tile-{i}-UI"
-            elem["position"] = [-140, -self.TILE_UI_ELEM_HEIGHT * (i - (len(self.tiles) - 1) / 2)]
-            elems.append(elem)
+        i = 0
+        for tile in self.tiles:
+            if tile["type"] == "follow":
+                elem = tile["ui_elem"]
+                elem["key"] = f"Tile-{i}-UI"
+                elem["position"] = [
+                    -140,
+                    -self.TILE_UI_ELEM_HEIGHT
+                    * (i - (len([tile for tile in self.tiles if tile["type"] == "follow"]) - 1) / 2),
+                ]
+                elems.append(elem)
+                i += 1
         for i, spawned in enumerate(ScriptLoader.instance.loadElements(elems)):
             self.tiles[i]["ui_spawned"] = spawned
             self.tiles[i]["checker"].onSpawn()
@@ -408,7 +423,8 @@ class RescueInteractor(IInteractor):
         self.setScore(0)
         self.resetFollows()
         for x in range(len(self.tiles)):
-            self.tiles[x]["checker"].onReset()
+            if self.tiles[x]["type"] == "follow":
+                self.tiles[x]["checker"].onReset()
 
     def setScore(self, val):
         self.score = val
@@ -484,7 +500,8 @@ class RescueInteractor(IInteractor):
                 ):
                     self.lackOfProgress(i)
         for i in range(len(self.tiles)):
-            self.tiles[i]["checker"].tick(tick)
+            if self.tiles[i]["type"] == "follow":
+                self.tiles[i]["checker"].tick(tick)
         # UI Tick
         if self._pressed:
             ScriptLoader.instance.object_map["controlsReset"].visual.image_path = "ui/controls_reset_pressed.png"

@@ -42,11 +42,11 @@ settings:
       - 1
       rotation: 90
     - flip: true
-      path: tiles/definitions/double_curve.yaml
+      path: tiles/definitions/right_angle.yaml
       position:
       - 0
       - 1
-      rotation: 180
+      rotation: -180
     - path: tiles/definitions/ramp.yaml
       position:
       - 0
@@ -64,31 +64,80 @@ settings:
       - 1
       - -1
       rotation: 0
-    - flip: true
-      path: tiles/definitions/strict_turns2.yaml
+    - flip: false
+      path: tiles/definitions/double_curve.yaml
       position:
       - 2
       - -1
-      rotation: 180
+      rotation: 0
     - flip: false
       path: tiles/definitions/tunnel.yaml
       position:
       - 2
       - 0
       rotation: 90
-    - flip: false
-      path: tiles/definitions/color_right.yaml
+    - flip: true
+      path: tiles/definitions/strict_turns2.yaml
       position:
       - 2
       - 1
-      rotation: 90
+      rotation: -90
     - flip: true
       path: tiles/definitions/left_circle_green.yaml
       position:
       - 1
       - 1
-    - path: tiles/definitions/water_tower.yaml
+    - flip: true
+      path: tiles/definitions/color_right.yaml
       position:
       - 1
       - 2
-      rotation: 90
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/zig_zag.yaml
+      position:
+      - 2
+      - 2
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/square_green.yaml
+      position:
+      - 3
+      - 2
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/dotted.yaml
+      position:
+      - 3
+      - 1
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/water_tower.yaml
+      position:
+      - 3
+      - 0
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/strict_turns1.yaml
+      position:
+      - 3
+      - -1
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 1
+      - -3
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 2
+      - -3
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/oil_spill_entry.yaml
+      position:
+      - 2
+      - -2
+      rotation: -90
