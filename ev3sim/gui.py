@@ -3,10 +3,33 @@ import pygame
 import sys
 import yaml
 from os.path import join
+from multiprocessing import Queue, Process
 
+import ev3sim
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import config_locations
+from ev3sim.visual.manager import ScreenObjectManager
+
+
+def get_latest_version(q):
+    from luddite import get_version_pypi
+
+    v = get_version_pypi("ev3sim")
+    q.put(v)
+
+
+def checkVersion():
+    Q = Queue()
+    process = Process(target=get_latest_version, args=(Q,))
+    process.start()
+    process.join(2)
+    if process.is_alive():
+        process.terminate()
+        ScreenObjectManager.NEW_VERSION = False
+    else:
+        ScreenObjectManager.NEW_VERSION = Q.get() != ev3sim.__version__
+
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
 parser.add_argument(
@@ -50,10 +73,18 @@ def main(passed_args=None):
         conf.update(config)
 
     handler = StateHandler()
+    checkVersion()
     handler.startUp(**conf)
 
     if args.batch:
-        handler.beginSimulation(args.simulation_kwargs)
+        args.simulation_kwargs.update(
+            {
+                "batch": args.batch,
+            }
+        )
+        handler.beginSimulation(**args.simulation_kwargs)
+        # We want to start on the simulation screen.
+        ScreenObjectManager.instance.screen_stack = [ScreenObjectManager.instance.SCREEN_SIM]
 
     error = None
 

@@ -1,0 +1,90 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- [-9, 0]
+- [-9, -3]
+- [-9, -6]
+- [-6, -6]
+- [-3, -6]
+- [0, -6]
+- [0, -3]
+- [0, 0]
+- [0, 3]
+- [0, 6]
+- [3, 6]
+- [6, 6]
+- [9, 6]
+- [9, 3]
+- [9, 0]
+- [12, 0]
+- [15, 0]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 6
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line1
+  position: [-12, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 8
+  fill: line_color
+  zPos: 0.1
+  key: line2
+  position: [-9, -3]
+- type: visual
+  name: Rectangle
+  width: 9
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line3
+  position: [-4.5, -6]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 14
+  fill: line_color
+  zPos: 0.1
+  key: line4
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 9
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line5
+  position: [4.5, 6]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 8
+  fill: line_color
+  zPos: 0.1
+  key: line6
+  position: [9, 3]
+- type: visual
+  name: Rectangle
+  width: 6
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line7
+  position: [12, 0]
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
+preview: tiles/previews/sharp_straight.png
+entries: [left]
+exits: [right]

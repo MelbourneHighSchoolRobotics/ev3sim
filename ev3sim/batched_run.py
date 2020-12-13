@@ -1,5 +1,5 @@
 from queue import Empty
-from ev3sim.simulation.loader import StateHandler, initialiseFromConfig
+from ev3sim.simulation.loader import ScriptLoader, StateHandler, initialiseFromConfig
 from ev3sim.simulation.randomisation import Randomiser
 import yaml
 import time
@@ -73,6 +73,9 @@ def batched_run(batch_file, bind_addr, seed):
             )
     sim_args.append(bot_processes)
     sim_args.extend(queue_with_count)
+
+    ScriptLoader.instance.reset()
+    ScriptLoader.instance.startUp()
 
     # Begin the sim process.
     simulate(*sim_args)

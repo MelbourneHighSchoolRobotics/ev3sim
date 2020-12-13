@@ -11,6 +11,8 @@ from ev3sim.search_locations import asset_locations, batch_locations, bot_locati
 
 class BatchMenu(BaseMenu):
 
+    MODE_NORMAL = "NORMAL"
+    MODE_BATCH = "BATCH_SELECTION"
     bot_list = []
 
     def sizeObjects(self):
@@ -251,6 +253,7 @@ class BatchMenu(BaseMenu):
         self.settings_button.disable()
         self.remove_batch.disable()
         self.bot_button.disable()
+        self.mode = self.MODE_NORMAL
 
     def clickStart(self):
         # Shouldn't happen but lets be safe.
@@ -266,13 +269,21 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
+        import importlib
         from ev3sim.visual.manager import ScreenObjectManager
-        from ev3sim.presets.soccer import visual_settings
+
+        with open(self.available_batches[self.batch_index][1], "r") as f:
+            conf = yaml.safe_load(f)
+        with open(find_abs(conf["preset_file"], preset_locations)) as f:
+            preset = yaml.safe_load(f)
+        mname, cname = preset["visual_settings"].rsplit(".", 1)
+
+        klass = getattr(importlib.import_module(mname), cname)
 
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_SETTINGS,
             file=self.available_batches[self.batch_index][1],
-            settings=visual_settings,
+            settings=klass,
             allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
         )
 
@@ -284,20 +295,112 @@ class BatchMenu(BaseMenu):
         ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
         ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
 
-    def clickNew(self):
+    def addBatchDialog(self):
+        self.mode = self.MODE_BATCH
+
+        class BatchPicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.mode = self.MODE_NORMAL
+                self.removeBatchDialog()
+
+            def process_event(self2, event: pygame.event.Event) -> bool:
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_object_id.split(".")[-1].startswith("preset-"):
+                        preset_type = event.ui_object_id.split(".")[-1].split("-")[1]
+                        self.generateBatch(preset_type)
+                        self2.kill()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+        self.picker = BatchPicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Pick Batch Type",
+            object_id=pygame_gui.core.ObjectID("batch_dialog"),
+        )
+
+        label_height = (self.picker.rect.height - 60) / 3
+        image_height = 2 * (self.picker.rect.height - 60) / 3 - 60
+
+        self.soccer_labels = []
+        self.soccer_images = []
+        self.soccer_buttons = []
+        for i, preset_type in enumerate(["soccer", "rescue"]):
+            with open(find_abs(f"{preset_type}.yaml", preset_locations), "r") as f:
+                p = yaml.safe_load(f)
+            self.soccer_images.append(
+                pygame_gui.elements.UIImage(
+                    relative_rect=pygame.Rect(
+                        40 + (i % 2) * ((self.picker.rect.width - 90) / 2 + 20),
+                        40 + label_height,
+                        (self.picker.rect.width - 90) / 2 - 40,
+                        image_height,
+                    ),
+                    image_surface=pygame.image.load(find_abs(p["preview_path"], asset_locations)),
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-image"),
+                )
+            )
+            self.soccer_labels.append(
+                pygame_gui.elements.UITextBox(
+                    relative_rect=pygame.Rect(
+                        20 + (i % 2) * (self.picker.rect.width - 60) / 2,
+                        20,
+                        (self.picker.rect.width - 60) / 2,
+                        label_height,
+                    ),
+                    html_text=p["preset_description"],
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-label", "text_dialog"),
+                )
+            )
+            self.soccer_buttons.append(
+                pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect(
+                        20 + (i % 2) * (self.picker.rect.width - 60) / 2,
+                        20,
+                        (self.picker.rect.width - 60) / 2,
+                        self.picker.rect.height - 40,
+                    ),
+                    text="",
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-button", "invis_button"),
+                )
+            )
+
+    def removeBatchDialog(self):
+        try:
+            for i in range(len(self.soccer_labels)):
+                self.soccer_labels[i].kill()
+                self.soccer_images[i].kill()
+                self.soccer_buttons[i].kill()
+        except:
+            pass
+
+    def generateBatch(self, preset_type):
         from ev3sim.visual.manager import ScreenObjectManager
-        from ev3sim.presets.soccer import visual_settings
+
+        if preset_type == "soccer":
+            from ev3sim.presets.soccer import visual_settings
+        elif preset_type == "rescue":
+            from ev3sim.presets.rescue import visual_settings
+        else:
+            raise ValueError(f"Unknown preset type {preset_type}.")
 
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_SETTINGS,
             settings=visual_settings,
             creating=True,
-            creation_area="workspace/batched_commands/",
+            creation_area="workspace/sims/",
             starting_data={
-                "preset_file": "soccer.yaml",
+                "preset_file": f"{preset_type}.yaml",
                 "bots": [],
                 "settings": {
-                    "soccer": {},
+                    preset_type: {},
                 },
             },
         )
@@ -371,29 +474,30 @@ class BatchMenu(BaseMenu):
             )
 
     def handleEvent(self, event):
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_object_id.startswith("start-sim"):
-                self.clickStart()
-            elif event.ui_object_id.startswith("batch-settings"):
-                self.clickSettings()
-            elif event.ui_object_id.startswith("batch-bots"):
-                self.clickBots()
-            elif event.ui_object_id.startswith("new_batch"):
-                self.clickNew()
-            elif event.ui_object_id.startswith("remove_batch"):
-                self.clickRemove()
-            else:
-                if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
-                    self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
-        if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_DOWN, pygame.K_w]:
-                self.incrementBatchIndex(1)
-            elif event.key in [pygame.K_UP, pygame.K_s]:
-                self.incrementBatchIndex(-1)
-            elif event.key == pygame.K_RETURN:
-                self.clickStart()
-            elif event.key == pygame.K_n:
-                self.clickNew()
+        if self.mode == self.MODE_NORMAL:
+            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_object_id.startswith("start-sim"):
+                    self.clickStart()
+                elif event.ui_object_id.startswith("batch-settings"):
+                    self.clickSettings()
+                elif event.ui_object_id.startswith("batch-bots"):
+                    self.clickBots()
+                elif event.ui_object_id.startswith("new_batch"):
+                    self.addBatchDialog()
+                elif event.ui_object_id.startswith("remove_batch"):
+                    self.clickRemove()
+                else:
+                    if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
+                        self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
+            if event.type == pygame.KEYDOWN:
+                if event.key in [pygame.K_DOWN, pygame.K_w]:
+                    self.incrementBatchIndex(1)
+                elif event.key in [pygame.K_UP, pygame.K_s]:
+                    self.incrementBatchIndex(-1)
+                elif event.key == pygame.K_RETURN:
+                    self.clickStart()
+                elif event.key == pygame.K_n:
+                    self.clickNew()
 
     def setBatchIndex(self, new_index):
         self.batch_index = new_index
