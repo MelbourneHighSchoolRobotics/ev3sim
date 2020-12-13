@@ -1,0 +1,86 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- [-9, 0]
+- [-6, 0]
+- [-3, 0]
+- [0, 0]
+- [3, 0]
+- [6, 0]
+- [9, 0]
+- [12, 0]
+- [15, 0]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line
+  position: [0, 0]
+- type: object
+  static: true
+  physics: true
+  force_type: slow_dir
+  force_args:
+    - [1, 0]
+    - 0.4
+  visual:
+    name: Rectangle
+    width: 3
+    height: 10
+    fill: null
+    stroke: '#000000'
+    stroke_width: 0.1
+    zPos: 0.2
+  key: forceArea1
+  position: [-7, 0]
+- type: object
+  static: true
+  physics: true
+  force_type: slow_dir
+  force_args:
+    - [1, 0]
+    - 0.4
+  visual:
+    name: Rectangle
+    width: 3
+    height: 10
+    fill: null
+    stroke: '#000000'
+    stroke_width: 0.1
+    zPos: 0.2
+  key: forceArea2
+  position: [0, 0]
+- type: object
+  static: true
+  physics: true
+  force_type: slow_dir
+  force_args:
+    - [1, 0]
+    - 0.4
+  visual:
+    name: Rectangle
+    width: 3
+    height: 10
+    fill: null
+    stroke: '#000000'
+    stroke_width: 0.1
+    zPos: 0.2
+  key: forceArea3
+  position: [7, 0]
+    
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
+preview: tiles/previews/rough.png
+entries: [left]
+exits: [right]

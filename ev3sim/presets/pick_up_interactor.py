@@ -6,7 +6,7 @@ from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.world import World
 from ev3sim.objects.base import objectFactory
 from ev3sim.visual.utils import screenspace_to_worldspace
-from ev3sim.objects.base import STATIC_CATEGORY
+from ev3sim.objects.base import DYNAMIC_CATEGORY
 
 
 class PickUpInteractor(IInteractor):
@@ -44,9 +44,7 @@ class PickUpInteractor(IInteractor):
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(
-                m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
-            )
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY))
             if shapes:
                 max_z = max(pq.shape.obj.clickZ for pq in shapes)
                 shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]
@@ -59,9 +57,7 @@ class PickUpInteractor(IInteractor):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             # If a robot is right clicked, copy it's ID for use in the attach script.
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(
-                m_pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
-            )
+            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY))
             if shapes:
                 max_z = max(pq.shape.obj.clickZ for pq in shapes)
                 shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]

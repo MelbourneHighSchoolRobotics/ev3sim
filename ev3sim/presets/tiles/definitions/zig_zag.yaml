@@ -1,0 +1,55 @@
+follow_points:
+- [-15, 0]
+- [-12, 3]
+- [-9, 6]
+- [-7.5, 7.5]
+- [-6, 6]
+- [-3, 3]
+- [0, 0]
+- [3, -3]
+- [6, -6]
+- [7.5, -7.5]
+- [9, -6]
+- [12, -3]
+- [15, 0]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 20
+  fill: line_color
+  zPos: 0.1
+  key: mid_line
+  position: [0, 0]
+  rotation: 45
+- type: visual
+  name: Rectangle
+  width: 12.1
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: entry_line
+  position: [-11, 4]
+  rotation: 45
+- type: visual
+  name: Rectangle
+  width: 12.1
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: exit_line
+  position: [11, -4]
+  rotation: 45
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
+preview: tiles/previews/zig_zag.png
+entries: [left]
+exits: [right]

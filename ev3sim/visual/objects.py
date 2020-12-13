@@ -180,16 +180,26 @@ class Colorable(IVisualElement):
 class Image(Colorable):
     def initFromKwargs(self, **kwargs):
         self._image_path = ""
-        self.image_path = kwargs.get("image_path")
         super().initFromKwargs(**kwargs)
         self.fill = kwargs.get("fill", (0, 0, 0, 0))
         self.hAlignment = kwargs.get("hAlignment", "m")
         self.vAlignment = kwargs.get("vAlignment", "m")
         self.scale = kwargs.get("scale", 1)
+        self.flip = kwargs.get("flip", [False, False])
+        self.image_path = kwargs.get("image_path")
         self.calculatePoints()
 
     def scaleAtPosition(self, amount, pos=(0, 0)):
-        self.scale *= amount
+        if isinstance(self.scale, (tuple, list)):
+            if isinstance(amount, (tuple, list)):
+                self.scale = (self.scale[0] * amount[0], self.scale[1] * amount[1])
+            else:
+                self.scale = (self.scale[0] * amount, self.scale[1] * amount)
+        else:
+            if isinstance(amount, (tuple, list)):
+                self.scale = (self.scale * amount[0], self.scale * amount[1])
+            else:
+                self.scale *= amount
         super().scaleAtPosition(amount, pos=pos)
 
     @property
@@ -200,12 +210,14 @@ class Image(Colorable):
     def image_path(self, value):
         from ev3sim.file_helper import find_abs
 
-        self._image_path = find_abs(value, allowed_areas=asset_locations)
-        self.image = pygame.image.load(self._image_path)
-        try:
-            self.calculatePoints()
-        except:
-            pass
+        image_path = find_abs(value, allowed_areas=asset_locations)
+        if image_path != self._image_path:
+            self._image_path = image_path
+            self.image = pygame.image.load(self._image_path)
+            try:
+                self.calculatePoints()
+            except:
+                pass
 
     def calculatePoints(self):
         if self.customMap is None:
@@ -215,11 +227,20 @@ class Image(Colorable):
         else:
             relative_scale = self.customMap["SCREEN_WIDTH"] / 1280 * 293.3 / self.customMap["MAP_WIDTH"]
         new_size = [
-            int(self.image.get_size()[0] * self.scale * relative_scale),
-            int(self.image.get_size()[1] * self.scale * relative_scale),
+            int(
+                self.image.get_size()[0]
+                * (self.scale[0] if isinstance(self.scale, (list, tuple)) else self.scale)
+                * relative_scale
+            ),
+            int(
+                self.image.get_size()[1]
+                * (self.scale[1] if isinstance(self.scale, (list, tuple)) else self.scale)
+                * relative_scale
+            ),
         ]
         scaled = pygame.transform.scale(self.image, new_size)
-        self.rotated = pygame.transform.rotate(scaled, self.rotation * 180 / np.pi)
+        flipped = pygame.transform.flip(scaled, self.flip[0], self.flip[1])
+        self.rotated = pygame.transform.rotate(flipped, self.rotation * 180 / np.pi)
         self.rotated.fill(self.fill, special_flags=pygame.BLEND_ADD)
         self.screen_location = utils.worldspace_to_screenspace(self.position, self.customMap)
         self.screen_size = self.rotated.get_size()
@@ -561,6 +582,9 @@ class Circle(Colorable):
         elif self.fill:
             pygame.gfxdraw.aaellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
             pygame.gfxdraw.filled_ellipse(screen, *self.point, self.h_radius, self.v_radius, self.fill)
+        elif self.stroke and self.stroke_width:
+            # No fill but still stroke and stroke width. Can't use gfxdraw.
+            self._applyToScreen(screen)
 
     def applyToScreen(self, screen):
         if USE_PYGAME_GFX:
@@ -583,6 +607,43 @@ class Circle(Colorable):
 
         shape.filter = pymunk.ShapeFilter(categories=STATIC_CATEGORY if physObj.static else DYNAMIC_CATEGORY)
         return body, shape
+
+
+class Arc(Polygon):
+    """
+    An Arc is just a circle which only has a pie portion drawn.
+
+    However pygame filled arcs (or thick arcs) aren't drawn well. So just use a polygon!
+    """
+
+    def initFromKwargs(self, **kwargs):
+        self.radius = kwargs.get("radius", 1)
+        self.angle_span = kwargs.get("angle", 90)
+        kwargs["verts"] = [
+            [self.radius * np.cos(x * np.pi / 180), self.radius * np.sin(x * np.pi / 180)]
+            for x in range(int(self.angle_span))
+        ]
+        super().initFromKwargs(**kwargs)
+        if self.fill is not None:
+            raise ValueError("Arcs are only for strokes.")
+        # Actually fill it though.
+        self.stroke, self.fill = self.fill, self.stroke
+        # But actually, we want to double back so we draw the stroke correctly.
+        self.verts = [
+            [
+                (self.radius + self.stroke_width / 2) * np.cos(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+                (self.radius + self.stroke_width / 2) * np.sin(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+            ]
+            for x in range(abs(self.angle_span) + 1)
+        ] + [
+            [
+                (self.radius - self.stroke_width / 2) * np.cos(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+                (self.radius - self.stroke_width / 2) * np.sin(x * np.pi / 180 * (-1 if self.angle_span < 0 else 1)),
+            ]
+            for x in range(abs(self.angle_span), -1, -1)
+        ]
+        self.points = [None] * len(self.verts)
+        self.calculatePoints()
 
 
 class Text(Colorable):
@@ -704,7 +765,7 @@ class Text(Colorable):
 def visualFactory(**options):
     if "name" not in options:
         raise ValueError("Tried to generate visual element, but no 'name' field was supplied.")
-    for klass in (Polygon, Rectangle, Circle, Text, Image):
+    for klass in (Polygon, Rectangle, Circle, Arc, Text, Image):
         if options["name"] == klass.__name__:
             r = klass(**options)
             return r

@@ -21,6 +21,7 @@ class ScreenObjectManager:
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
+    SCREEN_RESCUE_EDIT = "RESCUE_EDIT"
 
     screen_stack = []
 
@@ -101,6 +102,10 @@ class ScreenObjectManager:
         from ev3sim.visual.settings.menu import SettingsMenu
 
         self.screens[self.SCREEN_SETTINGS] = SettingsMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Rescue edit screen
+        from ev3sim.visual.menus.rescue_edit import RescueMapEditMenu
+
+        self.screens[self.SCREEN_RESCUE_EDIT] = RescueMapEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
     # TODO: Animate screen popping? Add this as an option?
 
@@ -160,7 +165,7 @@ class ScreenObjectManager:
         return obj
 
     def registerObject(self, obj: "objects.base.BaseObject", key) -> str:  # noqa: F821
-        if obj.visual is not None and obj.visual.visible:
+        if hasattr(obj, "visual") and obj.visual.visible:
             self.registerVisual(obj.visual, key)
         for i, child in enumerate(obj.children):
             self.registerObject(child, child.key)

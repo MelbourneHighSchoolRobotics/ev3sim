@@ -1,0 +1,64 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- [-9, 0]
+- [-6, 0]
+- [-3, 0]
+- [0, 0]
+- [3, 0]
+- [6, 0]
+- [9, 0]
+- [12, 0]
+- [15, 0]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line
+  position: [0, 0]
+- type: object
+  physics: true
+  visual:
+    name: Rectangle
+    width: 4
+    height: 4
+    fill: "#0000ff"
+    stroke: "#ffffff"
+    stroke_width: 0.1
+    zPos: 0.3
+  mass: 2
+  friction: 0.7
+  restitution: 0.5
+  position: [0, 9]
+  key: topTunnel
+- type: object
+  physics: true
+  visual:
+    name: Rectangle
+    width: 4
+    height: 4
+    fill: "#0000ff"
+    stroke: "#ffffff"
+    stroke_width: 0.1
+    zPos: 0.3
+  mass: 2
+  friction: 0.7
+  restitution: 0.5
+  position: [0, -9]
+  key: botTunnel
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.TunnelChecker.TunnelChecker
+preview: tiles/previews/tunnel.png
+entries: [left]
+exits: [right]
