@@ -64,12 +64,12 @@ settings:
       - 1
       - -1
       rotation: 0
-    - flip: false
-      path: tiles/definitions/right_angle.yaml
+    - flip: true
+      path: tiles/definitions/strict_turns2.yaml
       position:
       - 2
       - -1
-      rotation: 0
+      rotation: 180
     - flip: false
       path: tiles/definitions/tunnel.yaml
       position:

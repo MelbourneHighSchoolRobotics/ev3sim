@@ -623,6 +623,7 @@ class RescueMapEditMenu(BaseMenu):
         "curved_straight.yaml",
         "square_green.yaml",
         "strict_turns1.yaml",
+        "strict_turns2.yaml",
     ]
 
     def drawTileDialog(self):
