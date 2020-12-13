@@ -807,6 +807,13 @@ def onClickMapEditor(filename):
     )
 
 
+class MapButton(Button):
+    def resize(self, objects, index):
+        super().resize(objects, index)
+        if self.menu.creating:
+            self.button.disable()
+
+
 visual_settings = [
     {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BATCH NAME", None, (lambda s: (0, 20)))]},
     {
@@ -837,7 +844,7 @@ visual_settings = [
         "height": (lambda s: 120 if s[0] < 540 else 70),
         "objects": [
             Checkbox(["settings", "rescue", "SHOW_FOLLOW_POINTS"], False, "Show Follow Points", (lambda s: (0, 20))),
-            Button("Map Editor", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)), onClickMapEditor),
+            MapButton("Map Editor", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20)), onClickMapEditor),
         ],
     },
 ]
