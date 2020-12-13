@@ -113,7 +113,9 @@ class RescueMapEditMenu(BaseMenu):
 
         r = RescueInteractor()
         r.TILE_DEFINITIONS = self.current_tiles
-        r.CAN_SPAWN_POSITION = self.previous_info.get("settings", {}).get("rescue", {}).get("CAN_SPAWN_POSITION", [0, 0])
+        r.CAN_SPAWN_POSITION = (
+            self.previous_info.get("settings", {}).get("rescue", {}).get("CAN_SPAWN_POSITION", [0, 0])
+        )
         self.customMap = {
             "SCREEN_WIDTH": self._size[0],
             "SCREEN_HEIGHT": self._size[1],
