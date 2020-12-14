@@ -44,6 +44,7 @@ FunctionEnd
 !define MUI_HEADERIMAGE_BITMAP "ev3sim\assets\Logo.bmp"
 !define MUI_HEADERIMAGE_UNBITMAP "ev3sim\assets\Logo.bmp"
 !define MUI_HEADERIMAGE_RIGHT
+!define MUI_WELCOMEFINISHPAGE_BITMAP "ev3sim\assets\installer_preview.bmp"
 
 !define MUI_PAGE_HEADER_TEXT "EV3Sim"
 !define MUI_PAGE_HEADER_SUBTEXT "Robotics Simulator"
