@@ -8,7 +8,9 @@ with open("version_file.txt", "w") as f:
     f.write(string)
 
 # Then generate the build.
-PyInstaller.__main__.run([
-    "-y",
-    "executable_entry.spec",
-])
+PyInstaller.__main__.run(
+    [
+        "-y",
+        "executable_entry.spec",
+    ]
+)
