@@ -43,7 +43,9 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          console=False,
+          icon="ev3sim/assets/Logo.ico",
+          version="version_file.txt")
 coll = COLLECT(exe,
                a.binaries + chipmunk_libs,
                a.zipfiles,
