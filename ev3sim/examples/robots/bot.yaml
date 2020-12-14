@@ -9,7 +9,7 @@ base_plate:
     visual:
       image_path: Logo.png
       name: Image
-      scale: 0.7
+      scale: 0.015
       zPos: 2
   - collider: inherit
     friction: 0.8
