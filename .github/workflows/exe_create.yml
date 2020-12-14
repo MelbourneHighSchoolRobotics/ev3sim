@@ -28,7 +28,7 @@ jobs:
 
     - name: Build with pyinstaller
       run: |
-        python -m build_exe.py
+        python -m build_exe
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v1
       with:
