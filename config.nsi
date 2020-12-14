@@ -85,6 +85,9 @@ Section "Dummy Section" SecDummy
 SetOutPath "$INSTDIR"
 File /nonfatal /a /r "dist\ev3sim\"
 WriteRegStr HKCU "Software\EV3Sim" "" $INSTDIR
+;Start Menu
+createDirectory "$SMPROGRAMS\MHS_Robotics"
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$INSTDIR\ev3sim.exe" "" "$INSTDIR\ev3sim.exe" 0
 ;Create uninstaller
 WriteUninstaller "$INSTDIR\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
@@ -111,4 +114,8 @@ Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
 RMDir /R /REBOOTOK "$INSTDIR"
 DeleteRegKey /ifempty HKCU "Software\EV3Sim"
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim"
+;Remove Start Menu launcher
+Delete /REBOOTOK "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk"
+;Try to remove the Start Menu folder - this will only happen if it is empty
+RMDir /R /REBOOTOK "$SMPROGRAMS\MHS_Robotics"
 SectionEnd
