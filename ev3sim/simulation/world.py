@@ -25,6 +25,7 @@ class World:
     COLLISION_LENIENCY = 0.5
 
     paused = False
+    spawn_no = 0
 
     def __init__(self):
         World.instance = self
@@ -34,6 +35,7 @@ class World:
         self.space = pymunk.Space()
         self.space.gravity = 0, 0
         self.objects = []
+        self.spawn_no += 1
 
     def registerObject(self, obj):
         self.objects.append(obj)

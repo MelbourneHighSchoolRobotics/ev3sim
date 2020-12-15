@@ -107,7 +107,11 @@ class SoccerInteractor(IInteractor):
 
         handler = World.instance.space.add_collision_handler(self.BALL_COLLISION_TYPE, self.GOAL_COLLISION_TYPE)
 
+        saved_world_no = World.instance.spawn_no
+
         def handle_collide(arbiter, space, data):
+            if World.instance.spawn_no != saved_world_no:
+                return
             a, b = arbiter.shapes
             if hasattr(a, "goal_index"):
                 self.goalScoredIn(a.goal_index)
@@ -128,11 +132,17 @@ class SoccerInteractor(IInteractor):
                 self.FIELD_BALL_COLLISION_TYPE, self.BALL_COLLISION_TYPE
             )
 
+            saved_world_no = World.instance.spawn_no
+
             def handle_separate_ball(arbiter, space, data):
+                if World.instance.spawn_no != saved_world_no:
+                    return
                 self.out_on_white_tick = self.BALL_RESET_WHITE_DELAY_SECONDS * ScriptLoader.instance.GAME_TICK_RATE
                 return False
 
             def handle_collide_ball(arbiter, space, data):
+                if World.instance.spawn_no != saved_world_no:
+                    return
                 self.out_on_white_tick = 0
                 return False
 
@@ -146,7 +156,11 @@ class SoccerInteractor(IInteractor):
         if self.ENFORCE_OUT_ON_WHITE:
             handler = World.instance.space.add_collision_handler(self.FIELD_COLLISION_TYPE, self.BOT_COLLISION_TYPE)
 
+            saved_world_no = World.instance.spawn_no
+
             def handle_separate(arbiter, space, data):
+                if World.instance.spawn_no != saved_world_no:
+                    return
                 a, b = arbiter.shapes
                 if hasattr(a, "bot_index"):
                     self.penaliseBot(a.bot_index)

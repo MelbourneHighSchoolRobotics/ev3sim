@@ -494,7 +494,11 @@ class RescueInteractor(IInteractor):
             self.FOLLOW_POINT_COLLISION_TYPE, self.ROBOT_CENTRE_COLLISION_TYPE
         )
 
+        saved_world_no = World.instance.spawn_no
+
         def handle_collide(arbiter, space, data):
+            if World.instance.spawn_no != saved_world_no:
+                return
             a, b = arbiter.shapes
             if hasattr(a, "_follow_indexes"):
                 self.collidedFollowPoint(a._follow_indexes, b._robot_index)
