@@ -190,11 +190,8 @@ class RescueMapEditMenu(BaseMenu):
             ]
         r.spawnCan()
         r.can_obj.visual.customMap = self.customMap
-        r.can_obj.body.position = [
-            r.can_obj.body.position[0] + self.tile_offset[0],
-            r.can_obj.body.position[1] + self.tile_offset[1],
-        ]
-        r.can_obj.position = r.can_obj.body.position
+        r.can_obj.body.position = [a + b for a, b in zip(r.can_obj.body.position, self.tile_offset)]
+        r.can_obj.position = np.array(r.can_obj.body.position)
         r.can_obj.visual.calculatePoints()
         self.can_obj = r.can_obj
         self.current_tile_objects = r.tiles

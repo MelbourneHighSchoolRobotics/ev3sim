@@ -10,7 +10,7 @@ class WaterChecker(CompletedChecker):
 
     def onReset(self):
         super().onReset()
-        self.waterTower.body.position = self.rescue.tiles[self.index]["all_elems"][0].position
+        self.waterTower.body.position = [float(v) for v in self.rescue.tiles[self.index]["all_elems"][0].position]
 
     @property
     def waterTower(self):

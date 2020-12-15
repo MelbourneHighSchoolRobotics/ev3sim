@@ -207,7 +207,7 @@ class BotEditMenu(BaseMenu):
         from ev3sim.simulation.world import World
 
         shapes = World.instance.space.point_query(
-            pos, 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
+            [float(v) for v in pos], 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
         )
         if shapes:
             top_shape_z = max(map(lambda x: x.shape.actual_obj.visual.zPos, shapes))

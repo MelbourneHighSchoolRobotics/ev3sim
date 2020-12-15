@@ -1,7 +1,7 @@
 numpy>=1.19.0
 pygame>=2.0.0
 PyYAML>=3.13
-pymunk>=5.6.0
+pymunk>=6.0.0
 pyperclip>=1.8.0
 grpcio>=1.30.0
 grpcio-tools>=1.30.0

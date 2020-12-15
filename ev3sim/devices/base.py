@@ -95,7 +95,7 @@ class IDeviceInteractor(IInteractor):
             )
             obj.rotation = self.physical_object.rotation + self.relative_rotation
             if isinstance(obj, PhysicsObject):
-                obj.body.position = obj.position
+                obj.body.position = [float(v) for v in obj.position]
                 obj.body.angle = obj.rotation
 
     def random(self):

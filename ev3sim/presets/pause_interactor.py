@@ -17,7 +17,9 @@ class PauseInteractor(IInteractor):
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             if shapes:
                 max_z = max(pq.shape.obj.clickZ for pq in shapes)
                 shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]
@@ -27,7 +29,9 @@ class PauseInteractor(IInteractor):
 
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             if shapes:
                 max_z = max(pq.shape.obj.clickZ for pq in shapes)
                 shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]

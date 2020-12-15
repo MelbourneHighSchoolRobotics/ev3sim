@@ -211,19 +211,21 @@ class SoccerInteractor(IInteractor):
                 # Generate a uniformly random point in radius of spawn for bot.
                 diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
                 diff_angle = Randomiser.random() * 2 * np.pi
-                self.robots[actual_index].body.position = self.spawns[team][index][0] + diff_radius * np.array(
-                    [np.cos(diff_angle), np.sin(diff_angle)]
-                )
+                self.robots[actual_index].body.position = [
+                    self.spawns[team][index][0][0] + diff_radius * np.cos(diff_angle),
+                    self.spawns[team][index][0][1] + diff_radius * np.sin(diff_angle),
+                ]
                 self.robots[actual_index].body.angle = self.spawns[team][index][1] * np.pi / 180
-                self.robots[actual_index].body.velocity = np.array([0.0, 0.0])
+                self.robots[actual_index].body.velocity = (0.0, 0.0)
                 self.robots[actual_index].body.angular_velocity = 0
         # Generate position for ball.
         diff_radius = Randomiser.random() * self.BALL_SPAWN_RADIUS
         diff_angle = Randomiser.random() * 2 * np.pi
-        ScriptLoader.instance.object_map["IR_BALL"].body.position = np.array([0, -18]) + diff_radius * np.array(
-            [np.cos(diff_angle), np.sin(diff_angle)]
-        )
-        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
+        ScriptLoader.instance.object_map["IR_BALL"].body.position = [
+            diff_radius * np.cos(diff_angle),
+            diff_radius * np.sin(diff_angle) - 18,
+        ]
+        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = (0.0, 0.0)
         for idx in range(len(self.bot_penalties)):
             if self.bot_penalties[idx] > 0:
                 self.finishPenalty(idx)
@@ -234,23 +236,32 @@ class SoccerInteractor(IInteractor):
             key
             for key in all_keys
             if not World.instance.space.point_query(
-                ScriptLoader.instance.object_map[key].position, 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY)
+                [float(v) for v in ScriptLoader.instance.object_map[key].position],
+                0.0,
+                pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY),
             )
         ]
         best_key = sorted(
             [
                 (
                     magnitude_sq(
-                        ScriptLoader.instance.object_map["IR_BALL"].body.position
-                        - ScriptLoader.instance.object_map[key].position
+                        [
+                            a - b
+                            for a, b in zip(
+                                ScriptLoader.instance.object_map["IR_BALL"].body.position,
+                                ScriptLoader.instance.object_map[key].position,
+                            )
+                        ]
                     ),
                     key,
                 )
                 for key in (available_keys if available_keys else all_keys)
             ]
         )[0][1]
-        ScriptLoader.instance.object_map["IR_BALL"].body.position = ScriptLoader.instance.object_map[best_key].position
-        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = np.array([0.0, 0.0])
+        ScriptLoader.instance.object_map["IR_BALL"].body.position = [
+            float(v) for v in ScriptLoader.instance.object_map[best_key].position
+        ]
+        ScriptLoader.instance.object_map["IR_BALL"].body.velocity = (0.0, 0.0)
 
     def tick(self, tick):
         super().tick(tick)
@@ -280,7 +291,7 @@ class SoccerInteractor(IInteractor):
                 if self.bot_penalties[actual_index] > 0:
                     self.robots[actual_index].body.position = self.penalty[team][index][0]
                     self.robots[actual_index].body.angle = self.penalty[team][index][1] * np.pi / 180
-                    self.robots[actual_index].position = self.robots[actual_index].body.position
+                    self.robots[actual_index].position = np.array(self.robots[actual_index].body.position)
                     self.robots[actual_index].rotation = self.robots[actual_index].body.angle
 
     @stop_on_pause
@@ -392,7 +403,7 @@ class SoccerInteractor(IInteractor):
         self.robots[botIndex].body.angle = (
             self.spawns[botIndex // len(self.names)][botIndex % len(self.names)][1] * np.pi / 180
         )
-        self.robots[botIndex].body.velocity = np.array([0.0, 0.0])
+        self.robots[botIndex].body.velocity = (0.0, 0.0)
         self.robots[botIndex].body.angular_velocity = 0
         ScriptLoader.instance.sendEvent(f"Robot-{botIndex}", END_PENALTY, {})
         ScreenObjectManager.instance.unregisterVisual(f"UI-penalty-{botIndex}")
@@ -404,7 +415,9 @@ class SoccerInteractor(IInteractor):
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for shape in shapes:
                 for team in range(len(self.names)):
                     if shape.shape.obj.key.startswith(f"score{team+1}"):
@@ -427,7 +440,9 @@ class SoccerInteractor(IInteractor):
 
         if event.type == pygame.MOUSEMOTION:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for team in range(len(self.names)):
                 for index in range(self.BOTS_PER_TEAM):
                     actual_index = team + index * len(self.names)
@@ -442,7 +457,9 @@ class SoccerInteractor(IInteractor):
 
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for shape in shapes:
                 if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()

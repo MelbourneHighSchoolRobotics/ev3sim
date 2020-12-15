@@ -10,12 +10,22 @@ class TunnelChecker(CompletedChecker):
 
     def onReset(self):
         super().onReset()
-        self.tunnelTop.body.position = local_space_to_world_space(
-            [0, 9], self.rescue.tiles[self.index]["rotation"], self.rescue.tiles[self.index]["all_elems"][0].position
-        )
-        self.tunnelBot.body.position = local_space_to_world_space(
-            [0, -9], self.rescue.tiles[self.index]["rotation"], self.rescue.tiles[self.index]["all_elems"][0].position
-        )
+        self.tunnelTop.body.position = [
+            float(v)
+            for v in local_space_to_world_space(
+                [0, 9],
+                self.rescue.tiles[self.index]["rotation"],
+                self.rescue.tiles[self.index]["all_elems"][0].position,
+            )
+        ]
+        self.tunnelBot.body.position = [
+            float(v)
+            for v in local_space_to_world_space(
+                [0, -9],
+                self.rescue.tiles[self.index]["rotation"],
+                self.rescue.tiles[self.index]["all_elems"][0].position,
+            )
+        ]
 
     @property
     def tunnelTop(self):
