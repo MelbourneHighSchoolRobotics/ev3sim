@@ -33,8 +33,8 @@ def checkVersion():
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
 parser.add_argument(
-    "--batch",
-    "-b",
+    "batch",
+    nargs="?",
     type=str,
     default=None,
     help="If specified, will begin the gui simulating a particular batch file.",
@@ -46,6 +46,12 @@ parser.add_argument(
     default=None,
     help="Provide a file with some configurable values for the screen.",
 )
+parser.add_argument(
+    "--from_main",
+    action="store_true",
+    help="This should only be set programmatically, if using the CLI then ignore.",
+    dest="from_main",
+)
 
 
 def main(passed_args=None):
@@ -54,6 +60,11 @@ def main(passed_args=None):
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
+
+    if args.batch and not args.from_main:
+        from ev3sim.sim import main
+        main(args.__dict__)
+        return
 
     # Try loading a user config. If one does not exist, then generate one.
     try:
@@ -77,6 +88,7 @@ def main(passed_args=None):
     handler.startUp(**conf)
 
     if args.batch:
+        # Implicitly, this must have been called from main
         args.simulation_kwargs.update(
             {
                 "batch": args.batch,

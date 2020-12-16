@@ -58,6 +58,7 @@ def main(passed_args=None):
                     "bind_addr": args.bind_addr,
                     "version": args.version,
                 },
+                "from_main": True,
             }
         )
         return
