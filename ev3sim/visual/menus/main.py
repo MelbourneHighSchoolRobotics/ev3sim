@@ -3,10 +3,14 @@ import pygame_gui
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
-from ev3sim.search_locations import config_locations
+from ev3sim.search_locations import asset_locations, config_locations
 
 
 class MainMenu(BaseMenu):
+
+    SLIDE_NUMS = 4
+    SLIDE_TIME = 5
+
     def sizeObjects(self):
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
@@ -25,6 +29,8 @@ class MainMenu(BaseMenu):
         )
 
     def generateObjects(self):
+        self.slide_index = 0
+        self.swapSlides()
         dummy_rect = pygame.Rect(0, 0, *self._size)
         # In order to respect theme changes, objects must be built in initWithKwargs
         self.bg = pygame_gui.elements.UIPanel(
@@ -75,6 +81,43 @@ class MainMenu(BaseMenu):
                     settings=main_settings,
                 )
                 ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+
+    def swapSlides(self):
+        self.remaining = 0
+        self.slide_index += 1
+        self.slide_index %= self.SLIDE_NUMS
+        self.slide_surface_prev = pygame.image.load(
+            find_abs(f"bg_slide{(self.slide_index - 1) % self.SLIDE_NUMS}.png", asset_locations)
+        )
+        self.slide_surface_next = pygame.image.load(find_abs(f"bg_slide{self.slide_index}.png", asset_locations))
+
+    MAX_ALPHA = 0.4
+    FADE_PCT = 0.55
+
+    def update(self, time_delta: float):
+        super().update(time_delta)
+        self.remaining += time_delta
+        if self.remaining >= self.SLIDE_TIME:
+            self.swapSlides()
+        bg_image = pygame.Surface(self._size, depth=32)
+        bg_image.fill(pygame.Color(16, 16, 16))
+        prop_time = self.remaining / self.SLIDE_TIME
+        alpha_prev = int(
+            (self.FADE_PCT - prop_time) / self.FADE_PCT * 255 * self.MAX_ALPHA if prop_time < self.FADE_PCT else 0
+        )
+        alpha_next = int(
+            (prop_time - (1 - self.FADE_PCT)) / self.FADE_PCT * 255 * self.MAX_ALPHA if prop_time > 0.25 else 0
+        )
+        img_prev = self.slide_surface_prev
+        img_next = self.slide_surface_next
+        img_prev.set_alpha(alpha_prev)
+        img_next.set_alpha(alpha_next)
+        bg_image.blit(img_prev, pygame.Rect(0, 0, *self._size))
+        bg_image.blit(img_next, pygame.Rect(0, 0, *self._size))
+        self.bg.set_image(bg_image)
+
+    def draw_ui(self, window_surface: pygame.surface.Surface):
+        super().draw_ui(window_surface)
 
     def onPop(self):
         pass
