@@ -5,6 +5,7 @@ import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
+from ev3sim.validation.preset_files import PresetValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.search_locations import asset_locations, batch_locations, bot_locations, preset_locations
 
@@ -311,8 +312,8 @@ class BatchMenu(BaseMenu):
             def process_event(self2, event: pygame.event.Event) -> bool:
                 if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_object_id.split(".")[-1].startswith("preset-"):
-                        preset_type = event.ui_object_id.split(".")[-1].split("-")[1]
-                        self.generateBatch(preset_type)
+                        preset_index = int(event.ui_object_id.split(".")[-1].split("-")[1])
+                        self.generateBatch(preset_index)
                         self2.kill()
                 return super().process_event(event)
 
@@ -330,9 +331,21 @@ class BatchMenu(BaseMenu):
         self.soccer_labels = []
         self.soccer_images = []
         self.soccer_buttons = []
-        for i, preset_type in enumerate(["soccer", "rescue"]):
-            with open(find_abs(f"{preset_type}.yaml", preset_locations), "r") as f:
-                p = yaml.safe_load(f)
+        self.available_presets = []
+        for rel_dir in preset_locations:
+            try:
+                actual_dir = find_abs_directory(rel_dir)
+            except:
+                continue
+            for preset in PresetValidator.all_valid_in_dir(actual_dir):
+                # Show everything except dir and .yaml
+                with open(os.path.join(actual_dir, preset), "r") as f:
+                    config = yaml.safe_load(f)
+                if not config.get("hidden", False):
+                    self.available_presets.append(
+                        (preset[:-5], os.path.join(actual_dir, preset), rel_dir, preset, config)
+                    )
+        for i, preset_type in enumerate(self.available_presets):
             self.soccer_images.append(
                 pygame_gui.elements.UIImage(
                     relative_rect=pygame.Rect(
@@ -341,10 +354,10 @@ class BatchMenu(BaseMenu):
                         (self.picker.rect.width - 90) / 2 - 40,
                         image_height,
                     ),
-                    image_surface=pygame.image.load(find_abs(p["preview_path"], asset_locations)),
+                    image_surface=pygame.image.load(find_abs(preset_type[4]["preview_path"], asset_locations)),
                     manager=self,
                     container=self.picker,
-                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-image"),
+                    object_id=pygame_gui.core.ObjectID(f"preset-{i}-image"),
                 )
             )
             self.soccer_labels.append(
@@ -355,10 +368,10 @@ class BatchMenu(BaseMenu):
                         (self.picker.rect.width - 60) / 2,
                         label_height,
                     ),
-                    html_text=p["preset_description"],
+                    html_text=preset_type[4].get("preset_description", ""),
                     manager=self,
                     container=self.picker,
-                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-label", "text_dialog"),
+                    object_id=pygame_gui.core.ObjectID(f"preset-{i}-label", "text_dialog"),
                 )
             )
             self.soccer_buttons.append(
@@ -372,7 +385,7 @@ class BatchMenu(BaseMenu):
                     text="",
                     manager=self,
                     container=self.picker,
-                    object_id=pygame_gui.core.ObjectID(f"preset-{preset_type}-button", "invis_button"),
+                    object_id=pygame_gui.core.ObjectID(f"preset-{i}-button", "invis_button"),
                 )
             )
 
@@ -385,15 +398,12 @@ class BatchMenu(BaseMenu):
         except:
             pass
 
-    def generateBatch(self, preset_type):
+    def generateBatch(self, preset_index):
+        import importlib
         from ev3sim.visual.manager import ScreenObjectManager
 
-        if preset_type == "soccer":
-            from ev3sim.presets.soccer import visual_settings
-        elif preset_type == "rescue":
-            from ev3sim.presets.rescue import visual_settings
-        else:
-            raise ValueError(f"Unknown preset type {preset_type}.")
+        mname, cname = self.available_presets[preset_index][4]["visual_settings"].rsplit(".", 1)
+        visual_settings = getattr(importlib.import_module(mname), cname)
 
         ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_SETTINGS,
@@ -401,10 +411,10 @@ class BatchMenu(BaseMenu):
             creating=True,
             creation_area="workspace/sims/",
             starting_data={
-                "preset_file": f"{preset_type}.yaml",
+                "preset_file": f"{self.available_presets[preset_index][0]}.yaml",
                 "bots": [],
                 "settings": {
-                    preset_type: {},
+                    self.available_presets[preset_index][0]: {},
                 },
             },
             extension="sim",
