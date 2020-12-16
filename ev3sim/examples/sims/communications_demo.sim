@@ -12,3 +12,4 @@ settings:
     GAME_HALF_LENGTH_MINUTES: 5
     TEAM_NAME_1: Team 1
     TEAM_NAME_2: Team 2
+hidden: true

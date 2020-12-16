@@ -126,7 +126,10 @@ class BatchMenu(BaseMenu):
                 continue
             for batch in BatchValidator.all_valid_in_dir(actual_dir):
                 # Show everything except dir and .sim
-                self.available_batches.append((batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch))
+                with open(os.path.join(actual_dir, batch), "r") as f:
+                    config = yaml.safe_load(f)
+                if not config.get("hidden", False):
+                    self.available_batches.append((batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch))
         self.batch_buttons = []
         self.batch_descriptions = []
 

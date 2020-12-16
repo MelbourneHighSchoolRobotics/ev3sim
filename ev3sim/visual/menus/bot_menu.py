@@ -114,17 +114,20 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all bot files and show them
         self.available_bots = []
-        bot_search_locations = (
-            [b for b in bot_locations if "package" not in b] if len(self.bot_keys) == 0 else bot_locations
-        )
-        for rel_dir in bot_search_locations:
+        for rel_dir in bot_locations:
             try:
                 actual_dir = find_abs_directory(rel_dir)
             except:
                 continue
             for bot in BotValidator.all_valid_in_dir(actual_dir):
-                # Show everything except dir and .bot
-                self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
+                # Show everything except dir and .noy
+                with open(os.path.join(actual_dir, bot), "r") as f:
+                    config = yaml.safe_load(f)
+                # If we are hidden, or in edit mode with hidden_edit, then don't show.
+                if not config.get("hidden", False) and not (
+                    config.get("hidden_edit", False) and len(self.bot_keys) == 0
+                ):
+                    self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
         self.bot_buttons = []
         self.bot_descriptions = []
 
