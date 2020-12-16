@@ -63,6 +63,7 @@ def main(passed_args=None):
 
     if args.batch and not args.from_main:
         from ev3sim.sim import main
+
         main(args.__dict__)
         return
 
