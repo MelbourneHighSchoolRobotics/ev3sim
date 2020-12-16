@@ -33,14 +33,44 @@
         "font": {
             "name": "Roboto",
             "size": "42",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "any_button": {
         "font": {
             "name": "Roboto",
             "size": "18",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "invis_button": {
@@ -98,7 +128,22 @@
         "font": {
             "name": "Roboto",
             "size": "26",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "settings-background": {
@@ -135,7 +180,22 @@
         "font": {
             "name": "Roboto",
             "size": "12",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "button_info_selected": {
@@ -213,7 +273,22 @@
         "font": {
             "name": "Roboto",
             "size": "18",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "device_label": {
@@ -225,7 +300,22 @@
         "font": {
             "name": "Roboto",
             "size": "18",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "baseplate_label": {
@@ -240,21 +330,66 @@
         "font": {
             "name": "Roboto",
             "size": "14",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "error_msg": {
         "font": {
             "name": "Roboto",
             "size": "16",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "window.#title_bar": {
         "font": {
             "name": "Roboto",
             "size": "14",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     },
     "option-button": {
@@ -262,7 +397,22 @@
         "font": {
             "name": "Roboto",
             "size": "24",
-            "regular_path": "ev3sim/assets/Roboto-Regular.ttf"
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
         }
     }
 }

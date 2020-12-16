@@ -665,7 +665,7 @@ class Text(Colorable):
         super().initFromKwargs(**kwargs)
         from ev3sim.file_helper import find_abs
 
-        self.font_style = kwargs.get("font_style", "OpenSans-SemiBold.ttf")
+        self.font_style = kwargs.get("font_style", "fonts/OpenSans-SemiBold.ttf")
         self.font_path = find_abs(self.font_style, allowed_areas=asset_locations)
         self.font_size = kwargs.get("font_size", 30)
         self.hAlignment = kwargs.get("hAlignment", "l")
