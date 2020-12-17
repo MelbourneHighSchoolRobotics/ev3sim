@@ -818,7 +818,7 @@ def onClickMapEditor(filename):
 
     ScreenObjectManager.instance.pushScreen(
         ScreenObjectManager.SCREEN_RESCUE_EDIT,
-        batch_file=find_abs(f"{filename}.yaml", batch_locations),
+        batch_file=find_abs(f"{filename}.sim", batch_locations),
     )
 
 

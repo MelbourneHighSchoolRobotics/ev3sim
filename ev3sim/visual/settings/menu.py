@@ -145,14 +145,14 @@ class SettingsMenu(BaseMenu):
                             if self.creating:
                                 # Make sure the name can be used.
                                 creation_dir = find_abs_directory(self.creation_area, create=True)
-                                current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.yaml")
-                                rel_file = f"{obj.obj.text}.yaml"
+                                current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.{self.extension}")
+                                rel_file = f"{obj.obj.text}.{self.extension}"
                                 if os.path.exists(current_filepath):
                                     raise ValueError("A file with this name already exists.")
                             else:
                                 # Make sure the name can be used.
                                 end, front = os.path.split(self.filename)
-                                current_filepath = os.path.join(end, f"{obj.obj.text}.yaml")
+                                current_filepath = os.path.join(end, f"{obj.obj.text}.{self.extension}")
                                 if current_filepath != self.filename and os.path.exists(current_filepath):
                                     raise ValueError("A file with this name already exists.")
                                 if current_filepath != self.filename:
@@ -190,6 +190,8 @@ class SettingsMenu(BaseMenu):
         # If creating a new thing, what data do you start with.
         self.starting_data = kwargs.get("starting_data", {})
         self.settings_obj = kwargs["settings"]
+        # Different files have different extensions to add
+        self.extension = kwargs.get("extension", "yaml")
         if not self.creating:
             self.filename = kwargs["file"]
             with open(self.filename, "r") as f:
@@ -198,7 +200,7 @@ class SettingsMenu(BaseMenu):
                 for obj in group["objects"]:
                     if obj.json_keys == "__filename__":
                         __, show_name = os.path.split(self.filename)
-                        show_name = show_name.rstrip(".yaml")
+                        show_name = show_name[: -(len(f".{self.extension}"))]
                         obj.current = show_name
                     else:
                         obj.getFromJson(json_obj)

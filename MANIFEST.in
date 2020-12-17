@@ -1,4 +1,6 @@
 global-include *.yaml
+global-include *.bot
+global-include *.sim
 global-include *.png
 global-include *.py
 graft ev3sim/assets

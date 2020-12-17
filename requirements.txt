@@ -1,4 +1,4 @@
-numpy>=1.19.0
+numpy==1.19.2
 pygame>=2.0.0
 PyYAML>=3.13
 pymunk>=6.0.0
