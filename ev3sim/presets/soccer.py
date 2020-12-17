@@ -89,7 +89,6 @@ class SoccerInteractor(IInteractor):
         ), "All player related arrays should be of equal size."
         # Initialise the goal colliders.
         self.goal_colliders = []
-        self.team_scores = []
         self.locateBots()
         self.BOTS_PER_TEAM = math.ceil(len(self.robots) / len(self.names))
 
@@ -194,14 +193,11 @@ class SoccerInteractor(IInteractor):
                 ScreenObjectManager.instance.registerVisual(
                     self.goal_colliders[-1].visual, f"Soccer_DEBUG_collider-{len(self.goal_colliders)}"
                 )
-            # Set up team scores
-            self.team_scores.append(0)
             # Set up team name
             ScriptLoader.instance.object_map[f"name{x+1}Text"].text = self.names[x]
-        self.updateScoreText()
-        self.resetPositions()
         for robot in self.robots:
             robot.robot_class.onSpawn()
+        self.reset()
 
     def updateScoreText(self):
         for x in range(len(self.names)):

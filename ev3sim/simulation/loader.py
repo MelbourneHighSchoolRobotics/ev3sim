@@ -79,7 +79,7 @@ class ScriptLoader:
             self.processes[robot_id].start()
 
     def killProcess(self, robot_id, allow_empty=True):
-        if robot_id not in self.processes or self.processes[robot_id] is not None:
+        if robot_id in self.processes and self.processes[robot_id] is not None:
             self.processes[robot_id].terminate()
             self.processes[robot_id].join()
             self.processes[robot_id].close()
