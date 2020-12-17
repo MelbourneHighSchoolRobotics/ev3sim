@@ -23,11 +23,19 @@ def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_i
 
     try:
         sleep_builtin = sleep
-        print_builtin = print
 
         def print_mock(*objects, sep=" ", end="\n"):
             message = sep.join(str(obj) for obj in objects) + end
-            print_builtin(f"[{robot_id}] " + message, end="")
+            message = f"[{robot_id}] " + message
+            sq.put(
+                (
+                    MESSAGE_PRINT,
+                    {
+                        "robot_id": robot_id,
+                        "data": message,
+                    },
+                )
+            )
 
         @mock.patch("builtins.print", print_mock)
         def run_code(fname, recv_q: multiprocessing.Queue, send_q: multiprocessing.Queue):

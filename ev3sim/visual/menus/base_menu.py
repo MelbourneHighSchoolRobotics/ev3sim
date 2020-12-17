@@ -25,7 +25,10 @@ class BaseMenu(pygame_gui.UIManager):
     def sizeObjects(self):
         raise NotImplementedError()
 
-    def initWithKwargs(self, **kwargs):
+    def regenerateObjects(self):
         self.clearObjects()
         self.generateObjects()
         self.sizeObjects()
+
+    def initWithKwargs(self, **kwargs):
+        self.regenerateObjects()

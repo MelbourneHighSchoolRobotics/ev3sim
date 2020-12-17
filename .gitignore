@@ -145,3 +145,5 @@ cython_debug/
 
 # Generated config files
 ev3sim/user_config.yaml
+# Generated logs
+ev3sim/logs
