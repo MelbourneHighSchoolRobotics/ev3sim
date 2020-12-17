@@ -61,7 +61,9 @@ class MotorMixin:
         # Look at motor global position for any force modification fields.
         pos = local_space_to_world_space(object.body.position, rotation, position)
         new_force = self.applied_force * np.array([np.cos(rotation), np.sin(rotation)])
-        shapes = World.instance.space.point_query(pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+        shapes = World.instance.space.point_query(
+            [float(v) for v in pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+        )
         if shapes:
             max_z = max(pq.shape.obj.clickZ for pq in shapes)
             shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]

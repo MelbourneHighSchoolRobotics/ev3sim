@@ -5,6 +5,9 @@ class SimulatorMenu:
     def initWithKwargs(self, **kwargs):
         batch = kwargs.get("batch")
         from ev3sim.simulation.loader import StateHandler
+        from ev3sim.simulation.world import World
+
+        World.instance.resetWorld()
 
         StateHandler.instance.beginSimulation(batch=batch)
 

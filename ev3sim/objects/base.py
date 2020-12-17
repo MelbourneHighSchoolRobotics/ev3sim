@@ -106,7 +106,7 @@ class PhysicsObject(BaseObject):
         self.shapes = [self.shape]
         self.shape.obj = self
         self.shape.actual_obj = self
-        self.body.position = self.position + self.visual.getPositionAnchorOffset()
+        self.body.position = [a + b for a, b in zip(self.position, self.visual.getPositionAnchorOffset())]
         for child in self.children:
             if isinstance(child, PhysicsObject):
                 child.body, child.shape = child.visual.generateBodyAndShape(
@@ -118,7 +118,7 @@ class PhysicsObject(BaseObject):
 
     def update(self):
         if not self.static:
-            self.position = self.body.position - self.visual.getPositionAnchorOffset()
+            self.position = np.array(self.body.position) - self.visual.getPositionAnchorOffset()
             self.rotation = self.body.angle
             self.update_velocities()
 
@@ -126,14 +126,14 @@ class PhysicsObject(BaseObject):
     def update_velocities(self):
         # No angular friction or air resistance/velocity dampening, so do this.
         self.body.angular_velocity *= self.friction_coefficient
-        self.body.velocity *= self.friction_coefficient
+        self.body.velocity = [v * self.friction_coefficient for v in self.body.velocity]
 
     @stop_on_pause
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
         if pos is None:
             pos = np.array([0.0, 0.0])
-        self.shape.body.apply_force_at_local_point(f, pos)
+        self.shape.body.apply_force_at_local_point([float(v) for v in f], [float(v) for v in pos])
 
 
 class ForceAffectArea(PhysicsObject):

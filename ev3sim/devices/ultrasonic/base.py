@@ -49,8 +49,8 @@ class UltrasonicSensorMixin:
                     cats.append(shape.filter.categories)
                     shape.filter = pymunk.ShapeFilter(categories=0b1)
             raycast = World.instance.space.segment_query_first(
-                startPosition,
-                endPosition,
+                [float(v) for v in startPosition],
+                [float(v) for v in endPosition],
                 self.RAYCAST_RADIUS,
                 pymunk.ShapeFilter(mask=STATIC_CATEGORY & DYNAMIC_CATEGORY),
             )

@@ -476,11 +476,14 @@ class RescueInteractor(IInteractor):
         self.reset()
         for i in range(len(self.robots)):
             # This is bad, I should get the robot key somehow else (Generally speaking the robot class, interactor and object should be more tightly coupled.)
-            self.bot_follows[i].body.position = local_space_to_world_space(
-                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
-                self.robots[i].body.angle,
-                (self.robots[i].body.position.x, self.robots[i].body.position.y),
-            )
+            self.bot_follows[i].body.position = [
+                float(v)
+                for v in local_space_to_world_space(
+                    ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                    self.robots[i].body.angle,
+                    (self.robots[i].body.position.x, self.robots[i].body.position.y),
+                )
+            ]
         self.addCollisionHandler()
 
         for robot in self.robots:
@@ -491,7 +494,11 @@ class RescueInteractor(IInteractor):
             self.FOLLOW_POINT_COLLISION_TYPE, self.ROBOT_CENTRE_COLLISION_TYPE
         )
 
+        saved_world_no = World.instance.spawn_no
+
         def handle_collide(arbiter, space, data):
+            if World.instance.spawn_no != saved_world_no:
+                return
             a, b = arbiter.shapes
             if hasattr(a, "_follow_indexes"):
                 self.collidedFollowPoint(a._follow_indexes, b._robot_index)
@@ -515,12 +522,18 @@ class RescueInteractor(IInteractor):
             self.robots[i].body.angle = self.tiles[tileIndex]["rotation"]
             if self.tiles[tileIndex]["flip"]:
                 self.robots[i].body.angle = self.robots[i].body.angle + np.pi
-            self.bot_follows[i].body.position = local_space_to_world_space(
-                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
-                self.robots[i].body.angle,
-                (self.robots[i].body.position.x, self.robots[i].body.position.y),
-            )
-            self.robots[i].body.position += spawn_point - self.bot_follows[i].body.position
+            self.bot_follows[i].body.position = [
+                float(v)
+                for v in local_space_to_world_space(
+                    ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                    self.robots[i].body.angle,
+                    (self.robots[i].body.position.x, self.robots[i].body.position.y),
+                )
+            ]
+            self.robots[i].body.position = [
+                a + b - c
+                for a, b, c in zip(self.robots[i].body.position, spawn_point, self.bot_follows[i].body.position)
+            ]
             self.robots[i].body.velocity = (0, 0)
             self.robots[i].body.angular_velocity = 0
         self.touchBot()
@@ -570,7 +583,7 @@ class RescueInteractor(IInteractor):
         self.can_scored_this_spawn = False
         self.can_scored = False
         self.can_obj.body.position = self.CAN_SPAWN_POSITION
-        self.can_obj.position = self.can_obj.body.position
+        self.can_obj.position = np.array(self.can_obj.body.position)
         self.reentered = False
         self.canStateChanged()
 
@@ -595,15 +608,10 @@ class RescueInteractor(IInteractor):
         for i, robot in enumerate(self.robots):
             diff_radius = Randomiser.random() * self.BOT_SPAWN_RADIUS
             diff_angle = Randomiser.random() * 2 * np.pi
-            robot.body.position = (
-                np.array(
-                    [
-                        self.BOT_SPAWN_POSITION[i][0][0] * self.TILE_LENGTH,
-                        self.BOT_SPAWN_POSITION[i][0][1] * self.TILE_LENGTH,
-                    ]
-                )
-                + diff_radius * np.array([np.cos(diff_angle), np.sin(diff_angle)])
-            )
+            robot.body.position = [
+                self.BOT_SPAWN_POSITION[i][0][0] * self.TILE_LENGTH + diff_radius * np.cos(diff_angle),
+                self.BOT_SPAWN_POSITION[i][0][1] * self.TILE_LENGTH + diff_radius * np.sin(diff_angle),
+            ]
             robot.body.angle = (
                 (
                     self.BOT_SPAWN_POSITION[i][1]
@@ -613,24 +621,23 @@ class RescueInteractor(IInteractor):
                 * np.pi
                 / 180
             )
-            robot.body.velocity = np.array([0.0, 0.0])
+            robot.body.velocity = (0.0, 0.0)
             robot.body.angular_velocity = 0
 
     def tick(self, tick):
         super().tick(tick)
         self.cur_tick = tick
         for i in range(len(self.robots)):
-            self.bot_follows[i].body.position = local_space_to_world_space(
-                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
-                self.robots[i].body.angle,
-                (self.robots[i].body.position.x, self.robots[i].body.position.y),
-            )
+            self.bot_follows[i].body.position = [
+                float(v)
+                for v in local_space_to_world_space(
+                    ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
+                    self.robots[i].body.angle,
+                    (self.robots[i].body.position.x, self.robots[i].body.position.y),
+                )
+            ]
             # Ensure visual is not 1 frame behind.
-            self.bot_follows[i].position = local_space_to_world_space(
-                ScriptLoader.instance.robots[f"Robot-{i}"]._follow_collider_offset,
-                self.robots[i].body.angle,
-                (self.robots[i].body.position.x, self.robots[i].body.position.y),
-            )
+            self.bot_follows[i].position = np.array(self.bot_follows[i].body.position)
             if self.current_follow is not None and not World.instance.paused:
                 distance = magnitude_sq(
                     self.bot_follows[i].position
@@ -732,7 +739,9 @@ class RescueInteractor(IInteractor):
     def handleEvent(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for shape in shapes:
                 if shape.shape.obj.key == "controlsReset":
                     self._pressed = True
@@ -742,14 +751,18 @@ class RescueInteractor(IInteractor):
                     self.spawnAt(tile_index)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for shape in shapes:
                 if (shape.shape.obj.key == "controlsReset") & self._pressed:
                     self.reset()
             self._pressed = False
         if event.type == pygame.MOUSEMOTION:
             m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(m_pos, 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY))
+            shapes = World.instance.space.point_query(
+                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+            )
             for shape in shapes:
                 words = shape.shape.obj.key.split("-")
                 if len(words) == 3 and words[0] == "Tile" and words[2] == "UI":
