@@ -214,6 +214,8 @@ class SoccerInteractor(IInteractor):
         self.time_tick = 0
         self.update_time_text = True
         for robotID in ScriptLoader.instance.robots.keys():
+            # Restart the robot scripts.
+            ScriptLoader.instance.startProcess(robotID, kill_recent=True)
             ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
 
     def resetPositions(self):

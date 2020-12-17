@@ -1,3 +1,5 @@
+from ev3sim.file_helper import find_abs
+from ev3sim.search_locations import code_locations
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import stop_on_pause
@@ -71,6 +73,11 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             robot._follow_collider_offset = config.get("follow_collider", [0, 0])
             ScriptLoader.instance.robots[prefix] = robot
             ScriptLoader.instance.outstanding_events[prefix] = []
+            scriptname = config.get("script", None)
+            if scriptname is not None:
+                scriptname = find_abs(scriptname, code_locations)
+            ScriptLoader.instance.scriptnames[prefix] = scriptname
+
         except yaml.YAMLError as exc:
             print(f"An error occurred while loading robot preset {filename}. Exited with error: {exc}")
 
