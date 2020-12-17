@@ -12,7 +12,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 
 
 class ScriptLoader:
@@ -37,6 +37,8 @@ class ScriptLoader:
         ScriptLoader.instance = self
         self.robots = {}
         self.queues = {}
+        self.processes = {}
+        self.scriptnames = {}
         self.outstanding_events = {}
         self.comms = BotCommService()
         self.active_scripts = []
@@ -46,9 +48,55 @@ class ScriptLoader:
         for script in self.all_scripts:
             if hasattr(script, "_settings_name"):
                 SettingsManager.instance.removeSetting(script._settings_name)
+        self.killAllProcesses()
         self.active_scripts = []
         self.all_scripts = []
         self.robots = {}
+        self.scriptnames = {}
+
+    def startProcess(self, robot_id, kill_recent=True):
+        if robot_id in self.processes and self.processes[robot_id] is not None:
+            if kill_recent:
+                self.killProcess(robot_id)
+            else:
+                raise ValueError("Did not expect an existing process!")
+        if self.scriptnames[robot_id] is not None:
+            from ev3sim.attach_bot import attach_bot
+
+            self.processes[robot_id] = Process(
+                target=attach_bot,
+                args=(
+                    robot_id,
+                    self.scriptnames[robot_id],
+                    StateHandler.instance.shared_info["result_queue"],
+                    StateHandler.instance.shared_info["result_queue"]._internal_size,
+                    self.queues[robot_id][self.SEND],
+                    self.queues[robot_id][self.SEND]._internal_size,
+                    self.queues[robot_id][self.RECV],
+                    self.queues[robot_id][self.RECV]._internal_size,
+                ),
+            )
+            self.processes[robot_id].start()
+
+    def killProcess(self, robot_id, allow_empty=True):
+        if robot_id not in self.processes or self.processes[robot_id] is not None:
+            self.processes[robot_id].terminate()
+            self.processes[robot_id].join()
+            self.processes[robot_id].close()
+            self.processes[robot_id] = None
+        elif not allow_empty:
+            raise ValueError("Expected an existing process!")
+        # Clear all the robot queues. Do this regardless of whether the process existed.
+        for key in (ScriptLoader.instance.SEND, ScriptLoader.instance.RECV):
+            while True:
+                try:
+                    ScriptLoader.instance.queues[robot_id][key].get_nowait()
+                except Empty:
+                    break
+
+    def killAllProcesses(self):
+        for rob_id in self.robots:
+            self.killProcess(rob_id, allow_empty=True)
 
     def addActiveScript(self, script: IInteractor):
         idx = len(self.active_scripts)
@@ -205,25 +253,13 @@ class StateHandler:
         self.shared_info = {}
 
     def closeProcesses(self):
-        for process in self.shared_info.get("processes", []):
-            process.terminate()
-            process.join()
-            process.close()
-        self.shared_info["processes"] = []
+        ScriptLoader.instance.killAllProcesses()
         # Clear the result queue.
         while True:
             try:
                 self.shared_info["result_queue"].get_nowait()
             except Empty:
                 break
-        # Clear all the robot queues.
-        for rob_id in ScriptLoader.instance.queues:
-            for key in (ScriptLoader.instance.SEND, ScriptLoader.instance.RECV):
-                while True:
-                    try:
-                        ScriptLoader.instance.queues[rob_id][key].get_nowait()
-                    except Empty:
-                        break
 
     def setConfig(self, **kwargs):
         SettingsManager.instance.setMany(kwargs)
