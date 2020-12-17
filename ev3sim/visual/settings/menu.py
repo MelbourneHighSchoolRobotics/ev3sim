@@ -1,3 +1,4 @@
+from ev3sim.settings import SettingsManager
 from ev3sim.visual.settings.elements import TextEntry
 import os
 import pygame
@@ -160,6 +161,19 @@ class SettingsMenu(BaseMenu):
                                     os.remove(self.filename)
                         else:
                             obj.setToJson(json_obj)
+                            try:
+                                # If we are editing loaded settings, then apply the changes.
+                                settings = {}
+                                cur = settings
+                                prev = None
+                                for key in obj.json_keys:
+                                    cur[key] = {}
+                                    prev = cur
+                                    cur = cur[key]
+                                prev[obj.json_keys[-1]] = obj.current
+                                SettingsManager.instance.setMany(settings)
+                            except:
+                                pass
                 string = yaml.dump(json_obj)
                 with open(current_filepath, "w") as f:
                     f.write(string)
