@@ -52,7 +52,7 @@ def main(passed_args=None):
 
         main(
             passed_args={
-                "batch": args.batch,
+                "elem": args.batch,
                 "simulation_kwargs": {
                     "seed": args.seed,
                     "bind_addr": args.bind_addr,

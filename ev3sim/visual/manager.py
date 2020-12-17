@@ -284,11 +284,11 @@ class ScreenObjectManager:
         else:
             raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
         dirname = find_abs_directory(rel_dir, create=True)
-        pygame.image.save(screen, join(dirname, filename.replace(".yaml", ".png")))
+        pygame.image.save(screen, join(dirname, filename.replace(".bot", ".png")))
         actual_bot_path = find_abs(filename, [directory])
         with open(actual_bot_path, "r") as f:
             conf = yaml.safe_load(f)
-        conf["preview_path"] = join(show_dir, filename.replace(".yaml", ".png"))
+        conf["preview_path"] = join(show_dir, filename.replace(".bot", ".png"))
         with open(actual_bot_path, "w") as f:
             f.write(yaml.dump(conf))
 

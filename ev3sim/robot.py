@@ -123,7 +123,7 @@ class Robot:
 
     This class however does not contain the physical definition of the robot though, just the brains.
 
-    All robot 'definitions' (see `robots/controllable.yaml`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
+    All robot 'definitions' (see `examples/robots/controllable.bot`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
     """
 
     spawned = False

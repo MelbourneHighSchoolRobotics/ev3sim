@@ -4,6 +4,7 @@ import yaml
 
 class Validator:
 
+    FILE_EXT = "yaml"
     # Abstract methods
 
     @classmethod
@@ -12,7 +13,7 @@ class Validator:
 
     @classmethod
     def validate_file(cls, filepath) -> bool:
-        if filepath.endswith(".yaml"):
+        if filepath.endswith(f".{cls.FILE_EXT}"):
             with open(filepath, "r") as f:
                 config = yaml.safe_load(f)
                 return cls.validate_json(config)

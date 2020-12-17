@@ -125,8 +125,8 @@ class BatchMenu(BaseMenu):
             except:
                 continue
             for batch in BatchValidator.all_valid_in_dir(actual_dir):
-                # Show everything except dir and .yaml
-                self.available_batches.append((batch[:-5], os.path.join(actual_dir, batch), rel_dir, batch))
+                # Show everything except dir and .sim
+                self.available_batches.append((batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch))
         self.batch_buttons = []
         self.batch_descriptions = []
 
@@ -285,6 +285,7 @@ class BatchMenu(BaseMenu):
             file=self.available_batches[self.batch_index][1],
             settings=klass,
             allows_filename_change=not self.available_batches[self.batch_index][2].startswith("package"),
+            extension="sim",
         )
 
         def onSave(filename):
@@ -403,6 +404,7 @@ class BatchMenu(BaseMenu):
                     preset_type: {},
                 },
             },
+            extension="sim",
         )
 
         def onSave(filename):

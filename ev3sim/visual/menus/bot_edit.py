@@ -601,6 +601,7 @@ class BotEditMenu(BaseMenu):
                             creating=True,
                             creation_area="workspace/robots/",
                             starting_data={},
+                            extension="bot",
                         )
 
                         def onSave(filename):

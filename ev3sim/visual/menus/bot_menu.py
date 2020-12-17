@@ -123,8 +123,8 @@ class BotMenu(BaseMenu):
             except:
                 continue
             for bot in BotValidator.all_valid_in_dir(actual_dir):
-                # Show everything except dir and .yaml
-                self.available_bots.append((bot[:-5], os.path.join(actual_dir, bot), rel_dir, bot))
+                # Show everything except dir and .bot
+                self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
         self.bot_buttons = []
         self.bot_descriptions = []
 
@@ -368,6 +368,7 @@ class BotMenu(BaseMenu):
             file=self.available_bots[self.bot_index][1],
             settings=visual_settings,
             allows_filename_change=not self.available_bots[self.bot_index][2].startswith("package"),
+            extension="bot",
         )
 
         def onSave(filename):
