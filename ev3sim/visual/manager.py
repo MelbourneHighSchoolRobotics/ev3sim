@@ -110,6 +110,10 @@ class ScreenObjectManager:
     # TODO: Animate screen popping? Add this as an option?
 
     def pushScreen(self, screenString, **kwargs):
+        if len(self.screen_stack) == 0:
+            from ev3sim.simulation.loader import StateHandler
+
+            StateHandler.instance.is_running = True
         self.screen_stack.append(screenString)
         if hasattr(self.screens[screenString], "ui_theme"):
             self.screens[screenString].ui_theme.load_theme(self.theme_path)
@@ -118,8 +122,12 @@ class ScreenObjectManager:
     def popScreen(self):
         self.screens[self.screen_stack[-1]].onPop()
         self.screen_stack.pop()
+        if len(self.screen_stack) == 0:
+            from ev3sim.simulation.loader import StateHandler
 
-    def startScreen(self):
+            StateHandler.instance.is_running = False
+
+    def startScreen(self, push_screen=None, push_kwargs={}):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
         from ev3sim.simulation.loader import StateHandler
@@ -136,10 +144,13 @@ class ScreenObjectManager:
         pygame.display.set_icon(img)
 
         self.initScreens()
-        if not StateHandler.WORKSPACE_FOLDER:
-            self.pushScreen(self.SCREEN_WORKSPACE)
+        if push_screen is not None:
+            self.pushScreen(push_screen, **push_kwargs)
         else:
-            self.pushScreen(self.SCREEN_MENU)
+            if not StateHandler.WORKSPACE_FOLDER:
+                self.pushScreen(self.SCREEN_WORKSPACE)
+            else:
+                self.pushScreen(self.SCREEN_MENU)
 
     def registerVisual(self, obj: "visual.objects.IVisualElement", key) -> str:  # noqa: F821
         assert (
@@ -198,6 +209,8 @@ class ScreenObjectManager:
 
         events = pygame.event.get()
         for event in events:
+            if not StateHandler.instance.is_running:
+                break
             self.screens[self.screen_stack[-1]].process_events(event)
             self.screens[self.screen_stack[-1]].handleEvent(event)
             if event.type == pygame.VIDEORESIZE:

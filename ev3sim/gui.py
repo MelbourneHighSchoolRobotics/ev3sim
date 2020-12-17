@@ -8,7 +8,7 @@ from multiprocessing import Queue, Process
 import ev3sim
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
-from ev3sim.search_locations import config_locations
+from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
 
 
@@ -33,11 +33,11 @@ def checkVersion():
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
 parser.add_argument(
-    "batch",
+    "elem",
     nargs="?",
     type=str,
     default=None,
-    help="If specified, will begin the gui simulating a particular batch file.",
+    help="If specified, will begin the gui focusing on this file.",
 )
 parser.add_argument(
     "--config",
@@ -52,6 +52,18 @@ parser.add_argument(
     help="This should only be set programmatically, if using the CLI then ignore.",
     dest="from_main",
 )
+parser.add_argument(
+    "--open",
+    action="store_true",
+    help="Opens the current bot/sim file.",
+    dest="open",
+)
+parser.add_argument(
+    "--edit",
+    action="store_true",
+    help="Edits the current bot/sim file.",
+    dest="edit",
+)
 
 
 def main(passed_args=None):
@@ -61,55 +73,134 @@ def main(passed_args=None):
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
 
-    if args.batch and not args.from_main:
-        from ev3sim.sim import main
+    pushed_screen = None
+    pushed_kwargs = {}
 
-        main(args.__dict__)
-        return
+    if not args.from_main:
+        # Try loading a user config. If one does not exist, then generate one.
+        try:
+            conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
+            with open(conf_file, "r") as f:
+                conf = yaml.safe_load(f)
+        except:
+            with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
+                conf = yaml.safe_load(fr)
+            with open(join(find_abs_directory(config_locations[-1]), "user_config.yaml"), "w") as fw:
+                fw.write(yaml.dump(conf))
 
-    # Try loading a user config. If one does not exist, then generate one.
-    try:
-        conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
-        with open(conf_file, "r") as f:
-            conf = yaml.safe_load(f)
-    except:
-        with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
-            conf = yaml.safe_load(fr)
-        with open(join(find_abs_directory(config_locations[-1]), "user_config.yaml"), "w") as fw:
-            fw.write(yaml.dump(conf))
+        if args.config is not None:
+            config_path = find_abs(args.config, allowed_areas=config_locations)
+            with open(config_path, "r") as f:
+                config = yaml.safe_load(f)
+            conf.update(config)
 
-    if args.config is not None:
-        config_path = find_abs(args.config, allowed_areas=config_locations)
-        with open(config_path, "r") as f:
-            config = yaml.safe_load(f)
-        conf.update(config)
+        handler = StateHandler()
+        checkVersion()
+        handler.setConfig(**conf)
 
-    handler = StateHandler()
-    checkVersion()
-    handler.startUp(**conf)
+        if args.elem:
+            # First, figure out what type it is.
+            from ev3sim.validation.batch_files import BatchValidator
+            from ev3sim.validation.bot_files import BotValidator
 
-    if args.batch:
-        # Implicitly, this must have been called from main
+            found = False
+            try:
+                fname = args.elem
+                for possible_dir in batch_locations:
+                    dir_path = find_abs_directory(possible_dir, create=True)
+                    if fname.startswith(dir_path):
+                        fname = fname[len(dir_path) :]
+                        break
+                batch_path = find_abs(fname, batch_locations)
+                if BatchValidator.validate_file(batch_path):
+                    # Valid batch file.
+                    if args.open:
+                        from ev3sim.sim import main
+
+                        args.batch = fname
+
+                        main(args.__dict__)
+                        found = True
+                        return
+                    elif args.edit:
+                        import importlib
+
+                        with open(batch_path, "r") as f:
+                            conf = yaml.safe_load(f)
+                        with open(find_abs(conf["preset_file"], preset_locations)) as f:
+                            preset = yaml.safe_load(f)
+                        mname, cname = preset["visual_settings"].rsplit(".", 1)
+                        klass = getattr(importlib.import_module(mname), cname)
+
+                        pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
+                        pushed_kwargs = {
+                            "file": batch_path,
+                            "settings": klass,
+                            "allows_filename_change": True,
+                            "extension": "sim",
+                        }
+                        found = True
+            except:
+                pass
+            if not found:
+                try:
+                    fname = args.elem
+                    for possible_dir in bot_locations:
+                        dir_path = find_abs_directory(possible_dir, create=True)
+                        if fname.startswith(dir_path):
+                            fname = fname[len(dir_path) :]
+                            break
+                    bot_path = find_abs(fname, bot_locations)
+                    if BotValidator.validate_file(bot_path):
+                        if args.open:
+                            pushed_screen = ScreenObjectManager.SCREEN_BOT_EDIT
+                            for possible_dir in bot_locations:
+                                try:
+                                    n_bot_path = find_abs(fname, [possible_dir])
+                                    pushed_kwargs = {
+                                        "bot_file": n_bot_path,
+                                        "bot_dir_file": (possible_dir, fname),
+                                    }
+                                    break
+                                except:
+                                    continue
+                        elif args.edit:
+                            from ev3sim.robot import visual_settings
+
+                            pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
+                            pushed_kwargs = {
+                                "file": bot_path,
+                                "settings": visual_settings,
+                                "allows_filename_change": True,
+                                "extension": "bot",
+                            }
+                        found = True
+                except:
+                    pass
+
+    StateHandler.instance.startUp(push_screen=pushed_screen, push_kwargs=pushed_kwargs)
+
+    if args.elem and args.from_main:
         args.simulation_kwargs.update(
             {
-                "batch": args.batch,
+                "batch": args.elem,
             }
         )
-        handler.beginSimulation(**args.simulation_kwargs)
+        StateHandler.instance.beginSimulation(**args.simulation_kwargs)
         # We want to start on the simulation screen.
         ScreenObjectManager.instance.screen_stack = [ScreenObjectManager.instance.SCREEN_SIM]
 
     error = None
 
     try:
-        handler.mainLoop()
+        StateHandler.instance.mainLoop()
     except Exception as e:
         print("An error occured in the Simulator :(")
         error = e
     pygame.quit()
-    handler.is_running = False
+    StateHandler.instance.is_running = False
     try:
-        handler.closeProcesses()
+        StateHandler.instance.closeProcesses()
     except:
         pass
     if error is not None:

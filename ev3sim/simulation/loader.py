@@ -229,9 +229,8 @@ class StateHandler:
         SettingsManager.instance.setMany(kwargs)
 
     def startUp(self, **kwargs):
-        self.setConfig(**kwargs)
         man = ScreenObjectManager()
-        man.startScreen()
+        man.startScreen(**kwargs)
 
     def beginSimulation(self, **kwargs):
         self.is_simulating = True
