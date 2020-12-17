@@ -28,26 +28,27 @@
     "title": {
         "colours": {
             "normal_text": "#06d6a0",
-            "dark_bg": "#00000000"
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000"
         },
         "font": {
-            "name": "Roboto",
-            "size": "42",
+            "name": "Poppins",
+            "size": "48",
             "regular_resource": {
                 "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Regular.ttf"
+                "resource": "Poppins-Light.ttf"
             },
             "bold_resource": {
                 "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Bold.ttf"
+                "resource": "Poppins-Regular.ttf"
             },
             "italic_resource": {
                 "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Italic.ttf"
+                "resource": "Poppins-LightItalic.ttf"
             },
             "bold_italic_resource": {
                 "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-BoldItalic.ttf"
+                "resource": "Poppins-Italic.ttf"
             }
         }
     },
