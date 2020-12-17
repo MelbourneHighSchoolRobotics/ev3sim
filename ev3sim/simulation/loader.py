@@ -1,3 +1,4 @@
+from ev3sim.logging import Logger
 from ev3sim.settings import ObjectSetting, SettingsManager
 from queue import Empty
 import time
@@ -77,6 +78,7 @@ class ScriptLoader:
                 ),
             )
             self.processes[robot_id].start()
+            Logger.instance.beginLog(robot_id)
 
     def killProcess(self, robot_id, allow_empty=True):
         if robot_id in self.processes and self.processes[robot_id] is not None:
@@ -179,7 +181,7 @@ class ScriptLoader:
                             data["robot_id"], data["send_to"], data["connection_string"], data["data"]
                         )
                     elif write_type == MESSAGE_PRINT:
-                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printMessage(data)
+                        Logger.instance.writeMessage(data["robot_id"], data["data"])
                 except Empty:
                     break
 
@@ -243,6 +245,7 @@ class StateHandler:
         StateHandler.instance = self
         sl = ScriptLoader()
         world = World()
+        logger = Logger()
         settings = SettingsManager()
         loader_settings = {
             "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
@@ -304,14 +307,8 @@ class StateHandler:
                         print("The simulation is currently lagging, you may want to turn down the game tick rate.")
                 try:
                     r = self.shared_info["result_queue"].get_nowait()
-                    self.closeProcesses()
                     if r is not True:
-                        print(f"An error occurred in the {r[0]} process. Printing the error now...")
-                        print(r[1])
-                        # TODO: Just pop the screen and print the error.
-                        self.is_running = False
-                        self.is_simulating = False
-                        return
+                        Logger.instance.reportError(r[0], r[1])
                 except Empty:
                     pass
             if new_time - last_vis_update > 1 / ScriptLoader.instance.VISUAL_TICK_RATE:

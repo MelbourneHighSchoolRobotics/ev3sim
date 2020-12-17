@@ -23,16 +23,17 @@ def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_i
 
     try:
         sleep_builtin = sleep
-        print_builtin = print
 
         def print_mock(*objects, sep=" ", end="\n"):
             message = sep.join(str(obj) for obj in objects) + end
             message = f"[{robot_id}] " + message
-            print_builtin(message, end="")
             sq.put(
                 (
                     MESSAGE_PRINT,
-                    message,
+                    {
+                        "robot_id": robot_id,
+                        "data": message,
+                    },
                 )
             )
 
