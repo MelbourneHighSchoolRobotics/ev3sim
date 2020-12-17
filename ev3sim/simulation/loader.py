@@ -251,6 +251,7 @@ class StateHandler:
             "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
             "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
             "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
+            "console_log": ObjectSetting(Logger, "LOG_CONSOLE"),
             "workspace_folder": ObjectSetting(StateHandler, "WORKSPACE_FOLDER"),
         }
         settings.addSettingGroup("app", loader_settings)

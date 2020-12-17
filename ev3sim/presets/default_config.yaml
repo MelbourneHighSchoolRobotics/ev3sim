@@ -1,5 +1,6 @@
 app:
   FPS: 30
+  console_log: true
 screen:
   SCREEN_WIDTH: 960
   SCREEN_HEIGHT: 720
