@@ -10,7 +10,7 @@ class MainMenu(BaseMenu):
     def sizeObjects(self):
         self.bg.set_dimensions(self._size)
         self.bg.set_position((0, 0))
-        self.title.set_position(((self._size[0] - self.title.rect.width)/2, 50))
+        self.title.set_position(((self._size[0] - self.title.rect.width) / 2, 50))
         button_size = self._size[0] / 4, self._size[1] / 8
         self.simulate_button.set_dimensions(button_size)
         self.simulate_button.set_position(
@@ -34,7 +34,10 @@ class MainMenu(BaseMenu):
         )
         self._all_objs.append(self.bg)
         self.title = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect(0, 0, -1, -1), html_text="EV3<i>Sim</i>", manager=self, object_id=pygame_gui.core.ObjectID("title")
+            relative_rect=pygame.Rect(0, 0, -1, -1),
+            html_text="EV3<i>Sim</i>",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("title"),
         )
         self._all_objs.append(self.title)
         self.simulate_button = pygame_gui.elements.UIButton(
