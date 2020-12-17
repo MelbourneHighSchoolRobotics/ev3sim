@@ -186,9 +186,10 @@ def main(passed_args=None):
                 "batch": args.elem,
             }
         )
-        StateHandler.instance.beginSimulation(**args.simulation_kwargs)
+
         # We want to start on the simulation screen.
-        ScreenObjectManager.instance.screen_stack = [ScreenObjectManager.instance.SCREEN_SIM]
+        ScreenObjectManager.instance.screen_stack = []
+        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, **args.simulation_kwargs)
 
     error = None
 
