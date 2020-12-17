@@ -178,6 +178,8 @@ class ScriptLoader:
                         self.comms.handleSend(
                             data["robot_id"], data["send_to"], data["connection_string"], data["data"]
                         )
+                    elif write_type == MESSAGE_PRINT:
+                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printMessage(data)
                 except Empty:
                     break
 

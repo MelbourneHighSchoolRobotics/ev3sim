@@ -97,7 +97,7 @@ class ScreenObjectManager:
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
-        self.screens[self.SCREEN_SIM] = SimulatorMenu()
+        self.screens[self.SCREEN_SIM] = SimulatorMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Settings generic screen
         from ev3sim.visual.settings.menu import SettingsMenu
 
@@ -196,8 +196,7 @@ class ScreenObjectManager:
             blit_screen.fill(self.background_colour if bg is None else bg)
             for key in self.sorting_order:
                 self.objects[key].applyToScreen(blit_screen)
-        else:
-            self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
+        self.screens[self.screen_stack[-1]].draw_ui(blit_screen)
         if to_screen is None:
             pygame.display.update()
 

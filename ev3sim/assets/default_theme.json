@@ -415,5 +415,17 @@
                 "resource": "Roboto-BoldItalic.ttf"
             }
         }
+    },
+    "console-bg": {
+        "colours": {
+            "dark_bg": "#44444480"
+        }
+    },
+    "console-text": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#ffffff"
+        }
     }
 }
