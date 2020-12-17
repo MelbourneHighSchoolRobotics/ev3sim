@@ -73,13 +73,23 @@ _____________________________________________________________________________
  
  
  
-!macro RegisterExtensionCall _EXECUTABLE _EXTENSION _DESCRIPTION
+!macro RegisterExtensionOpenCall _EXECUTABLE _EXTENSION _DESCRIPTION
   !verbose push
   !verbose ${_FileAssociation_VERBOSE}
   Push `${_DESCRIPTION}`
   Push `${_EXTENSION}`
   Push `${_EXECUTABLE}`
-  ${CallArtificialFunction} RegisterExtension_
+  ${CallArtificialFunction} RegisterExtensionOpen_
+  !verbose pop
+!macroend
+
+!macro RegisterExtensionEditCall _EXECUTABLE _EXTENSION _DESCRIPTION
+  !verbose push
+  !verbose ${_FileAssociation_VERBOSE}
+  Push `${_DESCRIPTION}`
+  Push `${_EXTENSION}`
+  Push `${_EXECUTABLE}`
+  ${CallArtificialFunction} RegisterExtensionEdit_
   !verbose pop
 !macroend
  
@@ -94,19 +104,22 @@ _____________________________________________________________________________
  
  
  
-!define RegisterExtension `!insertmacro RegisterExtensionCall`
+!define RegisterExtensionOpen `!insertmacro RegisterExtensionOpenCall`
+!define RegisterExtensionEdit `!insertmacro RegisterExtensionEditCall`
 !define un.RegisterExtension `!insertmacro RegisterExtensionCall`
  
-!macro RegisterExtension
+!macro RegisterExtensionOpen
+!macroend
+!macro RegisterExtensionEdit
 !macroend
  
 !macro un.RegisterExtension
 !macroend
  
-!macro RegisterExtension_
+!macro RegisterExtensionOpen_
   !verbose push
   !verbose ${_FileAssociation_VERBOSE}
- 
+
   Exch $R2 ;exe
   Exch
   Exch $R1 ;ext
@@ -130,10 +143,48 @@ NoBackup:
     WriteRegStr HKCR "$R0\shell" "" "open"
     WriteRegStr HKCR "$R0\DefaultIcon" "" "$R2,0"
 Skip:
-  WriteRegStr HKCR "$R0\shell\open\command" "" '"$R2" "%1"'
-  WriteRegStr HKCR "$R0\shell\edit" "" "Open with EV3Sim"
-  WriteRegStr HKCR "$R0\shell\edit\command" "" '"$R2" "%1"'
+  WriteRegStr HKCR "$R0\shell\open" "" "Open"
+  WriteRegStr HKCR "$R0\shell\open\command" "" '"$R2" "%1" --open'
+
+  Pop $1
+  Pop $0
+  Pop $R2
+  Pop $R1
+  Pop $R0
  
+  !verbose pop
+!macroend
+ 
+!macro RegisterExtensionEdit_
+  !verbose push
+  !verbose ${_FileAssociation_VERBOSE}
+
+  Exch $R2 ;exe
+  Exch
+  Exch $R1 ;ext
+  Exch
+  Exch 2
+  Exch $R0 ;desc
+  Exch 2
+  Push $0
+  Push $1
+ 
+  ReadRegStr $1 HKCR $R1 ""  ; read current file association
+  StrCmp "$1" "" NoBackupEdit  ; is it empty
+  StrCmp "$1" "$R0" NoBackupEdit  ; is it our own
+    WriteRegStr HKCR $R1 "backup_val" "$1"  ; backup current value
+NoBackupEdit:
+  WriteRegStr HKCR $R1 "" "$R0"  ; set our file association
+ 
+  ReadRegStr $0 HKCR $R0 ""
+  StrCmp $0 "" 0 SkipEdit
+    WriteRegStr HKCR "$R0" "" "$R0"
+    WriteRegStr HKCR "$R0\shell" "" "edit"
+    WriteRegStr HKCR "$R0\DefaultIcon" "" "$R2,0"
+SkipEdit:
+  WriteRegStr HKCR "$R0\shell\edit" "" "Edit"
+  WriteRegStr HKCR "$R0\shell\edit\command" "" '"$R2" "%1" --edit'
+
   Pop $1
   Pop $0
   Pop $R2

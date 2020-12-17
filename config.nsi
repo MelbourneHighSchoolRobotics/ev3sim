@@ -2,7 +2,7 @@
 ;Includes
 !include MUI2.nsh
 !include "FileAssociation.nsh"
-RequestExecutionLevel highest
+RequestExecutionLevel admin
 
 ;---------------------------------
 ;About
@@ -91,7 +91,12 @@ WriteRegStr HKCU "Software\EV3Sim" "" $INSTDIR
 createDirectory "$SMPROGRAMS\MHS_Robotics"
 createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$INSTDIR\ev3sim.exe" "" "$INSTDIR\ev3sim.exe" 0
 ;File Associations
-${registerExtension} "$INSTDIR\ev3sim.exe" ".yaml" "YAML_File"
+;Open sims by default.
+${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
+${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
+;Open bots by default.
+${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
+${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
 WriteUninstaller "$INSTDIR\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
@@ -119,7 +124,8 @@ RMDir /R /REBOOTOK "$INSTDIR"
 DeleteRegKey /ifempty HKCU "Software\EV3Sim"
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim"
 ;File Associations
-${unregisterExtension} ".yaml" "YAML_File"
+${unregisterExtension} ".sim" "ev3sim.sim_file"
+${unregisterExtension} ".bot" "ev3sim.bot_file"
 ;Remove Start Menu launcher
 Delete /REBOOTOK "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk"
 ;Try to remove the Start Menu folder - this will only happen if it is empty
