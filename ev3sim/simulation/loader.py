@@ -93,7 +93,7 @@ class ScriptLoader:
             while True:
                 try:
                     ScriptLoader.instance.queues[robot_id][key].get_nowait()
-                except Empty:
+                except (Empty, KeyError):
                     break
 
     def killAllProcesses(self):
