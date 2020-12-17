@@ -568,6 +568,8 @@ class RescueInteractor(IInteractor):
         for x in range(len(self.tiles)):
             if self.tiles[x]["type"] == "follow":
                 self.tiles[x]["checker"].onReset()
+        for rob_id in ScriptLoader.instance.robots:
+            ScriptLoader.instance.startProcess(rob_id)
 
     def setScore(self, val):
         self.score = val

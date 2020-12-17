@@ -51,5 +51,3 @@ def batched_run(batch_file, bind_addr, seed):
 
     # Begin the sim process.
     simulate(*sim_args)
-    for rob_id in ScriptLoader.instance.robots:
-        ScriptLoader.instance.startProcess(rob_id)
