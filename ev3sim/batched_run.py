@@ -26,6 +26,7 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
     preset_file = find_abs(preset_filename, allowed_areas=preset_locations())
     with open(preset_file, "r") as f:
         config = yaml.safe_load(f)
+    config["settings"] = config.get("settings", {})
     recursive_merge(config["settings"], override_settings)
 
     config["robots"] = config.get("robots", []) + bot_paths
