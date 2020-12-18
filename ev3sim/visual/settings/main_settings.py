@@ -15,7 +15,7 @@ main_settings = [
     {
         "height": (lambda s: 90),
         "objects": [
-            FileEntry(["app", "workspace_folder"], True, [], None, "Workspace", (lambda s: (0, 20))),
+            FileEntry(["app", "workspace_folder"], "", True, None, "Workspace", (lambda s: (0, 20))),
         ],
     },
 ]

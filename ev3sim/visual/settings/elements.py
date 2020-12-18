@@ -177,6 +177,8 @@ class FileEntry(SettingsVisualElement):
         Tk().withdraw()
         if self.is_directory:
             directory = askdirectory()
+            if not directory:
+                return
             self.current = directory
             self.filename.set_text(self.current)
         else:
