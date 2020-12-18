@@ -23,6 +23,7 @@ class BotEditMenu(BaseMenu):
     MODE_BASEPLATE_DIALOG = "BASEPLATE"
 
     SELECTED_CIRCLE = "CIRCLE"
+    SELECTED_RECTANGLE = "RECTANGLE"
     SELECTED_POLYGON = "POLYGON"
     SELECTED_NOTHING = "NOTHING"
     SELECTED_DEVICE = "DEVICE"
@@ -70,30 +71,40 @@ class BotEditMenu(BaseMenu):
         if self.mode == self.MODE_BASEPLATE_DIALOG:
             self.addBaseplatePicker()
 
-    def getSelectedAttribute(self, attr, fallback=None):
+    def getSelectedAttribute(self, attr, fallback=None, visual=True):
         if self.selected_index is None:
             raise ValueError("Nothing selected.")
         elif self.selected_index == "Holding":
             return self.current_holding_kwargs.get(attr, fallback)
         elif self.selected_index == "Baseplate":
-            return self.current_object["visual"].get(attr, fallback)
+            if visual:
+                return self.current_object["visual"].get(attr, fallback)
+            return self.current_object.get(attr, fallback)
         elif self.selected_index[0] == "Children":
-            return self.current_object["children"][self.selected_index[1]]["visual"].get(attr, fallback)
+            if visual:
+                return self.current_object["children"][self.selected_index[1]]["visual"].get(attr, fallback)
+            return self.current_object["children"][self.selected_index[1]].get(attr, fallback)
         elif self.selected_index[0] == "Devices":
             # Just one key in this dict.
             for key in self.current_devices[self.selected_index[1]]:
                 return self.current_devices[self.selected_index[1]][key].get(attr, fallback)
         raise ValueError(f"Unknown selection {self.selected_index}")
 
-    def setSelectedAttribute(self, attr, val):
+    def setSelectedAttribute(self, attr, val, visual=True):
         if self.selected_index is None:
             raise ValueError("Nothing selected.")
         elif self.selected_index == "Holding":
             self.current_holding_kwargs[attr] = val
         elif self.selected_index == "Baseplate":
-            self.current_object["visual"][attr] = val
+            if visual:
+                self.current_object["visual"][attr] = val
+            else:
+                self.current_object[attr] = val
         elif self.selected_index[0] == "Children":
-            self.current_object["children"][self.selected_index[1]]["visual"][attr] = val
+            if visual:
+                self.current_object["children"][self.selected_index[1]]["visual"][attr] = val
+            else:
+                self.current_object["children"][self.selected_index[1]][attr] = val
         elif self.selected_index[0] == "Devices":
             # Just one key in this dict.
             for key in self.current_devices[self.selected_index[1]]:
@@ -217,6 +228,8 @@ class BotEditMenu(BaseMenu):
             name = self.getSelectedAttribute("name", None)
             if name == "Circle":
                 self.selected_type = self.SELECTED_CIRCLE
+            elif name == "Rectangle":
+                self.selected_type = self.SELECTED_RECTANGLE
             elif name == "Polygon":
                 self.selected_type = self.SELECTED_POLYGON
             else:
@@ -237,21 +250,25 @@ class BotEditMenu(BaseMenu):
         # Clickies
         icon_size = self.side_width / 2
         self.select_icon.set_dimensions((icon_size, icon_size))
-        self.select_icon.set_position((self.side_width / 2 - icon_size / 2, 50))
+        self.select_icon.set_position((self.side_width / 2 - icon_size / 2, 20))
         self.select_button.set_dimensions((icon_size, icon_size))
-        self.select_button.set_position((self.side_width / 2 - icon_size / 2, 50))
+        self.select_button.set_position((self.side_width / 2 - icon_size / 2, 20))
         self.circle_icon.set_dimensions((icon_size, icon_size))
-        self.circle_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.circle_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 1.3))
         self.circle_button.set_dimensions((icon_size, icon_size))
-        self.circle_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 1.5))
+        self.circle_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 1.3))
+        self.rectangle_icon.set_dimensions((icon_size, icon_size / 2))
+        self.rectangle_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 2.75))
+        self.rectangle_button.set_dimensions((icon_size, icon_size))
+        self.rectangle_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 2.5))
         self.polygon_icon.set_dimensions((icon_size, icon_size))
-        self.polygon_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 3))
+        self.polygon_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 3.7))
         self.polygon_button.set_dimensions((icon_size, icon_size))
-        self.polygon_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 3))
+        self.polygon_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 3.7))
         self.device_icon.set_dimensions((icon_size, icon_size))
-        self.device_icon.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
+        self.device_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 5))
         self.device_button.set_dimensions((icon_size, icon_size))
-        self.device_button.set_position((self.side_width / 2 - icon_size / 2, 50 + icon_size * 4.5))
+        self.device_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 5))
 
         # Other options
         lock_size = self.side_width / 4
@@ -326,6 +343,21 @@ class BotEditMenu(BaseMenu):
         )
         self._all_objs.append(self.circle_button)
         self._all_objs.append(self.circle_icon)
+        self.rectangle_button = pygame_gui.elements.UIButton(
+            relative_rect=dummy_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rectangle-button", "invis_button"),
+        )
+        rect_icon_path = find_abs("ui/icon_rectangle.png", allowed_areas=asset_locations())
+        self.rectangle_icon = pygame_gui.elements.UIImage(
+            relative_rect=dummy_rect,
+            image_surface=pygame.image.load(rect_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rectangle-icon"),
+        )
+        self._all_objs.append(self.rectangle_button)
+        self._all_objs.append(self.rectangle_icon)
         self.polygon_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="",
@@ -508,6 +540,22 @@ class BotEditMenu(BaseMenu):
         self.drawOptions()
         self.generateHoldingItem()
 
+    def clickRectangle(self):
+        self.current_holding_kwargs = {
+            "type": "visual",
+            "name": "Rectangle",
+            "width": 6,
+            "height": 3,
+            "fill": "#878E88",
+            "stroke_width": 0.1,
+            "stroke": "#ffffff",
+            "zPos": self.HOLD_ZPOS,
+        }
+        self.selected_index = "Holding"
+        self.selected_type = self.SELECTED_RECTANGLE
+        self.drawOptions()
+        self.generateHoldingItem()
+
     def clickPolygon(self):
         self.current_holding_kwargs = {
             "type": "visual",
@@ -570,6 +618,8 @@ class BotEditMenu(BaseMenu):
                     self.clickSelect()
                 elif event.ui_object_id.startswith("circle-button"):
                     self.clickCircle()
+                elif event.ui_object_id.startswith("rectangle-button"):
+                    self.clickRectangle()
                 elif event.ui_object_id.startswith("polygon-button"):
                     self.clickPolygon()
                 elif event.ui_object_id.startswith("device-button"):
@@ -664,6 +714,8 @@ class BotEditMenu(BaseMenu):
                 for attr, conv, inc in [
                     ("rotation_entry", float, 1),
                     ("radius_entry", float, 0.1),
+                    ("width_entry", float, 0.1),
+                    ("height_entry", float, 0.1),
                     ("size_entry", float, 0.1),
                     ("stroke_entry", float, 0.05),
                     ("sides_entry", int, 1),
@@ -690,6 +742,8 @@ class BotEditMenu(BaseMenu):
         name = self.getSelectedAttribute("name", None)
         if name == "Circle":
             self.drawCircleOptions()
+        elif name == "Rectangle":
+            self.drawRectangleOptions()
         elif name == "Polygon":
             self.drawPolygonOptions()
         else:
@@ -762,6 +816,99 @@ class BotEditMenu(BaseMenu):
         self.stroke_img.set_position(
             (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
         )
+
+    def drawRectangleOptions(self):
+        dummy_rect = pygame.Rect(0, 0, *self._size)
+
+        # Width/Height
+        self.width_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Width",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("width-label", "bot_edit_label"),
+        )
+        self.width_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("width-entry", "num_entry"),
+        )
+        self.width_entry.set_text(str(self.getSelectedAttribute("width")))
+        entry_size = self.side_width / 3
+        self.width_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.width_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
+        self.width_entry.set_dimensions((entry_size, entry_size))
+        self.width_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
+
+        self.height_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Height",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("height-label", "bot_edit_label"),
+        )
+        self.height_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("height-entry", "num_entry"),
+        )
+        self.height_entry.set_text(str(self.getSelectedAttribute("height")))
+        entry_size = self.side_width / 3
+        self.height_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.height_label.set_position((self.side_width + 20, self._size[1] - entry_size))
+        self.height_entry.set_dimensions((entry_size, entry_size))
+        self.height_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
+
+        self.generateColourPickers()
+        button_size = entry_size * 0.9
+        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
+        self.fill_img.set_dimensions((button_size, button_size))
+        self.fill_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
+        )
+        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
+        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
+        self.stroke_img.set_dimensions((button_size, button_size))
+        self.stroke_img.set_position(
+            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
+        )
+
+        # Rotation
+        self.rotation_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Rotation",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
+        )
+        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
+        )
+        # Takeaway pi/2, so that pointing up is rotation 0.
+        cur_rotation = self.getSelectedAttribute("rotation", 0, visual=False)
+        self.rotation_entry.set_text(str(180 / np.pi * cur_rotation))
+        self.rotation_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.rotation_label.set_position((3 * self.side_width + 100, self._size[1] - self.bot_height + 15))
+        self.rotation_entry.set_dimensions((entry_size, entry_size))
+        self.rotation_entry.set_position((4 * self.side_width + 70, self._size[1] - self.bot_height + 20))
+
+        # Stroke width
+        self.stroke_num_label = pygame_gui.elements.UILabel(
+            relative_rect=dummy_rect,
+            text="Stroke",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
+        )
+        self.stroke_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=dummy_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
+        )
+        self.stroke_entry.set_text(str(self.getSelectedAttribute("stroke_width")))
+        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
+        self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
+        self.stroke_entry.set_dimensions((entry_size, entry_size))
+        self.stroke_entry.set_position((4 * self.side_width + 70, self._size[1] - entry_size + 5))
 
     def drawPolygonOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -1265,6 +1412,19 @@ All other objects are placed on this baseplate. After creating it, the baseplate
         except:
             pass
 
+    def removeRectangleOptions(self):
+        try:
+            self.width_label.kill()
+            self.width_entry.kill()
+            self.height_label.kill()
+            self.height_entry.kill()
+            self.rotation_label.kill()
+            self.rotation_label.kill()
+            self.stroke_num_label.kill()
+            self.stroke_entry.kill()
+        except:
+            pass
+
     def removePolygonOptions(self):
         try:
             self.sides_label.kill()
@@ -1294,6 +1454,7 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             pass
         self.removeColourOptions()
         self.removeCircleOptions()
+        self.removeRectangleOptions()
         self.removePolygonOptions()
         self.removeDeviceOptions()
 
@@ -1316,6 +1477,42 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                         generate()
                 except:
                     self.setSelectedAttribute("radius", old_radius)
+
+                old_stroke_width = self.getSelectedAttribute("stroke_width")
+                try:
+                    new_stroke_width = float(self.stroke_entry.text)
+                    if old_stroke_width != new_stroke_width:
+                        self.setSelectedAttribute("stroke_width", new_stroke_width)
+                        generate()
+                except:
+                    self.setSelectedAttribute("stroke_width", old_stroke_width)
+            if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_RECTANGLE:
+                old_width = self.getSelectedAttribute("width")
+                try:
+                    new_width = float(self.width_entry.text)
+                    if old_width != new_width:
+                        self.setSelectedAttribute("width", new_width)
+                        generate()
+                except:
+                    self.setSelectedAttribute("width", old_width)
+
+                old_height = self.getSelectedAttribute("height")
+                try:
+                    new_height = float(self.height_entry.text)
+                    if old_height != new_height:
+                        self.setSelectedAttribute("height", new_height)
+                        generate()
+                except:
+                    self.setSelectedAttribute("height", old_height)
+
+                cur_rotation = self.getSelectedAttribute("rotation", 0, visual=False)
+                cur_rotation *= 180 / np.pi
+                try:
+                    new_rot = float(self.rotation_entry.text)
+                    self.setSelectedAttribute("rotation", new_rot * np.pi / 180, visual=False)
+                    generate()
+                except:
+                    pass
 
                 old_stroke_width = self.getSelectedAttribute("stroke_width")
                 try:
