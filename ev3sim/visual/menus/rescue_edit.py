@@ -235,12 +235,14 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
         )
+        self.addButtonEvent("save-changes", self.saveBatch)
         self.cancel_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="Cancel",
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
         )
+        self.addButtonEvent("cancel-changes", lambda: ScreenObjectManager.instance.popScreen())
         self._all_objs.append(self.save_button)
         self._all_objs.append(self.cancel_button)
 
@@ -326,6 +328,7 @@ class RescueMapEditMenu(BaseMenu):
                 self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][i][1] = rot
         with open(self.batch_file, "w") as f:
             f.write(yaml.dump(self.previous_info))
+        ScreenObjectManager.instance.popScreen()
 
     def selectTile(self, pos):
         self.selected_index = pos
@@ -392,27 +395,9 @@ class RescueMapEditMenu(BaseMenu):
         self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0] = pos
 
     def handleEvent(self, event):
+        super().handleEvent(event)
         if self.mode == self.MODE_NORMAL:
-            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                # Removing
-                if event.ui_object_id.startswith("remove_button"):
-                    self.removeSelected()
-                # Saving
-                elif event.ui_object_id.startswith("save-changes"):
-                    self.saveBatch()
-                    ScreenObjectManager.instance.popScreen()
-                elif event.ui_object_id.startswith("cancel-changes"):
-                    ScreenObjectManager.instance.popScreen()
-                elif event.ui_object_id.startswith("tile_type"):
-                    self.drawTileDialog()
-                elif event.ui_object_id.startswith("spawn_button"):
-                    self.setSpawnAtSelected()
-                    self.updateSpawnCheckbox()
-                elif event.ui_object_id.startswith("flip_button"):
-                    self.setSelectedAttribute("flip", not self.getSelectedAttribute("flip", False))
-                    self.updateFlipCheckbox()
-                    self.resetRescueVisual()
-            elif event.type == pygame.MOUSEMOTION:
+            if event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 world_mpos = utils.screenspace_to_worldspace(self.current_mpos, self.customMap)
@@ -483,6 +468,7 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
         )
+        self.addButtonEvent("tile_type", self.drawTileDialog)
 
     def drawSpawnOptions(self):
         total_width = self.action_size[0]
@@ -517,6 +503,12 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("spawn_button", "invis_button"),
         )
+
+        def clickSpawn():
+            self.setSpawnAtSelected()
+            self.updateSpawnCheckbox()
+
+        self.addButtonEvent("spawn_button", clickSpawn)
         self.updateSpawnCheckbox()
 
     def updateSpawnCheckbox(self):
@@ -588,6 +580,13 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("flip_button", "invis_button"),
         )
+
+        def clickFlip():
+            self.setSelectedAttribute("flip", not self.getSelectedAttribute("flip", False))
+            self.updateFlipCheckbox()
+            self.resetRescueVisual()
+
+        self.addButtonEvent("flip_button", clickFlip)
         self.updateFlipCheckbox()
 
     def updateFlipCheckbox(self):
@@ -612,10 +611,12 @@ class RescueMapEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
         )
+        self.addButtonEvent("remove_button", self.removeSelected)
 
     def clearTileTypeOptions(self):
         try:
             self.tile_button.kill()
+            self.removeButtonEvent("tile_type")
         except:
             pass
 
@@ -624,6 +625,7 @@ class RescueMapEditMenu(BaseMenu):
             self.spawn_label.kill()
             self.spawn_button.kill()
             self.spawn_image.kill()
+            self.removeButtonEvent("spawn_button")
         except:
             pass
 
@@ -634,12 +636,14 @@ class RescueMapEditMenu(BaseMenu):
             self.flip_label.kill()
             self.flip_button.kill()
             self.flip_image.kill()
+            self.removeButtonEvent("flip_button")
         except:
             pass
 
     def clearRemove(self):
         try:
             self.remove_button.kill()
+            self.removeButtonEvent("remove_button")
         except:
             pass
 

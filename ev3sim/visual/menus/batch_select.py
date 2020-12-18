@@ -150,6 +150,7 @@ class BatchMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
+            self.addButtonEvent(show + "-" + str(i), self.setBatchIndex, i)
             self.batch_descriptions.append(
                 pygame_gui.elements.UILabel(
                     relative_rect=dummy_rect,
@@ -167,6 +168,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch", "action_button"),
         )
+        self.addButtonEvent("new_batch", self.addBatchDialog)
         new_batch_path = find_abs("ui/add.png", allowed_areas=asset_locations())
         self.new_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -182,6 +184,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("remove_batch", "cancel-changes"),
         )
+        self.addButtonEvent("remove_batch", self.clickRemove)
         remove_batch_path = find_abs("ui/bin.png", allowed_areas=asset_locations())
         self.remove_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -197,6 +200,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("start-sim", "action_button"),
         )
+        self.addButtonEvent("start-sim", self.clickStart)
         start_icon_path = find_abs("ui/start_sim.png", allowed_areas=asset_locations())
         self.start_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -219,6 +223,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("batch-settings", "settings_buttons"),
         )
+        self.addButtonEvent("batch-settings", self.clickSettings)
         settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations())
         self.settings_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -234,6 +239,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("batch-bots", "settings_buttons"),
         )
+        self.addButtonEvent("batch-bots", self.clickBots)
         bot_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
         self.bot_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -489,21 +495,8 @@ class BatchMenu(BaseMenu):
             )
 
     def handleEvent(self, event):
+        super().handleEvent(event)
         if self.mode == self.MODE_NORMAL:
-            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_object_id.startswith("start-sim"):
-                    self.clickStart()
-                elif event.ui_object_id.startswith("batch-settings"):
-                    self.clickSettings()
-                elif event.ui_object_id.startswith("batch-bots"):
-                    self.clickBots()
-                elif event.ui_object_id.startswith("new_batch"):
-                    self.addBatchDialog()
-                elif event.ui_object_id.startswith("remove_batch"):
-                    self.clickRemove()
-                else:
-                    if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
-                        self.setBatchIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
             if event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_DOWN, pygame.K_w]:
                     self.incrementBatchIndex(1)

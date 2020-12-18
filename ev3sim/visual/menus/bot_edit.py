@@ -319,6 +319,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("select-button", "invis_button"),
         )
+        self.addButtonEvent("select-button", self.clickSelect)
         select_icon_path = find_abs("ui/icon_select.png", allowed_areas=asset_locations())
         self.select_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -334,6 +335,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("circle-button", "invis_button"),
         )
+        self.addButtonEvent("circle-button", self.clickCircle)
         circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=asset_locations())
         self.circle_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -349,6 +351,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("rectangle-button", "invis_button"),
         )
+        self.addButtonEvent("rectangle-button", self.clickRectangle)
         rect_icon_path = find_abs("ui/icon_rectangle.png", allowed_areas=asset_locations())
         self.rectangle_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -364,6 +367,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("polygon-button", "invis_button"),
         )
+        self.addButtonEvent("polygon-button", self.clickPolygon)
         polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=asset_locations())
         self.polygon_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -379,6 +383,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("device-button", "invis_button"),
         )
+        self.addButtonEvent("device-button", self.clickDevice)
         device_icon_path = find_abs("ui/icon_device.png", allowed_areas=asset_locations())
         self.device_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
@@ -408,6 +413,12 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID(f"lock_grid-button", "checkbox-button"),
             text="",
         )
+
+        def clickLock():
+            self.lock_grid = not self.lock_grid
+            self.updateCheckbox()
+
+        self.addButtonEvent("lock_grid-button", clickLock)
         self._all_objs.append(self.lock_grid_label)
         self._all_objs.append(self.lock_grid_image)
         self._all_objs.append(self.lock_grid_button)
@@ -433,12 +444,14 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
         )
+        self.addButtonEvent("save-changes", self.clickSave)
         self.cancel_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="Cancel",
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
         )
+        self.addButtonEvent("cancel-changes", lambda: ScreenObjectManager.instance.popScreen())
         self._all_objs.append(self.save_button)
         self._all_objs.append(self.cancel_button)
 
@@ -580,6 +593,16 @@ class BotEditMenu(BaseMenu):
     def clickDevice(self):
         self.addDevicePicker()
 
+    def clickStroke(self):
+        self.colour_field = "stroke"
+        start_colour = self.getSelectedAttribute("stroke", "")
+        self.addColourPicker("Pick Stroke", start_colour)
+
+    def clickFill(self):
+        self.colour_field = "fill"
+        start_colour = self.getSelectedAttribute("fill", "")
+        self.addColourPicker("Pick Fill", start_colour)
+
     def updateCheckbox(self):
         img = pygame.image.load(
             find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=asset_locations())
@@ -587,6 +610,31 @@ class BotEditMenu(BaseMenu):
         if img.get_size() != self.lock_grid_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
         self.lock_grid_image.set_image(img)
+
+    def clickSave(self):
+        from ev3sim.robot import visual_settings
+
+        if self.creating:
+            ScreenObjectManager.instance.pushScreen(
+                ScreenObjectManager.SCREEN_SETTINGS,
+                settings=visual_settings,
+                creating=True,
+                creation_area="workspace/robots/",
+                starting_data={},
+                extension="bot",
+            )
+
+            def onSave(filename):
+                self.bot_file = find_abs(filename, ["workspace/robots/"])
+                self.bot_dir_file = ["workspace/robots/", filename]
+                self.saveBot()
+                ScreenObjectManager.instance.popScreen()
+
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+        else:
+            self.saveBot()
+            ScreenObjectManager.instance.popScreen()
 
     def saveBot(self):
         self.previous_info["base_plate"] = self.current_object
@@ -612,61 +660,9 @@ class BotEditMenu(BaseMenu):
             self.onSave(self.bot_dir_file[1])
 
     def handleEvent(self, event):
+        super().handleEvent(event)
         if self.mode == self.MODE_NORMAL:
-            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_object_id.startswith("select-button"):
-                    self.clickSelect()
-                elif event.ui_object_id.startswith("circle-button"):
-                    self.clickCircle()
-                elif event.ui_object_id.startswith("rectangle-button"):
-                    self.clickRectangle()
-                elif event.ui_object_id.startswith("polygon-button"):
-                    self.clickPolygon()
-                elif event.ui_object_id.startswith("device-button"):
-                    self.clickDevice()
-                elif event.ui_object_id.startswith("lock_grid-button"):
-                    self.lock_grid = not self.lock_grid
-                    self.updateCheckbox()
-                # Colour
-                elif event.ui_object_id.startswith("stroke_colour-button"):
-                    self.colour_field = "stroke"
-                    start_colour = self.getSelectedAttribute("stroke", "")
-                    self.addColourPicker("Pick Stroke", start_colour)
-                elif event.ui_object_id.startswith("fill_colour-button"):
-                    self.colour_field = "fill"
-                    start_colour = self.getSelectedAttribute("fill", "")
-                    self.addColourPicker("Pick Fill", start_colour)
-                # Removing
-                elif event.ui_object_id.startswith("remove_button"):
-                    self.removeSelected()
-                # Saving
-                elif event.ui_object_id.startswith("save-changes"):
-                    from ev3sim.robot import visual_settings
-
-                    if self.creating:
-                        ScreenObjectManager.instance.pushScreen(
-                            ScreenObjectManager.SCREEN_SETTINGS,
-                            settings=visual_settings,
-                            creating=True,
-                            creation_area="workspace/robots/",
-                            starting_data={},
-                            extension="bot",
-                        )
-
-                        def onSave(filename):
-                            self.bot_file = find_abs(filename, ["workspace/robots/"])
-                            self.bot_dir_file = ["workspace/robots/", filename]
-                            self.saveBot()
-                            ScreenObjectManager.instance.popScreen()
-
-                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
-                        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
-                    else:
-                        self.saveBot()
-                        ScreenObjectManager.instance.popScreen()
-                elif event.ui_object_id.startswith("cancel-changes"):
-                    ScreenObjectManager.instance.popScreen()
-            elif event.type == pygame.MOUSEMOTION:
+            if event.type == pygame.MOUSEMOTION:
                 self.actual_mpos = event.pos
                 self.current_mpos = screenspace_to_worldspace(
                     (event.pos[0] - self.side_width, event.pos[1]), customScreen=self.customMap
@@ -761,6 +757,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
         )
+        self.addButtonEvent("remove_button", self.removeSelected)
 
     def drawCircleOptions(self):
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -1064,6 +1061,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke_colour-button"),
         )
+        self.addButtonEvent("stroke_colour-button", self.clickStroke)
         self.fill_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(0, 0, *self._size),
             text="Fill Colour",
@@ -1076,6 +1074,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("fill_colour-button"),
         )
+        self.addButtonEvent("fill_colour-button", self.clickFill)
         data = {
             "fill_colour-button": {
                 "colours": {
@@ -1400,6 +1399,8 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             self.fill_img.kill()
             self.stroke_label.kill()
             self.stroke_img.kill()
+            self.removeButtonEvent("stroke_colour-button")
+            self.removeButtonEvent("fill_colour-button")
         except:
             pass
 
@@ -1450,6 +1451,7 @@ All other objects are placed on this baseplate. After creating it, the baseplate
     def clearOptions(self):
         try:
             self.remove_button.kill()
+            self.removeButtonEvent("remove_button")
         except:
             pass
         self.removeColourOptions()

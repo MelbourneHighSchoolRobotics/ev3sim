@@ -147,6 +147,7 @@ class BotMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
                 )
             )
+            self.addButtonEvent(show + "-" + str(i), self.setBotIndex, i)
             self.bot_descriptions.append(
                 pygame_gui.elements.UILabel(
                     relative_rect=dummy_rect,
@@ -174,6 +175,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-settings", "settings_buttons"),
             )
+            self.addButtonEvent("bot-settings", self.clickSettings)
             settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations())
             self.settings_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
@@ -189,6 +191,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-edit", "settings_buttons"),
             )
+            self.addButtonEvent("bot-edit", self.clickEdit)
             edit_icon_path = find_abs("ui/edit.png", allowed_areas=asset_locations())
             self.edit_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
@@ -204,6 +207,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("new_bot", "action_button"),
             )
+            self.addButtonEvent("new_bot", self.clickNew)
             new_bot_path = find_abs("ui/add.png", allowed_areas=asset_locations())
             self.new_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
@@ -219,6 +223,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("remove_bot", "cancel-changes"),
             )
+            self.addButtonEvent("remove_bot", self.clickRemove)
             remove_bot_path = find_abs("ui/bin.png", allowed_areas=asset_locations())
             self.remove_icon = pygame_gui.elements.UIImage(
                 relative_rect=dummy_rect,
@@ -240,6 +245,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("select-bot", "action_button"),
             )
+            self.addButtonEvent("select-bot", self.clickSelect)
             self._all_objs.append(self.select_button)
             self.done_button = pygame_gui.elements.UIButton(
                 relative_rect=dummy_rect,
@@ -247,6 +253,7 @@ class BotMenu(BaseMenu):
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("select-done", "action_button"),
             )
+            self.addButtonEvent("select-done", self.clickDone)
             self._all_objs.append(self.done_button)
 
     def createBotImage(self, index, bg=None):
@@ -430,22 +437,7 @@ class BotMenu(BaseMenu):
         self.setBotIndex(-1)
 
     def handleEvent(self, event):
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_object_id.startswith("bot-settings"):
-                self.clickSettings()
-            elif event.ui_object_id.startswith("bot-edit"):
-                self.clickEdit()
-            elif event.ui_object_id.startswith("select-bot"):
-                self.clickSelect()
-            elif event.ui_object_id.startswith("select-done"):
-                self.clickDone()
-            elif event.ui_object_id.startswith("new_bot"):
-                self.clickNew()
-            elif event.ui_object_id.startswith("remove_bot"):
-                self.clickRemove()
-            else:
-                if event.ui_object_id.split("#")[0].split("-")[-1].isnumeric():
-                    self.setBotIndex(int(event.ui_object_id.split("#")[0].split("-")[-1]))
+        super().handleEvent(event)
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_DOWN, pygame.K_w]:
                 self.incrementBotIndex(1)

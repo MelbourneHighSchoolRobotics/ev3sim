@@ -1,3 +1,4 @@
+import pygame
 import pygame_gui
 
 
@@ -6,6 +7,25 @@ class BaseMenu(pygame_gui.UIManager):
         self._size = size
         super().__init__(size, *args, **kwargs)
         self._all_objs = []
+        self._button_events = []
+
+    def addButtonEvent(self, id, event, *args, **kwargs):
+        self._button_events.append(
+            (
+                id,
+                event,
+                args,
+                kwargs,
+            )
+        )
+
+    def removeButtonEvent(self, id):
+        to_remove = []
+        for i in range(len(self._button_events)):
+            if self._button_events[i][0] == id:
+                to_remove.append(i)
+        for idx in to_remove[::-1]:
+            del self._button_events[idx]
 
     def setSize(self, size):
         self._size = size
@@ -18,6 +38,7 @@ class BaseMenu(pygame_gui.UIManager):
         for obj in self._all_objs:
             obj.kill()
         self._all_objs = []
+        self._button_events = []
 
     def generateObjects(self):
         raise NotImplementedError()
@@ -32,3 +53,9 @@ class BaseMenu(pygame_gui.UIManager):
 
     def initWithKwargs(self, **kwargs):
         self.regenerateObjects()
+
+    def handleEvent(self, event):
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+            for id, method, args, kwargs in self._button_events:
+                if event.ui_object_id.split(".")[-1] == id:
+                    method(*args, **kwargs)

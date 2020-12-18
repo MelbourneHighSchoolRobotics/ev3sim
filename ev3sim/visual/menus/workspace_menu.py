@@ -61,6 +61,7 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
             manager=self,
             object_id=pygame_gui.core.ObjectID("skip_button", "menu_button"),
         )
+        self.addButtonEvent("skip_button", self.clickSkip)
         self._all_objs.append(self.skip)
         self.select = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
@@ -68,35 +69,36 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
             manager=self,
             object_id=pygame_gui.core.ObjectID("select_button", "menu_button"),
         )
+        self.addButtonEvent("select_button", self.clickSelect)
         self._all_objs.append(self.select)
 
-    def handleEvent(self, event):
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            from ev3sim.visual.manager import ScreenObjectManager
+    def clickSkip(self):
+        from ev3sim.visual.manager import ScreenObjectManager
 
-            if event.ui_object_id.startswith("skip_button"):
-                ScreenObjectManager.instance.popScreen()
-                ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
-            if event.ui_object_id.startswith("select_button"):
-                # Open file dialog.
-                import yaml
-                from tkinter import Tk
-                from tkinter.filedialog import askdirectory
-                from ev3sim.simulation.loader import StateHandler
+        ScreenObjectManager.instance.popScreen()
+        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
 
-                Tk().withdraw()
-                directory = askdirectory()
-                if not directory:
-                    return
-                conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
-                with open(conf_file, "r") as f:
-                    conf = yaml.safe_load(f)
-                conf["app"]["workspace_folder"] = directory
-                with open(conf_file, "w") as f:
-                    f.write(yaml.dump(conf))
-                StateHandler.WORKSPACE_FOLDER = directory
-                ScreenObjectManager.instance.popScreen()
-                ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
+    def clickSelect(self):
+        # Open file dialog.
+        import yaml
+        from tkinter import Tk
+        from tkinter.filedialog import askdirectory
+        from ev3sim.simulation.loader import StateHandler
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        Tk().withdraw()
+        directory = askdirectory()
+        if not directory:
+            return
+        conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
+        with open(conf_file, "r") as f:
+            conf = yaml.safe_load(f)
+        conf["app"]["workspace_folder"] = directory
+        with open(conf_file, "w") as f:
+            f.write(yaml.dump(conf))
+        StateHandler.WORKSPACE_FOLDER = directory
+        ScreenObjectManager.instance.popScreen()
+        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
 
     def onPop(self):
         pass

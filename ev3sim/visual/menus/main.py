@@ -28,6 +28,8 @@ class MainMenu(BaseMenu):
         )
 
     def generateObjects(self):
+        from ev3sim.visual.manager import ScreenObjectManager
+
         self.slide_index = 0
         self.swapSlides()
         dummy_rect = pygame.Rect(0, 0, *self._size)
@@ -52,12 +54,18 @@ class MainMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("simulate_button", "menu_button"),
         )
+        self.addButtonEvent(
+            "simulate_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
+        )
         self._all_objs.append(self.simulate_button)
         self.bot_button = pygame_gui.elements.UIButton(
             relative_rect=dummy_rect,
             text="Bots",
             manager=self,
             object_id=pygame_gui.core.ObjectID("bots_button", "menu_button"),
+        )
+        self.addButtonEvent(
+            "bots_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
         )
         self._all_objs.append(self.bot_button)
         self.settings_button = pygame_gui.elements.UIButton(
@@ -66,23 +74,17 @@ class MainMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("main_settings_button", "menu_button"),
         )
+
+        def clickSettings():
+            ScreenObjectManager.instance.pushScreen(
+                ScreenObjectManager.SCREEN_SETTINGS,
+                file=find_abs("user_config.yaml", config_locations()),
+                settings=main_settings,
+            )
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+
+        self.addButtonEvent("main_settings_button", clickSettings)
         self._all_objs.append(self.settings_button)
-
-    def handleEvent(self, event):
-        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            from ev3sim.visual.manager import ScreenObjectManager
-
-            if event.ui_object_id.startswith("simulate_button"):
-                ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
-            if event.ui_object_id.startswith("bots_button"):
-                ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
-            if event.ui_object_id.startswith("main_settings_button"):
-                ScreenObjectManager.instance.pushScreen(
-                    ScreenObjectManager.SCREEN_SETTINGS,
-                    file=find_abs("user_config.yaml", config_locations()),
-                    settings=main_settings,
-                )
-                ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
 
     def swapSlides(self):
         self.remaining = 0
