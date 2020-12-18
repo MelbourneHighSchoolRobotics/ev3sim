@@ -598,7 +598,7 @@ class Circle(Colorable):
             body = pymunk.Body(
                 physObj.mass, moment, body_type=pymunk.Body.STATIC if physObj.static else pymunk.Body.DYNAMIC
             )
-        shape = pymunk.Circle(body, self.radius, offset=rel_pos)
+        shape = pymunk.Circle(body, self.radius, offset=[float(v) for v in rel_pos])
         shape.friction = physObj.friction_coefficient
         shape.elasticity = physObj.restitution_coefficient
         shape.collision_type = 1
