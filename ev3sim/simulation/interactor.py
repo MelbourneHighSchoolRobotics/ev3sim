@@ -64,12 +64,14 @@ def fromOptions(options):
             "Your options has no 'class_path' or 'filename' entry (Or the file you reference has no 'class_path' entry')"
         )
     import importlib
+
     if isinstance(options["class_path"], str):
         mname, cname = options["class_path"].rsplit(".", 1)
 
         klass = getattr(importlib.import_module(mname), cname)
     else:
         from importlib.machinery import SourceFileLoader
+
         module = SourceFileLoader("not_main", find_abs(options["class_path"][0], preset_locations())).load_module()
         klass = getattr(module, options["class_path"][1])
     topObj = klass(*options.get("args", []), **options.get("kwargs", {}))

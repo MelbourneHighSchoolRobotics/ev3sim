@@ -6,6 +6,7 @@ device_locations = lambda: ["workspace/devices/", "package/devices/"]
 theme_locations = lambda: ["workspace/assets/", "workspace", "package/assets"]
 asset_locations = lambda: ["workspace/assets/", "workspace", "package/assets/"]
 
+
 def batch_locations():
     """Batch files can also be in the custom folders."""
     import os
