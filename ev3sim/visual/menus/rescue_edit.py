@@ -107,7 +107,7 @@ class RescueMapEditMenu(BaseMenu):
         ScriptLoader.instance.reset()
         ScriptLoader.instance.startUp()
         ScreenObjectManager.instance.resetVisualElements()
-        with open(find_abs("rescue.yaml", preset_locations), "r") as f:
+        with open(find_abs("rescue.yaml", preset_locations()), "r") as f:
             conf = yaml.safe_load(f)
         utils.GLOBAL_COLOURS.update(conf.get("colours", {}))
 
@@ -525,7 +525,7 @@ class RescueMapEditMenu(BaseMenu):
         img = pygame.image.load(
             find_abs(
                 "ui/box_check.png" if tile_pos[0] == spawn[0] and tile_pos[1] == spawn[1] else "ui/box_clear.png",
-                allowed_areas=asset_locations,
+                allowed_areas=asset_locations(),
             )
         )
         if img.get_size() != self.spawn_image.rect.size:
@@ -594,7 +594,7 @@ class RescueMapEditMenu(BaseMenu):
         img = pygame.image.load(
             find_abs(
                 "ui/box_check.png" if self.getSelectedAttribute("flip", False) else "ui/box_clear.png",
-                allowed_areas=asset_locations,
+                allowed_areas=asset_locations(),
             )
         )
         if img.get_size() != self.flip_image.rect.size:
@@ -742,12 +742,12 @@ class RescueMapEditMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(f"tile-{i}-button", "invis_button"),
                 )
             )
-            with open(find_abs(f"tiles/definitions/{self.tile_locations[i]}", preset_locations), "r") as f:
+            with open(find_abs(f"tiles/definitions/{self.tile_locations[i]}", preset_locations()), "r") as f:
                 conf = yaml.safe_load(f)
             self.tile_images.append(
                 pygame_gui.elements.UIImage(
                     relative_rect=rect,
-                    image_surface=pygame.image.load(find_abs(conf["preview"], preset_locations)),
+                    image_surface=pygame.image.load(find_abs(conf["preview"], preset_locations())),
                     manager=self,
                     container=self.scroll_container,
                     object_id=pygame_gui.core.ObjectID(f"tile-{i}-image"),

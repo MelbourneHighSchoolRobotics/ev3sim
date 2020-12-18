@@ -88,7 +88,7 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
                 directory = askdirectory()
                 if not directory:
                     return
-                conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
+                conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
                 with open(conf_file, "r") as f:
                     conf = yaml.safe_load(f)
                 conf["app"]["workspace_folder"] = directory

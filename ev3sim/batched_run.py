@@ -23,7 +23,7 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
 
     Randomiser.createGlobalRandomiserWithSeed(seed)
 
-    preset_file = find_abs(preset_filename, allowed_areas=preset_locations)
+    preset_file = find_abs(preset_filename, allowed_areas=preset_locations())
     with open(preset_file, "r") as f:
         config = yaml.safe_load(f)
     recursive_merge(config["settings"], override_settings)
@@ -35,7 +35,7 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
 
 def batched_run(batch_file, bind_addr, seed):
 
-    batch_path = find_abs(batch_file, allowed_areas=batch_locations)
+    batch_path = find_abs(batch_file, allowed_areas=batch_locations())
     with open(batch_path, "r") as f:
         config = yaml.safe_load(f)
 

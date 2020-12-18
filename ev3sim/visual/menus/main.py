@@ -79,7 +79,7 @@ class MainMenu(BaseMenu):
             if event.ui_object_id.startswith("main_settings_button"):
                 ScreenObjectManager.instance.pushScreen(
                     ScreenObjectManager.SCREEN_SETTINGS,
-                    file=find_abs("user_config.yaml", config_locations),
+                    file=find_abs("user_config.yaml", config_locations()),
                     settings=main_settings,
                 )
                 ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
@@ -89,9 +89,9 @@ class MainMenu(BaseMenu):
         self.slide_index += 1
         self.slide_index %= self.SLIDE_NUMS
         self.slide_surface_prev = pygame.image.load(
-            find_abs(f"bg_slide{(self.slide_index - 1) % self.SLIDE_NUMS}.png", asset_locations)
+            find_abs(f"bg_slide{(self.slide_index - 1) % self.SLIDE_NUMS}.png", asset_locations())
         )
-        self.slide_surface_next = pygame.image.load(find_abs(f"bg_slide{self.slide_index}.png", asset_locations))
+        self.slide_surface_next = pygame.image.load(find_abs(f"bg_slide{self.slide_index}.png", asset_locations()))
 
     MAX_ALPHA = 0.4
     FADE_PCT = 0.55

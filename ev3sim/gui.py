@@ -79,17 +79,17 @@ def main(passed_args=None):
     if not args.from_main:
         # Try loading a user config. If one does not exist, then generate one.
         try:
-            conf_file = find_abs("user_config.yaml", allowed_areas=config_locations)
+            conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
             with open(conf_file, "r") as f:
                 conf = yaml.safe_load(f)
         except:
             with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
                 conf = yaml.safe_load(fr)
-            with open(join(find_abs_directory(config_locations[-1]), "user_config.yaml"), "w") as fw:
+            with open(join(find_abs_directory(config_locations()[-1]), "user_config.yaml"), "w") as fw:
                 fw.write(yaml.dump(conf))
 
         if args.config is not None:
-            config_path = find_abs(args.config, allowed_areas=config_locations)
+            config_path = find_abs(args.config, allowed_areas=config_locations())
             with open(config_path, "r") as f:
                 config = yaml.safe_load(f)
             conf.update(config)
@@ -106,12 +106,12 @@ def main(passed_args=None):
             found = False
             try:
                 fname = args.elem
-                for possible_dir in batch_locations:
+                for possible_dir in batch_locations():
                     dir_path = find_abs_directory(possible_dir, create=True)
                     if fname.startswith(dir_path):
                         fname = fname[len(dir_path) :]
                         break
-                batch_path = find_abs(fname, batch_locations)
+                batch_path = find_abs(fname, batch_locations())
                 if BatchValidator.validate_file(batch_path):
                     # Valid batch file.
                     if args.open:
@@ -127,7 +127,7 @@ def main(passed_args=None):
 
                         with open(batch_path, "r") as f:
                             conf = yaml.safe_load(f)
-                        with open(find_abs(conf["preset_file"], preset_locations)) as f:
+                        with open(find_abs(conf["preset_file"], preset_locations())) as f:
                             preset = yaml.safe_load(f)
                         mname, cname = preset["visual_settings"].rsplit(".", 1)
                         klass = getattr(importlib.import_module(mname), cname)
@@ -145,16 +145,16 @@ def main(passed_args=None):
             if not found:
                 try:
                     fname = args.elem
-                    for possible_dir in bot_locations:
+                    for possible_dir in bot_locations():
                         dir_path = find_abs_directory(possible_dir, create=True)
                         if fname.startswith(dir_path):
                             fname = fname[len(dir_path) :]
                             break
-                    bot_path = find_abs(fname, bot_locations)
+                    bot_path = find_abs(fname, bot_locations())
                     if BotValidator.validate_file(bot_path):
                         if args.open:
                             pushed_screen = ScreenObjectManager.SCREEN_BOT_EDIT
-                            for possible_dir in bot_locations:
+                            for possible_dir in bot_locations():
                                 try:
                                     n_bot_path = find_abs(fname, [possible_dir])
                                     pushed_kwargs = {

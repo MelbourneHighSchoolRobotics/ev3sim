@@ -302,7 +302,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("select-button", "invis_button"),
         )
-        select_icon_path = find_abs("ui/icon_select.png", allowed_areas=asset_locations)
+        select_icon_path = find_abs("ui/icon_select.png", allowed_areas=asset_locations())
         self.select_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(select_icon_path),
@@ -317,7 +317,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("circle-button", "invis_button"),
         )
-        circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=asset_locations)
+        circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=asset_locations())
         self.circle_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(circ_icon_path),
@@ -332,7 +332,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("polygon-button", "invis_button"),
         )
-        polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=asset_locations)
+        polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=asset_locations())
         self.polygon_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(polygon_icon_path),
@@ -347,7 +347,7 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("device-button", "invis_button"),
         )
-        device_icon_path = find_abs("ui/icon_device.png", allowed_areas=asset_locations)
+        device_icon_path = find_abs("ui/icon_device.png", allowed_areas=asset_locations())
         self.device_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(device_icon_path),
@@ -535,7 +535,7 @@ class BotEditMenu(BaseMenu):
 
     def updateCheckbox(self):
         img = pygame.image.load(
-            find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=asset_locations)
+            find_abs("ui/box_check.png" if self.lock_grid else "ui/box_clear.png", allowed_areas=asset_locations())
         )
         if img.get_size() != self.lock_grid_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
@@ -1060,7 +1060,7 @@ class BotEditMenu(BaseMenu):
                     object_id=pygame_gui.core.ObjectID(f"{device}_label", "device_label"),
                 ),
             )
-            img = pygame.image.load(find_abs(f"ui/devices/{file}.png", asset_locations))
+            img = pygame.image.load(find_abs(f"ui/devices/{file}.png", asset_locations()))
             img.set_colorkey((0, 255, 0))
             but_rect = pygame.Rect(
                 30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
@@ -1195,7 +1195,7 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     object_id=pygame_gui.core.ObjectID(f"{name}_label", "baseplate_label"),
                 ),
             )
-            img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=asset_locations))
+            img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=asset_locations()))
             img.set_colorkey((0, 255, 0))
             but_rect = pygame.Rect(
                 30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),

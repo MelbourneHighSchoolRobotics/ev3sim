@@ -108,7 +108,7 @@ def initialise_device(deviceData, parentObj, index, preview_mode=False):
     name = deviceData["name"]
     if name not in devices:
         raise ValueError(f"Unknown device type {name}")
-    fname = find_abs(devices[name], allowed_areas=device_locations)
+    fname = find_abs(devices[name], allowed_areas=device_locations())
     with open(fname, "r") as f:
         try:
             config = yaml.safe_load(f)

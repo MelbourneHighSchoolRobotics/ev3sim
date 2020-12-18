@@ -1,4 +1,6 @@
+from ev3sim.file_helper import find_abs
 from ev3sim.settings import SettingsManager
+from ev3sim.search_locations import preset_locations
 
 
 class IInteractor:
@@ -52,7 +54,6 @@ class IInteractor:
 def fromOptions(options):
     if "filename" in options:
         import yaml
-        from ev3sim.file_helper import find_abs
 
         fname = find_abs(options["filename"])
         with open(fname, "r") as f:
@@ -62,12 +63,18 @@ def fromOptions(options):
         raise ValueError(
             "Your options has no 'class_path' or 'filename' entry (Or the file you reference has no 'class_path' entry')"
         )
-    mname, cname = options["class_path"].rsplit(".", 1)
     import importlib
+    if isinstance(options["class_path"], str):
+        mname, cname = options["class_path"].rsplit(".", 1)
 
-    klass = getattr(importlib.import_module(mname), cname)
+        klass = getattr(importlib.import_module(mname), cname)
+    else:
+        from importlib.machinery import SourceFileLoader
+        module = SourceFileLoader("not_main", find_abs(options["class_path"][0], preset_locations())).load_module()
+        klass = getattr(module, options["class_path"][1])
     topObj = klass(*options.get("args", []), **options.get("kwargs", {}))
     # Add any settings for this interactor, if applicable.
+    # This only works for package presets. Not workspace ones.
     if "settings_name" in options:
         name = options["settings_name"]
         if "settings_defn" not in options:

@@ -163,7 +163,7 @@ class FileEntry(SettingsVisualElement):
                 off[1] + self.container.relative_rect.top - 2,
             )
         )
-        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=asset_locations))
+        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=asset_locations()))
         if img.get_size() != objs[index + 3].rect.size:
             img = pygame.transform.smoothscale(img, (objs[index + 3].rect.width, objs[index + 3].rect.height))
         objs[index + 3].set_image(img)
@@ -333,7 +333,7 @@ class Checkbox(SettingsVisualElement):
 
     def setCheckboxBg(self, value, obj):
         img = pygame.image.load(
-            find_abs("ui/box_check.png" if value else "ui/box_clear.png", allowed_areas=asset_locations)
+            find_abs("ui/box_check.png" if value else "ui/box_clear.png", allowed_areas=asset_locations())
         )
         if img.get_size() != obj.rect.size:
             img = pygame.transform.smoothscale(img, (obj.rect.width, obj.rect.height))

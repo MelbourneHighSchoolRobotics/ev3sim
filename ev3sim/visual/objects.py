@@ -210,7 +210,7 @@ class Image(Colorable):
     def image_path(self, value):
         from ev3sim.file_helper import find_abs
 
-        image_path = find_abs(value, allowed_areas=asset_locations)
+        image_path = find_abs(value, allowed_areas=asset_locations())
         if image_path != self._image_path:
             self._image_path = image_path
             self.image = pygame.image.load(self._image_path)
@@ -666,7 +666,7 @@ class Text(Colorable):
         from ev3sim.file_helper import find_abs
 
         self.font_style = kwargs.get("font_style", "fonts/OpenSans-SemiBold.ttf")
-        self.font_path = find_abs(self.font_style, allowed_areas=asset_locations)
+        self.font_path = find_abs(self.font_style, allowed_areas=asset_locations())
         self.font_size = kwargs.get("font_size", 30)
         self.hAlignment = kwargs.get("hAlignment", "l")
         self.vAlignment = kwargs.get("vAlignment", "t")

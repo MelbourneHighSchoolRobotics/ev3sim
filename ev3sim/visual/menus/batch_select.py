@@ -120,7 +120,7 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.bg)
         # Find all batch files and show them
         self.available_batches = []
-        for rel_dir in batch_locations:
+        for rel_dir in batch_locations():
             try:
                 actual_dir = find_abs_directory(rel_dir)
             except:
@@ -167,7 +167,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("new_batch", "action_button"),
         )
-        new_batch_path = find_abs("ui/add.png", allowed_areas=asset_locations)
+        new_batch_path = find_abs("ui/add.png", allowed_areas=asset_locations())
         self.new_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(new_batch_path),
@@ -182,7 +182,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("remove_batch", "cancel-changes"),
         )
-        remove_batch_path = find_abs("ui/bin.png", allowed_areas=asset_locations)
+        remove_batch_path = find_abs("ui/bin.png", allowed_areas=asset_locations())
         self.remove_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(remove_batch_path),
@@ -197,7 +197,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("start-sim", "action_button"),
         )
-        start_icon_path = find_abs("ui/start_sim.png", allowed_areas=asset_locations)
+        start_icon_path = find_abs("ui/start_sim.png", allowed_areas=asset_locations())
         self.start_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(start_icon_path),
@@ -219,7 +219,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("batch-settings", "settings_buttons"),
         )
-        settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations)
+        settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations())
         self.settings_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(settings_icon_path),
@@ -234,7 +234,7 @@ class BatchMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("batch-bots", "settings_buttons"),
         )
-        bot_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations)
+        bot_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
         self.bot_icon = pygame_gui.elements.UIImage(
             relative_rect=dummy_rect,
             image_surface=pygame.image.load(bot_icon_path),
@@ -278,7 +278,7 @@ class BatchMenu(BaseMenu):
 
         with open(self.available_batches[self.batch_index][1], "r") as f:
             conf = yaml.safe_load(f)
-        with open(find_abs(conf["preset_file"], preset_locations)) as f:
+        with open(find_abs(conf["preset_file"], preset_locations())) as f:
             preset = yaml.safe_load(f)
         mname, cname = preset["visual_settings"].rsplit(".", 1)
 
@@ -332,7 +332,7 @@ class BatchMenu(BaseMenu):
         self.soccer_images = []
         self.soccer_buttons = []
         self.available_presets = []
-        for rel_dir in preset_locations:
+        for rel_dir in preset_locations():
             try:
                 actual_dir = find_abs_directory(rel_dir)
             except:
@@ -354,7 +354,7 @@ class BatchMenu(BaseMenu):
                         (self.picker.rect.width - 90) / 2 - 40,
                         image_height,
                     ),
-                    image_surface=pygame.image.load(find_abs(preset_type[4]["preview_path"], asset_locations)),
+                    image_surface=pygame.image.load(find_abs(preset_type[4]["preview_path"], asset_locations())),
                     manager=self,
                     container=self.picker,
                     object_id=pygame_gui.core.ObjectID(f"preset-{i}-image"),
@@ -451,10 +451,10 @@ class BatchMenu(BaseMenu):
 
     def createBotImage(self, index):
 
-        fname = find_abs(self.bot_list[index], bot_locations)
+        fname = find_abs(self.bot_list[index], bot_locations())
         with open(fname, "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations)
+        bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
         img = pygame.image.load(bot_preview)
         img = pygame.transform.smoothscale(img, self._size)
         return pygame_gui.elements.UIImage(
@@ -541,10 +541,10 @@ class BatchMenu(BaseMenu):
                 "button_info_selected" if i == self.batch_index else "button_info"
             )
             self.batch_descriptions[i].rebuild_from_changed_theme_data()
-        preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations)
+        preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations())
         with open(preset_path, "r") as f:
             preset_config = yaml.safe_load(f)
-        preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations)
+        preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations())
         img = pygame.image.load(preset_preview)
         if img.get_size() != self.preview_image.rect.size:
             img = pygame.transform.smoothscale(img, (self.preview_image.rect.width, self.preview_image.rect.height))

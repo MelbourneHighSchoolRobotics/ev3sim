@@ -331,7 +331,7 @@ def initialiseFromConfig(config, send_queues, recv_queues):
     # Keep track of index w.r.t. filename.
     robot_paths = defaultdict(lambda: 0)
     for index, robot in enumerate(config.get("robots", [])):
-        robot_path = find_abs(robot, allowed_areas=bot_locations)
+        robot_path = find_abs(robot, allowed_areas=bot_locations())
         initialise_bot(config, robot_path, f"Robot-{index}", robot_paths[robot_path])
         robot_paths[robot_path] += 1
         ScriptLoader.instance.setRobotQueues(f"Robot-{index}", send_queues[index], recv_queues[index])

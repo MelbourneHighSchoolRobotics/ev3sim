@@ -75,7 +75,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             ScriptLoader.instance.outstanding_events[prefix] = []
             scriptname = config.get("script", None)
             if scriptname is not None:
-                scriptname = find_abs(scriptname, code_locations)
+                scriptname = find_abs(scriptname, code_locations())
             ScriptLoader.instance.scriptnames[prefix] = scriptname
 
         except yaml.YAMLError as exc:
@@ -204,7 +204,7 @@ visual_settings = [
                 ["script"],
                 None,
                 False,
-                code_locations,
+                code_locations(),
                 "Bot script",
                 (lambda s: (0, 20)),
             ),
