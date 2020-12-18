@@ -1,6 +1,6 @@
 import numpy as np
 import pymunk
-from ev3sim.objects.base import objectFactory
+from ev3sim.objects.base import PhysicsObject
 from ev3sim.simulation.world import World
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
@@ -45,9 +45,10 @@ class UltrasonicSensorMixin:
             # Ignore all ignored objects by setting the category on them.
             cats = []
             for obj in self.ignore_objects:
-                for shape in obj.shapes:
-                    cats.append(shape.filter.categories)
-                    shape.filter = pymunk.ShapeFilter(categories=0b1)
+                if isinstance(obj, PhysicsObject):
+                    for shape in obj.shapes:
+                        cats.append(shape.filter.categories)
+                        shape.filter = pymunk.ShapeFilter(categories=0b1)
             raycast = World.instance.space.segment_query_first(
                 [float(v) for v in startPosition],
                 [float(v) for v in endPosition],
@@ -56,9 +57,10 @@ class UltrasonicSensorMixin:
             )
             i = 0
             for obj in self.ignore_objects:
-                for shape in obj.shapes:
-                    shape.filter = pymunk.ShapeFilter(categories=cats[i])
-                    i += 1
+                if isinstance(obj, PhysicsObject):
+                    for shape in obj.shapes:
+                        shape.filter = pymunk.ShapeFilter(categories=cats[i])
+                        i += 1
 
             if raycast == None:
                 if top_length == self.MAX_RAYCAST or (not ScriptLoader.RANDOMISE_SENSORS):
