@@ -4,7 +4,7 @@ import pymunk
 import yaml
 import numpy as np
 from ev3sim.file_helper import find_abs
-from ev3sim.objects.base import STATIC_CATEGORY
+from ev3sim.objects.base import DYNAMIC_CATEGORY
 from ev3sim.robot import add_devices
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.menus.base_menu import BaseMenu
@@ -207,7 +207,7 @@ class BotEditMenu(BaseMenu):
         from ev3sim.simulation.world import World
 
         shapes = World.instance.space.point_query(
-            [float(v) for v in pos], 0.0, pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ STATIC_CATEGORY)
+            [float(v) for v in pos], 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY)
         )
         if shapes:
             top_shape_z = max(map(lambda x: x.shape.actual_obj.visual.zPos, shapes))
@@ -434,7 +434,7 @@ class BotEditMenu(BaseMenu):
                 [
                     {
                         "type": "object",
-                        "physics": True,
+                        "physics": False,
                         "visual": {
                             "name": "Circle",
                             "stroke": None,
@@ -446,8 +446,7 @@ class BotEditMenu(BaseMenu):
                         "children": [self.current_holding_kwargs],
                         "key": "holding_bot",
                     }
-                ],
-                preview_mode=True,
+                ]
             )
             for interactor in ScriptLoader.instance.active_scripts:
                 if interactor.physical_object.key == "holding_bot":
