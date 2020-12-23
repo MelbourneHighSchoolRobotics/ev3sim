@@ -7,6 +7,7 @@ class PresetValidator(Validator):
     # Most of these keys are required if the preset is not "hidden".
     AVAILABLE_KEYS = REQUIRED_KEYS + [
         "preview_path",
+        "button_bg",
         "bot_names",
         "visual_settings",
         "preset_description",

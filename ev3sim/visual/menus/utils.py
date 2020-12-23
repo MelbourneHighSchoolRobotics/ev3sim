@@ -21,7 +21,7 @@ class CustomScroll(pygame_gui.elements.UIScrollingContainer):
 
         if self.is_enabled and event.type == pygame.MOUSEWHEEL:
             self.cur_y += event.y * 10
-            self.cur_y = min(0, max(self.cur_y, -self.elems_size * (self.num_elems - 5)))
+            self.cur_y = min(0, max(self.cur_y, -self.elems_size * (self.num_elems - self.span_elems)))
             if event.y != 0:
                 self.set_scroll(self.cur_y)
                 consumed_event = True

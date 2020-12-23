@@ -147,6 +147,112 @@
             }
         }
     },
+    "button_text": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#555555"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "22",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_text_highlighted": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "22",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_info": {
+        "prototype": "button_text",
+        "colours": {
+            "normal_text": "#555555"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_info_highlighted": {
+        "prototype": "button_text",
+        "colours": {
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
     "settings-background": {
         "colours": {
             "dark_bg": "#141D2A"
@@ -174,31 +280,6 @@
             "active_bg": "#adb5bd"
         }
     },
-    "button_info": {
-        "colours": {
-            "dark_bg": "#00000000"
-        },
-        "font": {
-            "name": "Roboto",
-            "size": "12",
-            "regular_resource": {
-                "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Regular.ttf"
-            },
-            "bold_resource": {
-                "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Bold.ttf"
-            },
-            "italic_resource": {
-                "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-Italic.ttf"
-            },
-            "bold_italic_resource": {
-                "package": "ev3sim.assets.fonts",
-                "resource": "Roboto-BoldItalic.ttf"
-            }
-        }
-    },
     "button_info_selected": {
         "prototype": "button_info",
         "colours": {
@@ -206,7 +287,13 @@
         }
     },
     "list_button": {
-        "prototype": "any_button"
+        "prototype": "any_button",
+        "colours": {
+            "normal_bg": "#dddddd",
+            "hovered_bg": "#eeeeee",
+            "active_bg": "#ffffff",
+            "normal_border": "#00000000"
+        }
     },
     "list_button_highlighted": {
         "prototype": "any_button",
@@ -214,9 +301,6 @@
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
             "active_bg": "#D0252A",
-            "normal_text": "#f7ede2",
-            "hovered_text": "#f7ede2",
-            "active_text": "#f7ede2",
             "normal_border": "#00000000"
         }
     },

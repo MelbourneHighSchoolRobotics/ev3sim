@@ -34,8 +34,12 @@ class BatchMenu(BaseMenu):
                 # Show everything except dir and .sim
                 with open(os.path.join(actual_dir, batch), "r") as f:
                     config = yaml.safe_load(f)
+                with open(find_abs(config["preset_file"], preset_locations()), "r") as f:
+                    preset = yaml.safe_load(f)
                 if not config.get("hidden", False):
-                    self.available_batches.append((batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch))
+                    self.available_batches.append(
+                        (batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch, preset["button_bg"])
+                    )
 
         for i, bot in enumerate(self.available_batches):
             if i == self.batch_index:
@@ -62,12 +66,15 @@ class BatchMenu(BaseMenu):
         # Scrolling container
         old_y = getattr(getattr(self, "scrolling_container", None), "cur_y", 0)
         self.scrolling_container = CustomScroll(
-            relative_rect=pygame.Rect(0, 0, *self._size),
+            relative_rect=pygame.Rect(0, 0, self._size[0], 5 * self._size[1]),
             manager=self,
             object_id=pygame_gui.core.ObjectID("scroll_container"),
         )
+        picture_width = 360
+        self.scrolling_container.elems_size = picture_width * 0.4
+        self.scrolling_container.span_elems = 4
         self.scrolling_container.num_elems = len(self.available_batches)
-        scrolling_size = (self._size[0] / 4 + self._size[0] / 5, self._size[1] * 0.9 - min(self._size[1] / 6, 90))
+        scrolling_size = (self._size[0] / 4 + self._size[0] / 5, self._size[1] * 0.95 - min(self._size[1] / 6, 90) + 20)
         # Setting dimensions and positions on a UIScrollingContainer seems buggy. This works.
         self.scrolling_container.set_dimensions(scrolling_size)
         self.scrolling_container.set_position(scrolling_size)
@@ -76,42 +83,77 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.scrolling_container)
 
         # The batch buttons
-        button_size = self._size[0] / 4, 60
-        info_size = self._size[0] / 4 - 20, 15
-        batch_rect = lambda i: (self._size[0] / 10, self._size[1] / 10 + i * button_size[1] * 1.5)
-        info_rect = lambda b_r: (
-            b_r[0] + button_size[0] - info_size[0] - 10,
-            b_r[1] + button_size[1] - info_size[1] - 5,
-        )
+        batch_rect = lambda i: (0, self._size[1] / 20 + i * picture_width * 0.4)
+        self.batch_bgs = []
         self.batch_buttons = []
+        self.batch_titles = []
         self.batch_descriptions = []
-        for i, (show, batch, rel_dir, filename) in enumerate(self.available_batches):
+        self.batch_fgs = []
+        for i, (show, batch, rel_dir, filename, preset_bg_path) in enumerate(self.available_batches):
+            bg_img = pygame.image.load(find_abs(preset_bg_path, asset_locations()))
+            self.batch_bgs.append(
+                pygame_gui.elements.UIImage(
+                    relative_rect=pygame.Rect(0, batch_rect(i)[1], picture_width, picture_width * 0.33),
+                    image_surface=bg_img,
+                    manager=self,
+                    container=self.scrolling_container,
+                    object_id=pygame_gui.core.ObjectID(),
+                )
+            )
             self.batch_buttons.append(
                 pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect(*batch_rect(i), *button_size),
+                    relative_rect=pygame.Rect(0, batch_rect(i)[1], picture_width * 0.68, picture_width * 0.2),
+                    text="",
+                    manager=self,
+                    container=self.scrolling_container,
+                    object_id=pygame_gui.core.ObjectID(f"button-{i}", "list_button"),
+                )
+            )
+            self.addButtonEvent(f"button-{i}", self.setBatchIndex, i)
+            self.batch_titles.append(
+                pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect(12, batch_rect(i)[1] + 5, picture_width, picture_width * 0.2),
                     text=show,
                     manager=self,
                     container=self.scrolling_container,
-                    object_id=pygame_gui.core.ObjectID(show + "-" + str(i), "list_button"),
+                    object_id=pygame_gui.core.ObjectID(f"button-{i}-label", "button_text"),
                 )
             )
-            self.addButtonEvent(show + "-" + str(i), self.setBatchIndex, i)
+            self.batch_titles[-1].set_dimensions(self.batch_titles[-1].font.size(self.batch_titles[-1].text))
             self.batch_descriptions.append(
                 pygame_gui.elements.UILabel(
-                    relative_rect=pygame.Rect(*info_rect(batch_rect(i)), *info_size),
+                    relative_rect=pygame.Rect(0, batch_rect(i)[1], picture_width, picture_width * 0.2 - 20),
                     text=rel_dir,
                     manager=self,
                     container=self.scrolling_container,
-                    object_id=pygame_gui.core.ObjectID(show + "-dir-" + str(i), "button_info"),
+                    object_id=pygame_gui.core.ObjectID(f"button-{i}-info", "button_info"),
                 )
             )
+            size = self.batch_descriptions[-1].font.size(self.batch_descriptions[-1].text)
+            self.batch_descriptions[-1].set_position(
+                (picture_width * 0.68 - size[0] - 10, batch_rect(i)[1] + picture_width * 0.2 - size[1] - 10)
+            )
+            self.batch_descriptions[-1].set_dimensions(size)
+            fg_img = pygame.image.load(find_abs("ui/button_fg.png", asset_locations()))
+            self.batch_fgs.append(
+                pygame_gui.elements.UIImage(
+                    relative_rect=pygame.Rect(0, batch_rect(i)[1], picture_width, picture_width * 0.33),
+                    image_surface=fg_img,
+                    manager=self,
+                    container=self.scrolling_container,
+                    object_id=pygame_gui.core.ObjectID(f"button-{i}-fg", "button-fg"),
+                )
+            )
+        self._all_objs.extend(self.batch_bgs)
         self._all_objs.extend(self.batch_buttons)
+        self._all_objs.extend(self.batch_titles)
         self._all_objs.extend(self.batch_descriptions)
+        self._all_objs.extend(self.batch_fgs)
 
         # New + Remove
         new_size = self._size[0] / 8, min(self._size[1] / 6, 90)
         new_icon_size = new_size[1] * 0.6, new_size[1] * 0.6
-        new_batch_pos = (batch_rect(0)[0] + button_size[0] - new_size[0], self._size[1] * 0.9 - new_size[1])
+        new_batch_pos = (self._size[0] / 3 - new_size[0], self._size[1] * 0.95 - new_size[1])
         self.new_batch = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*new_batch_pos, *new_size),
             text="",
@@ -129,7 +171,7 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.new_batch)
         self._all_objs.append(self.new_icon)
 
-        remove_batch_pos = (batch_rect(0)[0], self._size[1] * 0.9 - new_size[1])
+        remove_batch_pos = (self._size[0] / 3 - 2 * new_size[0] - 15, self._size[1] * 0.95 - new_size[1])
         self.remove_batch = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*remove_batch_pos, *new_size),
             text="",
@@ -347,12 +389,16 @@ class BatchMenu(BaseMenu):
 
     def changeSelectedTheming(self):
         for i in range(len(self.batch_buttons)):
-            self.batch_buttons[i].combined_element_ids[2] = (
+            self.batch_buttons[i].combined_element_ids[1] = (
                 "list_button_highlighted" if i == self.batch_index else "list_button"
             )
             self.batch_buttons[i].rebuild_from_changed_theme_data()
-            self.batch_descriptions[i].combined_element_ids[2] = (
-                "button_info_selected" if i == self.batch_index else "button_info"
+            self.batch_titles[i].combined_element_ids[1] = (
+                "button_text_highlighted" if i == self.batch_index else "button_text"
+            )
+            self.batch_titles[i].rebuild_from_changed_theme_data()
+            self.batch_descriptions[i].combined_element_ids[1] = (
+                "button_info_highlighted" if i == self.batch_index else "button_info"
             )
             self.batch_descriptions[i].rebuild_from_changed_theme_data()
         if self.batch_index != -1:

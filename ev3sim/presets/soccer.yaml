@@ -1,4 +1,5 @@
 preview_path: "soccer_preview.png"
+button_bg: "soccer_bg.png"
 
 bot_names:
   - "Team 1\nBot 1"
