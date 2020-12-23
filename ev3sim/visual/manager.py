@@ -210,7 +210,7 @@ class ScreenObjectManager:
         return self.sensorScreen.get_at(screen_position)
 
     def handleEvents(self):
-        from ev3sim.simulation.loader import StateHandler
+        from ev3sim.simulation.loader import StateHandler, ScriptLoader
 
         events = pygame.event.get()
         for event in events:
@@ -231,6 +231,9 @@ class ScreenObjectManager:
                 )
                 for key, menu in self.screens.items():
                     menu.setSize((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL))
+                for interactor in ScriptLoader.instance.active_scripts:
+                    if hasattr(interactor, "setSize"):
+                        interactor.setSize((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL))
                 for screen in self.screen_stack:
                     if screen == self.SCREEN_SIM:
                         for key in self.sorting_order:

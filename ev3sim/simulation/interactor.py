@@ -1,3 +1,4 @@
+from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.file_helper import find_abs
 from ev3sim.settings import SettingsManager
 from ev3sim.search_locations import preset_locations
@@ -93,6 +94,15 @@ class IInteractor:
             # Restart the robot scripts.
             ScriptLoader.instance.startProcess(robotID, kill_recent=True)
             ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
+
+
+class PygameGuiInteractor(BaseMenu, IInteractor):
+    def __init__(self, **kwargs):
+        """Fix to avoid size not being set correctly."""
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        IInteractor.__init__(self, **kwargs)
+        BaseMenu.__init__(self, (ScreenObjectManager.instance.SCREEN_WIDTH, ScreenObjectManager.instance.SCREEN_HEIGHT))
 
 
 def fromOptions(options):

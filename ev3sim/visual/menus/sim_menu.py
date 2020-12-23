@@ -3,6 +3,7 @@ import pygame
 import pygame_gui
 from pygame_gui.core.ui_element import ObjectID
 from ev3sim.visual.menus.base_menu import BaseMenu
+from ev3sim.simulation.loader import ScriptLoader, StateHandler
 
 
 class SimulatorMenu(BaseMenu):
@@ -18,18 +19,15 @@ class SimulatorMenu(BaseMenu):
 
     def initWithKwargs(self, **kwargs):
         batch = kwargs.get("batch")
-        from ev3sim.simulation.loader import StateHandler
         from ev3sim.simulation.world import World
 
         World.instance.resetWorld()
 
-        StateHandler.instance.beginSimulation(batch=batch)
         self.messages = []
+        StateHandler.instance.beginSimulation(batch=batch)
         super().initWithKwargs(**kwargs)
 
     def onPop(self):
-        from ev3sim.simulation.loader import StateHandler, ScriptLoader
-
         # We need to close all previous communications with the bots.
         StateHandler.instance.closeProcesses()
         StateHandler.instance.is_simulating = False
@@ -43,6 +41,12 @@ class SimulatorMenu(BaseMenu):
         World.instance.resetWorld()
         # And reset the script loader.
         ScriptLoader.instance.reset()
+
+    def regenerateObjects(self):
+        super().regenerateObjects()
+        for interactor in ScriptLoader.instance.active_scripts:
+            if hasattr(interactor, "regenerateObjects"):
+                interactor.regenerateObjects()
 
     def generateObjects(self):
         self.gen_messages = []
@@ -89,6 +93,9 @@ class SimulatorMenu(BaseMenu):
 
     def update(self, time_delta: float):
         super().update(time_delta)
+        for interactor in ScriptLoader.instance.active_scripts:
+            if hasattr(interactor, "update"):
+                interactor.update(time_delta)
         to_remove = []
         for i in range(len(self.messages)):
             if self.messages[i][0]:
@@ -99,6 +106,13 @@ class SimulatorMenu(BaseMenu):
             del self.messages[index]
         if len(to_remove) != 0:
             self.regenerateObjects()
+
+    def draw_ui(self, window_surface: pygame.surface.Surface):
+        # Draw interactors below.
+        for interactor in ScriptLoader.instance.active_scripts:
+            if hasattr(interactor, "draw_ui"):
+                interactor.draw_ui(window_surface)
+        super().draw_ui(window_surface)
 
     def handleEvent(self, event):
         if hasattr(event, "link_target"):
@@ -115,3 +129,14 @@ class SimulatorMenu(BaseMenu):
             elif event.link_target.startswith("logs"):
                 robot_index = int(event.link_target.split("-")[1])
                 Logger.instance.openLog(f"Robot-{robot_index}")
+
+    def process_events(self, event: pygame.event.Event):
+        res = super().process_events(event)
+        if res:
+            return
+        for interactor in ScriptLoader.instance.active_scripts:
+            if hasattr(interactor, "process_events"):
+                res = res or interactor.process_events(event)
+                if res:
+                    return res
+        return False
