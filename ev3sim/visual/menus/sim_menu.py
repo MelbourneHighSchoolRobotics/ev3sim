@@ -71,12 +71,47 @@ class SimulatorMenu(BaseMenu):
         )
         self._all_objs.append(self.console_bg)
 
-    def printMessage(self, msg, msg_life=3, kill=True):
-        for i, col in enumerate(self.ROBOT_COLOURS):
-            repl = f"[Robot-{i}]"
+    def formatMessage(self, msg):
+        """Figures out the lifespan, whether to kill, and any extra styling for a message."""
+        life = 3
+        kill = True
+        if msg.startswith("[Robot-"):
+            # Generate the unformatted text
+            unformatted_text = "]".join(msg.split("]")[1:])[1:]
+            # Color the Robot-id.
             msg = msg.replace("\n", "<br>")
-            msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
-        self.messages.append([kill, msg_life, msg])
+            for i, col in enumerate(self.ROBOT_COLOURS):
+                repl = f"[Robot-{i}]"
+                msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
+        else:
+            unformatted_text = msg
+        if unformatted_text.startswith("["):
+            # Try to get any options here.
+            try:
+                option_string = unformatted_text.split("]")[0][1:]
+                options = option_string.split()
+                for opt in options:
+                    key, v = opt.split("=")
+                    if key == "life":
+                        life = float(v)
+                    elif key == "alive_id":
+                        life = v
+                        kill = False
+                msg = msg.replace(f"[{option_string}]", "")
+            except:
+                pass
+        return msg, life, kill
+
+    def printStyledMessage(self, msg):
+        self.printMessage(*self.formatMessage(msg))
+
+    def printMessage(self, msg, msg_life=3, kill=True):
+        for i, message in enumerate(self.messages):
+            if not kill and not message[0] and message[1] == msg_life:
+                self.messages[i] = [kill, msg_life, msg]
+                break
+        else:
+            self.messages.append([kill, msg_life, msg])
         self.regenerateObjects()
 
     def printError(self, robot_index):

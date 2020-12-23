@@ -28,7 +28,7 @@ class Logger:
 
     def writeMessage(self, robot_id, msg):
         if Logger.LOG_CONSOLE:
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printMessage(msg)
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printStyledMessage(msg)
         with open(self.getFilename(robot_id), "a") as f:
             f.write(msg)
 

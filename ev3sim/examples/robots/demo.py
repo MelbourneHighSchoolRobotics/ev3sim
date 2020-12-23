@@ -78,6 +78,14 @@ while True:
         last_step_time = time.time()
         m1Speed, m2Speed = random_between(*MOTOR_SPEEDS), random_between(*MOTOR_SPEEDS)
         current_step_wait = random_between(*STEP_LENGTH)
+        print(
+            (
+                # Keep the message alive in console, and just update the values.
+                f"[alive_id={robot_id}_motor"
+                + f"<b>Motor speeds</b>: {m1Speed:.2f} and {m2Speed:.2f}\n"
+                + f"<i>will run for {current_step_wait:.2f}s.</i>"
+            )
+        )
         lm1.on_for_seconds(m1Speed, current_step_wait, block=False)
         lm2.on_for_seconds(m2Speed, current_step_wait, block=False)
         movement_queue.append(
