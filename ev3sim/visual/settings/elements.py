@@ -36,10 +36,7 @@ class SettingsVisualElement:
             cur = cur[key]
         cur[self.json_keys[-1]] = self.current
 
-    def resize(self, objects, index):
-        raise NotImplementedError()
-
-    def generateVisual(self, relative_rect, container, manager, idx):
+    def generateVisual(self, size, container, manager, idx):
         raise NotImplementedError()
 
 
@@ -61,31 +58,23 @@ class Button(SettingsVisualElement):
     def setToJson(self, json_obj):
         pass
 
-    def generateVisual(self, relative_rect, container, manager, idx):
+    def generateVisual(self, size, container, manager, idx):
         self.container = container
+        off = self.offset(size)
+        if size[0] < 540:
+            button_size = (size[0] - 40, 40)
+            button_pos = (off[0] + 20, off[1])
+        else:
+            button_size = ((size[0] - 40) * 0.5 - 20, 40)
+            button_pos = (off[0] + 30, off[1])
         self.button = pygame_gui.elements.UIButton(
-            relative_rect=relative_rect,
+            relative_rect=pygame.Rect(*button_pos, *button_size),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx}-button", "option-button"),
             container=container,
             text=self.title,
         )
         return [self.button]
-
-    def resize(self, objects, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        if self.container.relative_rect.width < 540:
-            button_size = (self.container.relative_rect.width - 40, 40)
-            objects[index].set_dimensions(button_size)
-            objects[index].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-            )
-        else:
-            button_size = ((self.container.relative_rect.width - 40) * 0.5 - 20, 40)
-            objects[index].set_dimensions(button_size)
-            objects[index].set_position(
-                (off[0] + self.container.relative_rect.left + 30, off[1] + self.container.relative_rect.top)
-            )
 
     def handlePressed(self, idx):
         assert idx == 0, f"{idx} expected to be 0."
@@ -102,71 +91,55 @@ class FileEntry(SettingsVisualElement):
         self.is_directory = is_directory
         self.relative_paths = relative_paths
 
-    def generateVisual(self, relative_rect, container, manager, idx):
+    def generateVisual(self, size, container, manager, idx):
         self.container = container
+        off = self.offset(size)
+
+        label_size = ((size[0] - 40) / 2 - 10, 40)
+        label_pos = (off[0] + 20, off[1])
         label = pygame_gui.elements.UILabel(
-            relative_rect=relative_rect,
+            relative_rect=pygame.Rect(*label_pos, *label_size),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx}-file-label", "entry-label"),
             container=container,
             text=self.title,
         )
-        self.filename = pygame_gui.elements.UILabel(
-            relative_rect=relative_rect,
-            manager=manager,
-            object_id=pygame_gui.core.ObjectID(f"{idx+1}-file-name", "entry-label"),
-            container=container,
-            text=self.current if self.current else "",
+
+        button_size = ((size[0] - 40) * 0.25 - 20, 44)
+        button_size = [min(button_size[0], button_size[1])] * 2
+        file_size = ((size[0] - 40) / 2 - button_size[0] - 30, 40)
+        button_pos = (
+            off[0] + 50 + label_size[0] + file_size[0],
+            off[1] - 2,
         )
+        file_pos = (off[0] + 40 + label_size[0], off[1])
         click = pygame_gui.elements.UIButton(
-            relative_rect=relative_rect,
+            relative_rect=pygame.Rect(*button_pos, *button_size),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx+2}-button", "file-button"),
             container=container,
             text="",
         )
+        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=asset_locations()))
+        if img.get_size() != button_size:
+            img = pygame.transform.smoothscale(img, button_size)
         click_icon = pygame_gui.elements.UIImage(
-            relative_rect=relative_rect,
+            relative_rect=pygame.Rect(*button_pos, *button_size),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx+3}-image", "file-image"),
             container=container,
-            image_surface=pygame.Surface((relative_rect.width, relative_rect.height)),
+            image_surface=img,
         )
+
+        self.filename = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(*file_pos, *file_size),
+            manager=manager,
+            object_id=pygame_gui.core.ObjectID(f"{idx+1}-file-name", "entry-label"),
+            container=container,
+            text=self.current if self.current else "",
+        )
+
         return [label, self.filename, click, click_icon]
-
-    def resize(self, objs, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        button_size = ((self.container.relative_rect.width - 40) * 0.25 - 20, 44)
-        button_size = [min(button_size[0], button_size[1])] * 2
-        label_size = ((self.container.relative_rect.width - 40) / 2 - 10, 40)
-        file_size = ((self.container.relative_rect.width - 40) / 2 - button_size[0] - 30, 40)
-        objs[index].set_dimensions(label_size)
-        objs[index + 1].set_dimensions(file_size)
-        objs[index + 2].set_dimensions(button_size)
-        objs[index + 3].set_dimensions(button_size)
-
-        objs[index].set_position(
-            (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-        )
-        objs[index + 1].set_position(
-            (off[0] + self.container.relative_rect.left + 40 + label_size[0], off[1] + self.container.relative_rect.top)
-        )
-        objs[index + 2].set_position(
-            (
-                off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0],
-                off[1] + self.container.relative_rect.top - 2,
-            )
-        )
-        objs[index + 3].set_position(
-            (
-                off[0] + self.container.relative_rect.left + 50 + label_size[0] + file_size[0],
-                off[1] + self.container.relative_rect.top - 2,
-            )
-        )
-        img = pygame.image.load(find_abs("ui/folder.png", allowed_areas=asset_locations()))
-        if img.get_size() != objs[index + 3].rect.size:
-            img = pygame.transform.smoothscale(img, (objs[index + 3].rect.width, objs[index + 3].rect.height))
-        objs[index + 3].set_image(img)
 
     def handlePressed(self, idx):
         assert idx == 2, f"{idx} expected to be 2."
@@ -205,21 +178,44 @@ class TextEntry(SettingsVisualElement):
         self.current = self.obj.text
         super().setToJson(json_obj)
 
-    def generateVisual(self, relative_rect, container, manager, idx):
+    def getEntryRect(self, off):
+        if self.title is None:
+            entry_size = ((self.size[0] - 40) - 20, 60)
+            entry_pos = (
+                off[0] + 20,
+                off[1],
+            )
+        else:
+            entry_size = ((self.size[0] - 40) / 2 - 20, 60)
+            entry_pos = (
+                off[0] + 20 + (self.size[0] - 40) / 2 + 10,
+                off[1],
+            )
+        return pygame.Rect(*entry_pos, *entry_size)
+
+    def getLabelRect(self, off):
+        label_size = ((self.size[0] - 40) / 2 - 20, 40)
+        label_pos = off[0] + 20, off[1]
+        return pygame.Rect(*label_pos, *label_size)
+
+    def generateVisual(self, size, container, manager, idx):
+        self.size = size
         self.num_objs = 0
         self.container = container
+        off = self.offset(size)
         self.obj = pygame_gui.elements.UITextEntryLine(
-            relative_rect=relative_rect,
+            relative_rect=self.getEntryRect(off),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx}-text"),
             container=container,
         )
         self.obj.set_text(str(self.current))
         self.num_objs += 1
+
         if self.title is not None:
             self.num_objs += 1
             obj2 = pygame_gui.elements.UILabel(
-                relative_rect=relative_rect,
+                relative_rect=self.getLabelRect(off),
                 manager=manager,
                 object_id=pygame_gui.core.ObjectID(f"{idx+1}-text-label", "entry-label"),
                 container=container,
@@ -228,74 +224,35 @@ class TextEntry(SettingsVisualElement):
             return [self.obj, obj2]
         return [self.obj]
 
-    def resize(self, objs, index):
-        if self.title is None:
-            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-            objs[index].set_dimensions(((self.container.relative_rect.width - 40) - 20, 60))
-            objs[index].set_position(
-                (
-                    off[0] + self.container.relative_rect.left + 20,
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-        else:
-            off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-            objs[index].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 60))
-            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) / 2 - 20, 40))
-            objs[index].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40) / 2
-                    + 10,
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 1].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-            )
-
 
 class NumberEntry(TextEntry):
     def setToJson(self, json_obj):
         self.current = int(self.obj.text)
         SettingsVisualElement.setToJson(self, json_obj)
 
-    def resize(self, objs, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        if self.container.relative_rect.width < 540:
-            objs[index].set_dimensions(((self.container.relative_rect.width - 40) * 0.25 - 20, 60))
-            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) * 0.75 - 20, 40))
-            objs[index].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40) * 0.75
-                    + 10,
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 1].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+    def getEntryRect(self, off):
+        if self.size[0] < 540:
+            entry_size = ((self.size[0] - 40) * 0.25 - 20, 60)
+            entry_pos = (
+                off[0] + self.container.relative_rect.left + 20 + (self.size[0] - 40) * 0.75 + 10,
+                off[1] + self.container.relative_rect.top,
             )
         else:
-            objs[index].set_dimensions(((self.container.relative_rect.width - 40) * 0.125 - 20, 60))
-            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) * 0.375 - 20, 40))
-            objs[index].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40) * 0.375
-                    + 10,
-                    off[1] + self.container.relative_rect.top,
-                )
+            entry_size = ((self.size[0] - 40) * 0.125 - 20, 60)
+            entry_pos = (
+                off[0] + self.container.relative_rect.left + 20 + (self.size[0] - 40) * 0.375 + 10,
+                off[1] + self.container.relative_rect.top,
             )
-            objs[index + 1].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-            )
+        return pygame.Rect(*entry_pos, *entry_size)
+
+    def getLabelRect(self, off):
+        if self.size[0] < 540:
+            label_size = ((self.size[0] - 40) * 0.75 - 20, 40)
+            label_pos = (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+        else:
+            label_size = ((self.size[0] - 40) * 0.375 - 20, 40)
+            label_pos = (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
+        return pygame.Rect(*label_pos, *label_size)
 
 
 class Checkbox(SettingsVisualElement):
@@ -307,30 +264,64 @@ class Checkbox(SettingsVisualElement):
         self.current = not self.current
         self.setCheckboxBg(self.current, self.obj3)
 
-    def generateVisual(self, relative_rect, container, manager, idx):
+    def getLabelRect(self, off):
+        if self.size[0] < 540:
+            button_size = ((self.size[0] - 40) * 0.25 - 20, 45)
+            button_size = [min(button_size[0], button_size[1])] * 2
+            label_size = ((self.size[0] - 40) - 20 - button_size[0], 40)
+            label_pos = (off[0] + 20, off[1])
+        else:
+            button_size = ((self.size[0] - 40) * 0.125 - 20, 45)
+            button_size = [min(button_size[0], button_size[1])] * 2
+            label_size = ((self.size[0] - 40) * 0.5 - 20 - button_size[0], 40)
+            label_pos = (off[0] + 20, off[1])
+        return pygame.Rect(*label_pos, *label_size)
+
+    def getCheckRect(self, off):
+        if self.size[0] < 540:
+            button_size = ((self.size[0] - 40) * 0.25 - 20, 45)
+            button_size = [min(button_size[0], button_size[1])] * 2
+            btn_pos = (
+                off[0] + 20 + (self.size[0] - 40) + 10 - button_size[0],
+                off[1],
+            )
+        else:
+            button_size = ((self.size[0] - 40) * 0.125 - 20, 45)
+            button_size = [min(button_size[0], button_size[1])] * 2
+            btn_pos = (
+                off[0] + 20 + (self.size[0] - 40) * 0.5 - button_size[0] - 10,
+                off[1],
+            )
+        return pygame.Rect(*btn_pos, *button_size)
+
+    def generateVisual(self, size, container, manager, idx):
+        self.size = size
         self.container = container
+        off = self.offset(size)
         obj2 = pygame_gui.elements.UILabel(
-            relative_rect=relative_rect,
+            relative_rect=self.getLabelRect(off),
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx+1}-button-label", "entry-label"),
             container=container,
             text=self.title,
         )
+        check_rect = self.getCheckRect(off)
         self.obj3 = pygame_gui.elements.UIImage(
-            relative_rect=relative_rect,
+            relative_rect=check_rect,
             manager=manager,
             object_id=pygame_gui.core.ObjectID("check-image"),
             container=container,
-            image_surface=pygame.Surface((relative_rect.width, relative_rect.height)),
+            image_surface=pygame.Surface((check_rect.width, check_rect.height)),
         )
         self.setCheckboxBg(self.current, self.obj3)
         obj = pygame_gui.elements.UIButton(
-            relative_rect=relative_rect,
+            relative_rect=check_rect,
             manager=manager,
             object_id=pygame_gui.core.ObjectID(f"{idx}-button", "checkbox-button"),
             container=container,
             text="",
         )
+        self.setCheckboxBg(self.current, self.obj3)
         return [obj, obj2, self.obj3]
 
     def setCheckboxBg(self, value, obj):
@@ -340,69 +331,3 @@ class Checkbox(SettingsVisualElement):
         if img.get_size() != obj.rect.size:
             img = pygame.transform.smoothscale(img, (obj.rect.width, obj.rect.height))
         obj.set_image(img)
-
-    def resize(self, objs, index):
-        off = self.offset((self.container.relative_rect.width, self.container.relative_rect.height))
-        if self.container.relative_rect.width < 540:
-            button_size = ((self.container.relative_rect.width - 40) * 0.25 - 20, 45)
-            button_size = [min(button_size[0], button_size[1])] * 2
-            objs[index].set_dimensions(button_size)
-            objs[index + 2].set_dimensions(button_size)
-            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) - 20 - button_size[0], 40))
-            objs[index].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40)
-                    + 10
-                    - button_size[0],
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 2].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40)
-                    + 10
-                    - button_size[0],
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 1].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-            )
-        else:
-            button_size = ((self.container.relative_rect.width - 40) * 0.125 - 20, 45)
-            button_size = [min(button_size[0], button_size[1])] * 2
-            objs[index].set_dimensions(button_size)
-            objs[index + 2].set_dimensions(button_size)
-            objs[index + 1].set_dimensions(((self.container.relative_rect.width - 40) * 0.5 - 20 - button_size[0], 40))
-            objs[index].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40) * 0.5
-                    - button_size[0]
-                    - 10,
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 2].set_position(
-                (
-                    off[0]
-                    + self.container.relative_rect.left
-                    + 20
-                    + (self.container.relative_rect.width - 40) * 0.5
-                    - button_size[0]
-                    - 10,
-                    off[1] + self.container.relative_rect.top,
-                )
-            )
-            objs[index + 1].set_position(
-                (off[0] + self.container.relative_rect.left + 20, off[1] + self.container.relative_rect.top)
-            )
-        self.setCheckboxBg(self.current, objs[index + 2])

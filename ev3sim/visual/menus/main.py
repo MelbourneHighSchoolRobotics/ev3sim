@@ -11,45 +11,36 @@ class MainMenu(BaseMenu):
     SLIDE_NUMS = 4
     SLIDE_TIME = 5
 
-    def sizeObjects(self):
-        self.bg.set_dimensions(self._size)
-        self.bg.set_position((0, 0))
-        self.title.set_position(((self._size[0] - self.title.rect.width) / 2, 50))
-        button_size = self._size[0] / 4, self._size[1] / 8
-        self.simulate_button.set_dimensions(button_size)
-        self.simulate_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 - button_size[1] * 1.5 + 50)
-        )
-        self.bot_button.set_dimensions(button_size)
-        self.bot_button.set_position(((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + 50))
-        self.settings_button.set_dimensions(button_size)
-        self.settings_button.set_position(
-            ((self._size[0] - button_size[0]) / 2, (self._size[1] - button_size[1]) / 2 + button_size[1] * 1.5 + 50)
+    def buttonPos(self, i):
+        return (
+            (self._size[0] - self.button_size[0]) / 2,
+            (self._size[1] - self.button_size[1]) / 2 + self.button_size[1] * (1.5 * i - 1.5) + 50,
         )
 
     def generateObjects(self):
         from ev3sim.visual.manager import ScreenObjectManager
 
-        self.slide_index = 0
-        self.swapSlides()
-        dummy_rect = pygame.Rect(0, 0, *self._size)
         # In order to respect theme changes, objects must be built in initWithKwargs
         self.bg = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(0, 0, *self._size),
             starting_layer_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )
         self._all_objs.append(self.bg)
+
         self.title = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect(0, 0, -1, -1),
             html_text="EV3<i>Sim</i>",
             manager=self,
             object_id=pygame_gui.core.ObjectID("title"),
         )
+        self.title.set_position(((self._size[0] - self.title.rect.width) / 2, 50))
         self._all_objs.append(self.title)
+
+        self.button_size = self._size[0] / 4, self._size[1] / 8
         self.simulate_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*self.buttonPos(0), *self.button_size),
             text="Simulate",
             manager=self,
             object_id=pygame_gui.core.ObjectID("simulate_button", "menu_button"),
@@ -58,8 +49,9 @@ class MainMenu(BaseMenu):
             "simulate_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
         )
         self._all_objs.append(self.simulate_button)
+
         self.bot_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*self.buttonPos(1), *self.button_size),
             text="Bots",
             manager=self,
             object_id=pygame_gui.core.ObjectID("bots_button", "menu_button"),
@@ -68,8 +60,9 @@ class MainMenu(BaseMenu):
             "bots_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
         )
         self._all_objs.append(self.bot_button)
+
         self.settings_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
             text="Settings",
             manager=self,
             object_id=pygame_gui.core.ObjectID("main_settings_button", "menu_button"),
@@ -112,12 +105,12 @@ class MainMenu(BaseMenu):
         alpha_next = int(
             (prop_time - (1 - self.FADE_PCT)) / self.FADE_PCT * 255 * self.MAX_ALPHA if prop_time > 0.25 else 0
         )
-        img_prev = self.slide_surface_prev
-        img_next = self.slide_surface_next
-        img_prev.set_alpha(alpha_prev)
-        img_next.set_alpha(alpha_next)
-        bg_image.blit(img_prev, pygame.Rect(0, 0, *self._size))
-        bg_image.blit(img_next, pygame.Rect(0, 0, *self._size))
+        self.slide_surface_prev = pygame.transform.smoothscale(self.slide_surface_prev, self._size)
+        self.slide_surface_next = pygame.transform.smoothscale(self.slide_surface_next, self._size)
+        self.slide_surface_prev.set_alpha(alpha_prev)
+        self.slide_surface_next.set_alpha(alpha_next)
+        bg_image.blit(self.slide_surface_prev, pygame.Rect(0, 0, *self._size))
+        bg_image.blit(self.slide_surface_next, pygame.Rect(0, 0, *self._size))
         self.bg.set_image(bg_image)
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
@@ -125,3 +118,8 @@ class MainMenu(BaseMenu):
 
     def onPop(self):
         pass
+
+    def initWithKwargs(self, **kwargs):
+        super().initWithKwargs(**kwargs)
+        self.slide_index = 0
+        self.swapSlides()

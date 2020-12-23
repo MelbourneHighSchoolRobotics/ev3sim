@@ -23,6 +23,28 @@ class RescueMapEditMenu(BaseMenu):
     SELECTED_EMPTY = "Empty"
     SELECTED_GENERIC_TILE = "Tile"
 
+    tile_locations = [
+        "city_limits.yaml",
+        "straight.yaml",
+        "zig_zag.yaml",
+        "right_angle.yaml",
+        "double_curve.yaml",
+        "strict_turns1.yaml",
+        "curved_straight.yaml",
+        "strict_turns2.yaml",
+        "sharp_straight.yaml",
+        "dotted.yaml",
+        "rough.yaml",
+        "ramp.yaml",
+        "color_right.yaml",
+        "left_circle_green.yaml",
+        "square_green.yaml",
+        "tunnel.yaml",
+        "water_tower.yaml",
+        "oil_spill_entry.yaml",
+        "oil_spill.yaml",
+    ]
+
     def initWithKwargs(self, **kwargs):
         self.current_mpos = (0, 0)
         self.selected_index = None
@@ -38,8 +60,6 @@ class RescueMapEditMenu(BaseMenu):
             self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"] = [[[0, 0], 0]]
         self.current_tiles = batch.get("settings", {}).get("rescue", {}).get("TILE_DEFINITIONS", [])
         super().initWithKwargs(**kwargs)
-        self.resetRescueVisual()
-        self.drawOptions()
 
     def getSelectedAttribute(self, attr, fallback=None, index=None):
         if index is None:
@@ -195,33 +215,13 @@ class RescueMapEditMenu(BaseMenu):
         r.can_obj.visual.calculatePoints()
         self.can_obj = r.can_obj
         self.current_tile_objects = r.tiles
-
-    def sizeObjects(self):
-        # Bg
-        self.side_width = self._size[0] / 6
-        self.sidebar.set_dimensions((self.side_width, self._size[1] + 10))
-        self.sidebar.set_position((-5, -5))
-
-        # Clickies
-
-        # Save/Cancel
-        self.action_size = (self.side_width * 0.8, self._size[1] * 0.1)
-        self.save_button.set_dimensions(self.action_size)
-        self.save_button.set_position(
-            (self.side_width / 2 - self.action_size[0] / 2 - 2.5, self._size[1] - self.action_size[1] * 2 - 40)
-        )
-        self.cancel_button.set_dimensions(self.action_size)
-        self.cancel_button.set_position(
-            (self.side_width / 2 - self.action_size[0] / 2 - 2.5, self._size[1] - self.action_size[1] - 20)
-        )
-        self.resetRescueVisual()
+        self.updateSelectPlacement()
 
     def generateObjects(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-
         # Bg
+        self.side_width = self._size[0] / 6
         self.sidebar = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(-5, -5, self.side_width, self._size[1] + 10),
             starting_layer_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("sidebar-bot-edit", "bot_edit_bar"),
@@ -229,15 +229,24 @@ class RescueMapEditMenu(BaseMenu):
         self._all_objs.append(self.sidebar)
 
         # Save/Cancel
+        self.action_size = (self.side_width * 0.8, self._size[1] * 0.1)
         self.save_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                self._size[1] - self.action_size[1] * 2 - 40,
+                *self.action_size,
+            ),
             text="Save",
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
         )
         self.addButtonEvent("save-changes", self.saveBatch)
         self.cancel_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                self._size[1] - self.action_size[1] - 20,
+                *self.action_size,
+            ),
             text="Cancel",
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
@@ -245,6 +254,293 @@ class RescueMapEditMenu(BaseMenu):
         self.addButtonEvent("cancel-changes", lambda: ScreenObjectManager.instance.popScreen())
         self._all_objs.append(self.save_button)
         self._all_objs.append(self.cancel_button)
+
+        self.drawOptions()
+        if self.mode == self.MODE_TILE_DIALOG:
+            self.drawTileDialog()
+        self.resetRescueVisual()
+
+    def drawOptions(self):
+        # We have to remove the previous entries
+        for attr in (
+            "tile_button",
+            "spawn_label",
+            "spawn_image",
+            "spawn_button",
+            "rotation_label",
+            "rotation_entry",
+            "flip_label",
+            "flip_image",
+            "flip_button",
+            "remove_button",
+        ):
+            if hasattr(self, attr) and getattr(self, attr) in self._all_objs:
+                getattr(self, attr).kill()
+                self._all_objs.remove(getattr(self, attr))
+        if self.selected_type != self.SELECTED_NOTHING:
+            self.drawTileTypeOptions()
+        if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
+            self.drawRotationFlip()
+            self.drawRemove()
+            if "city_limits" in self.getSelectedAttribute("path"):
+                self.drawSpawnOptions()
+
+    def drawTileTypeOptions(self):
+        self.tile_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30,
+                *self.action_size,
+            ),
+            text="Tile Type",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
+        )
+
+        def openDialog():
+            self.mode = self.MODE_TILE_DIALOG
+            self.regenerateObjects()
+
+        self.addButtonEvent("tile_type", openDialog)
+        self._all_objs.append(self.tile_button)
+
+    def drawSpawnOptions(self):
+        total_width = self.action_size[0]
+        label_width = total_width * 0.7 - 10
+        button_size = total_width - label_width - 10
+        self.spawn_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - total_width / 2 - 2.5,
+                30 + (self.action_size[1] + 20),
+                label_width,
+                button_size,
+            ),
+            text="Spawn",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("is_spawn", "entry-label"),
+        )
+        self._all_objs.append(self.spawn_label)
+        but_rect = pygame.Rect(
+            self.side_width / 2 - total_width / 2 - 2.5 + label_width + 10,
+            30 + (self.action_size[1] + 20),
+            button_size,
+            button_size,
+        )
+        self.spawn_image = pygame_gui.elements.UIImage(
+            relative_rect=but_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("spawn_image"),
+            image_surface=pygame.Surface((button_size, button_size)),
+        )
+        self._all_objs.append(self.spawn_image)
+        self.spawn_button = pygame_gui.elements.UIButton(
+            relative_rect=but_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("spawn_button", "invis_button"),
+        )
+
+        def clickSpawn():
+            self.setSpawnAtSelected()
+            self.updateSpawnCheckbox()
+
+        self.addButtonEvent("spawn_button", clickSpawn)
+        self._all_objs.append(self.spawn_button)
+        self.updateSpawnCheckbox()
+
+    def updateSpawnCheckbox(self):
+        tile_pos = self.getSelectedAttribute("position")
+        spawn = self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0]
+        img = pygame.image.load(
+            find_abs(
+                "ui/box_check.png" if tile_pos[0] == spawn[0] and tile_pos[1] == spawn[1] else "ui/box_clear.png",
+                allowed_areas=asset_locations(),
+            )
+        )
+        if img.get_size() != self.spawn_image.rect.size:
+            img = pygame.transform.smoothscale(img, (self.spawn_image.rect.width, self.spawn_image.rect.height))
+        self.spawn_image.set_image(img)
+
+    def drawRotationFlip(self):
+        total_height = self.action_size[1]
+        label_height = total_height / 2 - 5
+        entry_height = total_height / 2 - 5
+        entry_width = self.action_size[0] / 2
+        self.rotation_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30 + 2 * (self.action_size[1] + 20),
+                self.action_size[0],
+                label_height,
+            ),
+            text="Rotation",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation_label", "entry-label"),
+        )
+        self._all_objs.append(self.rotation_label)
+        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 + self.action_size[0] / 2 - entry_width - 2.5,
+                30 + 2 * (self.action_size[1] + 20) + label_height + 10,
+                entry_width,
+                entry_height,
+            ),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rotation_entry", "text_entry_line"),
+        )
+        self.rotation_entry.set_text(str(self.getSelectedAttribute("rotation", 0)))
+        self._all_objs.append(self.rotation_entry)
+        self.flip_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                30 + 3 * (self.action_size[1] + 20),
+                self.action_size[0],
+                label_height,
+            ),
+            text="Flipped",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("is_flip", "entry-label"),
+        )
+        self._all_objs.append(self.flip_label)
+        but_rect = pygame.Rect(
+            self.side_width / 2 + self.action_size[0] / 2 - 2.5 - entry_height,
+            30 + 3 * (self.action_size[1] + 20) + entry_height + 10,
+            entry_height,
+            entry_height,
+        )
+        self.flip_image = pygame_gui.elements.UIImage(
+            relative_rect=but_rect,
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("flip_image"),
+            image_surface=pygame.Surface((entry_height, entry_height)),
+        )
+        self._all_objs.append(self.flip_image)
+        self.flip_button = pygame_gui.elements.UIButton(
+            relative_rect=but_rect,
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("flip_button", "invis_button"),
+        )
+        self._all_objs.append(self.flip_button)
+
+        def clickFlip():
+            self.setSelectedAttribute("flip", not self.getSelectedAttribute("flip", False))
+            self.updateFlipCheckbox()
+            self.resetRescueVisual()
+
+        self.addButtonEvent("flip_button", clickFlip)
+        self.updateFlipCheckbox()
+
+    def updateFlipCheckbox(self):
+        img = pygame.image.load(
+            find_abs(
+                "ui/box_check.png" if self.getSelectedAttribute("flip", False) else "ui/box_clear.png",
+                allowed_areas=asset_locations(),
+            )
+        )
+        if img.get_size() != self.flip_image.rect.size:
+            img = pygame.transform.smoothscale(img, (self.flip_image.rect.width, self.flip_image.rect.height))
+        self.flip_image.set_image(img)
+
+    def drawRemove(self):
+        self.remove_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
+                self._size[1] - self.action_size[1] * 3 - 60,
+                *self.action_size,
+            ),
+            text="Remove",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
+        )
+        self.addButtonEvent("remove_button", self.removeSelected)
+        self._all_objs.append(self.remove_button)
+
+    def drawTileDialog(self):
+        class TilePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                self.mode = self.MODE_NORMAL
+                self._all_objs.remove(self2)
+                super().kill()
+
+            def process_event(self2, event: pygame.event.Event) -> bool:
+                if event.type == pygame.MOUSEWHEEL:
+                    self.scroll_container.vert_scroll_bar.scroll_position -= event.y * 10
+                    self.scroll_container.vert_scroll_bar.scroll_position = min(
+                        max(
+                            self.scroll_container.vert_scroll_bar.scroll_position,
+                            self.scroll_container.vert_scroll_bar.top_limit,
+                        ),
+                        self.scroll_container.vert_scroll_bar.bottom_limit
+                        - self.scroll_container.vert_scroll_bar.sliding_button.relative_rect.height,
+                    )
+                    x_pos = 0
+                    y_pos = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        + self.scroll_container.vert_scroll_bar.arrow_button_height
+                    )
+                    self.scroll_container.vert_scroll_bar.sliding_button.set_relative_position((x_pos, y_pos))
+                    self.scroll_container.vert_scroll_bar.start_percentage = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        / self.scroll_container.vert_scroll_bar.scrollable_height
+                    )
+                    self.scroll_container.vert_scroll_bar.has_moved_recently = True
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_object_id.split(".")[-1].startswith("tile-"):
+                        index = int(event.ui_object_id.split(".")[-1].split("-")[1])
+                        self.placeTile(index)
+                        self2.kill()
+                        self.regenerateObjects()
+                        return True
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+        self.picker = TilePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Pick Tile Type",
+            object_id=pygame_gui.core.ObjectID("tile_dialog"),
+        )
+        self._all_objs.append(self.picker)
+
+        button_size = (picker_size[0] - 120) / 3
+        button_pos = lambda i: ((button_size + 15) * (i % 3), 10 + (button_size + 15) * (i // 3))
+
+        self.tile_buttons = []
+        self.tile_images = []
+        self.scroll_container = pygame_gui.elements.UIScrollingContainer(
+            relative_rect=pygame.Rect(20, 10, picker_size[0] - 60, picker_size[1] - 80),
+            container=self.picker,
+            manager=self,
+        )
+        self._all_objs.append(self.scroll_container)
+        for i in range(len(self.tile_locations)):
+            rect = pygame.Rect(*button_pos(i), button_size, button_size)
+            self.tile_buttons.append(
+                pygame_gui.elements.UIButton(
+                    relative_rect=rect,
+                    text=f"{i}",
+                    manager=self,
+                    container=self.scroll_container,
+                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-button", "invis_button"),
+                )
+            )
+            with open(find_abs(f"tiles/definitions/{self.tile_locations[i]}", preset_locations()), "r") as f:
+                conf = yaml.safe_load(f)
+            self.tile_images.append(
+                pygame_gui.elements.UIImage(
+                    relative_rect=rect,
+                    image_surface=pygame.image.load(find_abs(conf["preview"], preset_locations())),
+                    manager=self,
+                    container=self.scroll_container,
+                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-image"),
+                )
+            )
+        self._all_objs.extend(self.tile_buttons)
+        self._all_objs.extend(self.tile_images)
+        self.scroll_container.set_scrollable_area_dimensions(
+            (picker_size[0] - 80, (button_size + 15) * ((len(self.tile_locations) + 2) // 3))
+        )
 
     def saveBatch(self):
         # Reorder the tiles so it follows a path.
@@ -339,24 +635,28 @@ class RescueMapEditMenu(BaseMenu):
         else:
             self.selected_type = self.SELECTED_EMPTY
         self.drawOptions()
-        hoverRect = visualFactory(
-            name="Rectangle",
-            width=30,
-            height=30,
-            position=(
-                self.tile_offset[0] + 30 * self.selected_index[0],
-                self.tile_offset[1] + 30 * self.selected_index[1],
-            ),
-            fill=None,
-            stroke="#ff0000",
-            stroke_width=1,
-            zPos=20,
-        )
-        hoverRect.customMap = self.customMap
-        hoverRect.calculatePoints()
-        if "hoverRect" in ScreenObjectManager.instance.objects:
-            ScreenObjectManager.instance.unregisterVisual("hoverRect")
-        ScreenObjectManager.instance.registerVisual(hoverRect, "hoverRect")
+        self.updateSelectPlacement()
+
+    def updateSelectPlacement(self):
+        if self.selected_index is not None:
+            hoverRect = visualFactory(
+                name="Rectangle",
+                width=30,
+                height=30,
+                position=(
+                    self.tile_offset[0] + 30 * self.selected_index[0],
+                    self.tile_offset[1] + 30 * self.selected_index[1],
+                ),
+                fill=None,
+                stroke="#ff0000",
+                stroke_width=1,
+                zPos=20,
+            )
+            hoverRect.customMap = self.customMap
+            hoverRect.calculatePoints()
+            if "hoverRect" in ScreenObjectManager.instance.objects:
+                ScreenObjectManager.instance.unregisterVisual("hoverRect")
+            ScreenObjectManager.instance.registerVisual(hoverRect, "hoverRect")
 
     def placeTile(self, tile_index):
         assert self.selected_index is not None
@@ -446,330 +746,6 @@ class RescueMapEditMenu(BaseMenu):
                     float(self.can_obj.position[0] - self.tile_offset[0]),
                     float(self.can_obj.position[1] - self.tile_offset[1]),
                 ]
-
-    def drawOptions(self):
-        self.clearOptions()
-        if self.selected_type != self.SELECTED_NOTHING:
-            self.drawTileTypeOptions()
-        if self.selected_type not in [self.SELECTED_NOTHING, self.SELECTED_EMPTY]:
-            self.drawRotationFlip()
-            self.drawRemove()
-            if "city_limits" in self.getSelectedAttribute("path"):
-                self.drawSpawnOptions()
-
-    def drawTileTypeOptions(self):
-        self.tile_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
-                30,
-                *self.action_size,
-            ),
-            text="Tile Type",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("tile_type", "any_button"),
-        )
-        self.addButtonEvent("tile_type", self.drawTileDialog)
-
-    def drawSpawnOptions(self):
-        total_width = self.action_size[0]
-        label_width = total_width * 0.7 - 10
-        button_size = total_width - label_width - 10
-        self.spawn_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 - total_width / 2 - 2.5,
-                30 + (self.action_size[1] + 20),
-                label_width,
-                button_size,
-            ),
-            text="Spawn",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("is_spawn", "entry-label"),
-        )
-        but_rect = pygame.Rect(
-            self.side_width / 2 - total_width / 2 - 2.5 + label_width + 10,
-            30 + (self.action_size[1] + 20),
-            button_size,
-            button_size,
-        )
-        self.spawn_image = pygame_gui.elements.UIImage(
-            relative_rect=but_rect,
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("spawn_image"),
-            image_surface=pygame.Surface((button_size, button_size)),
-        )
-        self.spawn_button = pygame_gui.elements.UIButton(
-            relative_rect=but_rect,
-            text="",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("spawn_button", "invis_button"),
-        )
-
-        def clickSpawn():
-            self.setSpawnAtSelected()
-            self.updateSpawnCheckbox()
-
-        self.addButtonEvent("spawn_button", clickSpawn)
-        self.updateSpawnCheckbox()
-
-    def updateSpawnCheckbox(self):
-        tile_pos = self.getSelectedAttribute("position")
-        spawn = self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0]
-        img = pygame.image.load(
-            find_abs(
-                "ui/box_check.png" if tile_pos[0] == spawn[0] and tile_pos[1] == spawn[1] else "ui/box_clear.png",
-                allowed_areas=asset_locations(),
-            )
-        )
-        if img.get_size() != self.spawn_image.rect.size:
-            img = pygame.transform.smoothscale(img, (self.spawn_image.rect.width, self.spawn_image.rect.height))
-        self.spawn_image.set_image(img)
-
-    def drawRotationFlip(self):
-        total_height = self.action_size[1]
-        label_height = total_height / 2 - 5
-        entry_height = total_height / 2 - 5
-        entry_width = self.action_size[0] / 2
-        self.rotation_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
-                30 + 2 * (self.action_size[1] + 20),
-                self.action_size[0],
-                label_height,
-            ),
-            text="Rotation",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("rotation_label", "entry-label"),
-        )
-        self.rotation_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 + self.action_size[0] / 2 - entry_width - 2.5,
-                30 + 2 * (self.action_size[1] + 20) + label_height + 10,
-                entry_width,
-                entry_height,
-            ),
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("rotation_entry", "text_entry_line"),
-        )
-        self.rotation_entry.set_text(str(self.getSelectedAttribute("rotation", 0)))
-        self.flip_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
-                30 + 3 * (self.action_size[1] + 20),
-                self.action_size[0],
-                label_height,
-            ),
-            text="Flipped",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("is_flip", "entry-label"),
-        )
-        but_rect = pygame.Rect(
-            self.side_width / 2 + self.action_size[0] / 2 - 2.5 - entry_height,
-            30 + 3 * (self.action_size[1] + 20) + entry_height + 10,
-            entry_height,
-            entry_height,
-        )
-        self.flip_image = pygame_gui.elements.UIImage(
-            relative_rect=but_rect,
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("flip_image"),
-            image_surface=pygame.Surface((entry_height, entry_height)),
-        )
-        self.flip_button = pygame_gui.elements.UIButton(
-            relative_rect=but_rect,
-            text="",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("flip_button", "invis_button"),
-        )
-
-        def clickFlip():
-            self.setSelectedAttribute("flip", not self.getSelectedAttribute("flip", False))
-            self.updateFlipCheckbox()
-            self.resetRescueVisual()
-
-        self.addButtonEvent("flip_button", clickFlip)
-        self.updateFlipCheckbox()
-
-    def updateFlipCheckbox(self):
-        img = pygame.image.load(
-            find_abs(
-                "ui/box_check.png" if self.getSelectedAttribute("flip", False) else "ui/box_clear.png",
-                allowed_areas=asset_locations(),
-            )
-        )
-        if img.get_size() != self.flip_image.rect.size:
-            img = pygame.transform.smoothscale(img, (self.flip_image.rect.width, self.flip_image.rect.height))
-        self.flip_image.set_image(img)
-
-    def drawRemove(self):
-        self.remove_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                self.side_width / 2 - self.action_size[0] / 2 - 2.5,
-                self._size[1] - self.action_size[1] * 3 - 60,
-                *self.action_size,
-            ),
-            text="Remove",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
-        )
-        self.addButtonEvent("remove_button", self.removeSelected)
-
-    def clearTileTypeOptions(self):
-        try:
-            self.tile_button.kill()
-            self.removeButtonEvent("tile_type")
-        except:
-            pass
-
-    def clearSpawnOptions(self):
-        try:
-            self.spawn_label.kill()
-            self.spawn_button.kill()
-            self.spawn_image.kill()
-            self.removeButtonEvent("spawn_button")
-        except:
-            pass
-
-    def clearRotationFlip(self):
-        try:
-            self.rotation_label.kill()
-            self.rotation_entry.kill()
-            self.flip_label.kill()
-            self.flip_button.kill()
-            self.flip_image.kill()
-            self.removeButtonEvent("flip_button")
-        except:
-            pass
-
-    def clearRemove(self):
-        try:
-            self.remove_button.kill()
-            self.removeButtonEvent("remove_button")
-        except:
-            pass
-
-    def clearOptions(self):
-        self.clearTileTypeOptions()
-        self.clearSpawnOptions()
-        self.clearRotationFlip()
-        self.clearRemove()
-
-    def clearObjects(self):
-        super().clearObjects()
-        self.clearOptions()
-
-    tile_locations = [
-        "city_limits.yaml",
-        "straight.yaml",
-        "zig_zag.yaml",
-        "right_angle.yaml",
-        "double_curve.yaml",
-        "strict_turns1.yaml",
-        "curved_straight.yaml",
-        "strict_turns2.yaml",
-        "sharp_straight.yaml",
-        "dotted.yaml",
-        "rough.yaml",
-        "ramp.yaml",
-        "color_right.yaml",
-        "left_circle_green.yaml",
-        "square_green.yaml",
-        "tunnel.yaml",
-        "water_tower.yaml",
-        "oil_spill_entry.yaml",
-        "oil_spill.yaml",
-    ]
-
-    def drawTileDialog(self):
-        self.mode = self.MODE_TILE_DIALOG
-
-        class TilePicker(pygame_gui.elements.UIWindow):
-            def kill(self2):
-                super().kill()
-                self.removeTileDialog()
-
-            def process_event(self2, event: pygame.event.Event) -> bool:
-                if event.type == pygame.MOUSEWHEEL:
-                    self.scroll_container.vert_scroll_bar.scroll_position -= event.y * 10
-                    self.scroll_container.vert_scroll_bar.scroll_position = min(
-                        max(
-                            self.scroll_container.vert_scroll_bar.scroll_position,
-                            self.scroll_container.vert_scroll_bar.top_limit,
-                        ),
-                        self.scroll_container.vert_scroll_bar.bottom_limit
-                        - self.scroll_container.vert_scroll_bar.sliding_button.relative_rect.height,
-                    )
-                    x_pos = 0
-                    y_pos = (
-                        self.scroll_container.vert_scroll_bar.scroll_position
-                        + self.scroll_container.vert_scroll_bar.arrow_button_height
-                    )
-                    self.scroll_container.vert_scroll_bar.sliding_button.set_relative_position((x_pos, y_pos))
-                    self.scroll_container.vert_scroll_bar.start_percentage = (
-                        self.scroll_container.vert_scroll_bar.scroll_position
-                        / self.scroll_container.vert_scroll_bar.scrollable_height
-                    )
-                    self.scroll_container.vert_scroll_bar.has_moved_recently = True
-                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_object_id.split(".")[-1].startswith("tile-"):
-                        index = int(event.ui_object_id.split(".")[-1].split("-")[1])
-                        self.placeTile(index)
-                        self2.kill()
-                        return True
-                return super().process_event(event)
-
-        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
-        self.picker = TilePicker(
-            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
-            manager=self,
-            window_display_title="Pick Tile Type",
-            object_id=pygame_gui.core.ObjectID("tile_dialog"),
-        )
-
-        button_size = (picker_size[0] - 120) / 3
-        button_pos = lambda i: ((button_size + 15) * (i % 3), 10 + (button_size + 15) * (i // 3))
-
-        self.tile_buttons = []
-        self.tile_images = []
-        self.scroll_container = pygame_gui.elements.UIScrollingContainer(
-            relative_rect=pygame.Rect(20, 10, picker_size[0] - 60, picker_size[1] - 80),
-            container=self.picker,
-            manager=self,
-        )
-        for i in range(len(self.tile_locations)):
-            rect = pygame.Rect(*button_pos(i), button_size, button_size)
-            self.tile_buttons.append(
-                pygame_gui.elements.UIButton(
-                    relative_rect=rect,
-                    text=f"{i}",
-                    manager=self,
-                    container=self.scroll_container,
-                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-button", "invis_button"),
-                )
-            )
-            with open(find_abs(f"tiles/definitions/{self.tile_locations[i]}", preset_locations()), "r") as f:
-                conf = yaml.safe_load(f)
-            self.tile_images.append(
-                pygame_gui.elements.UIImage(
-                    relative_rect=rect,
-                    image_surface=pygame.image.load(find_abs(conf["preview"], preset_locations())),
-                    manager=self,
-                    container=self.scroll_container,
-                    object_id=pygame_gui.core.ObjectID(f"tile-{i}-image"),
-                )
-            )
-        self.scroll_container.set_scrollable_area_dimensions(
-            (picker_size[0] - 80, (button_size + 15) * ((len(self.tile_locations) + 2) // 3))
-        )
-
-    def removeTileDialog(self):
-        try:
-            self.mode = self.MODE_NORMAL
-            self.scroll_container.kill()
-            for but, img in zip(self.tile_buttons, self.tile_images):
-                but.kill()
-                img.kill()
-        except:
-            pass
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         if self.selected_index is not None:

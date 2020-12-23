@@ -238,74 +238,27 @@ class BotEditMenu(BaseMenu):
         else:
             self.selected_index = None
 
-    def sizeObjects(self):
-        # Bg
+    def generateObjects(self):
+
         self.side_width = self._size[0] / 6
         self.bot_height = self._size[1] / 6
-        self.sidebar.set_dimensions((self.side_width, self._size[1] + 10))
-        self.sidebar.set_position((-5, -5))
-        self.bot_bar.set_dimensions((self._size[0] - self.side_width + 20, self.bot_height))
-        self.bot_bar.set_position((-10 + self.side_width, self._size[1] - self.bot_height + 5))
-
-        # Clickies
-        icon_size = self.side_width / 2
-        self.select_icon.set_dimensions((icon_size, icon_size))
-        self.select_icon.set_position((self.side_width / 2 - icon_size / 2, 20))
-        self.select_button.set_dimensions((icon_size, icon_size))
-        self.select_button.set_position((self.side_width / 2 - icon_size / 2, 20))
-        self.circle_icon.set_dimensions((icon_size, icon_size))
-        self.circle_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 1.3))
-        self.circle_button.set_dimensions((icon_size, icon_size))
-        self.circle_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 1.3))
-        self.rectangle_icon.set_dimensions((icon_size, icon_size / 2))
-        self.rectangle_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 2.75))
-        self.rectangle_button.set_dimensions((icon_size, icon_size))
-        self.rectangle_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 2.5))
-        self.polygon_icon.set_dimensions((icon_size, icon_size))
-        self.polygon_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 3.7))
-        self.polygon_button.set_dimensions((icon_size, icon_size))
-        self.polygon_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 3.7))
-        self.device_icon.set_dimensions((icon_size, icon_size))
-        self.device_icon.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 5))
-        self.device_button.set_dimensions((icon_size, icon_size))
-        self.device_button.set_position((self.side_width / 2 - icon_size / 2, 20 + icon_size * 5))
-
-        # Other options
-        lock_size = self.side_width / 4
-        self.lock_grid_label.set_dimensions(((self.side_width - 30) - lock_size - 5, lock_size))
-        self.lock_grid_label.set_position((10, self._size[1] - lock_size - 60))
-        self.lock_grid_image.set_dimensions((lock_size, lock_size))
-        self.lock_grid_image.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 60))
-        self.lock_grid_button.set_dimensions((lock_size, lock_size))
-        self.lock_grid_button.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 60))
-        self.updateCheckbox()
-        self.grid_size_label.set_dimensions(((self.side_width - 30) - lock_size - 5, lock_size))
-        self.grid_size_label.set_position((10, self._size[1] - lock_size - 15))
-        self.grid_size_entry.set_dimensions((lock_size, lock_size))
-        self.grid_size_entry.set_position((self.side_width - lock_size - 20, self._size[1] - lock_size - 15))
-
-        self.save_button.set_dimensions((self.side_width * 0.8, self.bot_height * 0.35))
-        self.save_button.set_position((self._size[0] - self.side_width * 0.9, self._size[1] - self.bot_height * 0.9))
-        self.cancel_button.set_dimensions((self.side_width * 0.8, self.bot_height * 0.4))
-        self.cancel_button.set_position((self._size[0] - self.side_width * 0.9, self._size[1] - self.bot_height * 0.45))
-
-        # Simulator objects
-        self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
-        self.bot_screen = pygame.Surface(self.surf_size)
-
-    def generateObjects(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
 
         # Bg
         self.sidebar = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(-5, -5, self.side_width, self._size[1] + 10),
             starting_layer_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("sidebar-bot-edit", "bot_edit_bar"),
         )
         self._all_objs.append(self.sidebar)
+
         self.bot_bar = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                -10 + self.side_width,
+                self._size[1] - self.bot_height + 5,
+                self._size[0] - self.side_width + 20,
+                self.bot_height,
+            ),
             starting_layer_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("botbar-bot-edit", "bot_edit_bar"),
@@ -313,8 +266,19 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.bot_bar)
 
         # Clickies
+        icon_size = self.side_width / 2
+
+        def iconPos(index):
+            # Need to handle the rectangle button a bit different.
+            if index < 2:
+                return self.side_width / 2 - icon_size / 2, 20 + icon_size * 1.3 * index
+            elif index == 2:
+                return self.side_width / 2 - icon_size / 2, 20 + icon_size * 2.5
+            else:
+                return self.side_width / 2 - icon_size / 2, 20 + icon_size * (1.3 * (index - 3) + 3.7)
+
         self.select_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(0), icon_size, icon_size),
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("select-button", "invis_button"),
@@ -322,15 +286,16 @@ class BotEditMenu(BaseMenu):
         self.addButtonEvent("select-button", self.clickSelect)
         select_icon_path = find_abs("ui/icon_select.png", allowed_areas=asset_locations())
         self.select_icon = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(0), icon_size, icon_size),
             image_surface=pygame.image.load(select_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("select-icon"),
         )
         self._all_objs.append(self.select_button)
         self._all_objs.append(self.select_icon)
+
         self.circle_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(1), icon_size, icon_size),
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("circle-button", "invis_button"),
@@ -338,31 +303,36 @@ class BotEditMenu(BaseMenu):
         self.addButtonEvent("circle-button", self.clickCircle)
         circ_icon_path = find_abs("ui/icon_circle.png", allowed_areas=asset_locations())
         self.circle_icon = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(1), icon_size, icon_size),
             image_surface=pygame.image.load(circ_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("circle-icon"),
         )
         self._all_objs.append(self.circle_button)
         self._all_objs.append(self.circle_icon)
+
         self.rectangle_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(2), icon_size, icon_size),
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("rectangle-button", "invis_button"),
         )
         self.addButtonEvent("rectangle-button", self.clickRectangle)
+        rect_loc = pygame.Rect(*iconPos(2), icon_size, icon_size)
+        rect_loc.y += icon_size * 0.25
+        rect_loc.height /= 2
         rect_icon_path = find_abs("ui/icon_rectangle.png", allowed_areas=asset_locations())
         self.rectangle_icon = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=rect_loc,
             image_surface=pygame.image.load(rect_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("rectangle-icon"),
         )
         self._all_objs.append(self.rectangle_button)
         self._all_objs.append(self.rectangle_icon)
+
         self.polygon_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(3), icon_size, icon_size),
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("polygon-button", "invis_button"),
@@ -370,15 +340,16 @@ class BotEditMenu(BaseMenu):
         self.addButtonEvent("polygon-button", self.clickPolygon)
         polygon_icon_path = find_abs("ui/icon_polygon.png", allowed_areas=asset_locations())
         self.polygon_icon = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(3), icon_size, icon_size),
             image_surface=pygame.image.load(polygon_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("polygon-icon"),
         )
         self._all_objs.append(self.polygon_button)
         self._all_objs.append(self.polygon_icon)
+
         self.device_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(4), icon_size, icon_size),
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("device-button", "invis_button"),
@@ -386,7 +357,7 @@ class BotEditMenu(BaseMenu):
         self.addButtonEvent("device-button", self.clickDevice)
         device_icon_path = find_abs("ui/icon_device.png", allowed_areas=asset_locations())
         self.device_icon = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(*iconPos(4), icon_size, icon_size),
             image_surface=pygame.image.load(device_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("device-icon"),
@@ -395,20 +366,25 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.device_icon)
 
         # Other options
+        lock_size = self.side_width / 4
         self.lock_grid_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                10, self._size[1] - lock_size - 60, (self.side_width - 30) - lock_size - 5, lock_size
+            ),
             text="Lock Grid",
             manager=self,
             object_id=pygame_gui.core.ObjectID("lock_grid-label", "bot_edit_label"),
         )
+        but_rect = pygame.Rect(self.side_width - lock_size - 20, self._size[1] - lock_size - 60, lock_size, lock_size)
         self.lock_grid_image = pygame_gui.elements.UIImage(
-            relative_rect=dummy_rect,
+            relative_rect=but_rect,
             manager=self,
-            image_surface=pygame.Surface((dummy_rect.width, dummy_rect.height)),
+            image_surface=pygame.Surface((but_rect.width, but_rect.height)),
             object_id=pygame_gui.core.ObjectID("lock_grid-image"),
         )
+        self.updateCheckbox()
         self.lock_grid_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=but_rect,
             manager=self,
             object_id=pygame_gui.core.ObjectID(f"lock_grid-button", "checkbox-button"),
             text="",
@@ -422,14 +398,19 @@ class BotEditMenu(BaseMenu):
         self._all_objs.append(self.lock_grid_label)
         self._all_objs.append(self.lock_grid_image)
         self._all_objs.append(self.lock_grid_button)
+
         self.grid_size_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                10, self._size[1] - lock_size - 15, (self.side_width - 30) - lock_size - 5, lock_size
+            ),
             text="Grid Size",
             manager=self,
             object_id=pygame_gui.core.ObjectID("grid_size-label", "bot_edit_label"),
         )
         self.grid_size_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                self.side_width - lock_size - 20, self._size[1] - lock_size - 15, lock_size, lock_size
+            ),
             manager=self,
             object_id=pygame_gui.core.ObjectID("grid_size-entry", "num_entry"),
         )
@@ -439,14 +420,24 @@ class BotEditMenu(BaseMenu):
 
         # Save/Cancel
         self.save_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                self._size[0] - self.side_width * 0.9,
+                self._size[1] - self.bot_height * 0.9,
+                self.side_width * 0.8,
+                self.bot_height * 0.35,
+            ),
             text="Create" if self.creating else "Save",
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
         )
         self.addButtonEvent("save-changes", self.clickSave)
         self.cancel_button = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(
+                self._size[0] - self.side_width * 0.9,
+                self._size[1] - self.bot_height * 0.45,
+                self.side_width * 0.8,
+                self.bot_height * 0.4,
+            ),
             text="Cancel",
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
@@ -454,6 +445,12 @@ class BotEditMenu(BaseMenu):
         self.addButtonEvent("cancel-changes", lambda: ScreenObjectManager.instance.popScreen())
         self._all_objs.append(self.save_button)
         self._all_objs.append(self.cancel_button)
+
+        # Bot blitting
+        self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
+        self.bot_screen = pygame.Surface(self.surf_size)
+        self.drawOptions()
+        self.resetBotVisual()
 
     def generateHoldingItem(self):
         from ev3sim.visual.objects import visualFactory
@@ -735,6 +732,8 @@ class BotEditMenu(BaseMenu):
 
     def drawOptions(self):
         self.clearOptions()
+        if self.selected_type == self.SELECTED_NOTHING:
+            return
         name = self.getSelectedAttribute("name", None)
         if name == "Circle":
             self.drawCircleOptions()
@@ -758,220 +757,157 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("remove_button", "cancel-changes"),
         )
         self.addButtonEvent("remove_button", self.removeSelected)
+        self._all_objs.append(self.remove_button)
+
+    def labelRect(self, x, y):
+        entry_size = self.side_width / 3
+        return pygame.Rect(
+            (x + 1) * self.side_width + 20 + x * 40,
+            self._size[1] - ((self.bot_height - 15) if y == 0 else (entry_size)),
+            (self.side_width - 30) - entry_size - 5,
+            entry_size,
+        )
+
+    def entryRect(self, x, y):
+        entry_size = self.side_width / 3
+        return pygame.Rect(
+            (x + 2) * self.side_width - 10 + 40 * x,
+            self._size[1] - ((self.bot_height - 15) if y == 0 else (entry_size)) + 5,
+            entry_size,
+            entry_size,
+        )
 
     def drawCircleOptions(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-
         # Radius
         self.radius_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 0),
             text="Radius",
             manager=self,
             object_id=pygame_gui.core.ObjectID("radius-label", "bot_edit_label"),
         )
         self.radius_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("radius-entry", "num_entry"),
         )
         self.radius_entry.set_text(str(self.getSelectedAttribute("radius")))
-        entry_size = self.side_width / 3
-        self.radius_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.radius_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
-        self.radius_entry.set_dimensions((entry_size, entry_size))
-        self.radius_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
 
         # Stroke width
         self.stroke_num_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 1),
             text="Stroke",
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
         )
         self.stroke_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
         )
         self.stroke_entry.set_text(str(self.getSelectedAttribute("stroke_width")))
-        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.stroke_num_label.set_position((self.side_width + 20, self._size[1] - entry_size))
-        self.stroke_entry.set_dimensions((entry_size, entry_size))
-        self.stroke_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
 
         self.generateColourPickers()
-        button_size = entry_size * 0.9
-        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
-        self.fill_img.set_dimensions((button_size, button_size))
-        self.fill_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
-        )
-        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
-        self.stroke_img.set_dimensions((button_size, button_size))
-        self.stroke_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
-        )
 
     def drawRectangleOptions(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-
         # Width/Height
         self.width_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 0),
             text="Width",
             manager=self,
             object_id=pygame_gui.core.ObjectID("width-label", "bot_edit_label"),
         )
         self.width_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("width-entry", "num_entry"),
         )
         self.width_entry.set_text(str(self.getSelectedAttribute("width")))
-        entry_size = self.side_width / 3
-        self.width_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.width_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
-        self.width_entry.set_dimensions((entry_size, entry_size))
-        self.width_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
 
         self.height_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 1),
             text="Height",
             manager=self,
             object_id=pygame_gui.core.ObjectID("height-label", "bot_edit_label"),
         )
         self.height_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("height-entry", "num_entry"),
         )
         self.height_entry.set_text(str(self.getSelectedAttribute("height")))
-        entry_size = self.side_width / 3
-        self.height_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.height_label.set_position((self.side_width + 20, self._size[1] - entry_size))
-        self.height_entry.set_dimensions((entry_size, entry_size))
-        self.height_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
 
         self.generateColourPickers()
-        button_size = entry_size * 0.9
-        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
-        self.fill_img.set_dimensions((button_size, button_size))
-        self.fill_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
-        )
-        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
-        self.stroke_img.set_dimensions((button_size, button_size))
-        self.stroke_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
-        )
 
         # Rotation
         self.rotation_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(2, 0),
             text="Rotation",
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
         )
         self.rotation_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(2, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
         )
         # Takeaway pi/2, so that pointing up is rotation 0.
         cur_rotation = self.getSelectedAttribute("rotation", 0, visual=False)
         self.rotation_entry.set_text(str(180 / np.pi * cur_rotation))
-        self.rotation_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.rotation_label.set_position((3 * self.side_width + 100, self._size[1] - self.bot_height + 15))
-        self.rotation_entry.set_dimensions((entry_size, entry_size))
-        self.rotation_entry.set_position((4 * self.side_width + 70, self._size[1] - self.bot_height + 20))
 
         # Stroke width
         self.stroke_num_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(2, 1),
             text="Stroke",
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
         )
         self.stroke_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(2, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
         )
         self.stroke_entry.set_text(str(self.getSelectedAttribute("stroke_width")))
-        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
-        self.stroke_entry.set_dimensions((entry_size, entry_size))
-        self.stroke_entry.set_position((4 * self.side_width + 70, self._size[1] - entry_size + 5))
 
     def drawPolygonOptions(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-
         # Sides
         self.sides_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 0),
             text="Sides",
             manager=self,
             object_id=pygame_gui.core.ObjectID("sides-label", "bot_edit_label"),
         )
         self.sides_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("sides-entry", "num_entry"),
         )
         self.sides_entry.set_text(str(len(self.getSelectedAttribute("verts"))))
-        entry_size = self.side_width / 3
-        self.sides_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.sides_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 15))
-        self.sides_entry.set_dimensions((entry_size, entry_size))
-        self.sides_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
 
         # Size
         self.size_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 1),
             text="Size",
             manager=self,
             object_id=pygame_gui.core.ObjectID("size-label", "bot_edit_label"),
         )
         self.size_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("size-entry", "num_entry"),
         )
-
         self.size_entry.set_text(str(np.linalg.norm(self.getSelectedAttribute("verts")[0], 2)))
-        self.size_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.size_label.set_position((self.side_width + 20, self._size[1] - entry_size))
-        self.size_entry.set_dimensions((entry_size, entry_size))
-        self.size_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_size + 5))
 
         self.generateColourPickers()
-        button_size = entry_size * 0.9
-        self.fill_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.fill_label.set_position((2 * self.side_width + 60, self._size[1] - entry_size))
-        self.fill_img.set_dimensions((button_size, button_size))
-        self.fill_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - button_size - (entry_size - button_size) / 2)
-        )
-        self.stroke_label.set_dimensions((self.side_width - entry_size + 5, entry_size))
-        self.stroke_label.set_position((2 * self.side_width + 60, self._size[1] - self.bot_height + 15))
-        self.stroke_img.set_dimensions((button_size, button_size))
-        self.stroke_img.set_position(
-            (3 * self.side_width + 30, self._size[1] - self.bot_height + 15 + (entry_size - button_size) / 2)
-        )
 
         # Rotation
         self.rotation_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(2, 0),
             text="Rotation",
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
         )
         self.rotation_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(2, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
         )
@@ -982,94 +918,90 @@ class BotEditMenu(BaseMenu):
         while cur_rotation < 0:
             cur_rotation += np.pi
         self.rotation_entry.set_text(str(180 / np.pi * cur_rotation))
-        self.rotation_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.rotation_label.set_position((3 * self.side_width + 100, self._size[1] - self.bot_height + 15))
-        self.rotation_entry.set_dimensions((entry_size, entry_size))
-        self.rotation_entry.set_position((4 * self.side_width + 70, self._size[1] - self.bot_height + 20))
+
         # Stroke width
         self.stroke_num_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(2, 1),
             text="Stroke",
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-label", "bot_edit_label"),
         )
         self.stroke_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(2, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke-entry", "num_entry"),
         )
         self.stroke_entry.set_text(str(self.getSelectedAttribute("stroke_width")))
-        self.stroke_num_label.set_dimensions(((self.side_width - 30) - entry_size - 5, entry_size))
-        self.stroke_num_label.set_position((3 * self.side_width + 100, self._size[1] - entry_size))
-        self.stroke_entry.set_dimensions((entry_size, entry_size))
-        self.stroke_entry.set_position((4 * self.side_width + 70, self._size[1] - entry_size + 5))
 
     def drawDeviceOptions(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-        entry_size = self.side_width / 2
-        entry_height = self.bot_height * 0.3
-
         # Rotation
         self.rotation_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 0),
             text="Rotation",
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-label", "bot_edit_label"),
         )
         self.rotation_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 0),
             manager=self,
             object_id=pygame_gui.core.ObjectID("rotation-entry", "num_entry"),
         )
         # Takeaway pi/2, so that pointing up is rotation 0.
         cur_rotation = self.getSelectedAttribute("rotation", 0)
         self.rotation_entry.set_text(str(cur_rotation))
-        self.rotation_label.set_dimensions(((self.side_width * 1.5 - 30) - entry_size - 5, entry_height))
-        self.rotation_label.set_position((self.side_width + 20, self._size[1] - self.bot_height + 20))
-        self.rotation_entry.set_dimensions((entry_size, entry_height))
-        self.rotation_entry.set_position((2 * self.side_width - 10, self._size[1] - self.bot_height + 20))
 
         # Port
         self.port_label = pygame_gui.elements.UILabel(
-            relative_rect=dummy_rect,
+            relative_rect=self.labelRect(0, 1),
             text="Port",
             manager=self,
             object_id=pygame_gui.core.ObjectID("port-label", "bot_edit_label"),
         )
         self.port_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=dummy_rect,
+            relative_rect=self.entryRect(0, 1),
             manager=self,
             object_id=pygame_gui.core.ObjectID("port-entry", "num_entry"),
         )
         self.port_entry.set_text(self.getSelectedAttribute("port"))
-        self.port_label.set_dimensions(((self.side_width * 1.5 - 30) - entry_size - 5, entry_height))
-        self.port_label.set_position((self.side_width + 20, self._size[1] - entry_height - 10))
-        self.port_entry.set_dimensions((entry_size, entry_height))
-        self.port_entry.set_position((2 * self.side_width - 10, self._size[1] - entry_height - 10))
 
     def generateColourPickers(self):
         # Colour pickers
+        button_size = self.side_width / 3 * 0.9
+
+        stroke_label_rect = self.labelRect(1, 0)
+        stroke_label_rect.width += 40
         self.stroke_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(0, 0, *self._size),
+            relative_rect=stroke_label_rect,
             text="Stroke Colour",
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke_colour-label", "bot_edit_label"),
         )
+        stroke_image_rect = self.entryRect(1, 0)
+        stroke_image_rect.y += (self.side_width / 3 - button_size) / 2
+        stroke_image_rect.width = button_size
+        stroke_image_rect.height = button_size
         self.stroke_img = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(0, 0, *self._size),
+            relative_rect=stroke_image_rect,
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("stroke_colour-button"),
         )
         self.addButtonEvent("stroke_colour-button", self.clickStroke)
+
+        fill_label_rect = self.labelRect(1, 1)
+        fill_label_rect.width += 40
         self.fill_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(0, 0, *self._size),
+            relative_rect=fill_label_rect,
             text="Fill Colour",
             manager=self,
             object_id=pygame_gui.core.ObjectID("fill_colour-label", "bot_edit_label"),
         )
+        fill_image_rect = self.entryRect(1, 1)
+        fill_image_rect.y += (self.side_width / 3 - button_size) / 2
+        fill_image_rect.width = button_size
+        fill_image_rect.height = button_size
         self.fill_img = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(0, 0, *self._size),
+            relative_rect=fill_image_rect,
             text="",
             manager=self,
             object_id=pygame_gui.core.ObjectID("fill_colour-button"),
@@ -1464,6 +1396,17 @@ All other objects are placed on this baseplate. After creating it, the baseplate
         super().clearObjects()
         self.clearOptions()
 
+    def updateAttribute(self, attr, entry, conv, generate, old_v=None):
+        if old_v is None:
+            old_v = self.getSelectedAttribute(attr)
+        try:
+            new_v = conv(entry.text)
+            if old_v != new_v:
+                self.setSelectedAttribute(attr, new_v)
+                generate()
+        except:
+            self.setSelectedAttribute(attr, old_v)
+
     def draw_ui(self, window_surface: pygame.surface.Surface):
         if self.selected_index is not None:
             if self.selected_index == "Holding":
@@ -1471,42 +1414,14 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             else:
                 generate = lambda: self.resetBotVisual()
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
-                old_radius = self.getSelectedAttribute("radius")
-                try:
-                    new_radius = float(self.radius_entry.text)
-                    if old_radius != new_radius:
-                        self.setSelectedAttribute("radius", new_radius)
-                        generate()
-                except:
-                    self.setSelectedAttribute("radius", old_radius)
-
-                old_stroke_width = self.getSelectedAttribute("stroke_width")
-                try:
-                    new_stroke_width = float(self.stroke_entry.text)
-                    if old_stroke_width != new_stroke_width:
-                        self.setSelectedAttribute("stroke_width", new_stroke_width)
-                        generate()
-                except:
-                    self.setSelectedAttribute("stroke_width", old_stroke_width)
+                self.updateAttribute("radius", self.radius_entry, float, generate)
+                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_RECTANGLE:
-                old_width = self.getSelectedAttribute("width")
-                try:
-                    new_width = float(self.width_entry.text)
-                    if old_width != new_width:
-                        self.setSelectedAttribute("width", new_width)
-                        generate()
-                except:
-                    self.setSelectedAttribute("width", old_width)
+                self.updateAttribute("width", self.width_entry, float, generate)
+                self.updateAttribute("height", self.height_entry, float, generate)
+                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
 
-                old_height = self.getSelectedAttribute("height")
-                try:
-                    new_height = float(self.height_entry.text)
-                    if old_height != new_height:
-                        self.setSelectedAttribute("height", new_height)
-                        generate()
-                except:
-                    self.setSelectedAttribute("height", old_height)
-
+                # Rotation is tricky. Do this explicitly.
                 cur_rotation = self.getSelectedAttribute("rotation", 0, visual=False)
                 cur_rotation *= 180 / np.pi
                 try:
@@ -1515,16 +1430,9 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     generate()
                 except:
                     pass
-
-                old_stroke_width = self.getSelectedAttribute("stroke_width")
-                try:
-                    new_stroke_width = float(self.stroke_entry.text)
-                    if old_stroke_width != new_stroke_width:
-                        self.setSelectedAttribute("stroke_width", new_stroke_width)
-                        generate()
-                except:
-                    self.setSelectedAttribute("stroke_width", old_stroke_width)
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
+                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
+                # Polygon drawing isn't as simple, do this explicitly.
                 old_sides = len(self.getSelectedAttribute("verts"))
                 old_size = np.linalg.norm(self.getSelectedAttribute("verts")[0], 2)
                 cur_rotation = (
@@ -1553,24 +1461,8 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     generate()
                 except:
                     pass
-
-                old_stroke_width = self.getSelectedAttribute("stroke_width")
-                try:
-                    new_stroke_width = float(self.stroke_entry.text)
-                    if old_stroke_width != new_stroke_width:
-                        self.setSelectedAttribute("stroke_width", new_stroke_width)
-                        generate()
-                except:
-                    self.setSelectedAttribute("stroke_width", old_stroke_width)
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_DEVICE:
-                old_rot = self.getSelectedAttribute("rotation", 0)
-                try:
-                    new_rot = float(self.rotation_entry.text)
-                    if new_rot != old_rot:
-                        self.setSelectedAttribute("rotation", new_rot)
-                        generate()
-                except:
-                    pass
+                self.updateAttribute("rotation", self.rotation_entry, float, generate)
                 self.setSelectedAttribute("port", self.port_entry.text)
             if self.mode == self.MODE_NORMAL:
                 try:

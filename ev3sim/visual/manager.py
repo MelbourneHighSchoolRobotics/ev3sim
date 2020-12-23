@@ -126,6 +126,8 @@ class ScreenObjectManager:
             from ev3sim.simulation.loader import StateHandler
 
             StateHandler.instance.is_running = False
+        else:
+            self.screens[self.screen_stack[-1]].regenerateObjects()
 
     def startScreen(self, push_screen=None, push_kwargs={}):
         from ev3sim import __version__ as version
@@ -228,14 +230,12 @@ class ScreenObjectManager:
                     (self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL), pygame.RESIZABLE
                 )
                 for key, menu in self.screens.items():
-                    if key != self.SCREEN_SIM:
-                        menu.setSize((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL))
+                    menu.setSize((self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL))
                 for screen in self.screen_stack:
                     if screen == self.SCREEN_SIM:
                         for key in self.sorting_order:
                             self.objects[key].calculatePoints()
-                    else:
-                        self.screens[screen].sizeObjects()
+                    self.screens[screen].regenerateObjects()
 
             if event.type == pygame.QUIT:
                 StateHandler.instance.is_running = False

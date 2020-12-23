@@ -23,6 +23,9 @@ class CustomScroll(pygame_gui.elements.UIScrollingContainer):
             self.cur_y += event.y * 10
             self.cur_y = min(0, max(self.cur_y, -self.elems_size * (self.num_elems - 5)))
             if event.y != 0:
-                self.scrollable_container.set_relative_position((self.scrollable_container.relative_rect.x, self.cur_y))
+                self.set_scroll(self.cur_y)
                 consumed_event = True
         return consumed_event and super().process_event(event)
+
+    def set_scroll(self, y):
+        self.scrollable_container.set_relative_position((self.scrollable_container.relative_rect.x, y))

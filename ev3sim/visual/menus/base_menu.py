@@ -10,14 +10,14 @@ class BaseMenu(pygame_gui.UIManager):
         self._button_events = []
 
     def addButtonEvent(self, id, event, *args, **kwargs):
-        self._button_events.append(
-            (
-                id,
-                event,
-                args,
-                kwargs,
-            )
-        )
+        elem = (id, event, args, kwargs)
+        for i in range(len(self._button_events)):
+            if self._button_events[i][0] == id:
+                # Overwrite if ID already exists.
+                self._button_events[i] = elem
+                break
+        else:
+            self._button_events.append(elem)
 
     def removeButtonEvent(self, id):
         to_remove = []
@@ -43,13 +43,9 @@ class BaseMenu(pygame_gui.UIManager):
     def generateObjects(self):
         raise NotImplementedError()
 
-    def sizeObjects(self):
-        raise NotImplementedError()
-
     def regenerateObjects(self):
         self.clearObjects()
         self.generateObjects()
-        self.sizeObjects()
 
     def initWithKwargs(self, **kwargs):
         self.regenerateObjects()

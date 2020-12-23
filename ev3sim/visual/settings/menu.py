@@ -14,45 +14,21 @@ class SettingsMenu(BaseMenu):
     onSave = None
     onCancel = None
 
+    MODE_NORMAL = "normal"
+    MODE_ERROR = "error"
+
     def clearEvents(self):
         self.onSave = None
         self.onCancel = None
 
-    def sizeObjects(self):
+    def generateObjects(self):
         yPadding = 20
         yOffset = 0
         index = 0
         for group in self.settings_obj:
             yOffset += yPadding
-            self._all_objs[index].set_dimensions((self._size[0] - 40, group["height"](self._size)))
-            self._all_objs[index].set_position((20, yOffset))
-            index += 1
-            for obj in group["objects"]:
-                obj.resize(self._all_objs, index)
-                if obj.json_keys == "__filename__" and not self.allows_filename_change:
-                    if isinstance(obj, TextEntry):
-                        obj.obj.disable()
-                index += obj.num_objs
-            yOffset += group["height"](self._size)
-        yOffset += yPadding
-        self.bg.set_dimensions(self._size)
-        index += 1
-        self._all_objs[index].set_dimensions((self._size[0] - 40, 80))
-        self._all_objs[index].set_position((20, yOffset))
-        index += 1
-        self.save.set_dimensions((120, 60))
-        self.save.set_position((self._size[0] - 300, yOffset + 10))
-        index += 1
-        self.cancel.set_dimensions((120, 60))
-        self.cancel.set_position((self._size[0] - 160, yOffset + 10))
-        index += 1
-
-    def generateObjects(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-        index = 0
-        for group in self.settings_obj:
             container = pygame_gui.elements.UIPanel(
-                relative_rect=dummy_rect,
+                relative_rect=pygame.Rect(0, 0, *self._size),
                 starting_layer_height=-1,
                 manager=self,
                 object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
@@ -61,62 +37,85 @@ class SettingsMenu(BaseMenu):
             index += 1
             for obj in group["objects"]:
                 obj.set_menu(self)
-                for obj2 in obj.generateVisual(dummy_rect, container, self, index):
+                for obj2 in obj.generateVisual(
+                    (self._size[0] - 40, group["height"](self._size)), container, self, index
+                ):
                     self._all_objs.append(obj2)
+                if obj.json_keys == "__filename__" and not self.allows_filename_change:
+                    if isinstance(obj, TextEntry):
+                        obj.obj.disable()
                 index += obj.num_objs
+            container.set_position((20, yOffset))
+            container.set_dimensions((self._size[0] - 40, group["height"](self._size)))
+            yOffset += group["height"](self._size)
+        yOffset += yPadding
+
         self.bg = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(0, 0, *self._size),
             starting_layer_height=-2,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )
         self._all_objs.append(self.bg)
-        index += 1
+
         container = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(20, yOffset, self._size[0] - 40, 80),
             starting_layer_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
         )
         self._all_objs.append(container)
-        index += 1
+
         self.save = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(self._size[0] - 300, yOffset + 10, 120, 60),
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
             text="Create" if self.creating else "Save",
         )
+        self.addButtonEvent("save-changes", self.clickSave)
         self._all_objs.append(self.save)
-        index += 1
+
         self.cancel = pygame_gui.elements.UIButton(
-            relative_rect=dummy_rect,
+            relative_rect=pygame.Rect(self._size[0] - 160, yOffset + 10, 120, 60),
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
             text="Cancel",
         )
+        self.addButtonEvent("cancel-changes", self.clickCancel)
         self._all_objs.append(self.cancel)
-        index += 1
+
+        if self.mode == self.MODE_ERROR:
+
+            class ErrorWindow(pygame_gui.elements.UIWindow):
+                def kill(self2):
+                    self.mode = self.MODE_NORMAL
+                    self.regenerateObjects()
+                    return super().kill()
+
+            dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+            self.dialog = ErrorWindow(
+                rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
+                manager=self,
+                window_display_title="An error occured",
+                object_id=pygame_gui.core.ObjectID("error_dialog"),
+            )
+            self._all_objs.append(self.dialog)
+
+            self.error_msg = pygame_gui.elements.UITextBox(
+                relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
+                html_text=msg,
+                manager=self,
+                container=self.dialog,
+                object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
+            )
+            self._all_objs.append(self.error_msg)
 
     def addErrorDialog(self, msg):
-
-        dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
-
-        self.dialog = pygame_gui.elements.UIWindow(
-            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
-            manager=self,
-            window_display_title="An error occured",
-            object_id=pygame_gui.core.ObjectID("error_dialog"),
-        )
-
-        self.error_msg = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
-            html_text=msg,
-            manager=self,
-            container=self.dialog,
-            object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
-        )
+        self.mode = self.MODE_ERROR
+        self.regenerateObjects()
 
     def handleEvent(self, event):
+        super().handleEvent(event)
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             obj_id = event.ui_object_id.split(".")[-1].split("-")[0]
             if obj_id.isnumeric():
@@ -129,65 +128,66 @@ class SettingsMenu(BaseMenu):
                             obj.handlePressed(idx - index)
                             return
                         index += obj.num_objs
-            # Not one of the dynamic buttons, save or cancel.
-            if event.ui_object_id == "save-changes":
-                if not self.creating:
-                    with open(self.filename, "r") as f:
-                        json_obj = yaml.safe_load(f)
+
+    def clickSave(self):
+        if not self.creating:
+            with open(self.filename, "r") as f:
+                json_obj = yaml.safe_load(f)
+        else:
+            json_obj = self.starting_data
+        current_filepath = None
+        rel_file = None
+        if not self.creating:
+            current_filepath = self.filename
+        for group in self.settings_obj:
+            for obj in group["objects"]:
+                if obj.json_keys == "__filename__" and isinstance(obj, TextEntry):
+                    if self.creating:
+                        # Make sure the name can be used.
+                        creation_dir = find_abs_directory(self.creation_area, create=True)
+                        current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.{self.extension}")
+                        rel_file = f"{obj.obj.text}.{self.extension}"
+                        if os.path.exists(current_filepath):
+                            raise ValueError("A file with this name already exists.")
+                    else:
+                        # Make sure the name can be used.
+                        end, front = os.path.split(self.filename)
+                        current_filepath = os.path.join(end, f"{obj.obj.text}.{self.extension}")
+                        if current_filepath != self.filename and os.path.exists(current_filepath):
+                            raise ValueError("A file with this name already exists.")
+                        if current_filepath != self.filename:
+                            # Remove the previous file.
+                            os.remove(self.filename)
                 else:
-                    json_obj = self.starting_data
-                current_filepath = None
-                rel_file = None
-                if not self.creating:
-                    current_filepath = self.filename
-                for group in self.settings_obj:
-                    for obj in group["objects"]:
-                        if obj.json_keys == "__filename__" and isinstance(obj, TextEntry):
-                            if self.creating:
-                                # Make sure the name can be used.
-                                creation_dir = find_abs_directory(self.creation_area, create=True)
-                                current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.{self.extension}")
-                                rel_file = f"{obj.obj.text}.{self.extension}"
-                                if os.path.exists(current_filepath):
-                                    raise ValueError("A file with this name already exists.")
-                            else:
-                                # Make sure the name can be used.
-                                end, front = os.path.split(self.filename)
-                                current_filepath = os.path.join(end, f"{obj.obj.text}.{self.extension}")
-                                if current_filepath != self.filename and os.path.exists(current_filepath):
-                                    raise ValueError("A file with this name already exists.")
-                                if current_filepath != self.filename:
-                                    # Remove the previous file.
-                                    os.remove(self.filename)
-                        else:
-                            obj.setToJson(json_obj)
-                            try:
-                                # If we are editing loaded settings, then apply the changes.
-                                settings = {}
-                                cur = settings
-                                prev = None
-                                for key in obj.json_keys:
-                                    cur[key] = {}
-                                    prev = cur
-                                    cur = cur[key]
-                                prev[obj.json_keys[-1]] = obj.current
-                                SettingsManager.instance.setMany(settings)
-                            except:
-                                pass
-                string = yaml.dump(json_obj)
-                with open(current_filepath, "w") as f:
-                    f.write(string)
-                from ev3sim.visual.manager import ScreenObjectManager
+                    obj.setToJson(json_obj)
+                    try:
+                        # If we are editing loaded settings, then apply the changes.
+                        settings = {}
+                        cur = settings
+                        prev = None
+                        for key in obj.json_keys:
+                            cur[key] = {}
+                            prev = cur
+                            cur = cur[key]
+                        prev[obj.json_keys[-1]] = obj.current
+                        SettingsManager.instance.setMany(settings)
+                    except:
+                        pass
+        string = yaml.dump(json_obj)
+        with open(current_filepath, "w") as f:
+            f.write(string)
+        from ev3sim.visual.manager import ScreenObjectManager
 
-                ScreenObjectManager.instance.popScreen()
-                if self.onSave is not None:
-                    self.onSave(rel_file)
-            elif event.ui_object_id == "cancel-changes":
-                from ev3sim.visual.manager import ScreenObjectManager
+        if self.onSave is not None:
+            self.onSave(rel_file)
+        ScreenObjectManager.instance.popScreen()
 
-                ScreenObjectManager.instance.popScreen()
-                if self.onCancel is not None:
-                    self.onCancel()
+    def clickCancel(self):
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        if self.onCancel is not None:
+            self.onCancel()
+        ScreenObjectManager.instance.popScreen()
 
     def onPop(self):
         pass
@@ -197,6 +197,7 @@ class SettingsMenu(BaseMenu):
         # kwargs[settings] = list of settings groups
         import os
 
+        self.mode = self.MODE_NORMAL
         self.creating = kwargs.get("creating", False)
         # The relative directory to create the file in.
         self.creation_area = kwargs.get("creation_area", "")

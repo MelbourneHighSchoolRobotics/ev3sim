@@ -45,28 +45,27 @@ class SimulatorMenu(BaseMenu):
         ScriptLoader.instance.reset()
 
     def generateObjects(self):
-        dummy_rect = pygame.Rect(0, 0, *self._size)
-        self.console_bg = pygame_gui.elements.UIPanel(
-            relative_rect=dummy_rect, starting_layer_height=0.5, manager=self, object_id=ObjectID("console-bg")
-        )
-        self._all_objs.append(self.console_bg)
         self.gen_messages = []
-        self.current_y = 0
+        current_y = 0
         for i, (_, __, msg) in enumerate(self.messages):
             self.gen_messages.append(
                 pygame_gui.elements.UITextBox(
                     html_text=msg,
-                    relative_rect=pygame.Rect(0, self.current_y, self._size[0] / 2, -1),
+                    relative_rect=pygame.Rect(0, current_y, self._size[0] / 2, -1),
                     manager=self,
                     object_id=ObjectID(f"console-text-{i}", "console-text"),
                 )
             )
-            self.current_y += self.gen_messages[-1].rect.height
+            current_y += self.gen_messages[-1].rect.height
         self._all_objs.extend(self.gen_messages)
 
-    def sizeObjects(self):
-        self.console_bg.set_position((0, 0))
-        self.console_bg.set_dimensions((self._size[0] / 2, self.current_y))
+        self.console_bg = pygame_gui.elements.UIPanel(
+            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y),
+            starting_layer_height=0.5,
+            manager=self,
+            object_id=ObjectID("console-bg"),
+        )
+        self._all_objs.append(self.console_bg)
 
     def printMessage(self, msg, msg_life=3, kill=True):
         for i, col in enumerate(self.ROBOT_COLOURS):
