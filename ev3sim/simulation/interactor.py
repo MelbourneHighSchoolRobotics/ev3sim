@@ -15,12 +15,18 @@ class IInteractor:
 
     constants: dict
 
+    AUTOSTART_BOTS = True
+
     def __init__(self, **kwargs):
         pass
 
     def startUp(self):
         """Called when the interactor is instantiated (After elements are spawned in, but before any ticks are done)."""
-        pass
+        self.locateBots()
+        for robot in self.robots:
+            robot.robot_class.onSpawn()
+        if self.AUTOSTART_BOTS:
+            self.restartBots()
 
     def tick(self, tick) -> bool:
         """
@@ -49,6 +55,44 @@ class IInteractor:
         :param pygame.event.Event event: The pygame event registered.
         """
         pass
+
+    # Some helper functions
+    def locateBots(self):
+        """Identifies all spawned robots."""
+        from ev3sim.simulation.loader import ScriptLoader
+
+        self.robots = []
+        bot_index = 0
+        while True:
+            # Find the next robot.
+            possible_keys = []
+            for key in ScriptLoader.instance.object_map.keys():
+                if key.startswith(f"Robot-{bot_index}"):
+                    possible_keys.append(key)
+            if len(possible_keys) == 0:
+                break
+            possible_keys.sort(key=len)
+            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+            bot_index += 1
+
+        if len(self.robots) == 0:
+            raise ValueError("No robots loaded.")
+
+    def killBots(self):
+        """Kill all ongoing robot scripts."""
+        from ev3sim.simulation.loader import ScriptLoader
+
+        ScriptLoader.instance.killAllProcesses()
+
+    def restartBots(self):
+        """Kill all ongoing robot scripts and start them again"""
+        from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.events import GAME_RESET
+
+        for robotID in ScriptLoader.instance.robots.keys():
+            # Restart the robot scripts.
+            ScriptLoader.instance.startProcess(robotID, kill_recent=True)
+            ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
 
 
 def fromOptions(options):

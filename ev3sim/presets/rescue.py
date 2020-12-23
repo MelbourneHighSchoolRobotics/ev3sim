@@ -56,6 +56,9 @@ class RescueInteractor(IInteractor):
     MODE_FOLLOW = "FOLLOW"
     MODE_RESCUE = "RESCUE"
 
+    # Don't autostart in the `startUp` parent call.
+    AUTOSTART_BOTS = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.time_tick = 0
@@ -420,20 +423,9 @@ class RescueInteractor(IInteractor):
         }
         self.can_obj = ScriptLoader.instance.loadElements([can_vis])[0]
 
-    def locateBots(self):
-        self.robots = []
+    def spawnRobotFollows(self):
         self.bot_follows = []
-        bot_index = 0
-        while True:
-            # Find the next robot.
-            possible_keys = []
-            for key in ScriptLoader.instance.object_map.keys():
-                if key.startswith(f"Robot-{bot_index}"):
-                    possible_keys.append(key)
-            if len(possible_keys) == 0:
-                break
-            possible_keys.sort(key=len)
-            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+        for i in range(len(self.robots)):
             # Spawn the robot follow point collider.
             obj = objectFactory(
                 **{
@@ -447,28 +439,25 @@ class RescueInteractor(IInteractor):
                         "zPos": 100,
                     },
                     "physics": True,
-                    "key": f"Robot-{bot_index}-follow",
+                    "key": f"Robot-{id}-follow",
                 }
             )
             obj.shape.filter = pymunk.ShapeFilter(categories=self.FOLLOW_POINT_CATEGORY)
             obj.shape.sensor = True
             obj.shape.collision_type = self.ROBOT_CENTRE_COLLISION_TYPE
-            obj.shape._robot_index = bot_index
+            obj.shape._robot_index = i
             World.instance.registerObject(obj)
             if self.SHOW_ROBOT_COLLIDER:
                 ScreenObjectManager.instance.registerObject(obj, obj.key)
             self.bot_follows.append(obj)
-            bot_index += 1
-
-        if len(self.robots) == 0:
-            raise ValueError("No robots loaded.")
 
     def startUp(self):
+        super().startUp()
         self.START_TIME = datetime.timedelta(minutes=self.GAME_LENGTH_MINUTES)
         self.spawnTiles()
         self.spawnFollowPointPhysics()
         self.spawnTileUI()
-        self.locateBots()
+        self.spawnRobotFollows()
         assert len(self.robots) <= len(self.BOT_SPAWN_POSITION), "Not enough spawning locations specified."
         self.spawnCan()
 

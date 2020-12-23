@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 import math
 import pymunk
-from ev3sim.events import GAME_RESET, GOAL_SCORED, START_PENALTY, END_PENALTY
+from ev3sim.events import GOAL_SCORED, START_PENALTY, END_PENALTY
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
@@ -48,6 +48,9 @@ class SoccerInteractor(IInteractor):
     BOT_SPAWN_RADIUS = 3
     BALL_SPAWN_RADIUS = 1
 
+    # Don't autostart in the `startUp` parent call.
+    AUTOSTART_BOTS = False
+
     _pressed = False
 
     def __init__(self, *args, **kwargs):
@@ -57,28 +60,8 @@ class SoccerInteractor(IInteractor):
         self.time_tick = 0
         self.update_time_text = True
 
-    def locateBots(self):
-        self.robots = []
-        bot_index = 0
-        while True:
-            # Find the next robot.
-            possible_keys = []
-            for key in ScriptLoader.instance.object_map.keys():
-                if key.startswith(f"Robot-{bot_index}"):
-                    possible_keys.append(key)
-            if len(possible_keys) == 0:
-                break
-            possible_keys.sort(key=len)
-            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
-            self.robots[-1].shape.collision_type = self.BOT_COLLISION_TYPE
-            self.robots[-1].shape.bot_index = bot_index
-            bot_index += 1
-        self.bot_penalties = [0] * bot_index
-
-        if len(self.robots) == 0:
-            raise ValueError("No robots loaded.")
-
     def startUp(self):
+        super().startUp()
         self.START_TIME = datetime.timedelta(minutes=self.GAME_HALF_LENGTH_MINUTES)
         self.names = [self.TEAM_NAME_1, self.TEAM_NAME_2]
         self.spawns = self.SPAWN_LOCATIONS[:]
@@ -89,7 +72,10 @@ class SoccerInteractor(IInteractor):
         ), "All player related arrays should be of equal size."
         # Initialise the goal colliders.
         self.goal_colliders = []
-        self.locateBots()
+        self.bot_penalties = [0] * len(self.robots)
+        for i, bot in enumerate(self.robots):
+            bot.shape.collision_type = self.BOT_COLLISION_TYPE
+            bot.shape.bot_index = i
         self.BOTS_PER_TEAM = math.ceil(len(self.robots) / len(self.names))
 
         self.ball_centre = objectFactory(
@@ -209,10 +195,7 @@ class SoccerInteractor(IInteractor):
         self.resetPositions()
         self.time_tick = 0
         self.update_time_text = True
-        for robotID in ScriptLoader.instance.robots.keys():
-            # Restart the robot scripts.
-            ScriptLoader.instance.startProcess(robotID, kill_recent=True)
-            ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
+        self.restartBots()
 
     def resetPositions(self):
         for team in range(len(self.names)):
