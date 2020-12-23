@@ -75,6 +75,7 @@ def main(passed_args=None):
 
     pushed_screen = None
     pushed_kwargs = {}
+    should_quit = False
 
     if not args.from_main:
         # Try loading a user config. If one does not exist, then generate one.
@@ -119,6 +120,7 @@ def main(passed_args=None):
 
                         args.batch = fname
 
+                        should_quit = True
                         main(args.__dict__)
                         found = True
                         return
@@ -177,6 +179,18 @@ def main(passed_args=None):
                         found = True
                 except:
                     pass
+
+    if should_quit:
+        # WHY DOES THIS HAPPEN?
+        pygame.quit()
+        StateHandler.instance.is_running = False
+        try:
+            StateHandler.instance.closeProcesses()
+        except:
+            pass
+        raise ValueError(
+            "Seems like something died :( Most likely the preset you are trying to load caused some issues."
+        )
 
     StateHandler.instance.startUp(push_screen=pushed_screen, push_kwargs=pushed_kwargs)
 
