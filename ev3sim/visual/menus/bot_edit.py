@@ -203,7 +203,8 @@ class BotEditMenu(BaseMenu):
 
     def removeSelected(self):
         if self.selected_index in ["Holding", None, "Baseplate"]:
-            raise ValueError("The remove button should not be visible at the moment.")
+            # We can't do anything.
+            return
         if self.selected_index[0] == "Children":
             del self.current_object["children"][self.selected_index[1]]
         elif self.selected_index[0] == "Devices":
@@ -728,7 +729,21 @@ class BotEditMenu(BaseMenu):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                     if self.selected_type not in [None, "Holding", "Baseplate"]:
-                        self.removeSelected()
+                        # Check that no entry is focused.
+                        good = True
+                        for attr in [
+                            "rotation_entry",
+                            "radius_entry",
+                            "width_entry",
+                            "height_entry",
+                            "size_entry",
+                            "stroke_entry",
+                            "sides_entry",
+                        ]:
+                            if hasattr(self, attr) and getattr(self, attr).is_focused:
+                                good = False
+                        if good:
+                            self.removeSelected()
 
     def drawOptions(self):
         self.clearOptions()

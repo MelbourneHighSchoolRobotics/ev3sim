@@ -678,12 +678,14 @@ class RescueMapEditMenu(BaseMenu):
         self.drawOptions()
 
     def removeSelected(self):
+        if self.selected_index is None:
+            return
         for i, tile in enumerate(self.current_tiles):
             if tile["position"][0] == self.selected_index[0] and tile["position"][1] == self.selected_index[1]:
                 index = i
                 break
         else:
-            raise ValueError("No existing tile is selected!")
+            return
         del self.current_tiles[index]
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
@@ -730,7 +732,15 @@ class RescueMapEditMenu(BaseMenu):
                                 pass
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
-                    self.removeSelected()
+                    # Check that no entry is focused.
+                    good = True
+                    for attr in [
+                        "rotation_entry",
+                    ]:
+                        if hasattr(self, attr) and getattr(self, attr).is_focused:
+                            good = False
+                    if good:
+                        self.removeSelected()
         elif self.mode == self.MODE_CAN_DRAGGING:
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 self.mode = self.MODE_NORMAL
