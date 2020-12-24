@@ -1,8 +1,3 @@
-.. raw:: html
-    <style> .red {color:red} </style>
-
-.. role:: red
-
 Extensions to normal EV3 Code
 =============================
 
@@ -60,6 +55,12 @@ Example:
 
     # The color specified below is a hex string.
     print("<b>Hello world!</b> I am <font color=\"#ff0000\">red</font> and <i>I slant</i>")
+
+.. raw:: html
+
+    <style> .red {color:red} </style>
+
+.. role:: red
 
 Will print "**Hello world!** I am :red:`red` and *I slant*".
 
