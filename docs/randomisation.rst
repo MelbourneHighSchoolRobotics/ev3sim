@@ -1,6 +1,8 @@
 Randomisation
 =============
 
+TODO: Change this to gui docs
+
 When executing ``ev3sim`` you may notice that the following is printed:
 
 .. code-block:: bash

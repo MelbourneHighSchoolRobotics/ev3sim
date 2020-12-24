@@ -1,5 +1,7 @@
-Batched Commands
-================
+Simulation Presets
+==================
+
+TODO: Change this to gui docs.
 
 Running a batched command
 -------------------------

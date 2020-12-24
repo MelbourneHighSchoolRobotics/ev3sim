@@ -1,6 +1,10 @@
 Extensions to normal EV3 Code
 =============================
 
+TODO: Add some preamble here.
+
+TODO: Add console info.
+
 Waiting for simulation ticks
 ----------------------------
 

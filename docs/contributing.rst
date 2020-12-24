@@ -19,7 +19,7 @@ or
     
     python setup.py develop
 
-To install the project. This creates a .pth link from your python installation to your ev3sim directory. This means any changes made will immediately take effect. Note that this will remove your existing install of stable ev3sim, so be aware of this.
+To install the project. This creates a .pth link from your python installation to your ev3sim directory. This means any changes made will immediately take effect. Note that this will remove your existing install of stable ev3sim (if installed via pip), so be aware of this.
 
 Linting code
 ------------
