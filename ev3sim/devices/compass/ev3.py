@@ -1,7 +1,6 @@
 import numpy as np
 from ev3sim.devices.base import IDeviceInteractor, Device
 from ev3sim.devices.compass.base import CompassSensorMixin
-from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.devices.utils import NearestValue, CyclicMixin, RandomDistributionMixin

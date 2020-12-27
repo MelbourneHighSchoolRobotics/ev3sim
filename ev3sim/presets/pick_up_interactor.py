@@ -4,7 +4,6 @@ import pymunk
 import pyperclip
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.world import World
-from ev3sim.objects.base import objectFactory
 from ev3sim.visual.utils import screenspace_to_worldspace
 from ev3sim.objects.base import DYNAMIC_CATEGORY
 

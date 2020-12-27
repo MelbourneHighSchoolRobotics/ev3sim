@@ -1,7 +1,6 @@
 from ev3sim.devices.base import Device, IDeviceInteractor
 from ev3sim.devices.colour.base import ColourSensorMixin
 from ev3sim.simulation.loader import ScriptLoader
-from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.visual.utils import worldspace_to_screenspace
 

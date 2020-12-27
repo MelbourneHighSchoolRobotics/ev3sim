@@ -2,7 +2,6 @@ import pygame
 import pygame_gui
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
-from ev3sim.visual.settings.main_settings import main_settings
 from ev3sim.search_locations import config_locations
 
 

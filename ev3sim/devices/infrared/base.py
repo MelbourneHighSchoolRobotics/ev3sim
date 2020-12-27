@@ -1,7 +1,5 @@
 import math
 import numpy as np
-from ev3sim.objects.base import objectFactory
-from ev3sim.simulation.world import World
 from ev3sim.simulation.loader import ScriptLoader
 
 

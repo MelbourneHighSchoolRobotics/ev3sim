@@ -4,9 +4,7 @@ import ev3sim.visual.utils as utils
 from ev3sim.simulation.interactor import IInteractor, fromOptions
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
-from ev3sim.objects.base import objectFactory
 from ev3sim.objects.utils import local_space_to_world_space
-from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.file_helper import find_abs
 from ev3sim.search_locations import device_locations
 

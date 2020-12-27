@@ -1,9 +1,7 @@
-from queue import Empty
 from ev3sim.simulation.loader import ScriptLoader, StateHandler, initialiseFromConfig
 from ev3sim.simulation.randomisation import Randomiser
 import yaml
 from ev3sim.file_helper import find_abs
-from multiprocessing import Process
 from ev3sim.utils import Queue, recursive_merge
 from ev3sim.search_locations import preset_locations, batch_locations
 

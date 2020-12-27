@@ -5,7 +5,6 @@ import pygame
 import pygame.freetype
 import yaml
 from typing import Dict, List, Tuple
-from os.path import join
 
 import ev3sim.visual.utils as utils
 

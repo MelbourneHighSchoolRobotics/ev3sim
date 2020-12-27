@@ -1,10 +1,5 @@
-import pygame
-import numpy as np
 import pymunk
 import pymunk.pygame_util
-from ev3sim.objects.utils import magnitude_sq
-from ev3sim.visual.manager import ScreenObjectManager
-from ev3sim.visual.utils import worldspace_to_screenspace
 
 
 def stop_on_pause(f):
