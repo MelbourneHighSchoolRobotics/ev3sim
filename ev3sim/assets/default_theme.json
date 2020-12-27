@@ -298,6 +298,7 @@
     "list_button_highlighted": {
         "prototype": "any_button",
         "colours": {
+            "normal_text": "#f7ede2",
             "normal_bg": "#DD4045",
             "hovered_bg": "#E05256",
             "active_bg": "#D0252A",
