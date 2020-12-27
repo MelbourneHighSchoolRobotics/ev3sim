@@ -81,7 +81,7 @@ while True:
         print(
             (
                 # Keep the message alive in console, and just update the values.
-                f"[alive_id={robot_id}_motor"
+                f"[alive_id={robot_id}_motor]"
                 + f"<b>Motor speeds</b>: {m1Speed:.2f} and {m2Speed:.2f}\n"
                 + f"<i>will run for {current_step_wait:.2f}s.</i>"
             )
