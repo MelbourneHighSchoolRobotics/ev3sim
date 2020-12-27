@@ -13,6 +13,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
+from ev3sim.file_helper import find_abs, find_abs_directory
 from multiprocessing import Process
 
 
@@ -62,13 +63,31 @@ class ScriptLoader:
             else:
                 raise ValueError("Did not expect an existing process!")
         if self.scriptnames[robot_id] is not None:
+            from os.path import join, split
             from ev3sim.attach_bot import attach_bot
+
+            format_filename = join(self.scriptnames[robot_id])
+            # workspace/code/ is used so that code.package imports aren't used. 
+            # This means we can copy a students entire /code/ directory and copy it into our code directory, 
+            # and since all imports are below /code/, the imports won't fail.
+            possible_locations = ["workspace/code/", "package"]
+            extra_dirs = []
+            for loc in possible_locations:
+                loc_path = find_abs_directory(loc, create=True)
+                if format_filename.startswith(loc_path):
+                    while format_filename.startswith(loc_path):
+                        format_filename, file = split(format_filename)
+                        extra_dirs.append(format_filename)
+                    break
+            else:
+                raise ValueError(f"Expected code to be in one of the following locations: {possible_locations}")
 
             self.processes[robot_id] = Process(
                 target=attach_bot,
                 args=(
                     robot_id,
                     self.scriptnames[robot_id],
+                    extra_dirs[::-1],
                     StateHandler.instance.shared_info["result_queue"],
                     StateHandler.instance.shared_info["result_queue"]._internal_size,
                     self.queues[robot_id][self.SEND],
@@ -325,7 +344,6 @@ class StateHandler:
 def initialiseFromConfig(config, send_queues, recv_queues):
     from collections import defaultdict
     from ev3sim.robot import initialise_bot, RobotInteractor
-    from ev3sim.file_helper import find_abs
 
     ev3sim.visual.utils.GLOBAL_COLOURS = config.get("colours", {})
     # Keep track of index w.r.t. filename.

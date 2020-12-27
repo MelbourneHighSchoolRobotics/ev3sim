@@ -15,7 +15,7 @@ last_checked_tick = -1
 communications_messages = NonMultiQueue()
 
 
-def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_internal, sq, sq_internal):
+def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_internal, rq, rq_internal, sq, sq_internal):
     result_queue._internal_size = result_queue_internal
     rq._internal_size = rq_internal
     sq._internal_size = sq_internal
@@ -38,7 +38,7 @@ def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_i
             )
 
         @mock.patch("builtins.print", print_mock)
-        def run_code(fname, recv_q: multiprocessing.Queue, send_q: multiprocessing.Queue):
+        def run_code(fname, fake_roots, recv_q: multiprocessing.Queue, send_q: multiprocessing.Queue):
             ### TIMING FUNCTIONS
 
             def handle_recv(msg_type, msg):
@@ -212,6 +212,7 @@ def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_i
 
             fake_path = sys.path.copy()
             fake_path.append(called_from)
+            fake_path = fake_roots + fake_path
 
             ### EV3DEV2 MOCKS
 
@@ -429,7 +430,7 @@ def attach_bot(robot_id, filename, result_queue, result_queue_internal, rq, rq_i
 
             run_script(fname)
 
-        run_code(filename, rq, sq)
+        run_code(filename, fake_roots, rq, sq)
     except Exception as e:
         import traceback
 
