@@ -53,7 +53,7 @@ class UltrasonicSensorMixin:
                 [float(v) for v in startPosition],
                 [float(v) for v in endPosition],
                 self.RAYCAST_RADIUS,
-                pymunk.ShapeFilter(mask=STATIC_CATEGORY & DYNAMIC_CATEGORY),
+                pymunk.ShapeFilter(mask=STATIC_CATEGORY | DYNAMIC_CATEGORY),
             )
             i = 0
             for obj in self.ignore_objects:
