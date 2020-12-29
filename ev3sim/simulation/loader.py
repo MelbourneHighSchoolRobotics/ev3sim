@@ -70,7 +70,7 @@ class ScriptLoader:
             # workspace/code/ is used so that code.package imports aren't used.
             # This means we can copy a students entire /code/ directory and copy it into our code directory,
             # and since all imports are below /code/, the imports won't fail.
-            possible_locations = ["workspace/code/", "package"]
+            possible_locations = ["workspace/code/", "package", "workspace/custom/"]
             extra_dirs = []
             for loc in possible_locations:
                 loc_path = find_abs_directory(loc, create=True)
