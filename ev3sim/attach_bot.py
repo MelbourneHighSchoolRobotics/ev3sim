@@ -219,6 +219,7 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             ### CODE HELPERS
 
             from ev3sim.code_helpers import CommandSystem
+
             class MockCommandSystem(CommandSystem):
                 @classmethod
                 def send_command(cls, command_type, command_data):

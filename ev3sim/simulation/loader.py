@@ -202,8 +202,10 @@ class ScriptLoader:
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
                     elif write_type == BOT_COMMAND:
+
                         class Event:
                             pass
+
                         event = Event()
                         event.type = EV3SIM_BOT_COMMAND
                         event.command_type = data["command_type"]
