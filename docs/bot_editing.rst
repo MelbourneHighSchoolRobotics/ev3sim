@@ -15,6 +15,8 @@ If you want to change the design of an existing bot, you can select that bot and
   :width: 600
   :alt: The bot select screen highlighting the new and edit buttons.
 
+If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Open`` to edit the bot.
+
 If you are creating a new bot, you'll be prompted to pick a baseplate for the bot.
 The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.
 
@@ -82,6 +84,8 @@ Adding code to a bot
 --------------------
 
 Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.
+
+If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Edit`` to go to the same window.
 
 .. image:: images/bot_menu_settings.png
   :width: 600
