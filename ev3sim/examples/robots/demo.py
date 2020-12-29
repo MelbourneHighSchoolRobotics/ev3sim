@@ -11,7 +11,7 @@ from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
 from ev3dev2.button import Button
-from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick, robot_id, format_print
+from ev3sim.code_helpers import CommandSystem, is_sim, EventSystem, wait_for_tick, robot_id, format_print
 
 
 def handle_scored(data):
@@ -82,6 +82,22 @@ while True:
             f"<b>Motor speeds</b>: {m1Speed:.2f} and {m2Speed:.2f}\n"
             + f"<i>will run for {current_step_wait:.2f}s.</i>",
             alive_id=f"{robot_id}_motor",
+        )
+        # Draw a circle to show whether we are going fast or slow.
+        CommandSystem.send_command(
+            CommandSystem.TYPE_DRAW,
+            {
+                "obj": {
+                    "name": "Circle",
+                    "fill": "#00ff00" if abs(m1Speed) + abs(m2Speed) > 100 else "#ff0000",
+                    "radius": 3,
+                    "stroke": None,
+                    "position": [15, 0],
+                    "zPos": 20,
+                },
+                "key": "ball",
+                "life": None,
+            },
         )
         lm1.on_for_seconds(m1Speed, current_step_wait, block=False)
         lm2.on_for_seconds(m2Speed, current_step_wait, block=False)

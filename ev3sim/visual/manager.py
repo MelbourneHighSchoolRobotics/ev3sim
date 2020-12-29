@@ -1,3 +1,5 @@
+from ev3sim.code_helpers import CommandSystem
+from ev3sim.constants import EV3SIM_BOT_COMMAND
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.settings import BindableValue, ObjectSetting
 from ev3sim.search_locations import theme_locations
@@ -43,12 +45,14 @@ class ScreenObjectManager:
         ScreenObjectManager.instance = self
         self.objects = {}
         self.sorting_order = []
+        self.kill_keys = []
         self.screen_stack = []
         self.initFromKwargs(**kwargs)
 
     def resetVisualElements(self):
         self.sorting_order = []
         self.objects = {}
+        self.kill_keys = []
 
     def initFromKwargs(self, **kwargs):
         self.original_SCREEN_WIDTH = self.SCREEN_WIDTH
@@ -154,10 +158,14 @@ class ScreenObjectManager:
             else:
                 self.pushScreen(self.SCREEN_MENU)
 
-    def registerVisual(self, obj: "visual.objects.IVisualElement", key) -> str:  # noqa: F821
+    def registerVisual(
+        self, obj: "visual.objects.IVisualElement", key, kill_time=None, overwrite_key=False
+    ) -> str:  # noqa: F821
         assert (
-            key not in self.objects
+            key not in self.objects or overwrite_key
         ), f"Tried to register visual element to screen with key that is already in use: {key}"
+        if key in self.objects:
+            self.sorting_order.remove(key)
         self.objects[key] = obj
         # It is assumed the z-value of an item will note change as time progresses,
         # so no extra checks need to be made to sorting_order.
@@ -168,6 +176,8 @@ class ScreenObjectManager:
                 break
         else:
             self.sorting_order.append(key)
+        if kill_time is not None:
+            self.kill_keys.append([key, kill_time])
         return key
 
     def unregisterVisual(self, key) -> "visual.objects.IVisualElement":  # noqa: F821
@@ -189,6 +199,16 @@ class ScreenObjectManager:
         blit_screen = self.screen if to_screen is None else to_screen
 
         blit_screen.fill(self.background_colour if bg is None else bg)
+
+        to_remove = []
+        for x in range(len(self.kill_keys)):
+            self.kill_keys[x][1] -= 1 / ScriptLoader.instance.VISUAL_TICK_RATE
+            if self.kill_keys[x][1] < 0:
+                self.unregisterVisual(self.kill_keys[x][0])
+                to_remove.append(x)
+        for x in to_remove[::-1]:
+            del self.kill_keys[x]
+
         if to_screen is None:
             # `.update` can call `applyToScreen`
             self.screens[self.screen_stack[-1]].update(1 / ScriptLoader.instance.VISUAL_TICK_RATE)
@@ -248,6 +268,41 @@ class ScreenObjectManager:
                     StateHandler.instance.is_running = False
                 else:
                     self.popScreen()
+            if event.type == EV3SIM_BOT_COMMAND and event.command_type == CommandSystem.TYPE_DRAW:
+                try:
+                    possible_keys = []
+                    for key in ScriptLoader.instance.object_map.keys():
+                        if key.startswith(event.robot_id):
+                            possible_keys.append(key)
+                    if len(possible_keys) == 0:
+                        break
+                    possible_keys.sort(key=len)
+                    parent_bot = ScriptLoader.instance.object_map[possible_keys[0]]
+
+                    key = event.robot_id + "-" + event.payload["key"]
+                    to_remove = []
+                    for x, child in enumerate(parent_bot.children):
+                        if child.key == key:
+                            to_remove.append(x)
+                    for x in to_remove[::-1]:
+                        del parent_bot.children[x]
+
+                    from ev3sim.objects.base import objectFactory
+
+                    obj = objectFactory(
+                        physics=False,
+                        visual=event.payload["obj"],
+                        position=event.payload["obj"].get("position", [0, 0]),
+                        rotation=event.payload["obj"].get("rotation", 0),
+                        key=key,
+                    )
+                    parent_bot.children.append(obj)
+                    obj.parent = parent_bot
+                    parent_bot.updateVisualProperties()
+                    life = event.payload.get("life", 3)
+                    self.registerVisual(obj.visual, key, kill_time=life, overwrite_key=True)
+                except:
+                    pass
         return events
 
     def relativeScreenScale(self):

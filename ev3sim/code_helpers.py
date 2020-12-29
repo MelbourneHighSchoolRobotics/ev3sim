@@ -96,6 +96,7 @@ class EventSystem:
 
 
 class CommandSystem:
+    TYPE_DRAW = "Draw"
     TYPE_CUSTOM = "Custom"
 
     @classmethod
