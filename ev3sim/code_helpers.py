@@ -95,6 +95,14 @@ class EventSystem:
         pass
 
 
+class CommandSystem:
+    TYPE_CUSTOM = "Custom"
+
+    @classmethod
+    def send_command(cls, command_type, command_data):
+        pass
+
+
 def format_print(*args, alive_id=None, life=3, sep=" ", end="\n"):
     msg = sep.join(map(str, args)) + end
     # Remove formatting

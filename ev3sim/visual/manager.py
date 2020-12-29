@@ -55,6 +55,7 @@ class ScreenObjectManager:
         self.original_SCREEN_HEIGHT = self.SCREEN_HEIGHT
         self._SCREEN_WIDTH_ACTUAL, self._SCREEN_HEIGHT_ACTUAL = self.SCREEN_WIDTH, self.SCREEN_HEIGHT
         self.background_colour = self.BACKGROUND_COLOUR
+        self.unhandled_events = []
 
     @property
     def background_colour(self):
@@ -211,7 +212,8 @@ class ScreenObjectManager:
     def handleEvents(self):
         from ev3sim.simulation.loader import StateHandler, ScriptLoader
 
-        events = pygame.event.get()
+        events = list(pygame.event.get()) + self.unhandled_events
+        self.unhandled_events = []
         for event in events:
             if not StateHandler.instance.is_running:
                 break

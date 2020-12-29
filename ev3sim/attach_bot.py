@@ -218,6 +218,21 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
 
             ### CODE HELPERS
 
+            from ev3sim.code_helpers import CommandSystem
+            class MockCommandSystem(CommandSystem):
+                @classmethod
+                def send_command(cls, command_type, command_data):
+                    send_q.put(
+                        (
+                            BOT_COMMAND,
+                            {
+                                "robot_id": robot_id,
+                                "command_type": command_type,
+                                "payload": command_data,
+                            },
+                        )
+                    )
+
             @classmethod
             def handle_events(cls):
                 """Since we can only handle events in mocked function calls, define a function to handle all of the existing events."""
@@ -424,6 +439,7 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
             @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
             @mock.patch("builtins.__import__", import_mock)
+            @mock.patch("ev3sim.code_helpers.CommandSystem", MockCommandSystem)
             @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
             @mock.patch("sys.path", fake_path)
             def run_script(fname):
