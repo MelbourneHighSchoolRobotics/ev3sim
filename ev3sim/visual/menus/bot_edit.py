@@ -1197,7 +1197,7 @@ class BotEditMenu(BaseMenu):
                 "Circle",
                 {
                     "name": "Circle",
-                    "radius": 1,
+                    "radius": 8,
                     "fill": "#878E88",
                     "stroke_width": 0.1,
                     "stroke": "#ffffff",
@@ -1207,6 +1207,20 @@ class BotEditMenu(BaseMenu):
                 self.SELECTED_CIRCLE,
             ),
             (
+                "Rectangle",
+                {
+                    "name": "Rectangle",
+                    "fill": "#878E88",
+                    "stroke_width": 0.1,
+                    "stroke": "#ffffff",
+                    "zPos": self.BASE_ZPOS,
+                    "width": 8,
+                    "height": 4,
+                },
+                "rectangle",
+                self.SELECTED_RECTANGLE,
+            ),
+            (
                 "Polygon",
                 {
                     "name": "Polygon",
@@ -1214,11 +1228,11 @@ class BotEditMenu(BaseMenu):
                     "stroke_width": 0.1,
                     "stroke": "#ffffff",
                     "verts": [
-                        [np.sin(0), np.cos(0)],
-                        [np.sin(2 * np.pi / 5), np.cos(2 * np.pi / 5)],
-                        [np.sin(4 * np.pi / 5), np.cos(4 * np.pi / 5)],
-                        [np.sin(6 * np.pi / 5), np.cos(6 * np.pi / 5)],
-                        [np.sin(8 * np.pi / 5), np.cos(8 * np.pi / 5)],
+                        [8 * np.sin(0), 8 * np.cos(0)],
+                        [8 * np.sin(2 * np.pi / 5), 8 * np.cos(2 * np.pi / 5)],
+                        [8 * np.sin(4 * np.pi / 5), 8 * np.cos(4 * np.pi / 5)],
+                        [8 * np.sin(6 * np.pi / 5), 8 * np.cos(6 * np.pi / 5)],
+                        [8 * np.sin(8 * np.pi / 5), 8 * np.cos(8 * np.pi / 5)],
                     ],
                     "zPos": self.BASE_ZPOS,
                 },
@@ -1236,6 +1250,27 @@ class BotEditMenu(BaseMenu):
                 self.removeBaseplatePicker()
 
             def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.MOUSEWHEEL:
+                    self.scroll_container.vert_scroll_bar.scroll_position -= event.y * 10
+                    self.scroll_container.vert_scroll_bar.scroll_position = min(
+                        max(
+                            self.scroll_container.vert_scroll_bar.scroll_position,
+                            self.scroll_container.vert_scroll_bar.top_limit,
+                        ),
+                        self.scroll_container.vert_scroll_bar.bottom_limit
+                        - self.scroll_container.vert_scroll_bar.sliding_button.relative_rect.height,
+                    )
+                    x_pos = 0
+                    y_pos = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        + self.scroll_container.vert_scroll_bar.arrow_button_height
+                    )
+                    self.scroll_container.vert_scroll_bar.sliding_button.set_relative_position((x_pos, y_pos))
+                    self.scroll_container.vert_scroll_bar.start_percentage = (
+                        self.scroll_container.vert_scroll_bar.scroll_position
+                        / self.scroll_container.vert_scroll_bar.scrollable_height
+                    )
+                    self.scroll_container.vert_scroll_bar.has_moved_recently = True
                 if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     for show, obj, name, select in baseplate_options:
                         if f"{name}_button" in event.ui_object_id:
@@ -1254,6 +1289,7 @@ class BotEditMenu(BaseMenu):
                             }
                             self.updateZpos()
                             self2.kill()
+                            return True
                 return super().process_event(event)
 
         picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
@@ -1265,14 +1301,20 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("device_dialog"),
         )
 
+        self.scroll_container = pygame_gui.elements.UIScrollingContainer(
+            relative_rect=pygame.Rect(20, 10, picker_size[0] - 60, picker_size[1] - 80),
+            container=self.picker,
+            manager=self,
+        )
+
         self.text = pygame_gui.elements.UITextBox(
             html_text="""\
 All bots require a <font color="#06d6a0">baseplate</font>.<br><br>\
 All other objects are placed on this baseplate. After creating it, the baseplate type <font color="#e63946">cannot</font> be changed. (Although it's characteristics can).\
 """,
-            relative_rect=pygame.Rect(30, 10, picker_size[0] - 60, 140),
+            relative_rect=pygame.Rect(0, 0, picker_size[0] - 80, 140),
             manager=self,
-            container=self.picker,
+            container=self.scroll_container,
             object_id=pygame_gui.core.ObjectID("text_dialog_baseplate", "text_dialog"),
         )
 
@@ -1282,35 +1324,27 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                 f"{name}_label",
                 pygame_gui.elements.UILabel(
                     relative_rect=pygame.Rect(
-                        30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),
-                        150 + (picker_size[1] - 250 + 20) * (i // 2),
-                        (picker_size[0] - 120) / 2,
+                        (i % 2) * ((picker_size[0] - 140) / 2 + 30),
+                        140 + (picker_size[1] - 250 + 20) * (i // 2),
+                        (picker_size[0] - 140) / 2,
                         25,
                     ),
                     text=show,
                     manager=self,
-                    container=self.picker,
+                    container=self.scroll_container,
                     object_id=pygame_gui.core.ObjectID(f"{name}_label", "baseplate_label"),
                 ),
+            )
+            self.scroll_container.set_scrollable_area_dimensions(
+                (picker_size[0] - 80, 150 + (picker_size[1] - 230) * ((len(baseplate_options) + 1) // 2))
             )
             img = pygame.image.load(find_abs(f"ui/icon_{name}.png", allowed_areas=asset_locations()))
             img.set_colorkey((0, 255, 0))
             but_rect = pygame.Rect(
-                30 + (i % 2) * ((picker_size[0] - 120) / 2 + 30),
-                180 + (picker_size[1] - 250 + 20) * (i // 2),
-                (picker_size[0] - 120) / 2,
+                (i % 2) * ((picker_size[0] - 140) / 2 + 30),
+                170 + (picker_size[1] - 250 + 20) * (i // 2),
+                (picker_size[0] - 140) / 2,
                 picker_size[1] - 250 - 30,
-            )
-            setattr(
-                self,
-                f"{name}_img",
-                pygame_gui.elements.UIImage(
-                    relative_rect=but_rect,
-                    image_surface=img,
-                    manager=self,
-                    container=self.picker,
-                    object_id=pygame_gui.core.ObjectID(f"{name}_img", "baseplate_img"),
-                ),
             )
             setattr(
                 self,
@@ -1319,8 +1353,23 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     relative_rect=but_rect,
                     text="",
                     manager=self,
-                    container=self.picker,
+                    container=self.scroll_container,
                     object_id=pygame_gui.core.ObjectID(f"{name}_button", "invis_button"),
+                ),
+            )
+            # So it isn't a square.
+            if name == "rectangle":
+                but_rect.height /= 2
+                but_rect.top += but_rect.height / 2
+            setattr(
+                self,
+                f"{name}_img",
+                pygame_gui.elements.UIImage(
+                    relative_rect=but_rect,
+                    image_surface=img,
+                    manager=self,
+                    container=self.scroll_container,
+                    object_id=pygame_gui.core.ObjectID(f"{name}_img", "baseplate_img"),
                 ),
             )
 
