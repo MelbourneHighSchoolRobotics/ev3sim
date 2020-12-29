@@ -97,6 +97,7 @@ while True:
                 },
                 "key": "ball",
                 "life": None,
+                "on_bot": True,
             },
         )
         lm1.on_for_seconds(m1Speed, current_step_wait, block=False)

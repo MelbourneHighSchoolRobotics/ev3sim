@@ -296,9 +296,10 @@ class ScreenObjectManager:
                         rotation=event.payload["obj"].get("rotation", 0),
                         key=key,
                     )
-                    parent_bot.children.append(obj)
-                    obj.parent = parent_bot
-                    parent_bot.updateVisualProperties()
+                    if event.payload.get("on_bot", False):
+                        parent_bot.children.append(obj)
+                        obj.parent = parent_bot
+                        parent_bot.updateVisualProperties()
                     life = event.payload.get("life", 3)
                     self.registerVisual(obj.visual, key, kill_time=life, overwrite_key=True)
                 except:
