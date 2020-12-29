@@ -43,7 +43,7 @@ Printing to console
 
 Printing information is the simplest, quickest way to debug your code. Provided you have enabled the console in the settings of EV3Sim (It is enabled by default), you can print information to the console when simulating.
 
-However, there is some additional arguments you can pass to the print function, by prepending your message with ``[]`` and adding some additional information:
+However, you can customise how your printed message looks on the screen using the code_helper function ``format_print``.
 
 Bold, Italics, Colours
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -53,8 +53,10 @@ Example:
 
 .. code-block:: python
 
+    from ev3sim.code_helpers import format_print
+
     # The color specified below is a hex string.
-    print("<b>Hello world!</b> I am <font color=\"#ff0000\">red</font> and <i>I slant</i>")
+    format_print("<b>Hello world!</b> I am <font color=\"#ff0000\">red</font> and <i>I slant</i>")
 
 .. raw:: html
 
@@ -62,7 +64,7 @@ Example:
 
 .. role:: red
 
-Will print "**Hello world!** I am :red:`red` and *I slant*".
+Will print "**Hello world!** I am :red:`red` and *I slant*" in the simulator, but "Hello world! I am red and I slant" will be printed in real life (and the logs).
 
 Life
 ^^^^
@@ -72,12 +74,14 @@ Example:
 
 .. code-block:: python
 
+    from ev3sim.code_helpers import format_print
+
     # This message will stay on the console for 3 seconds
-    print("Hello world!")
+    format_print("Hello world!")
     # This message will stay on the console for 5 seconds
-    print("[life=5]Hello world!")
+    format_print("Hello world!", life=3)
     # This message will stay on the console for 1 second.
-    print("[life=1]Hello world!")
+    format_print("Hello world!", life=1)
 
 Alive ID
 ^^^^^^^^
@@ -88,12 +92,12 @@ Example:
 
 .. code-block:: python
 
-    from ev3sim.code_helpers import wait_for_tick, robot_id
+    from ev3sim.code_helpers import wait_for_tick, robot_id, format_print
 
     x = 0
     while True:
         x += 0.001
-        print(f"[alive_id=number-{robot_id}]x value: {x:.2f}")
+        format_print(f"x value: {x:.2f}", alive_id=f"number-{robot_id}")
         wait_for_tick()
 
 Logs
