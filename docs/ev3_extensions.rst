@@ -5,6 +5,8 @@ While your robots still run python-ev3dev2 code in the simulation, you also have
 
 Almost all of the below functionality is available in the package ``ev3sim.code_helpers``. In order for this code to work on your physical robot, there also needs to be a package on the physical bot filesystem called ``ev3sim.code_helpers``, containing `this file`_.
 
+For a demo of most of these features, see ``demo.bot`` in the simulator. The code it runs is available `here`_.
+
 Waiting for simulation ticks
 ----------------------------
 
@@ -172,6 +174,52 @@ Fires whenever you are placed in the penalty box.
 ^^^^^^^^^^^^^^^^^^
 Fires whenever you are removed from the penalty box.
 
+Sending Commands
+----------------
+
+While in the real world this isn't possible, in a simulated world you might want the bot to be able to programmatically send commands to the simulation, allowing for different actions to occur.
+You can achieve this using the ``CommandSystem`` object.
+
+Use of the command system is rather simple; you specify a command type, and command information to go along with that type.
+Here is the list of supported commands:
+
+``CommandSystem.TYPE_DRAW``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Draws an object to the screen using the same syntax as the simulator. The data passed in must be a dictionary with the following keys:
+
+- ``obj``: The visual representation of the object.
+- ``key``: The key the visual object will be referenced by (This means you can update the object position by sending the same key).
+- ``life`` (Optional, default=3): How long this object will remain visual. If ``None`` then it will persist indefinitely.
+- ``on_bot`` (Optional, default=False): Whether to anchor this object to the bot (So that position (0, 0) is the bot's centre).
+
+``CommandSystem.TYPE_CUSTOM``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A custom event that can be caught by any custom presets you want to define.
+
+Example:
+
+.. code-block:: python
+
+    from ev3sim.code_helpers import CommandSystem, wait_for_tick
+
+    # Spawn a circle at the bot's centre.
+    CommandSystem.send_command(CommandSystem.TYPE_DRAW, {
+        "obj": {
+            "name": "Circle",
+            "fill": "#ffffff",
+            "radius": 3,
+            "stroke": None,
+            "position": [0, 0],
+            "zPos": 20,
+        },
+        "key": "ball",
+        "life": None,
+        "on_bot": True,
+    })
+    wait_for_tick()
+
 Robot Communications
 --------------------
 
@@ -203,6 +251,7 @@ For an example of robots communicating device data to each other (in this case t
 
 Sources: `communication_client.py`_, `communication_server.py`_
 
+.. _here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/demo.py
 .. _this file: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
 .. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
 .. _communication_client.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_client.py
