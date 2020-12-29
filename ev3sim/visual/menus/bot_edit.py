@@ -37,6 +37,12 @@ class BotEditMenu(BaseMenu):
         self.onSave = None
 
     def initWithKwargs(self, **kwargs):
+        # Try removing the baseplate dialog if it still exists.
+        try:
+            self.mode = self.MODE_NORMAL
+            self.picker.kill()
+        except:
+            pass
         self.current_mpos = (0, 0)
         self.selected_index = None
         self.selected_type = self.SELECTED_NOTHING
@@ -1223,7 +1229,7 @@ class BotEditMenu(BaseMenu):
 
         class BaseplatePicker(pygame_gui.elements.UIWindow):
             def kill(self2):
-                if self.selected_index != "Baseplate":
+                if self.selected_index != "Baseplate" and self.mode == self.MODE_BASEPLATE_DIALOG:
                     # We cannot close this until a baseplate has been selected.
                     return
                 super().kill()
