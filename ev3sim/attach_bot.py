@@ -26,7 +26,6 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
 
         def print_mock(*objects, sep=" ", end="\n"):
             message = sep.join(str(obj) for obj in objects) + end
-            message = f"[{robot_id}] " + message
             sq.put(
                 (
                     MESSAGE_PRINT,
@@ -37,7 +36,24 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                 )
             )
 
+        def format_print_mock(*objects, alive_id=None, life=3, sep=" ", end="\n"):
+            message = sep.join(str(obj) for obj in objects) + end
+            sq.put(
+                (
+                    MESSAGE_PRINT,
+                    {
+                        "robot_id": robot_id,
+                        "data": message,
+                        "kwargs": {
+                            "alive_id": alive_id,
+                            "life": life,
+                        },
+                    },
+                )
+            )
+
         @mock.patch("builtins.print", print_mock)
+        @mock.patch("ev3sim.code_helpers.format_print", format_print_mock)
         def run_code(fname, fake_roots, recv_q: multiprocessing.Queue, send_q: multiprocessing.Queue):
             ### TIMING FUNCTIONS
 

@@ -72,38 +72,17 @@ class SimulatorMenu(BaseMenu):
         self._all_objs.append(self.console_bg)
 
     def formatMessage(self, msg):
-        """Figures out the lifespan, whether to kill, and any extra styling for a message."""
-        life = 3
-        kill = True
-        if msg.startswith("[Robot-"):
-            # Generate the unformatted text
-            unformatted_text = "]".join(msg.split("]")[1:])[1:]
-            # Color the Robot-id.
-            msg = msg.replace("\n", "<br>")
-            for i, col in enumerate(self.ROBOT_COLOURS):
-                repl = f"[Robot-{i}]"
-                msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
-        else:
-            unformatted_text = msg
-        if unformatted_text.startswith("["):
-            # Try to get any options here.
-            try:
-                option_string = unformatted_text.split("]")[0][1:]
-                options = option_string.split()
-                for opt in options:
-                    key, v = opt.split("=")
-                    if key == "life":
-                        life = float(v)
-                    elif key == "alive_id":
-                        life = v
-                        kill = False
-                msg = msg.replace(f"[{option_string}]", "")
-            except:
-                pass
-        return msg, life, kill
+        """Adds additional formatting to any messages printed to console."""
+        msg = msg.replace("\n", "<br>")
+        for i, col in enumerate(self.ROBOT_COLOURS):
+            repl = f"[Robot-{i}]"
+            msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
+        return msg
 
-    def printStyledMessage(self, msg):
-        self.printMessage(*self.formatMessage(msg))
+    def printStyledMessage(self, msg, alive_id=None, life=3):
+        if alive_id is not None:
+            life = alive_id
+        self.printMessage(self.formatMessage(msg), msg_life=life, kill=alive_id is None)
 
     def printMessage(self, msg, msg_life=3, kill=True):
         for i, message in enumerate(self.messages):

@@ -11,7 +11,7 @@ from ev3dev2.motor import LargeMotor
 from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 from ev3dev2.sensor import Sensor
 from ev3dev2.button import Button
-from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick, robot_id
+from ev3sim.code_helpers import is_sim, EventSystem, wait_for_tick, robot_id, format_print
 
 
 def handle_scored(data):
@@ -78,13 +78,10 @@ while True:
         last_step_time = time.time()
         m1Speed, m2Speed = random_between(*MOTOR_SPEEDS), random_between(*MOTOR_SPEEDS)
         current_step_wait = random_between(*STEP_LENGTH)
-        print(
-            (
-                # Keep the message alive in console, and just update the values.
-                f"[alive_id={robot_id}_motor]"
-                + f"<b>Motor speeds</b>: {m1Speed:.2f} and {m2Speed:.2f}\n"
-                + f"<i>will run for {current_step_wait:.2f}s.</i>"
-            )
+        format_print(
+            f"<b>Motor speeds</b>: {m1Speed:.2f} and {m2Speed:.2f}\n"
+            + f"<i>will run for {current_step_wait:.2f}s.</i>",
+            alive_id=f"{robot_id}_motor",
         )
         lm1.on_for_seconds(m1Speed, current_step_wait, block=False)
         lm2.on_for_seconds(m2Speed, current_step_wait, block=False)

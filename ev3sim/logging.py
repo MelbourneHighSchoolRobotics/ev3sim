@@ -26,9 +26,16 @@ class Logger:
             # Don't write anything
             pass
 
-    def writeMessage(self, robot_id, msg):
+    def writeMessage(self, robot_id, msg, **kwargs):
         if Logger.LOG_CONSOLE:
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printStyledMessage(msg)
+            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SIM].printStyledMessage(
+                f"[{robot_id}] {msg}", **kwargs
+            )
+        # Remove formatting.
+        msg = msg.replace("<b>", "").replace("</b>", "").replace("<i>", "").replace("</i>", "").replace("</font>", "")
+        split = msg.split("<font")
+        for x in range(1, len(split) - 1):
+            split[x] = ">".join(split[x].split(">")[1:])
         with open(self.getFilename(robot_id), "a") as f:
             f.write(msg)
 

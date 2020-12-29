@@ -200,7 +200,7 @@ class ScriptLoader:
                             data["robot_id"], data["send_to"], data["connection_string"], data["data"]
                         )
                     elif write_type == MESSAGE_PRINT:
-                        Logger.instance.writeMessage(data["robot_id"], data["data"])
+                        Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
                 except Empty:
                     break
 
