@@ -239,8 +239,9 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                 """Since we can only handle events in mocked function calls, define a function to handle all of the existing events."""
                 while cur_events.qsize():
                     event_name, event_data = cur_events.get()
-                    func = getattr(cls, event_name)
-                    func(event_data)
+                    if hasattr(cls, event_name):
+                        func = getattr(cls, event_name)
+                        func(event_data)
 
             fake_path = sys.path.copy()
             fake_path.append(called_from)
