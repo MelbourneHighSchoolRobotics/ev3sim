@@ -177,7 +177,12 @@ class ScreenObjectManager:
         else:
             self.sorting_order.append(key)
         if kill_time is not None:
-            self.kill_keys.append([key, kill_time])
+            for x in range(len(self.kill_keys)):
+                if self.kill_keys[x][0] == key:
+                    self.kill_keys[x] = [key, kill_time]
+                    break
+            else:
+                self.kill_keys.append([key, kill_time])
         return key
 
     def unregisterVisual(self, key) -> "visual.objects.IVisualElement":  # noqa: F821
