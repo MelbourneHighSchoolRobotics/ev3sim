@@ -5,6 +5,7 @@ from ev3sim.settings import BindableValue, ObjectSetting
 from ev3sim.search_locations import theme_locations
 import pygame
 import pygame.freetype
+import os
 import yaml
 from typing import Dict, List, Tuple
 
@@ -356,7 +357,12 @@ class ScreenObjectManager:
                 screen.set_at((x, y), val)
         self.resetVisualElements()
         ScriptLoader.instance.reset()
-        if directory.startswith("workspace"):
+        if filename.startswith("custom"):
+            show_dir = os.path.split(os.path.split(filename)[0])[0] + "/images/"
+            rel_dir = "workspace/" + show_dir
+            directory = "workspace/" + os.path.split(filename)[0]
+            filename = os.path.split(filename)[1]
+        elif directory.startswith("workspace"):
             show_dir = "images/"
             rel_dir = "workspace/images/"
         elif directory.startswith("package"):

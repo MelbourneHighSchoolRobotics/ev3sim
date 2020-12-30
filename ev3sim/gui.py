@@ -111,6 +111,7 @@ def main(passed_args=None):
                     dir_path = find_abs_directory(possible_dir, create=True)
                     if fname.startswith(dir_path):
                         fname = fname[len(dir_path) :]
+                        fname = fname.replace("\\", "/")
                         break
                 batch_path = find_abs(fname, batch_locations())
                 if BatchValidator.validate_file(batch_path):
@@ -151,6 +152,7 @@ def main(passed_args=None):
                         dir_path = find_abs_directory(possible_dir, create=True)
                         if fname.startswith(dir_path):
                             fname = fname[len(dir_path) :]
+                            fname = fname.replace("\\", "/")
                             break
                     bot_path = find_abs(fname, bot_locations())
                     if BotValidator.validate_file(bot_path):
