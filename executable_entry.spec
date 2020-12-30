@@ -19,7 +19,6 @@ a = Analysis(['executable_entry.py'],
              ],
              hiddenimports=[
                  'opensimplex',
-                 'pyperclip',
                  # Not sure why these are needed specifically. Might think that pyinstaller isn't windows and so doesn't include the packages.
                  'ev3dev2.button',
                  'ev3dev2.motor',

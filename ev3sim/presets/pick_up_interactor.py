@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 import pymunk
-import pyperclip
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.world import World
 from ev3sim.visual.utils import screenspace_to_worldspace
@@ -55,18 +54,6 @@ class PickUpInteractor(IInteractor):
                     self.obj_grabbed = True
                     self.obj_rel_pos = self.obj.position - m_pos
                     self.obj_m_pos = m_pos
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-            # If a robot is right clicked, copy it's ID for use in the attach script.
-            m_pos = screenspace_to_worldspace(event.pos)
-            shapes = World.instance.space.point_query(
-                [float(v) for v in m_pos], 0.0, pymunk.ShapeFilter(mask=DYNAMIC_CATEGORY)
-            )
-            if shapes:
-                max_z = max(pq.shape.obj.clickZ for pq in shapes)
-                shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]
-                self.obj = shapes[0].shape.obj
-                if hasattr(self.obj, "robot_class"):
-                    pyperclip.copy(self.obj.robot_class.ID)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.obj_grabbed:
             self.obj_grabbed = False
             # Give velocity based on previous mouse positions.

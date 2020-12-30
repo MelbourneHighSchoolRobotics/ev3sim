@@ -2,7 +2,6 @@ numpy==1.19.2
 pygame>=2.0.0
 PyYAML>=3.13
 pymunk>=6.0.0
-pyperclip>=1.8.0
 grpcio>=1.30.0
 grpcio-tools>=1.30.0
 python-ev3dev2>=2.1.0.post1
