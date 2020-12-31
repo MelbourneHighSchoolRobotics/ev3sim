@@ -11,7 +11,7 @@ block_cipher = None
 
 
 a = Analysis(['executable_entry.py'],
-             pathex=['C:\\Users\\jgoer\\Documents\\GitHub\\RoboCup_Simulator'],
+             pathex=['.'],
              binaries=[],
              datas=[
                  ('ev3sim', 'ev3sim'),
