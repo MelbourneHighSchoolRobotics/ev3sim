@@ -45,7 +45,6 @@ exe = EXE(pyz,
           console=False,
           icon="ev3sim/assets/Logo.ico",
           version="version_file.txt")
-print(a.datas)
 coll = COLLECT(exe,
                a.binaries + chipmunk_libs,
                a.zipfiles,
