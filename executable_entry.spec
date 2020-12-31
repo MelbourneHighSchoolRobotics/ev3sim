@@ -15,8 +15,6 @@ a = Analysis(['executable_entry.py'],
              binaries=[],
              datas=[
                  ('ev3sim', 'ev3sim'),
-                 # Seems pyinstaller linux needs some help with these areas?
-                 ('ev3sim/assets/', 'ev3sim/assets/'),
                  (pygame_data_loc, 'pygame_gui/data'),
              ],
              hiddenimports=[
@@ -47,6 +45,7 @@ exe = EXE(pyz,
           console=False,
           icon="ev3sim/assets/Logo.ico",
           version="version_file.txt")
+print(a.datas)
 coll = COLLECT(exe,
                a.binaries + chipmunk_libs,
                a.zipfiles,
