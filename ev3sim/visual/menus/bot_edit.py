@@ -511,8 +511,12 @@ class BotEditMenu(BaseMenu):
                         obj.visual.customMap = self.customMap
                         obj.visual.offset_position = interactor.relative_positions[i]
                         obj.visual.position = [
-                            self.current_mpos[0] + obj.visual.offset_position[0],
-                            self.current_mpos[1] + obj.visual.offset_position[1],
+                            self.current_mpos[0]
+                            + obj.visual.offset_position[0] * np.cos(obj.visual.rotation)
+                            + obj.visual.offset_position[1] * np.sin(obj.visual.rotation),
+                            self.current_mpos[1]
+                            + obj.visual.offset_position[1] * np.cos(obj.visual.rotation)
+                            + obj.visual.offset_position[0] * np.sin(obj.visual.rotation),
                         ]
                     break
         else:
@@ -680,8 +684,12 @@ class BotEditMenu(BaseMenu):
                     if self.current_holding_kwargs["type"] == "device":
                         for obj in self.current_holding:
                             obj.visual.position = [
-                                self.current_mpos[0] + obj.visual.offset_position[0],
-                                self.current_mpos[1] + obj.visual.offset_position[1],
+                                self.current_mpos[0]
+                                + obj.visual.offset_position[0] * np.cos(obj.visual.rotation)
+                                + obj.visual.offset_position[1] * np.sin(obj.visual.rotation),
+                                self.current_mpos[1]
+                                + obj.visual.offset_position[1] * np.cos(obj.visual.rotation)
+                                + obj.visual.offset_position[0] * np.sin(obj.visual.rotation),
                             ]
                     else:
                         self.current_holding.position = self.current_mpos
