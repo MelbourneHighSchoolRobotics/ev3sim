@@ -1,10 +1,11 @@
-name: Executable Creation
+name: Windows Executable Creation
 
 on:
   push:
     branches:    
       - main
-      - executable
+      # TODO: Remove me before merging!
+      - version_2
 
 jobs:
   create-exe:
@@ -33,5 +34,5 @@ jobs:
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v1
       with:
-        name: Executable
+        name: windows_package
         path: dist/ev3sim
