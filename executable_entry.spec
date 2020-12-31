@@ -15,6 +15,8 @@ a = Analysis(['executable_entry.py'],
              binaries=[],
              datas=[
                  ('ev3sim', 'ev3sim'),
+                 # Seems pyinstaller linux needs some help with these areas?
+                 ('ev3sim/assets/', 'ev3sim/assets/'),
                  (pygame_data_loc, 'pygame_gui/data'),
              ],
              hiddenimports=[
