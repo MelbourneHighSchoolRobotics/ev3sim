@@ -2,9 +2,6 @@
 import os, pymunk, pygame_gui
 pymunk_dir = os.path.dirname(pymunk.__file__)
 # For linux and osx support, the .dylib and .so files for chipmunk need to be copied as well.
-chipmunk_libs = [
-    ('chipmunk.dll', os.path.join(pymunk_dir, 'chipmunk.dll'), 'DATA'),
-]
 pygame_data_loc = os.path.join(os.path.dirname(pygame_gui.__file__), 'data')
 
 block_cipher = None
@@ -46,7 +43,7 @@ exe = EXE(pyz,
           icon="ev3sim/assets/Logo.ico",
           version="version_file.txt")
 coll = COLLECT(exe,
-               a.binaries + chipmunk_libs,
+               a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,
