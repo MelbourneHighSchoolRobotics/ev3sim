@@ -7,14 +7,19 @@ Installation
 Windows Executable
 ^^^^^^^^^^^^^^^^^^
 
-By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available here (TODO: Place link).
+By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available on the `releases page on github`_.
 
-Simply follow the prompts to get the executable installed.
+.. image:: images/releases.jpg
+  :width: 600
+  :alt: An image of the releases page on github.
 
-Windows/Mac/Linux Bundle
-^^^^^^^^^^^^^^^^^^^^^^^^
+Simply download the asset file named ``one_click.exe``, and follow the prompts to get the executable installed.
 
-Another way to get EV3Sim is by downloading the package here (TODO: Place link). Simply unzip and place this folder in a program directory such as ``Program Files`` or ``Applications``.
+Windows Bundle
+^^^^^^^^^^^^^^
+
+Another way to get EV3Sim is by downloading the package from the same releases page (``windows_package``). Simply unzip and place this folder in a program directory such as ``Program Files`` or ``Applications``.
+In future we aim to also support this method for Mac/Linux, but currently there's not much point to. Let us now if you'd prefer this!
 
 Pip install
 ^^^^^^^^^^^
@@ -96,3 +101,5 @@ Redhat/CentOS
 Arch 
 
 ``sudo pacman -S python-pygame``
+
+.. _releases page on github: https://github.com/MelbourneHighSchoolRobotics/ev3sim/releases

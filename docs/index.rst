@@ -21,8 +21,9 @@ ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms usi
    setup
    batched_commands
    bot_editing
-   randomisation
    ev3_extensions
    custom_presets
    contributing
    system
+
+.. TODO: Support randomisation through settings.

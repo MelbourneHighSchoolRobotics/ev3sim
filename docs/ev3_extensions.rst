@@ -71,7 +71,7 @@ Will print "**Hello world!** I am :red:`red` and *I slant*" in the simulator, bu
 Life
 ^^^^
 
-By default, after 3 seconds your print statement will vanish from the console. You can customise this time using the ``life`` key.
+By default, after 3 seconds your print statement will vanish from the console. You can customise this time using the ``life`` keyword.
 Example:
 
 .. code-block:: python
@@ -89,7 +89,7 @@ Alive ID
 ^^^^^^^^
 
 Sometimes, you want a message to stay open on the console, and you might even want to change what is shown.
-As an example, you might want to print your motor speeds every tick. In order to achieve this functionality, you can use the ``alive_id`` key when printing.
+As an example, you might want to print your motor speeds every tick. In order to achieve this functionality, you can use the ``alive_id`` keyword when printing.
 Example:
 
 .. code-block:: python
@@ -101,6 +101,8 @@ Example:
         x += 0.001
         format_print(f"x value: {x:.2f}", alive_id=f"number-{robot_id}")
         wait_for_tick()
+
+This message will stay open in the console, and its message contents will change depending on the last call to ``format_print``.
 
 Logs
 ----
