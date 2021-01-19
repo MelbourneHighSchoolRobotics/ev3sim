@@ -7,7 +7,7 @@ RequestExecutionLevel admin
 ;---------------------------------
 ;About
 Name "EV3Sim"
-OutFile "EV3Sim_installer.exe"
+OutFile "one_click.exe"
 Unicode true
 InstallDirRegKey HKCU "Software\EV3Sim" ""
 Var IsAdminMode
