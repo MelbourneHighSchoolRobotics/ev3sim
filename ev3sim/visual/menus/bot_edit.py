@@ -753,6 +753,7 @@ class BotEditMenu(BaseMenu):
                             "size_entry",
                             "stroke_entry",
                             "sides_entry",
+                            "port_entry",
                         ]:
                             if hasattr(self, attr) and getattr(self, attr).is_focused:
                                 good = False
