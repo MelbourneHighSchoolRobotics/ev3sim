@@ -199,6 +199,7 @@ class BotEditMenu(BaseMenu):
                 "type": "object",
                 "visual": self.current_holding_kwargs.copy(),
                 "position": pos,
+                "rotation": self.current_holding_kwargs.get("rotation", 0),
                 "restitution": 0.2,
                 "friction": 0.8,
             }
