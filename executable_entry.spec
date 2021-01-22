@@ -41,7 +41,8 @@ exe = EXE(pyz,
           upx=True,
           console=False,
           icon="ev3sim/assets/Logo.ico",
-          version="version_file.txt")
+          version="version_file.txt",
+          uac_admin=True)
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

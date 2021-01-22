@@ -11,7 +11,6 @@ with open("version_file.txt", "w") as f:
 PyInstaller.__main__.run(
     [
         "-y",
-        "--uac-admin",
         "executable_entry.spec",
     ]
 )
