@@ -504,7 +504,11 @@ class BotEditMenu(BaseMenu):
                         Randomiser.createPortRandomiserWithSeed(interactor.port_key)
                     interactor.startUp()
                     interactor.device_class.generateBias()
-                    interactor.tick(0)
+                    try:
+                        interactor.tick(0)
+                        # Some devices can't be ticked outside of simulation.
+                    except:
+                        pass
                     interactor.afterPhysics()
                     self.current_holding = interactor.generated
                     for i, obj in enumerate(self.current_holding):
