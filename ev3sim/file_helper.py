@@ -74,6 +74,8 @@ def find_abs_directory(dirpath, create=False):
         else:
             # Remove one part of the directory, then try again.
             rest, single = os.path.split(dirpath.rstrip("/"))
+            if rest == dirpath:
+                raise ValueError(f"Find abs dir failed with input {dirpath}")
             dirname = find_abs_directory(rest, create=create)
             fpath = os.path.join(dirname, single)
             os.mkdir(fpath)

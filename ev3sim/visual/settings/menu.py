@@ -178,9 +178,9 @@ class SettingsMenu(BaseMenu):
             f.write(string)
         from ev3sim.visual.manager import ScreenObjectManager
 
+        ScreenObjectManager.instance.popScreen()
         if self.onSave is not None:
             self.onSave(rel_file)
-        ScreenObjectManager.instance.popScreen()
 
     def clickCancel(self):
         from ev3sim.visual.manager import ScreenObjectManager
