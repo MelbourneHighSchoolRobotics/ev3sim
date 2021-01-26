@@ -311,7 +311,6 @@ class BatchMenu(BaseMenu):
             window_display_title="Pick Batch Type",
             object_id=pygame_gui.core.ObjectID("batch_dialog"),
         )
-        self._all_objs.append(self.picker)
 
         label_height = (self.picker.rect.height - 60) / 3
         image_height = 2 * (self.picker.rect.height - 60) / 3 - 60
