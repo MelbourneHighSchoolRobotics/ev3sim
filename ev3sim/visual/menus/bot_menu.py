@@ -254,6 +254,7 @@ class BotMenu(BaseMenu):
             )
             self.addButtonEvent("select-done", self.clickDone)
             self._all_objs.append(self.done_button)
+            super().generateObjects()
 
     def createBotImage(self, index, bg=None):
         from ev3sim.visual.manager import ScreenObjectManager

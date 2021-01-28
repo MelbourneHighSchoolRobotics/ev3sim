@@ -3,7 +3,12 @@ import pygame_gui
 
 
 class BaseMenu(pygame_gui.UIManager):
+
+    WINDOW_MODE_NORMAL = "normal"
+    WINDOW_MODE_ERROR = "error"
+
     def __init__(self, size, *args, **kwargs):
+        self.window_mode = self.WINDOW_MODE_NORMAL
         self._size = size
         super().__init__(size, *args, **kwargs)
         self._all_objs = []
@@ -41,13 +46,42 @@ class BaseMenu(pygame_gui.UIManager):
         self._button_events = []
 
     def generateObjects(self):
-        raise NotImplementedError()
+        if self.window_mode == self.WINDOW_MODE_ERROR:
+
+            class ErrorWindow(pygame_gui.elements.UIWindow):
+                def kill(self2):
+                    self.window_mode = self.MODE_NORMAL
+                    self.regenerateObjects()
+                    return super().kill()
+
+            dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+            self.dialog = ErrorWindow(
+                rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
+                manager=self,
+                window_display_title="An error occured",
+                object_id=pygame_gui.core.ObjectID("error_dialog"),
+            )
+
+            self.error_msg = pygame_gui.elements.UITextBox(
+                relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
+                html_text=self.error_msg_text,
+                manager=self,
+                container=self.dialog,
+                object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
+            )
+            self._all_objs.append(self.error_msg)
+
+    def addErrorDialog(self, msg):
+        self.window_mode = self.WINDOW_MODE_ERROR
+        self.error_msg_text = msg
+        self.regenerateObjects()
 
     def regenerateObjects(self):
         self.clearObjects()
         self.generateObjects()
 
     def initWithKwargs(self, **kwargs):
+        self.window_mode = self.WINDOW_MODE_NORMAL
         self.regenerateObjects()
 
     def handleEvent(self, event):

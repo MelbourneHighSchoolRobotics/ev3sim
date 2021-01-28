@@ -459,6 +459,7 @@ class BotEditMenu(BaseMenu):
         self.bot_screen = pygame.Surface(self.surf_size)
         self.drawOptions()
         self.resetBotVisual()
+        super().generateObjects()
 
     def generateHoldingItem(self):
         from ev3sim.visual.objects import visualFactory

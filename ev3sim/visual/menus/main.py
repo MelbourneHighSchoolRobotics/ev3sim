@@ -78,6 +78,7 @@ class MainMenu(BaseMenu):
 
         self.addButtonEvent("main_settings_button", clickSettings)
         self._all_objs.append(self.settings_button)
+        super().generateObjects()
 
     def swapSlides(self):
         self.remaining = 0

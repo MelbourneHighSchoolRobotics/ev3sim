@@ -70,6 +70,7 @@ class SimulatorMenu(BaseMenu):
             object_id=ObjectID("console-bg"),
         )
         self._all_objs.append(self.console_bg)
+        super().generateObjects()
 
     def formatMessage(self, msg):
         """Adds additional formatting to any messages printed to console."""

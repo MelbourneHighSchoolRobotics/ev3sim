@@ -63,6 +63,7 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
         )
         self.addButtonEvent("select_button", self.clickSelect)
         self._all_objs.append(self.select)
+        super().generateObjects()
 
     def clickSkip(self):
         from ev3sim.visual.manager import ScreenObjectManager

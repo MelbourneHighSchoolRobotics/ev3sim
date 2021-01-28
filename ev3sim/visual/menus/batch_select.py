@@ -288,6 +288,7 @@ class BatchMenu(BaseMenu):
             self.generateBatchPicker()
 
         self.changeSelectedTheming()
+        super().generateObjects()
 
     def generateBatchPicker(self):
         class BatchPicker(pygame_gui.elements.UIWindow):
@@ -417,6 +418,15 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
+
+        # Check that bots are in the sim.
+        if not self.bot_list:
+            self.addErrorDialog(
+                '<font color="#DD4045">In order to run a simulation you must first select bots to use in the simulation.</font>'
+                + "<br><br>You can add bots to the simulation by clicking the button under the settings cog after selecting a particular batch."
+            )
+            return
+
         from ev3sim.visual.manager import ScreenObjectManager
 
         ScreenObjectManager.instance.pushScreen(

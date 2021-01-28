@@ -259,6 +259,7 @@ class RescueMapEditMenu(BaseMenu):
         if self.mode == self.MODE_TILE_DIALOG:
             self.drawTileDialog()
         self.resetRescueVisual()
+        super().generateObjects()
 
     def drawOptions(self):
         # We have to remove the previous entries

@@ -83,36 +83,7 @@ class SettingsMenu(BaseMenu):
         )
         self.addButtonEvent("cancel-changes", self.clickCancel)
         self._all_objs.append(self.cancel)
-
-        if self.mode == self.MODE_ERROR:
-
-            class ErrorWindow(pygame_gui.elements.UIWindow):
-                def kill(self2):
-                    self.mode = self.MODE_NORMAL
-                    self.regenerateObjects()
-                    return super().kill()
-
-            dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
-            self.dialog = ErrorWindow(
-                rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
-                manager=self,
-                window_display_title="An error occured",
-                object_id=pygame_gui.core.ObjectID("error_dialog"),
-            )
-
-            self.error_msg = pygame_gui.elements.UITextBox(
-                relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
-                html_text=self.error_msg_text,
-                manager=self,
-                container=self.dialog,
-                object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
-            )
-            self._all_objs.append(self.error_msg)
-
-    def addErrorDialog(self, msg):
-        self.mode = self.MODE_ERROR
-        self.error_msg_text = msg
-        self.regenerateObjects()
+        super().generateObjects()
 
     def handleEvent(self, event):
         super().handleEvent(event)
