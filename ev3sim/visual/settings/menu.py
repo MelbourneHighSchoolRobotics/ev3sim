@@ -119,13 +119,15 @@ class SettingsMenu(BaseMenu):
                         current_filepath = os.path.join(creation_dir, f"{obj.obj.text}.{self.extension}")
                         rel_file = f"{obj.obj.text}.{self.extension}"
                         if os.path.exists(current_filepath):
-                            raise ValueError("A file with this name already exists.")
+                            self.addErrorDialog('<font color="#DD4045">A file with this name already exists.</font>')
+                            return False
                     else:
                         # Make sure the name can be used.
                         end, front = os.path.split(self.filename)
                         current_filepath = os.path.join(end, f"{obj.obj.text}.{self.extension}")
                         if current_filepath != self.filename and os.path.exists(current_filepath):
-                            raise ValueError("A file with this name already exists.")
+                            self.addErrorDialog('<font color="#DD4045">A file with this name already exists.</font>')
+                            return False
                         if current_filepath != self.filename:
                             # Remove the previous file.
                             os.remove(self.filename)
@@ -152,6 +154,7 @@ class SettingsMenu(BaseMenu):
         ScreenObjectManager.instance.popScreen()
         if self.onSave is not None:
             self.onSave(rel_file)
+        return True
 
     def clickCancel(self):
         from ev3sim.visual.manager import ScreenObjectManager
