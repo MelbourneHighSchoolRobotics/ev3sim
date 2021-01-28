@@ -99,11 +99,10 @@ class SettingsMenu(BaseMenu):
                 window_display_title="An error occured",
                 object_id=pygame_gui.core.ObjectID("error_dialog"),
             )
-            self._all_objs.append(self.dialog)
 
             self.error_msg = pygame_gui.elements.UITextBox(
                 relative_rect=pygame.Rect(20, 20, dialog_size[0] - 40, dialog_size[1] - 40),
-                html_text=msg,
+                html_text=self.error_msg_text,
                 manager=self,
                 container=self.dialog,
                 object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
@@ -112,6 +111,7 @@ class SettingsMenu(BaseMenu):
 
     def addErrorDialog(self, msg):
         self.mode = self.MODE_ERROR
+        self.error_msg_text = msg
         self.regenerateObjects()
 
     def handleEvent(self, event):
