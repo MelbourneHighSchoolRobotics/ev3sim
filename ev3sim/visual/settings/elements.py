@@ -155,6 +155,8 @@ class FileEntry(SettingsVisualElement):
             self.filename.set_text(self.current)
         else:
             filename = askopenfilename().replace("/", "\\")
+            if not filename:
+                return
             for pathname in self.relative_paths:
                 dirpath = find_abs_directory(pathname, create=True)
                 if filename.startswith(dirpath):
