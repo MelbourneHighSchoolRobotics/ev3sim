@@ -75,12 +75,9 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                 msg = {}
                 while True:
                     try:
-                        prv_type, prv = msg_type, msg
                         msg_type, msg = recv_q.get_nowait()
+                        handle_recv(msg_type, msg)
                         if msg_type != SIM_DATA:
-                            if recved > 0:
-                                # Handle the last sim data.
-                                handle_recv(prv_type, prv)
                             break
                         recved += 1
                     except Empty:
@@ -88,7 +85,6 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                         if recved > 0 and send_q.qsize() == 0:
                             break
                         sleep_builtin(0.01)
-                handle_recv(msg_type, msg)
 
             def get_time():
                 return tick / tick_rate
