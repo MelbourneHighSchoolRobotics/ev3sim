@@ -8,7 +8,7 @@
 
 ## Getting started
 
-To get up and running with the simulator, see the docs: https://ev3sim.mhscsr.club
+To get up and running with the simulator, see the docs: https://ev3sim.mhsrobotics.club
 
 ## Problems
 
@@ -24,7 +24,7 @@ Bin icon created by Popcic https://www.iconfinder.com/popcic
 
 ## Contributing
 
-To contribute to ev3sim, see the contributing page of the docs: https://ev3sim.mhscsr.club/contributing
+To contribute to ev3sim, see the contributing page of the docs: https://ev3sim.mhsrobotics.club/contributing
 
 ## Contributors ✨
 
