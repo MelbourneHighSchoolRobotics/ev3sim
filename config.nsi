@@ -60,7 +60,7 @@ FunctionEnd
 
 !define MUI_FINISHPAGE_TITLE "All Done!"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\ev3sim.exe"
-!define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhscsr.club/"
+!define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhsrobotics.club/"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Go to documentation."
 
