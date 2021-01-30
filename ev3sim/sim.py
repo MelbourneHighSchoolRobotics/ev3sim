@@ -74,7 +74,7 @@ def main(passed_args=None):
 =====================================================
 DEPRECATED: Running ev3sim without the batch argument will be removed in a newer version of ev3sim.
 
-To find out how to use batch commands, consult https://ev3sim.mhscsr.club/batched_commands.html
+To find out how to use batch commands, consult https://ev3sim.mhsrobotics.club/batched_commands.html
 =====================================================
 
 """
