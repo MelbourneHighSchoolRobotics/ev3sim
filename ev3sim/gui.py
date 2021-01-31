@@ -212,10 +212,12 @@ def main(passed_args=None):
     try:
         StateHandler.instance.mainLoop()
     except Exception as e:
-        import traceback
+        import traceback, os
 
         print("An error occured in the Simulator :( Please see `error_log.txt` in your workspace.")
         error = traceback.format_exc()
+        with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
+            f.write(error)
     pygame.quit()
     StateHandler.instance.is_running = False
     try:
@@ -223,10 +225,6 @@ def main(passed_args=None):
     except:
         pass
     if error is not None:
-        import os
-
-        with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
-            f.write(error)
         sys.exit(1)
 
 
