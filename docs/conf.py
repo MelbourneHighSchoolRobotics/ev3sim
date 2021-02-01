@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "ev3sim"
-copyright = "2020, Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew"
+copyright = "2021, Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew"
 author = "Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew"
 
 
