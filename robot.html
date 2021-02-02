@@ -86,10 +86,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="system.html">Simulation Objects</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="visual.html">Visuals</a></li>
@@ -173,7 +173,7 @@
 <dd><p>A robot is as you’d expect in the physical sense - a collection of devices on a base board,
 with it’s own internal logic and events.</p>
 <p>This class however does not contain the physical definition of the robot though, just the brains.</p>
-<p>All robot ‘definitions’ (see <cite>robots/controllable.yaml</cite>) reference a <cite>class_path</cite> (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:</p>
+<p>All robot ‘definitions’ (see <cite>examples/robots/controllable.bot</cite>) reference a <cite>class_path</cite> (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:</p>
 <dl class="py method">
 <dt id="ev3sim.robot.Robot.getDevice">
 <code class="sig-name descname">getDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ev3sim.robot.Robot.getDevice" title="Permalink to this definition">¶</a></dt>

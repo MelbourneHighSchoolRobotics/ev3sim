@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Batched Commands &mdash; ev3sim  documentation</title>
+  <title>Simulation Presets &mdash; ev3sim  documentation</title>
   
 
   
@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Randomisation" href="randomisation.html" />
+    <link rel="next" title="Bot editing" href="bot_editing.html" />
     <link rel="prev" title="Setting up and Running EV3Sim" href="setup.html" /> 
 </head>
 
@@ -86,15 +86,17 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Batched Commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#running-a-batched-command">Running a batched command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#defining-batched-commands">Defining batched commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#batched-command-problems">Batched command problems</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Simulation Presets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-a-simulation-preset">What is a simulation preset?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changing-the-robots-in-a-simulation">Changing the robots in a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changing-simulation-settings">Changing simulation settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-simulation-preset">Creating a simulation preset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-simulation-preset">Running the simulation preset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
@@ -143,7 +145,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Batched Commands</li>
+      <li>Simulation Presets</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,64 +164,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="batched-commands">
-<h1>Batched Commands<a class="headerlink" href="#batched-commands" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="running-a-batched-command">
-<h2>Running a batched command<a class="headerlink" href="#running-a-batched-command" title="Permalink to this headline">¶</a></h2>
-<p>In the previous document, we run the simulator and attach script logic in two separate terminals.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml
-ev3attach demo.py Robot-0
-</pre></div>
+  <div class="section" id="simulation-presets">
+<h1>Simulation Presets<a class="headerlink" href="#simulation-presets" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-a-simulation-preset">
+<h2>What is a simulation preset?<a class="headerlink" href="#what-is-a-simulation-preset" title="Permalink to this headline">¶</a></h2>
+<p>When running a simulation with EV3Sim, you need two things:</p>
+<ul class="simple">
+<li><p>A world to simulate and interact with, and</p></li>
+<li><p>Robots to interact with the simulated world.</p></li>
+</ul>
+<p>A simulation preset specifies which world to simulate, the bots that will be placed in the simulation, and any settings specific to that world.</p>
+<p>As an example, one simulation preset provided by default is the <code class="docutils literal notranslate"><span class="pre">soccer_competition</span></code> preset. This specifies the world (preset type) as Soccer, and then specifies which bots are on which team.
+It also specifies soccer specific settings, such as the Team Names, rulings for out on white, and halftime length.</p>
 </div>
-<p>When testing robot code, as well as competitions, many of these commands will be the same however, and it would be much easier if the entire simulation, with code running, could be invoked by a single command.
-In fact, the simulator allows for this!</p>
-<p>To run the simulator with two bots both running the demo code, execute the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim -b soccer_competition.yaml
-</pre></div>
+<div class="section" id="changing-the-robots-in-a-simulation">
+<h2>Changing the robots in a simulation<a class="headerlink" href="#changing-the-robots-in-a-simulation" title="Permalink to this headline">¶</a></h2>
+<p>While selecting a simulation preset the following icon should light up:</p>
+<a class="reference internal image-reference" href="_images/robot_selection.png"><img alt="The simulation select screen, highlighting the robot select button." src="_images/robot_selection.png" style="width: 600px;" /></a>
+<p>From here, you can select a bot from those you have defined, and select them for Team 1 or Team 2. After selecting the bot for Team 1, Bot 1, you then select the bot for Team 2, Bot 1, and so on.
+At any point if you have enough bots in the simulation, you can click “Done” to finish.</p>
 </div>
-<p>This <code class="docutils literal notranslate"><span class="pre">-b</span></code> or <code class="docutils literal notranslate"><span class="pre">--batch</span></code> flag specifies to use the file <code class="docutils literal notranslate"><span class="pre">soccer_competition.yaml</span></code> as the information for the simulator, as well as attaching code to bots.</p>
+<div class="section" id="changing-simulation-settings">
+<h2>Changing simulation settings<a class="headerlink" href="#changing-simulation-settings" title="Permalink to this headline">¶</a></h2>
+<p>Clicking the settings cog instead of the robot button will take you to the settings page for you simulation preset:</p>
+<a class="reference internal image-reference" href="_images/settings_cog.png"><img alt="The simulation select screen, highlighting the settings button." src="_images/settings_cog.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/settings.png"><img alt="The simulation preset settings page, for the soccer preset." src="_images/settings.png" style="width: 600px;" /></a>
 </div>
-<div class="section" id="defining-batched-commands">
-<h2>Defining batched commands<a class="headerlink" href="#defining-batched-commands" title="Permalink to this headline">¶</a></h2>
-<p>You can write your own batched commands, just as you can write your own bot definitions and bot code. You can find the source for <code class="docutils literal notranslate"><span class="pre">soccer_competition.yaml</span></code> <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/batched_commands/soccer_competition.yaml">here</a>.</p>
-<p>The batched command file looks like the following:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">preset_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">soccer.yaml</span>
-<span class="nt">bots</span><span class="p">:</span>
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bot.yaml</span>
-  <span class="nt">scripts</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">demo.py</span>
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bot.yaml</span>
-  <span class="nt">scripts</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">demo.py</span>
-<span class="nt">settings</span><span class="p">:</span>
-  <span class="c1"># Optionally, any setting in the preset file can be overridden here</span>
-  <span class="c1"># ScriptLoader</span>
-  <span class="nt">ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-  <span class="nt">ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-  <span class="nt">ev3sim.simulation.loader.ScriptLoader.TIME_SCALE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-  <span class="c1"># ScreenObjectManager</span>
-  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">960</span>
-  <span class="nt">ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">720</span>
-  <span class="c1"># Soccer</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Team 1</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">Team 2</span>
-  <span class="c1"># Soccer referee game settings</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-  <span class="nt">ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-</pre></div>
+<div class="section" id="creating-a-simulation-preset">
+<h2>Creating a simulation preset<a class="headerlink" href="#creating-a-simulation-preset" title="Permalink to this headline">¶</a></h2>
+<p>Rather than editing an existing preset you can also create your own by clicking the plus button on the list view for simulation presets.
+This will prompt you to select a world type (Such as Soccer or Rescue).</p>
+<a class="reference internal image-reference" href="_images/add_sim.png"><img alt="The simulation select screen, highlighting the new sim button." src="_images/add_sim.png" style="width: 600px;" /></a>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">preset_file</span></code> points to the preset to load (usually specified with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag in <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code>, but defaults to <code class="docutils literal notranslate"><span class="pre">soccer.yaml</span></code>).
-After this you can specify any bots to load, as well as scripts to attach to them.</p>
-</div>
-<div class="section" id="batched-command-problems">
-<h2>Batched command problems<a class="headerlink" href="#batched-command-problems" title="Permalink to this headline">¶</a></h2>
-<p>If your computer is not powerful enough to run the number of bots specified with scripts attached, the command may just fail or hang.
-This method of loading robots is only supplied for ease of use, and has its problems.</p>
+<div class="section" id="running-the-simulation-preset">
+<h2>Running the simulation preset<a class="headerlink" href="#running-the-simulation-preset" title="Permalink to this headline">¶</a></h2>
+<p>To run your simulation presets, you can press the big green play button to begin.</p>
+<a class="reference internal image-reference" href="_images/play_button.png"><img alt="The simulation select screen, highlighting the sim start button." src="_images/play_button.png" style="width: 600px;" /></a>
+<p>However, if you installed with the windows one-click executable, you can also run the simulation simply by double clicking a file!
+Navigate to your workspace folder, and open the <code class="docutils literal notranslate"><span class="pre">sims</span></code> directory. This should contain all of the sims you have created in the form of <code class="docutils literal notranslate"><span class="pre">.sim</span></code> files.</p>
+<p>Double clicking should run the sim by default. Otherwise, you can right click and select one of two actions:</p>
+<ul class="simple">
+<li><p>Open: Run the simulation.</p></li>
+<li><p>Edit: Open the settings page for the simulation.</p></li>
+</ul>
 </div>
 </div>
 
@@ -231,7 +218,7 @@ This method of loading robots is only supplied for ease of use, and has its prob
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="randomisation.html" class="btn btn-neutral float-right" title="Randomisation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="bot_editing.html" class="btn btn-neutral float-right" title="Bot editing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="setup.html" class="btn btn-neutral float-left" title="Setting up and Running EV3Sim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

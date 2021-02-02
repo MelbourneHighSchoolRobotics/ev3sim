@@ -85,10 +85,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
@@ -165,31 +165,36 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#starting-ev3sim">Starting EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#running-ev3sim">Running EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#further-information-on-installing">Further Information on installing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#running-a-batched-command">Running a batched command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#defining-batched-commands">Defining batched commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#batched-command-problems">Batched command problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#what-is-a-simulation-preset">What is a simulation preset?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#changing-the-robots-in-a-simulation">Changing the robots in a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#changing-simulation-settings">Changing simulation settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#creating-a-simulation-preset">Creating a simulation preset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#running-the-simulation-preset">Running the simulation preset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bot_editing.html#designing-a-bot">Designing a bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bot_editing.html#adding-code-to-a-bot">Adding code to a bot</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#waiting-for-simulation-ticks">Waiting for simulation ticks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#simulation-testing">Simulation testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#robot-id">Robot ID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#printing-to-console">Printing to console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#logs">Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#simulation-testing">Simulation testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#handling-simulation-events">Handling simulation events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#sending-commands">Sending Commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ev3_extensions.html#robot-communications">Robot Communications</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="customisation.html#bot-definitions">Bot Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customisation.html#buttons">Buttons</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customisation.html#simulation-definitions">Simulation Definitions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#running-locally">Running locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#linting-code">Linting code</a></li>
@@ -204,7 +209,10 @@
 </li>
 </ul>
 </div>
-</div>
+<p>A full video on what EV3Sim is and how you can install it can be found here:</p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/wm9WApUwiVc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div></div>
 
 
            </div>

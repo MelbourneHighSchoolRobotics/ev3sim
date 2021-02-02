@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Batched Commands" href="batched_commands.html" />
+    <link rel="next" title="Simulation Presets" href="batched_commands.html" />
     <link rel="prev" title="Welcome to ev3sim’s documentation!" href="index.html" /> 
 </head>
 
@@ -86,12 +86,18 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting up and Running EV3Sim</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows-executable">Windows Executable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-bundle">Windows Bundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pip-install">Pip install</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#starting-ev3sim">Starting EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-ev3sim">Running EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#further-information-on-installing">Further Information on installing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-not-recognised">Command not recognised</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ev3sim-runs-but-no-pygame-window-is-created">Ev3sim runs, but no pygame window is created</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ev3sim-runs-but-no-pygame-window-is-created">EV3Sim runs, but no pygame window is created</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#unix">Unix</a><ul>
@@ -102,10 +108,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
@@ -177,42 +183,47 @@
 <h1>Setting up and Running EV3Sim<a class="headerlink" href="#setting-up-and-running-ev3sim" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>EV3sim requires Python 3.7-3.8 (3.9 is currently unsupported and will not work) to be installed on your system. If you don’t already have Python installed, you can download it from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a> .</p>
+<div class="section" id="windows-executable">
+<h3>Windows Executable<a class="headerlink" href="#windows-executable" title="Permalink to this headline">¶</a></h3>
+<p>By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available on the <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/releases">releases page on github</a>.</p>
+<a class="reference internal image-reference" href="images/releases.jpg"><img alt="An image of the releases page on github." src="images/releases.jpg" style="width: 600px;" /></a>
+<p>Simply download the asset file named <code class="docutils literal notranslate"><span class="pre">one_click.exe</span></code>, and follow the prompts to get the executable installed.</p>
+</div>
+<div class="section" id="windows-bundle">
+<h3>Windows Bundle<a class="headerlink" href="#windows-bundle" title="Permalink to this headline">¶</a></h3>
+<p>Another way to get EV3Sim is by downloading the package from the same releases page (<code class="docutils literal notranslate"><span class="pre">windows_package</span></code>). Simply unzip and place this folder in a program directory such as <code class="docutils literal notranslate"><span class="pre">Program</span> <span class="pre">Files</span></code> or <code class="docutils literal notranslate"><span class="pre">Applications</span></code>.
+In future we aim to also support this method for Mac/Linux, but currently there’s not much point to. Let us now if you’d prefer this!</p>
+</div>
+<div class="section" id="pip-install">
+<h3>Pip install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h3>
+<p>If installing via this method, EV3sim requires Python 3.7+ to be installed on your system. If you don’t already have Python installed, you can download it from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a> .</p>
 <p>You can install this package using pip as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install -U ev3sim
 </pre></div>
 </div>
-<p>(This command also updates ev3sim if you already have it installed.)</p>
-<p>After this, any new command prompt or terminal opened should have access to two new commands, <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and <code class="docutils literal notranslate"><span class="pre">ev3attach</span></code>.</p>
-<p>You can check this is the case by opening command prompt and typing <code class="docutils literal notranslate"><span class="pre">ev3sim</span> <span class="pre">-h</span></code>. You should get some explanation of the use of this program.</p>
-<p>If it works, great! You should be ready to go. If not, there are some platform specific instructions further down. If that also doesn’t work, contact one of the Melbourne High Robotics Mentors (or optionally, raise an issue on github! <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim">https://github.com/MelbourneHighSchoolRobotics/ev3sim</a>)</p>
-<p>Occasionally, you may need to run this command again to update the simulator.</p>
+<p>(This command also updates EV3Sim if you already have it installed.)</p>
+</div>
+</div>
+<div class="section" id="starting-ev3sim">
+<h2>Starting EV3Sim<a class="headerlink" href="#starting-ev3sim" title="Permalink to this headline">¶</a></h2>
+<p>Depending on you installation method, you might start EV3Sim differently:</p>
+<ul class="simple">
+<li><p>If you installed on windows with the one click install, EV3Sim should be in your start menu.</p></li>
+<li><p>If using the bundle installation, you can go into the folder and run <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> or <code class="docutils literal notranslate"><span class="pre">ev3sim.exe</span></code>.</p></li>
+<li><p>If installed via pip, then run <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> in the command line.</p></li>
+</ul>
+<p>The first time you run EV3Sim, you will be prompted with a dialog, asking you to specify a <em>workspace folder</em>.
+A workspace folder is where all of your local bots, code and simulation presets are stored.</p>
+<p>We’d recommend creating a new folder on your Desktop to be your workspace folder, for easy access.</p>
 </div>
 <div class="section" id="running-ev3sim">
 <h2>Running EV3Sim<a class="headerlink" href="#running-ev3sim" title="Permalink to this headline">¶</a></h2>
-<p>Running the simulator is as simple running the following command in the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml
-</pre></div>
-</div>
-<p>This runs a simple soccer simulation, with 1 bot. bot.yaml is a pre-made bot included with the package, for demonstration purposes.</p>
-<p>This should open a new pygame window with the simulation, as follows:</p>
-<a class="reference internal image-reference" href="_images/sim.jpg"><img alt="The pygame window for the simulator" src="_images/sim.jpg" style="width: 600px;" /></a>
-<p>You can also run the simulator with a robot that is contrlled by the keyboard:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim controllable.yaml
-</pre></div>
-</div>
-<p>You can define and run your own bots, by creating a <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file (Base this on <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/bot.yaml">bot.yaml</a>). Navigate to your yaml file in the command line (either by opening the command line window in the appropriate directory, or using <code class="docutils literal notranslate"><span class="pre">cd</span></code> (change directory) and <code class="docutils literal notranslate"><span class="pre">dir/ls</span></code> (list directory)</p>
-<p>If you want to run the simulation with multiple bots, you can simply add more yaml files to the command.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml bot.yaml bot.yaml bot.yaml
-</pre></div>
-</div>
-<p>Attaching some code to bots in the simulation is then done running the following in a new command prompt</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach demo.py Robot-0
-</pre></div>
-</div>
-<p>Which, provided a simulation is already running, attaches some demo code to that robot. Each robot has a unique ID that you can use to attach your own code to, starting from 0. You can right click on a robot in the simulation to copy it’s ID to the clipboard, so you can specify which robot to attach to, rahter than <code class="docutils literal notranslate"><span class="pre">Robot-0</span></code>.</p>
-<p>This is much the same as the previous command, where you need to be in the appropriate directory. You can use your own ev3dev2 code instead of <code class="docutils literal notranslate"><span class="pre">demo.py</span></code></p>
-<p>More information on the use of these commands can be given with <code class="docutils literal notranslate"><span class="pre">ev3sim</span> <span class="pre">-h</span></code> or <code class="docutils literal notranslate"><span class="pre">ev3attach</span> <span class="pre">-h</span></code>.</p>
+<p>Once your workspace folder has been set, you can start using the application.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Simulate</span></code> tab allows you to run simulations, and select simulations to edit the bots or settings.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Bots</span></code> tab allows you to edit and create bots to use in the simulation.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Settings</span></code> tab allows you to change a few configurations when running EV3Sim.</p></li>
+</ul>
 </div>
 <div class="section" id="further-information-on-installing">
 <h2>Further Information on installing<a class="headerlink" href="#further-information-on-installing" title="Permalink to this headline">¶</a></h2>
@@ -226,7 +237,7 @@
 <p>Make sure you install python with the “Add python to PATH” option selected. This makes sure that the windows command line will understand the python and pip commands. For more information, see <a class="reference external" href="https://docs.python.org/3/using/windows.html#installation-steps">https://docs.python.org/3/using/windows.html#installation-steps</a></p>
 </div>
 <div class="section" id="ev3sim-runs-but-no-pygame-window-is-created">
-<h4>Ev3sim runs, but no pygame window is created<a class="headerlink" href="#ev3sim-runs-but-no-pygame-window-is-created" title="Permalink to this headline">¶</a></h4>
+<h4>EV3Sim runs, but no pygame window is created<a class="headerlink" href="#ev3sim-runs-but-no-pygame-window-is-created" title="Permalink to this headline">¶</a></h4>
 <p>This is a known issue with pygame. A possible cause is not having the English (US) Language pack in windows installed. This should install itself after a few minutes, once you’ve installed the package, but if that doesn’t occur, you may wish to try manually installing it.</p>
 </div>
 </div>
@@ -254,7 +265,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="batched_commands.html" class="btn btn-neutral float-right" title="Batched Commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="batched_commands.html" class="btn btn-neutral float-right" title="Simulation Presets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to ev3sim’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

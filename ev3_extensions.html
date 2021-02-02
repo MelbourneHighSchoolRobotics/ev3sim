@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Customising Bots and Maps" href="customisation.html" />
-    <link rel="prev" title="Randomisation" href="randomisation.html" /> 
+    <link rel="next" title="Custom Preset Types" href="custom_presets.html" />
+    <link rel="prev" title="Bot editing" href="bot_editing.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,12 +86,19 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Batched Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="randomisation.html">Randomisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions to normal EV3 Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#waiting-for-simulation-ticks">Waiting for simulation ticks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#robot-id">Robot ID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#printing-to-console">Printing to console</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bold-italics-colours">Bold, Italics, Colours</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#life">Life</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alive-id">Alive ID</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logs">Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-testing">Simulation testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#handling-simulation-events">Handling simulation events</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#on-goal-scored"><code class="docutils literal notranslate"><span class="pre">on_goal_scored</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#on-reset"><code class="docutils literal notranslate"><span class="pre">on_reset</span></code></a></li>
@@ -99,10 +106,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#on-penalty-end"><code class="docutils literal notranslate"><span class="pre">on_penalty_end</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#sending-commands">Sending Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commandsystem-type-draw"><code class="docutils literal notranslate"><span class="pre">CommandSystem.TYPE_DRAW</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#commandsystem-type-custom"><code class="docutils literal notranslate"><span class="pre">CommandSystem.TYPE_CUSTOM</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#robot-communications">Robot Communications</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Bots and Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
@@ -172,6 +184,9 @@
             
   <div class="section" id="extensions-to-normal-ev3-code">
 <h1>Extensions to normal EV3 Code<a class="headerlink" href="#extensions-to-normal-ev3-code" title="Permalink to this headline">¶</a></h1>
+<p>While your robots still run python-ev3dev2 code in the simulation, you also have access to a few other bits of functionality not seen in a physical bot.</p>
+<p>Almost all of the below functionality is available in the package <code class="docutils literal notranslate"><span class="pre">ev3sim.code_helpers</span></code>. In order for this code to work on your physical robot, there also needs to be a package on the physical bot filesystem called <code class="docutils literal notranslate"><span class="pre">ev3sim.code_helpers</span></code>, containing <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">this file</a>.</p>
+<p>For a demo of most of these features, see <code class="docutils literal notranslate"><span class="pre">demo.bot</span></code> in the simulator. The code it runs is available <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/demo.py">here</a>.</p>
 <div class="section" id="waiting-for-simulation-ticks">
 <h2>Waiting for simulation ticks<a class="headerlink" href="#waiting-for-simulation-ticks" title="Permalink to this headline">¶</a></h2>
 <p>As most ev3 programs tend to have a single loop which handles all of the robot’s logic, in the interest of efficiency on simulator we highly recommend you attempt to sync this program loop up with each tick of the simulator.
@@ -185,6 +200,69 @@ This is because running multiple program loops per simulation tick is useless (a
 </pre></div>
 </div>
 <p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
+<div class="section" id="robot-id">
+<h2>Robot ID<a class="headerlink" href="#robot-id" title="Permalink to this headline">¶</a></h2>
+<p>Since you might be running multiple instances of the same code on different robots, it’s important to be able to check which robot the code is running on, you can do this with <code class="docutils literal notranslate"><span class="pre">code_helpers</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">robot_id</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from &quot;</span> <span class="o">+</span> <span class="n">robot_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will also work on the brick, it should print “Robot-0”.</p>
+<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
+</div>
+<div class="section" id="printing-to-console">
+<h2>Printing to console<a class="headerlink" href="#printing-to-console" title="Permalink to this headline">¶</a></h2>
+<p>Printing information is the simplest, quickest way to debug your code. Provided you have enabled the console in the settings of EV3Sim (It is enabled by default), you can print information to the console when simulating.</p>
+<p>However, you can customise how your printed message looks on the screen using the code_helper function <code class="docutils literal notranslate"><span class="pre">format_print</span></code>.</p>
+<div class="section" id="bold-italics-colours">
+<h3>Bold, Italics, Colours<a class="headerlink" href="#bold-italics-colours" title="Permalink to this headline">¶</a></h3>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">&lt;b&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;font&gt;</span></code> tags to add styling to your message.
+Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">format_print</span>
+
+<span class="c1"># The color specified below is a hex string.</span>
+<span class="n">format_print</span><span class="p">(</span><span class="s2">&quot;&lt;b&gt;Hello world!&lt;/b&gt; I am &lt;font color=</span><span class="se">\&quot;</span><span class="s2">#ff0000</span><span class="se">\&quot;</span><span class="s2">&gt;red&lt;/font&gt; and &lt;i&gt;I slant&lt;/i&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<style> .red {color:red} </style><p>Will print “<strong>Hello world!</strong> I am <span class="red">red</span> and <em>I slant</em>” in the simulator, but “Hello world! I am red and I slant” will be printed in real life (and the logs).</p>
+</div>
+<div class="section" id="life">
+<h3>Life<a class="headerlink" href="#life" title="Permalink to this headline">¶</a></h3>
+<p>By default, after 3 seconds your print statement will vanish from the console. You can customise this time using the <code class="docutils literal notranslate"><span class="pre">life</span></code> keyword.
+Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">format_print</span>
+
+<span class="c1"># This message will stay on the console for 3 seconds</span>
+<span class="n">format_print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="c1"># This message will stay on the console for 5 seconds</span>
+<span class="n">format_print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># This message will stay on the console for 1 second.</span>
+<span class="n">format_print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="n">life</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="alive-id">
+<h3>Alive ID<a class="headerlink" href="#alive-id" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes, you want a message to stay open on the console, and you might even want to change what is shown.
+As an example, you might want to print your motor speeds every tick. In order to achieve this functionality, you can use the <code class="docutils literal notranslate"><span class="pre">alive_id</span></code> keyword when printing.
+Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">wait_for_tick</span><span class="p">,</span> <span class="n">robot_id</span><span class="p">,</span> <span class="n">format_print</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">+=</span> <span class="mf">0.001</span>
+    <span class="n">format_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x value: </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alive_id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;number-</span><span class="si">{</span><span class="n">robot_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">wait_for_tick</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This message will stay open in the console, and its message contents will change depending on the last call to <code class="docutils literal notranslate"><span class="pre">format_print</span></code>.</p>
+</div>
+</div>
+<div class="section" id="logs">
+<h2>Logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h2>
+<p>All prints made to the console will also be stored in log files. These log files are available in your workspace if the workspace is defined. Otherwise they will be stored in your EV3Sim install location.</p>
 </div>
 <div class="section" id="simulation-testing">
 <h2>Simulation testing<a class="headerlink" href="#simulation-testing" title="Permalink to this headline">¶</a></h2>
@@ -200,17 +278,6 @@ As an example, the simulator currently does not implement the <code class="docut
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from the sim! Sadly I can&#39;t do lights at the moment :(&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
-</div>
-<div class="section" id="robot-id">
-<h2>Robot ID<a class="headerlink" href="#robot-id" title="Permalink to this headline">¶</a></h2>
-<p>Since you might be running multiple instances of the same code on different robots, it’s important to be able to check which robot the code is running on, you can do this with <code class="docutils literal notranslate"><span class="pre">code_helpers</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">robot_id</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from &quot;</span> <span class="o">+</span> <span class="n">robot_id</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This will also work on the brick, it should print “Robot-0”.</p>
 <p>Importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
 </div>
 <div class="section" id="handling-simulation-events">
@@ -256,6 +323,47 @@ As an example, your code may want to be aware of when an enemy (or you) has scor
 <p>Fires whenever you are removed from the penalty box.</p>
 </div>
 </div>
+<div class="section" id="sending-commands">
+<h2>Sending Commands<a class="headerlink" href="#sending-commands" title="Permalink to this headline">¶</a></h2>
+<p>While in the real world this isn’t possible, in a simulated world you might want the bot to be able to programmatically send commands to the simulation, allowing for different actions to occur.
+You can achieve this using the <code class="docutils literal notranslate"><span class="pre">CommandSystem</span></code> object.</p>
+<p>Use of the command system is rather simple; you specify a command type, and command information to go along with that type.
+Here is the list of supported commands:</p>
+<div class="section" id="commandsystem-type-draw">
+<h3><code class="docutils literal notranslate"><span class="pre">CommandSystem.TYPE_DRAW</span></code><a class="headerlink" href="#commandsystem-type-draw" title="Permalink to this headline">¶</a></h3>
+<p>Draws an object to the screen using the same syntax as the simulator. The data passed in must be a dictionary with the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code>: The visual representation of the object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: The key the visual object will be referenced by (This means you can update the object position by sending the same key).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">life</span></code> (Optional, default=3): How long this object will remain visual. If <code class="docutils literal notranslate"><span class="pre">None</span></code> then it will persist indefinitely.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_bot</span></code> (Optional, default=False): Whether to anchor this object to the bot (So that position (0, 0) is the bot’s centre).</p></li>
+</ul>
+</div>
+<div class="section" id="commandsystem-type-custom">
+<h3><code class="docutils literal notranslate"><span class="pre">CommandSystem.TYPE_CUSTOM</span></code><a class="headerlink" href="#commandsystem-type-custom" title="Permalink to this headline">¶</a></h3>
+<p>A custom event that can be caught by any custom presets you want to define.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ev3sim.code_helpers</span> <span class="kn">import</span> <span class="n">CommandSystem</span><span class="p">,</span> <span class="n">wait_for_tick</span>
+
+<span class="c1"># Spawn a circle at the bot&#39;s centre.</span>
+<span class="n">CommandSystem</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">CommandSystem</span><span class="o">.</span><span class="n">TYPE_DRAW</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Circle&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fill&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;stroke&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="s2">&quot;zPos&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;ball&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;life&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">&quot;on_bot&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">wait_for_tick</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="robot-communications">
 <h2>Robot Communications<a class="headerlink" href="#robot-communications" title="Permalink to this headline">¶</a></h2>
 <p>As bluetooth communications are a popular option for complicated strategies with robots, there is also functionality to support bot communication on the simulator.</p>
@@ -278,19 +386,7 @@ As an example, your code may want to be aware of when an enemy (or you) has scor
 </div>
 <p>The communications are written in a client/server architecture, as with normal use of bluetooth comms.</p>
 <p>This should also work on the physical robots over bluetooth, provided that the MAC Address and port are correct (Follow the instructions for normal bluetooth connectivity). As with above importing this means you need to transfer <code class="docutils literal notranslate"><span class="pre">ev3sim/code_helpers.py</span></code> onto the brick for this to run (Just create a folder named <code class="docutils literal notranslate"><span class="pre">ev3sim</span></code> and place <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py">code_helpers.py</a> in there).</p>
-<p>For an example of robots communicating device data to each other (in this case through a server, but client/server messaging could also simply work between two robots) try this example (place all 4 commands in separate terminals):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3sim bot.yaml bot.yaml bot.yaml
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_client.py Robot-0
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_server.py Robot-1
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ev3attach communication_client.py Robot-2
-</pre></div>
-</div>
+<p>For an example of robots communicating device data to each other (in this case through a server, but client/server messaging could also simply work between two robots) try this example (place all 4 commands in separate terminals), you can run the simulation preset <code class="docutils literal notranslate"><span class="pre">ev3sim/examples/sims/communications_demo.yaml</span></code></p>
 <p>Sources: <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_client.py">communication_client.py</a>, <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_server.py">communication_server.py</a></p>
 </div>
 </div>
@@ -303,10 +399,10 @@ As an example, your code may want to be aware of when an enemy (or you) has scor
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="customisation.html" class="btn btn-neutral float-right" title="Customising Bots and Maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="custom_presets.html" class="btn btn-neutral float-right" title="Custom Preset Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="randomisation.html" class="btn btn-neutral float-left" title="Randomisation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="bot_editing.html" class="btn btn-neutral float-left" title="Bot editing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

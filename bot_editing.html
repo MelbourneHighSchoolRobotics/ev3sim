@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Bot editing &mdash; ev3sim  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensions to normal EV3 Code" href="ev3_extensions.html" />
+    <link rel="prev" title="Simulation Presets" href="batched_commands.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> ev3sim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bot editing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#designing-a-bot">Designing a bot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#placing-elements">Placing elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-elements">Modifying elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removing-elements">Removing elements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-code-to-a-bot">Adding code to a bot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ev3sim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Bot editing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/bot_editing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bot-editing">
+<h1>Bot editing<a class="headerlink" href="#bot-editing" title="Permalink to this headline">¶</a></h1>
+<p>EV3Sim allows you to design, test and simulate your own bots, all through the application!
+The only thing you’ll want an external program for is writing the code to be run on your bot.</p>
+<div class="section" id="designing-a-bot">
+<h2>Designing a bot<a class="headerlink" href="#designing-a-bot" title="Permalink to this headline">¶</a></h2>
+<p>To create a new bot, go to the <code class="docutils literal notranslate"><span class="pre">Bots</span></code> menu and click the ‘+’ Button.
+If you want to change the design of an existing bot, you can select that bot and click the pencil icon instead.</p>
+<a class="reference internal image-reference" href="_images/bot_menu_edit.png"><img alt="The bot select screen highlighting the new and edit buttons." src="_images/bot_menu_edit.png" style="width: 600px;" /></a>
+<p>If you have the windows one click install, you can also find your bot in <code class="docutils literal notranslate"><span class="pre">workspace/robots</span></code> and right click, select <code class="docutils literal notranslate"><span class="pre">Open</span></code> to edit the bot.</p>
+<p>If you are creating a new bot, you’ll be prompted to pick a baseplate for the bot.
+The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.</p>
+<a class="reference internal image-reference" href="_images/baseplate_dialog.png"><img alt="The baseplate dialog, selecting circle, rectangle or polygon." src="_images/baseplate_dialog.png" style="width: 600px;" /></a>
+<p>After you’ve created the baseplate for your robot, you can starting adding and removing elements from the baseplate.</p>
+<div class="section" id="placing-elements">
+<h3>Placing elements<a class="headerlink" href="#placing-elements" title="Permalink to this headline">¶</a></h3>
+<p>Before you can place an element, you need to select what type of element you’ll be placing.
+There are 4 types of elements:</p>
+<ul class="simple">
+<li><p>Circles</p></li>
+<li><p>Rectangles</p></li>
+<li><p>Regular Polygons</p></li>
+<li><p>Devices (Motors, Sensors, Buttons)</p></li>
+</ul>
+<p>Click the respective icon on the left sidebar to select that element.
+If you instead click the cursor icon, you will be return to select mode, where you can select elements already on the bot, and change/remove them.</p>
+<a class="reference internal image-reference" href="_images/bot_edit_holding_elements.png"><img alt="The bot edit screen highlighting the different placement modes." src="_images/bot_edit_holding_elements.png" style="width: 600px;" /></a>
+<p>After selecting an element type, you can:</p>
+<ol class="arabic simple">
+<li><p>Edit the properties of your held item in the bottom bar.</p></li>
+<li><p>Click on the bot to place the element at a certain location.</p></li>
+</ol>
+</div>
+<div class="section" id="modifying-elements">
+<h3>Modifying elements<a class="headerlink" href="#modifying-elements" title="Permalink to this headline">¶</a></h3>
+<p>To modify an element on the robot, we first need to enter the selecting mode, by clicking the cursor icon on the left sidebar.
+Then, click on the element to select it. After this, the bottom bar should populate with properties to edit:</p>
+<ul class="simple">
+<li><p>Rotation</p></li>
+<li><p>Fill and Stroke colour</p></li>
+<li><p>Radius / Side length / Width</p></li>
+<li><p>Device port</p></li>
+</ul>
+<p>And many others. You can edit these properties and see them change in real time on the bot!</p>
+<p>Any numerical property can be edited simply by typing out the value you want, after clicking in the box.
+You can also scroll while hovering over the value to increase/decrease it with ease.</p>
+<p>The fill and stroke properties can be change by clicking the colour swatch next to it. This should open a colour picker.</p>
+<p>The device port entry can be whatever you want it to be, but this property tends to be <code class="docutils literal notranslate"><span class="pre">in1,in2,in3...</span></code> for sensors, and <code class="docutils literal notranslate"><span class="pre">outA,outB,outC...</span></code> for motors.</p>
+<a class="reference internal image-reference" href="_images/bot_edit_properties.png"><img alt="The bot select screen highlighting the editing fields for certain elements." src="_images/bot_edit_properties.png" style="width: 600px;" /></a>
+</div>
+<div class="section" id="removing-elements">
+<h3>Removing elements<a class="headerlink" href="#removing-elements" title="Permalink to this headline">¶</a></h3>
+<p>Just as before, enter the selecting mode and select the element.
+On the left sidebar, a ‘Remove’ button should appear, you can press this to delete the element.
+Additionally, the backspace key should also remove the element.</p>
+</div>
+</div>
+<div class="section" id="adding-code-to-a-bot">
+<h2>Adding code to a bot<a class="headerlink" href="#adding-code-to-a-bot" title="Permalink to this headline">¶</a></h2>
+<p>Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.</p>
+<p>If you have the windows one click install, you can also find your bot in <code class="docutils literal notranslate"><span class="pre">workspace/robots</span></code> and right click, select <code class="docutils literal notranslate"><span class="pre">Edit</span></code> to go to the same window.</p>
+<a class="reference internal image-reference" href="_images/bot_menu_settings.png"><img alt="The bot menu screen, showing the bot properties cog." src="_images/bot_menu_settings.png" style="width: 600px;" /></a>
+<p>Then press the button next to ‘Bot script’ to open the file selector.
+All code you want to run on your bot should be located in the <code class="docutils literal notranslate"><span class="pre">code</span></code> folder of your workspace!</p>
+<a class="reference internal image-reference" href="_images/bot_edit_code.png"><img alt="The bot property editing screen, showing the code location button." src="_images/bot_edit_code.png" style="width: 600px;" /></a>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ev3_extensions.html" class="btn btn-neutral float-right" title="Extensions to normal EV3 Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="batched_commands.html" class="btn btn-neutral float-left" title="Simulation Presets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Jackson Goerner, James Bui, Richard Huang, Angus Trau, Peter Drew
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

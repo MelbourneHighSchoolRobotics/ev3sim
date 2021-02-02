@@ -1,72 +1,67 @@
-Batched Commands
-================
+Simulation Presets
+==================
 
-Running a batched command
--------------------------
+What is a simulation preset?
+----------------------------
 
-In the previous document, we run the simulator and attach script logic in two separate terminals.
+When running a simulation with EV3Sim, you need two things:
 
-.. code-block:: bash
+* A world to simulate and interact with, and
+* Robots to interact with the simulated world.
 
-    ev3sim bot.yaml
-    ev3attach demo.py Robot-0
+A simulation preset specifies which world to simulate, the bots that will be placed in the simulation, and any settings specific to that world.
 
-When testing robot code, as well as competitions, many of these commands will be the same however, and it would be much easier if the entire simulation, with code running, could be invoked by a single command.
-In fact, the simulator allows for this! 
+As an example, one simulation preset provided by default is the ``soccer_competition`` preset. This specifies the world (preset type) as Soccer, and then specifies which bots are on which team.
+It also specifies soccer specific settings, such as the Team Names, rulings for out on white, and halftime length.
 
-To run the simulator with two bots both running the demo code, execute the following command:
+Changing the robots in a simulation
+-----------------------------------
 
-.. code-block:: bash
+While selecting a simulation preset the following icon should light up:
 
-    ev3sim -b soccer_competition.yaml
+.. image:: images/robot_selection.png
+  :width: 600
+  :alt: The simulation select screen, highlighting the robot select button.
 
-This ``-b`` or ``--batch`` flag specifies to use the file ``soccer_competition.yaml`` as the information for the simulator, as well as attaching code to bots.
+From here, you can select a bot from those you have defined, and select them for Team 1 or Team 2. After selecting the bot for Team 1, Bot 1, you then select the bot for Team 2, Bot 1, and so on.
+At any point if you have enough bots in the simulation, you can click "Done" to finish.
 
-Defining batched commands
--------------------------
+Changing simulation settings
+----------------------------
 
-You can write your own batched commands, just as you can write your own bot definitions and bot code. You can find the source for ``soccer_competition.yaml`` `here`_.
+Clicking the settings cog instead of the robot button will take you to the settings page for you simulation preset:
 
-.. _here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/batched_commands/soccer_competition.yaml
+.. image:: images/settings_cog.png
+  :width: 600
+  :alt: The simulation select screen, highlighting the settings button.
 
-The batched command file looks like the following:
+.. image:: images/settings.png
+  :width: 600
+  :alt: The simulation preset settings page, for the soccer preset.
 
-.. code-block:: yaml
+Creating a simulation preset
+----------------------------
 
-    preset_file: soccer.yaml
-    bots:
-    - name: bot.yaml
-      scripts:
-      - demo.py
-    - name: bot.yaml
-      scripts:
-      - demo.py
-    settings:
-      # Optionally, any setting in the preset file can be overridden here
-      # ScriptLoader
-      ev3sim.simulation.loader.ScriptLoader.GAME_TICK_RATE: 30
-      ev3sim.simulation.loader.ScriptLoader.VISUAL_TICK_RATE: 30
-      ev3sim.simulation.loader.ScriptLoader.TIME_SCALE: 1
-      # ScreenObjectManager
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_WIDTH: 960
-      ev3sim.visual.manager.ScreenObjectManager.SCREEN_HEIGHT: 720
-      # Soccer
-      ev3sim.presets.soccer.SoccerInteractor.TEAM_NAMES:
-        - Team 1
-        - Team 2
-      # Soccer referee game settings
-      ev3sim.presets.soccer.SoccerInteractor.GAME_HALF_LENGTH_MINUTES: 5
-      ev3sim.presets.soccer.SoccerInteractor.SHOW_GOAL_COLLIDERS: true
-      ev3sim.presets.soccer.SoccerInteractor.ENFORCE_OUT_ON_WHITE: true
-      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_ON_WHITE: true
-      ev3sim.presets.soccer.SoccerInteractor.BALL_RESET_WHITE_DELAY_SECONDS: 5
-      ev3sim.presets.soccer.SoccerInteractor.BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
+Rather than editing an existing preset you can also create your own by clicking the plus button on the list view for simulation presets.
+This will prompt you to select a world type (Such as Soccer or Rescue).
 
-The ``preset_file`` points to the preset to load (usually specified with the ``-p`` flag in ``ev3sim``, but defaults to ``soccer.yaml``).
-After this you can specify any bots to load, as well as scripts to attach to them.
+.. image:: images/add_sim.png
+  :width: 600
+  :alt: The simulation select screen, highlighting the new sim button.
 
-Batched command problems
-------------------------
+Running the simulation preset
+-----------------------------
 
-If your computer is not powerful enough to run the number of bots specified with scripts attached, the command may just fail or hang. 
-This method of loading robots is only supplied for ease of use, and has its problems.
+To run your simulation presets, you can press the big green play button to begin.
+
+.. image:: images/play_button.png
+  :width: 600
+  :alt: The simulation select screen, highlighting the sim start button.
+
+However, if you installed with the windows one-click executable, you can also run the simulation simply by double clicking a file!
+Navigate to your workspace folder, and open the ``sims`` directory. This should contain all of the sims you have created in the form of ``.sim`` files.
+
+Double clicking should run the sim by default. Otherwise, you can right click and select one of two actions:
+
+* Open: Run the simulation.
+* Edit: Open the settings page for the simulation.
