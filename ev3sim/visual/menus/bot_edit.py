@@ -743,6 +743,18 @@ class BotEditMenu(BaseMenu):
                             try:
                                 val = conv(getattr(self, attr).text)
                                 val += event.y * inc
+                                if conv == float:
+                                    # Make 0.200001 = 0.1999999 = 0.2
+                                    res = str(val + 1e-8)
+                                    if "." in res:
+                                        idx = res.index(".")
+                                        for i in range(max(0, idx - 1), len(res)):
+                                            try:
+                                                if abs(float(res[:i]) - val) < 1e-5:
+                                                    val = float(res[:i])
+                                                    break
+                                            except:
+                                                continue
                                 getattr(self, attr).set_text(str(val))
                             except:
                                 pass
