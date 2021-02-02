@@ -1,6 +1,10 @@
+import pymunk
 import numpy as np
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.devices.utils import NearestValue
+from ev3sim.objects.utils import local_space_to_world_space
+from ev3sim.objects.base import STATIC_CATEGORY
+from ev3sim.simulation.world import World
 
 
 class MotorMixin:
@@ -54,7 +58,19 @@ class MotorMixin:
                 self.off()
 
     def _applyMotors(self, object, position, rotation):
-        object.apply_force(self.applied_force * np.array([np.cos(rotation), np.sin(rotation)]), pos=position)
+        # Look at motor global position for any force modification fields.
+        pos = local_space_to_world_space(object.body.position, rotation, position)
+        new_force = self.applied_force * np.array([np.cos(rotation), np.sin(rotation)])
+        shapes = World.instance.space.point_query(
+            [float(v) for v in pos], 0.0, pymunk.ShapeFilter(mask=STATIC_CATEGORY)
+        )
+        if shapes:
+            max_z = max(pq.shape.obj.clickZ for pq in shapes)
+            shapes = [pq for pq in shapes if pq.shape.obj.clickZ == max_z]
+            for pq in shapes:
+                if pq.shape.obj.affectsForce:
+                    new_force = pq.shape.obj.changeForce(new_force)
+        object.apply_force(new_force, pos=position)
 
     def on(self, speed, **kwargs):
         """

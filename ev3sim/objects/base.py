@@ -4,6 +4,7 @@ from typing import List
 
 from ev3sim.visual.objects import IVisualElement, visualFactory
 from ev3sim.simulation.world import stop_on_pause
+from ev3sim.objects.utils import local_space_to_world_space
 
 DYNAMIC_CATEGORY = 0b10
 STATIC_CATEGORY = 0b100
@@ -25,7 +26,7 @@ class BaseObject:
         self.parent = None
         if "visual" in kwargs:
             self.visual = visualFactory(**kwargs["visual"])
-        self.position = kwargs.get("position", (0.5, 0.5))
+        self.position = kwargs.get("position", (0, 0))
         self.rotation = kwargs.get("rotation", 0)
         for i, child in enumerate(kwargs.get("children", [])):
             child["key"] = kwargs["key"] + f"-child-{i}"
@@ -100,21 +101,24 @@ class PhysicsObject(BaseObject):
         self.friction_coefficient = kwargs.get("friction", 1)
         self.restitution_coefficient = kwargs.get("restitution", 0.7)
         self.sensor = kwargs.get("sensor", False)
+        self.affectsForce = False
         self.body, self.shape = self.visual.generateBodyAndShape(self)
         self.shapes = [self.shape]
         self.shape.obj = self
-        self.body.position = self.position + self.visual.getPositionAnchorOffset()
+        self.shape.actual_obj = self
+        self.body.position = [a + b for a, b in zip(self.position, self.visual.getPositionAnchorOffset())]
         for child in self.children:
             if isinstance(child, PhysicsObject):
                 child.body, child.shape = child.visual.generateBodyAndShape(
                     child, body=self.body, rel_pos=child.position
                 )
                 child.shape.obj = self
+                child.shape.actual_obj = child
                 self.shapes.append(child.shape)
 
     def update(self):
         if not self.static:
-            self.position = self.body.position - self.visual.getPositionAnchorOffset()
+            self.position = np.array(self.body.position) - self.visual.getPositionAnchorOffset()
             self.rotation = self.body.angle
             self.update_velocities()
 
@@ -122,18 +126,48 @@ class PhysicsObject(BaseObject):
     def update_velocities(self):
         # No angular friction or air resistance/velocity dampening, so do this.
         self.body.angular_velocity *= self.friction_coefficient
-        self.body.velocity *= self.friction_coefficient
+        self.body.velocity = [v * self.friction_coefficient for v in self.body.velocity]
 
     @stop_on_pause
     def apply_force(self, f, pos=None):
         """Apply a force to the object, from a relative position"""
         if pos is None:
             pos = np.array([0.0, 0.0])
-        self.shape.body.apply_force_at_local_point(f, pos)
+        self.shape.body.apply_force_at_local_point([float(v) for v in f], [float(v) for v in pos])
+
+
+class ForceAffectArea(PhysicsObject):
+    def initFromKwargs(self, **kwargs):
+        kwargs["static"] = True
+        kwargs["physics"] = True
+        kwargs["sensor"] = True
+        super().initFromKwargs(**kwargs)
+        self.affectsForce = True
+        self.force_type = kwargs["force_type"]
+        self.force_args = kwargs.get("force_args", [])
+
+    def changeForce(self, force):
+        # Reduce the force by a factor
+        # args[0]: slow factor
+        if self.force_type == "slow":
+            return force * self.force_args[0]
+        # Reduce the force by a factor in a certain direction.
+        # args[0]: normalised vector to slow by
+        # args[1]: slow factor
+        if self.force_type == "slow_dir":
+            parallel = np.dot(
+                force, local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])
+            ) * local_space_to_world_space(self.force_args[0], self.rotation, [0, 0])
+            perpendicular = force - parallel
+            parallel *= self.force_args[1]
+            return perpendicular + parallel
+        raise ValueError(f"Unknown Force Effect Type {self.force_type}")
 
 
 def objectFactory(**options):
-    if options.get("physics", False):
+    if options.get("force_type", None) is not None:
+        r = ForceAffectArea()
+    elif options.get("physics", False):
         r = PhysicsObject()
     else:
         r = BaseObject()

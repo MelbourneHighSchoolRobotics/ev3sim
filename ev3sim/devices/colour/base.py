@@ -1,4 +1,3 @@
-import random
 import numpy as np
 from ev3sim.simulation.randomisation import Randomiser
 

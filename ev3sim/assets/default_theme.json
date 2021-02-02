@@ -1,0 +1,516 @@
+{
+    "defaults": {
+        "colours": {
+            "normal_bg": "#C5C6C7",
+            "hovered_bg": "#93A4B4",
+            "disabled_bg": "#25292e",
+            "selected_bg": "#193754",
+            "dark_bg": "#15191e",
+            "active_bg": "#9ACBD6",
+            "normal_text": "#1F2833",
+            "hovered_text": "#011628",
+            "selected_text": "#131920",
+            "disabled_text": "#6d736f",
+            "active_text": "#7E8B9A",
+            "link_text": "#0000EE",
+            "link_hover": "#2020FF",
+            "link_selected": "#551A8B",
+            "text_shadow": "#777777",
+            "normal_border": "#DDDDDD",
+            "hovered_border": "#B0B0B0",
+            "disabled_border": "#808080",
+            "selected_border": "#8080B0",
+            "active_border": "#8080B0",
+            "filled_bar": "#f4251b",
+            "unfilled_bar": "#CCCCCC"
+        }
+    },
+    "title": {
+        "colours": {
+            "normal_text": "#f0efeb",
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000"
+        },
+        "font": {
+            "name": "Poppins",
+            "size": "48",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Poppins-Light.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Poppins-Regular.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Poppins-LightItalic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Poppins-Italic.ttf"
+            }
+        }
+    },
+    "any_button": {
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "invis_button": {
+        "colours": {
+            "normal_bg": "#00000000",
+            "hovered_bg": "#00000000",
+            "active_bg": "#00000000",
+            "normal_text": "#00000000",
+            "hovered_text": "#00000000",
+            "active_text": "#00000000",
+            "normal_border": "#00000000",
+            "hovered_border": "#00000000",
+            "active_border": "#00000000"
+        }
+    },
+    "menu_button": {
+        "misc": {
+            "shape": "rectangle"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        },
+        "colours": {
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#EA8689",
+            "normal_text": "#ffffff",
+            "hovered_text": "#ffffff",
+            "active_text": "#ffffff"
+        }
+    },
+    "background": {
+        "colours": {
+            "dark_bg": "#0B0C10"
+        },
+        "misc": {
+            "border_width": "0"
+        }
+    },
+    "text_background": {
+        "colours": {
+            "dark_bg": "#141D2A"
+        },
+        "misc": {
+            "border_width": "0"
+        }
+    },
+    "text_dialog": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "26",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_text": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#555555"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "22",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_text_highlighted": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "22",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_info": {
+        "prototype": "button_text",
+        "colours": {
+            "normal_text": "#555555"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "button_info_highlighted": {
+        "prototype": "button_text",
+        "colours": {
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "settings-background": {
+        "colours": {
+            "dark_bg": "#141D2A"
+        },
+        "misc": {
+            "border_width": "0"
+        }
+    },
+    "action_button": {
+        "prototype": "any_button",
+        "colours": {
+            "normal_bg": "#7EB517",
+            "hovered_bg": "#97D91C",
+            "active_bg": "#A9E538",
+            "normal_text": "#ffffff",
+            "hovered_text": "#ffffff",
+            "active_text": "#ffffff"
+        }
+    },
+    "settings_buttons": {
+        "prototype": "any_button",
+        "colours": {
+            "normal_bg": "#6c757d",
+            "hovered_bg": "#7C858D",
+            "active_bg": "#adb5bd"
+        }
+    },
+    "button_info_selected": {
+        "prototype": "button_info",
+        "colours": {
+            "normal_text": "#f7ede2"
+        }
+    },
+    "list_button": {
+        "prototype": "any_button",
+        "colours": {
+            "normal_bg": "#dddddd",
+            "hovered_bg": "#eeeeee",
+            "active_bg": "#ffffff",
+            "normal_border": "#00000000"
+        }
+    },
+    "list_button_highlighted": {
+        "prototype": "any_button",
+        "colours": {
+            "normal_text": "#f7ede2",
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#D0252A",
+            "normal_border": "#00000000"
+        }
+    },
+    "text_entry_line": {
+        "colours": {
+            "dark_bg": "#BCC5CD"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        },
+        "misc": {
+            "padding": "4,2"
+        }
+    },
+    "entry-label": {
+        "colours": {
+            "dark_bg": "#BCC5CD"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        }
+    },
+    "checkbox-button": {
+        "colours": {
+            "normal_bg": "#ffffff00",
+            "hovered_bg": "#ffffff40",
+            "active_bg": "#ffffff80"
+        }
+    },
+    "cancel-changes": {
+        "prototype": "action_button",
+        "colours": {
+            "normal_bg": "#DD4045",
+            "hovered_bg": "#E05256",
+            "active_bg": "#EA8689"
+        }
+    },
+    "bot_edit_bar": {
+        "colours": {
+            "dark_bg": "#141D2A",
+            "normal_border": "#00ff00"
+        },
+        "misc": {
+            "border_width": "2"
+        }
+    },
+    "bot_edit_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "device_label": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#f7ede2"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "18",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "baseplate_label": {
+        "prototype": "device_label"
+    },
+    "colour_channel_editor.label": {
+        "colours": {
+            "normal_text": "#f7ede2"
+        }
+    },
+    "colour_channel_editor.text_entry_line": {
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "error_msg": {
+        "font": {
+            "name": "Roboto",
+            "size": "16",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "window.#title_bar": {
+        "font": {
+            "name": "Roboto",
+            "size": "14",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "option-button": {
+        "prototype": "any_button",
+        "font": {
+            "name": "Roboto",
+            "size": "24",
+            "regular_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Regular.ttf"
+            },
+            "bold_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Bold.ttf"
+            },
+            "italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-Italic.ttf"
+            },
+            "bold_italic_resource": {
+                "package": "ev3sim.assets.fonts",
+                "resource": "Roboto-BoldItalic.ttf"
+            }
+        }
+    },
+    "console-bg": {
+        "colours": {
+            "dark_bg": "#444444a0"
+        }
+    },
+    "console-text": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "normal_border": "#00000000",
+            "normal_text": "#ffffff"
+        }
+    }
+}

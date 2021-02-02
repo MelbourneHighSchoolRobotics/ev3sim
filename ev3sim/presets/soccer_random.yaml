@@ -700,3 +700,6 @@ elements:
   restitution: 0.3
   position: [-100, -18]
   key: IR_BALL
+
+# This yaml is currently unusable. Randomisation should be a system wide setting.
+hidden: true

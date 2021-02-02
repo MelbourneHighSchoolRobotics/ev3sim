@@ -1,3 +1,9 @@
+from ev3sim.visual.menus.base_menu import BaseMenu
+from ev3sim.file_helper import find_abs
+from ev3sim.settings import SettingsManager
+from ev3sim.search_locations import preset_locations
+
+
 class IInteractor:
     """
     An interactor can be thought of as a robot in the simulation which has much more access to the inner workings of the system, and no physical presence.
@@ -10,12 +16,18 @@ class IInteractor:
 
     constants: dict
 
+    AUTOSTART_BOTS = True
+
     def __init__(self, **kwargs):
         pass
 
     def startUp(self):
         """Called when the interactor is instantiated (After elements are spawned in, but before any ticks are done)."""
-        pass
+        self.locateBots()
+        for robot in self.robots:
+            robot.robot_class.onSpawn()
+        if self.AUTOSTART_BOTS:
+            self.restartBots()
 
     def tick(self, tick) -> bool:
         """
@@ -45,11 +57,57 @@ class IInteractor:
         """
         pass
 
+    # Some helper functions
+    def locateBots(self):
+        """Identifies all spawned robots."""
+        from ev3sim.simulation.loader import ScriptLoader
+
+        self.robots = []
+        bot_index = 0
+        while True:
+            # Find the next robot.
+            possible_keys = []
+            for key in ScriptLoader.instance.object_map.keys():
+                if key.startswith(f"Robot-{bot_index}"):
+                    possible_keys.append(key)
+            if len(possible_keys) == 0:
+                break
+            possible_keys.sort(key=len)
+            self.robots.append(ScriptLoader.instance.object_map[possible_keys[0]])
+            bot_index += 1
+
+        if len(self.robots) == 0:
+            raise ValueError("No robots loaded.")
+
+    def killBots(self):
+        """Kill all ongoing robot scripts."""
+        from ev3sim.simulation.loader import ScriptLoader
+
+        ScriptLoader.instance.killAllProcesses()
+
+    def restartBots(self):
+        """Kill all ongoing robot scripts and start them again"""
+        from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.events import GAME_RESET
+
+        for robotID in ScriptLoader.instance.robots.keys():
+            # Restart the robot scripts.
+            ScriptLoader.instance.startProcess(robotID, kill_recent=True)
+            ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
+
+
+class PygameGuiInteractor(BaseMenu, IInteractor):
+    def __init__(self, **kwargs):
+        """Fix to avoid size not being set correctly."""
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        IInteractor.__init__(self, **kwargs)
+        BaseMenu.__init__(self, (ScreenObjectManager.instance.SCREEN_WIDTH, ScreenObjectManager.instance.SCREEN_HEIGHT))
+
 
 def fromOptions(options):
     if "filename" in options:
         import yaml
-        from ev3sim.file_helper import find_abs
 
         fname = find_abs(options["filename"])
         with open(fname, "r") as f:
@@ -59,8 +117,27 @@ def fromOptions(options):
         raise ValueError(
             "Your options has no 'class_path' or 'filename' entry (Or the file you reference has no 'class_path' entry')"
         )
-    mname, cname = options["class_path"].rsplit(".", 1)
     import importlib
 
-    klass = getattr(importlib.import_module(mname), cname)
-    return klass(*options.get("args", []), **options.get("kwargs", {}))
+    if isinstance(options["class_path"], str):
+        mname, cname = options["class_path"].rsplit(".", 1)
+
+        klass = getattr(importlib.import_module(mname), cname)
+    else:
+        from importlib.machinery import SourceFileLoader
+
+        module = SourceFileLoader("not_main", find_abs(options["class_path"][0], preset_locations())).load_module()
+        klass = getattr(module, options["class_path"][1])
+    topObj = klass(*options.get("args", []), **options.get("kwargs", {}))
+    # Add any settings for this interactor, if applicable.
+    # This only works for package presets. Not workspace ones.
+    if "settings_name" in options:
+        name = options["settings_name"]
+        if "settings_defn" not in options:
+            raise ValueError(f"Expected a settings object to add with group name {name}")
+        mname, cname = options["settings_defn"].rsplit(".", 1)
+        obj = getattr(importlib.import_module(mname), cname)
+        SettingsManager.instance.addSettingGroup(name, obj)
+        # We need to remove this setting once the simulation ends, so save the name.
+        topObj._settings_name = name
+    return topObj

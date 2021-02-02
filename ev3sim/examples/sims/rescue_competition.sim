@@ -1,0 +1,146 @@
+bots:
+- rescue_bot.bot
+preset_file: rescue.yaml
+settings:
+  rescue:
+    BOT_SPAWN_POSITION:
+    - - - -2
+        - -2
+      - 0
+    CAN_SPAWN_POSITION:
+    - 63.242812500000014
+    - -88.05555555555554
+    FOLLOW_POINT_RADIUS: 1
+    GAME_LENGTH_MINUTES: 5
+    MAX_FOLLOW_DIST: 8
+    ROBOT_CENTRE_RADIUS: 3
+    SHOW_FOLLOW_POINTS: false
+    TILE_DEFINITIONS:
+    - path: tiles/definitions/city_limits.yaml
+      position:
+      - -2
+      - -2
+    - flip: false
+      path: tiles/definitions/right_angle.yaml
+      position:
+      - -1
+      - -2
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/sharp_straight.yaml
+      position:
+      - -1
+      - -1
+      rotation: 90
+    - flip: false
+      path: tiles/definitions/curved_straight.yaml
+      position:
+      - -1
+      - 0
+      rotation: 90
+    - flip: false
+      path: tiles/definitions/strict_turns1.yaml
+      position:
+      - -1
+      - 1
+      rotation: 90
+    - flip: true
+      path: tiles/definitions/right_angle.yaml
+      position:
+      - 0
+      - 1
+      rotation: -180
+    - path: tiles/definitions/ramp.yaml
+      position:
+      - 0
+      - 0
+      rotation: 270
+    - flip: true
+      path: tiles/definitions/square_green.yaml
+      position:
+      - 0
+      - -1
+      rotation: 90
+    - flip: false
+      path: tiles/definitions/rough.yaml
+      position:
+      - 1
+      - -1
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/double_curve.yaml
+      position:
+      - 2
+      - -1
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/tunnel.yaml
+      position:
+      - 2
+      - 0
+      rotation: 90
+    - flip: true
+      path: tiles/definitions/strict_turns2.yaml
+      position:
+      - 2
+      - 1
+      rotation: -90
+    - flip: true
+      path: tiles/definitions/left_circle_green.yaml
+      position:
+      - 1
+      - 1
+    - flip: true
+      path: tiles/definitions/color_right.yaml
+      position:
+      - 1
+      - 2
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/zig_zag.yaml
+      position:
+      - 2
+      - 2
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/square_green.yaml
+      position:
+      - 3
+      - 2
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/dotted.yaml
+      position:
+      - 3
+      - 1
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/water_tower.yaml
+      position:
+      - 3
+      - 0
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/strict_turns1.yaml
+      position:
+      - 3
+      - -1
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/oil_spill_entry.yaml
+      position:
+      - 2
+      - -2
+      rotation: -90
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 2
+      - -3
+      rotation: 0
+    - flip: false
+      path: tiles/definitions/oil_spill.yaml
+      position:
+      - 1
+      - -3
+      rotation: 0

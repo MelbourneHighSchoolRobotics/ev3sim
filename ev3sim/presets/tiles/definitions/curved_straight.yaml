@@ -1,0 +1,118 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- [-10, 3]
+- [-10, 6]
+- [-9, 10]
+- [-5, 11]
+- [-1, 10]
+- [0, 6]
+- [0, 3]
+- [0, 0]
+- [0, -3]
+- [0, -6]
+- [1, -10]
+- [5, -11]
+- [9, -10]
+- [10, -6]
+- [10, -3]
+- [12, 0]
+- [15, 0]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 3
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line1
+  position: [-13.5, 0]
+- type: visual
+  name: Arc
+  radius: 3
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc1
+  position: [-13, 3]
+  rotation: -90
+  angle: 90
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 4
+  fill: line_color
+  zPos: 0.1
+  key: line2
+  position: [-10, 5]
+- type: visual
+  name: Arc
+  radius: 5
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc2
+  position: [-5, 5.5]
+  rotation: 0
+  angle: 180
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 11
+  fill: line_color
+  zPos: 0.1
+  key: line3
+  position: [0, 0]
+- type: visual
+  name: Arc
+  radius: 5
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc3
+  position: [5, -5.5]
+  rotation: -180
+  angle: 180
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 4
+  fill: line_color
+  zPos: 0.1
+  key: line4
+  position: [10, -5]
+- type: visual
+  name: Arc
+  radius: 3
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc4
+  position: [13, -3]
+  rotation: 90
+  angle: 90
+- type: visual
+  name: Rectangle
+  width: 3
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line5
+  position: [13.5, 0]
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
+preview: tiles/previews/curved_straight.png
+entries: [left]
+exits: [right]

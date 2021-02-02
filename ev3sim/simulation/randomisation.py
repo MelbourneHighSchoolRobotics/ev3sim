@@ -7,8 +7,6 @@ class Randomiser:
     instance: "Randomiser" = None
 
     def __init__(self, seed):
-        if self.__class__.instance is not None:
-            raise ValueError(f"Two {self.__class__} instances created.")
         self.global_random = rd.RandomState(seed)
         self.__class__.instance = self
         self.port_randomisers = {}
@@ -29,7 +27,8 @@ class Randomiser:
     def createPortRandomiserWithSeed(cls, port_key, seed=None):
         instance = cls.getInstance()
         if port_key in instance.port_randomisers:
-            raise ValueError(f"Randomiser instance with key {port_key} already exists")
+            # This shouldn't error out, the code will likely fail instead.
+            return instance.port_randomisers[port_key]
         seed = cls._stringToSeed(port_key) if seed is None else seed
         instance.port_randomisers[port_key] = rd.RandomState(seed=seed)
         instance.seeds[port_key] = seed

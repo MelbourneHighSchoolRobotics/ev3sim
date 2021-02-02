@@ -1,0 +1,15 @@
+bots:
+- communication_server.bot
+- communication_client.bot
+- communication_client.bot
+preset_file: soccer.yaml
+settings:
+  soccer:
+    BALL_RESET_ON_WHITE: true
+    BALL_RESET_WHITE_DELAY_SECONDS: 5
+    BOT_OUT_ON_WHITE_PENALTY_SECONDS: 30
+    ENFORCE_OUT_ON_WHITE: true
+    GAME_HALF_LENGTH_MINUTES: 5
+    TEAM_NAME_1: Team 1
+    TEAM_NAME_2: Team 2
+hidden: true

@@ -1,10 +1,7 @@
 import numpy as np
-from ev3sim.objects.base import objectFactory
 from ev3sim.devices.base import Device, IDeviceInteractor
-from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.devices.ultrasonic.base import UltrasonicSensorMixin
 from ev3sim.simulation.loader import ScriptLoader
-from ev3sim.visual.manager import ScreenObjectManager
 
 
 class UltrasonicInteractor(IDeviceInteractor):

@@ -1,0 +1,68 @@
+base_plate:
+  children: []
+  collider: inherit
+  friction: 0.8
+  key: phys_obj
+  mass: 5
+  restitution: 0.2
+  visual:
+    fill: '#878E88'
+    height: 10
+    name: Rectangle
+    stroke: '#ffffff'
+    stroke_width: 0.1
+    width: 15
+    zPos: 1
+devices:
+- LargeMotor:
+    port: outB
+    position:
+    - 0
+    - 2.5
+    rotation: 0
+    zPos: 3
+- LargeMotor:
+    port: outC
+    position:
+    - 0
+    - -2.5
+    rotation: 0
+    zPos: 3.5
+- ColorSensor:
+    port: in1
+    position:
+    - 7
+    - 2.5
+    rotation: 180
+    zPos: 3.75
+- ColorSensor:
+    port: in2
+    position:
+    - 7
+    - -2.5
+    rotation: 180
+    zPos: 3.875
+- UltrasonicSensor:
+    port: in3
+    position:
+    - 7
+    - 0
+    rotation: 0
+    zPos: 3.9375
+- CompassSensor:
+    port: in4
+    position:
+    - 0
+    - 0
+    zPos: 3.96875
+- Button:
+    port: up
+    position:
+    - -4
+    - 0
+    zPos: 3.984375
+follow_collider:
+- 5
+- 0
+preview_path: bots/rescue_bot.png
+hidden_edit: true

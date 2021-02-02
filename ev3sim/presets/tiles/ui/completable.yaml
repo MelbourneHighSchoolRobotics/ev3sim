@@ -1,0 +1,33 @@
+type: object
+collider: inherit
+physics: true
+static: true
+visual:
+  name: Circle
+  fill: '#ff0000'
+  radius: 2
+  zPos: 5
+position: [-140, 0]
+children:
+- type: object
+  physics: false
+  visual:
+    name: Rectangle
+    width: 4
+    height: 4
+    fill: UI_tilebox_not_complete
+    stroke: '#ffffff'
+    stroke_width: 0.1
+    zPos: 5
+  position: [6, 0]
+- type: object
+  physics: false
+  visual:
+    name: Text
+    text: 0/0
+    font_size: 20
+    fill: Tile_UI_Text
+    hAlignment: r
+    vAlignment: m
+    zPos: 5
+  position: [30, 0]

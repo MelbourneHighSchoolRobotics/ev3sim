@@ -1,7 +1,6 @@
 import numpy as np
 from ev3sim.devices.base import IDeviceInteractor, Device
 from ev3sim.devices.compass.base import CompassSensorMixin
-from ev3sim.objects.utils import local_space_to_world_space
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.randomisation import Randomiser
 from ev3sim.devices.utils import NearestValue, CyclicMixin, RandomDistributionMixin
@@ -17,13 +16,8 @@ class CompassInteractor(IDeviceInteractor):
         self.do_rotation = self.device_class.value() * np.pi / 180
 
     def afterPhysics(self):
-        for i, obj in enumerate(self.generated):
-            obj.position = local_space_to_world_space(
-                self.relative_location
-                + local_space_to_world_space(self.relative_positions[i], self.relative_rotation, np.array([0, 0])),
-                self.physical_object.rotation,
-                self.physical_object.position,
-            )
+        super().afterPhysics()
+        for obj in self.generated:
             if obj.key == (self.getPrefix() + "relative_north"):
                 obj.rotation = self.device_class.global_rotation - self.do_rotation
             else:

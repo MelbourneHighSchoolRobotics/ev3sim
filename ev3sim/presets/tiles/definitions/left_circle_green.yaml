@@ -1,0 +1,86 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- - - [-10, 3]
+    - [-9, 5]
+    - [-7, 7]
+    - [-5, 9]
+    - [-3, 10]
+  - - [-10, -3]
+    - [-9, -5]
+    - [-8, -7]
+    - [-5, -9]
+    - [-3, -10]
+    - [0, -10]
+    - [3, -10]
+    - [5, -9]
+    - [8, -7]
+    - [9, -5]
+    - [10, -3]
+    - [10, 0]
+    - [10, 3]
+    - [9, 5]
+    - [8, 7]
+    - [5, 9]
+    - [3, 10]
+- [0, 12]
+- [0, 15]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg1
+  position: [0, 0]
+- type: visual
+  name: Circle
+  radius: 11
+  stroke_width: 2
+  stroke: line_color
+  fill: null
+  zPos: 0.1
+  key: circle_path
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 5
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: entry_line
+  position: [-12.5, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 5
+  fill: line_color
+  zPos: 0.1
+  key: exit_line
+  position: [0, 12.5]
+- type: visual
+  name: Rectangle
+  width: 3
+  height: 3
+  fill: turn_color
+  zPos: 0.05
+  key: entry_turn
+  position: [-11.5, 2]
+- type: visual
+  name: Rectangle
+  width: 3
+  height: 3
+  fill: turn_color
+  zPos: 0.05
+  key: exit_turn
+  position: [-2, 11.5]
+ui: tiles/ui/shortcut.yaml
+checker: ev3sim.presets.tiles.checkers.ShortcutChecker.ShortcutChecker
+checker_kwargs:
+  shortcut_paths:
+  - [0, 0, 'enter']
+  - [0, 0, 'exit']
+preview: tiles/previews/green_right.png
+entries: [left]
+exits: [up]

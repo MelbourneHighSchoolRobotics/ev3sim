@@ -1,4 +1,5 @@
-from queue import Queue
+from ev3sim.file_helper import find_abs
+from ev3sim.search_locations import code_locations
 from ev3sim.simulation.interactor import IInteractor
 from ev3sim.simulation.loader import ScriptLoader
 from ev3sim.simulation.world import stop_on_pause
@@ -69,8 +70,14 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
                 )
             )
             robot.ID = prefix
+            robot._follow_collider_offset = config.get("follow_collider", [0, 0])
             ScriptLoader.instance.robots[prefix] = robot
-            ScriptLoader.instance.data["events"][robot.ID] = Queue()
+            ScriptLoader.instance.outstanding_events[prefix] = []
+            scriptname = config.get("script", None)
+            if scriptname is not None:
+                scriptname = find_abs(scriptname, code_locations())
+            ScriptLoader.instance.scriptnames[prefix] = scriptname
+
         except yaml.YAMLError as exc:
             print(f"An error occurred while loading robot preset {filename}. Exited with error: {exc}")
 
@@ -86,14 +93,14 @@ class RobotInteractor(IInteractor):
 
     def connectDevices(self):
         self.devices = {}
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             self.devices[interactor.port] = interactor.device_class
             interactor.port_key = f"{self.filename}-{self.path_index}-{interactor.port}"
             Randomiser.createPortRandomiserWithSeed(interactor.port_key)
         ScriptLoader.instance.object_map[self.robot_key].robot_class = self.robot_class
 
     def initialiseDevices(self):
-        for interactor in ScriptLoader.instance.object_map[self.robot_key].device_interactors:
+        for interactor in getattr(ScriptLoader.instance.object_map[self.robot_key], "device_interactors", []):
             interactor.device_class.generateBias()
 
     def startUp(self):
@@ -123,7 +130,7 @@ class Robot:
 
     This class however does not contain the physical definition of the robot though, just the brains.
 
-    All robot 'definitions' (see `robots/controllable.yaml`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
+    All robot 'definitions' (see `examples/robots/controllable.bot`) reference a `class_path` (Which is by default this base class), and the actions of this bot are defined by how the following functions are modified:
     """
 
     spawned = False
@@ -183,3 +190,24 @@ class Robot:
         Shouldn't be required for normal bots.
         """
         pass
+
+
+from ev3sim.visual.settings.elements import TextEntry, FileEntry
+from ev3sim.search_locations import code_locations
+
+visual_settings = [
+    {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BOT NAME", None, (lambda s: (0, 20)))]},
+    {
+        "height": (lambda s: 90),
+        "objects": [
+            FileEntry(
+                ["script"],
+                None,
+                False,
+                code_locations(),
+                "Bot script",
+                (lambda s: (0, 20)),
+            ),
+        ],
+    },
+]

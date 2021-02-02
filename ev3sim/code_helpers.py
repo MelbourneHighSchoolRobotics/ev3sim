@@ -93,3 +93,22 @@ class EventSystem:
     def handle_events(cls):
         """Handle all outstanding events."""
         pass
+
+
+class CommandSystem:
+    TYPE_DRAW = "Draw"
+    TYPE_CUSTOM = "Custom"
+
+    @classmethod
+    def send_command(cls, command_type, command_data):
+        pass
+
+
+def format_print(*args, alive_id=None, life=3, sep=" ", end="\n"):
+    msg = sep.join(map(str, args)) + end
+    # Remove formatting
+    msg = msg.replace("<b>", "").replace("</b>", "").replace("<i>", "").replace("</i>", "").replace("</font>", "")
+    split = msg.split("<font")
+    for x in range(1, len(split) - 1):
+        split[x] = ">".join(split[x].split(">")[1:])
+    print(msg)

@@ -1,0 +1,141 @@
+follow_points:
+- [-15, 0]
+- [-12, 0]
+- [-9, 0]
+- [-7, 1]
+- [-7, 4]
+- [-7, 7]
+- [-7, 10]
+- [-4.5, 10]
+- [-1.5, 10]
+- [1.5, 10]
+- [4.5, 10]
+- [7, 10]
+- [7, 7]
+- [7, 4.5]
+- [7, 1.5]
+- [7, -1.5]
+- [7, -4.5]
+- [7, -7]
+- [7, -10]
+- [4, -10]
+- [1, -10]
+- [0, -12]
+- [0, -15]
+elements:
+- type: visual
+  name: Rectangle
+  width: 30
+  height: 30
+  fill: floor_color
+  zPos: 0
+  key: bg
+  position: [0, 0]
+- type: visual
+  name: Rectangle
+  width: 7
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line1
+  position: [-11.5, 0]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 8
+  fill: line_color
+  zPos: 0.1
+  key: line2
+  position: [-7, 5]
+- type: visual
+  name: Rectangle
+  width: 12
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line3
+  position: [0, 10]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 18
+  fill: line_color
+  zPos: 0.1
+  key: line4
+  position: [7, 0]
+- type: visual
+  name: Rectangle
+  width: 5
+  height: 2
+  fill: line_color
+  zPos: 0.1
+  key: line5
+  position: [3.5, -10]
+- type: visual
+  name: Rectangle
+  width: 2
+  height: 4
+  fill: line_color
+  zPos: 0.1
+  key: line6
+  position: [0, -13]
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc1
+  position: [-8, 1]
+  rotation: 270
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc2
+  position: [-6, 9]
+  rotation: 90
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc3
+  position: [6, 9]
+  rotation: 0
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc4
+  position: [6, -9]
+  rotation: 270
+  angle: 90
+- type: visual
+  name: Arc
+  radius: 1
+  stroke: line_color
+  stroke_width: 2
+  fill: null
+  zPos: 0.1
+  key: arc5
+  position: [1, -11]
+  rotation: 90
+  angle: 90
+ui: tiles/ui/completable.yaml
+checker: ev3sim.presets.tiles.checkers.CompletedChecker.CompletedChecker
+preview: tiles/previews/strict_turns2.png
+entries: [left]
+exits: [down]

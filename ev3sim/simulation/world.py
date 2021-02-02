@@ -1,10 +1,5 @@
-import pygame
-import numpy as np
 import pymunk
 import pymunk.pygame_util
-from ev3sim.objects.utils import magnitude_sq
-from ev3sim.visual.manager import ScreenObjectManager
-from ev3sim.visual.utils import worldspace_to_screenspace
 
 
 def stop_on_pause(f):
@@ -25,12 +20,17 @@ class World:
     COLLISION_LENIENCY = 0.5
 
     paused = False
+    spawn_no = 0
 
     def __init__(self):
         World.instance = self
+        self.resetWorld()
+
+    def resetWorld(self):
         self.space = pymunk.Space()
         self.space.gravity = 0, 0
         self.objects = []
+        self.spawn_no += 1
 
     def registerObject(self, obj):
         self.objects.append(obj)

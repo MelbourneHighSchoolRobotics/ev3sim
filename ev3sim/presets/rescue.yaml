@@ -1,0 +1,148 @@
+preview_path: "rescue_preview.png"
+button_bg: "rescue_bg.png"
+
+bot_names:
+  - "Bot"
+
+visual_settings: ev3sim.presets.rescue.visual_settings
+
+preset_description: "1 bot works its way through a set of tiles in order to rescue a can from a toxic spill."
+
+colours:
+  line_color: "#1f1f1f"
+  floor_color: "#dddedf"
+  turn_color: "#00ff00"
+  strip_dark_color: "#000000"
+  rescue_outline_color: "#ffffff"
+  grass_color: "#3F841F"
+  rescue_start_color: "#A8A8A8"
+  UI_bg: "#efedee"
+  UI_bg_2: "#dddedf"
+  UI_fg: "#efedee"
+  UI_fg_2: "1f1f1f"
+  UI_tilebox_not_complete: "#110b11"
+  Tile_UI_Text: "#c4e3e9"
+
+interactors:
+- class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
+- class_path: ev3sim.presets.pause_interactor.PauseInteractor
+- class_path: ev3sim.presets.rescue.RescueInteractor
+  settings_name: rescue
+  settings_defn: ev3sim.presets.rescue.rescue_settings
+
+settings:
+  app:
+    tick_rate: 30
+    timescale: 1
+  screen:
+    MAP_WIDTH: 293.3
+    MAP_HEIGHT: 220
+    BACKGROUND_COLOUR: "#264653"
+
+elements:
+- type: visual
+  name: Image
+  image_path: 'ui/timer_bg.png'
+  position: [0,110]
+  hAlignment: m
+  vAlignment: t
+  zPos: 5
+  key: timer_bg
+- type: visual
+  name: Text
+  text: "05:00"
+  fill: "UI_fg_2"
+  font_size: 48
+  position: [-13.6, 98.5]
+  hAlignment: l
+  vAlignment: baseline
+  zPos: 5
+  key: TimerText
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'ui/controls_pause_released.png'
+    hAlignment: r
+    vAlignment: t
+    zPos: 4.5
+  key: controlsPause
+- type: object
+  collider: inherit
+  physics: true
+  static: true
+  position: [0, 96]
+  visual:
+    name: Image
+    image_path: 'ui/controls_reset_released.png'
+    hAlignment: l
+    vAlignment: t
+    zPos: 4.5
+  key: controlsReset
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_middle.png
+  hAlignment: l
+  vAlignment: m
+  position: [-146.6, 0]
+  zPos: 4.5
+  key: rescueBGMid
+- type: visual
+  name: Text
+  text: "Touches"
+  font_size: 16
+  fill: Tile_UI_Text
+  hAlignment: l
+  vAlignment: baseline
+  position: [-142, 0]
+  zPos: 5
+  key: touchesTitle
+- type: visual
+  name: Text
+  text: "1"
+  font_size: 20
+  fill: Tile_UI_Text
+  hAlignment: l
+  vAlignment: baseline
+  position: [-125, 0]
+  zPos: 5
+  key: touchesCount
+- type: visual
+  name: Text
+  text: "-10"
+  font_size: 20
+  fill: Tile_UI_Text
+  hAlignment: r
+  vAlignment: baseline
+  position: [-110, 0]
+  zPos: 5
+  key: touchesScore
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_top.png
+  hAlignment: l
+  vAlignment: b
+  position: [-146.6, 49]
+  zPos: 4.5
+  key: rescueBGTop
+- type: visual
+  name: Image
+  image_path: ui/rescue_bg_bottom.png
+  hAlignment: l
+  vAlignment: t
+  position: [-146.6, -49]
+  zPos: 4.5
+  key: rescueBGBottom
+- type: visual
+  name: Text
+  text: scoreSum
+  hAlignment: r
+  vAlignment: baseline
+  fill: Tile_UI_Text
+  font_size: 24
+  position: [-110, 0]
+  zPos: 5
+  key: rescueScoreSum
