@@ -1493,18 +1493,29 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             self.setSelectedAttribute(attr, old_v)
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
+        def bounded_gen(conv, positive=True):
+            def func(x):
+                res = conv(x)
+                if res < 0 or res < 1e-4 and positive:
+                    raise ValueError("Expected a positive value!")
+                if res > 1000:
+                    raise ValueError("Value is too big!")
+                return res
+
+            return func
+
         if self.selected_index is not None:
             if self.selected_index == "Holding":
                 generate = lambda: self.generateHoldingItem()
             else:
                 generate = lambda: self.resetBotVisual()
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_CIRCLE:
-                self.updateAttribute("radius", self.radius_entry, float, generate)
-                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
+                self.updateAttribute("radius", self.radius_entry, bounded_gen(float), generate)
+                self.updateAttribute("stroke_width", self.stroke_entry, bounded_gen(float, positive=False), generate)
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_RECTANGLE:
-                self.updateAttribute("width", self.width_entry, float, generate)
-                self.updateAttribute("height", self.height_entry, float, generate)
-                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
+                self.updateAttribute("width", self.width_entry, bounded_gen(float), generate)
+                self.updateAttribute("height", self.height_entry, bounded_gen(float), generate)
+                self.updateAttribute("stroke_width", self.stroke_entry, bounded_gen(float, positive=False), generate)
 
                 # Rotation is tricky. Do this explicitly.
                 cur_rotation = self.getSelectedAttribute("rotation", 0, visual=False)
@@ -1516,7 +1527,7 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                 except:
                     pass
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_POLYGON:
-                self.updateAttribute("stroke_width", self.stroke_entry, float, generate)
+                self.updateAttribute("stroke_width", self.stroke_entry, bounded_gen(float, positive=False), generate)
                 # Polygon drawing isn't as simple, do this explicitly.
                 old_sides = len(self.getSelectedAttribute("verts"))
                 old_size = np.linalg.norm(self.getSelectedAttribute("verts")[0], 2)
@@ -1529,6 +1540,8 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                 cur_rotation *= 180 / np.pi
                 try:
                     new_sides = int(self.sides_entry.text)
+                    if new_sides > 100:
+                        raise ValueError("Too many sides!")
                     new_size = float(self.size_entry.text)
                     new_rot = float(self.rotation_entry.text)
                     assert new_sides > 2
