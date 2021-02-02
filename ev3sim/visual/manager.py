@@ -112,8 +112,6 @@ class ScreenObjectManager:
 
         self.screens[self.SCREEN_RESCUE_EDIT] = RescueMapEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
-    # TODO: Animate screen popping? Add this as an option?
-
     def pushScreen(self, screenString, **kwargs):
         if len(self.screen_stack) == 0:
             from ev3sim.simulation.loader import StateHandler

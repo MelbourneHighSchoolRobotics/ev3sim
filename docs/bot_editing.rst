@@ -4,8 +4,6 @@ Bot editing
 EV3Sim allows you to design, test and simulate your own bots, all through the application!
 The only thing you'll want an external program for is writing the code to be run on your bot.
 
-.. TODO: A full video explanation of this system can be found here:
-
 Designing a bot
 ---------------
 To create a new bot, go to the ``Bots`` menu and click the '+' Button. 
