@@ -14,6 +14,14 @@ ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms usi
   :alt: An image of the simulation
 
 
+A full video on what EV3Sim is and how you can install it can be found here:
+
+.. raw:: html
+
+   <div style="position: relative; max-width: 100%; height: auto;">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/wm9WApUwiVc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   </div>
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -25,14 +33,5 @@ ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms usi
    custom_presets
    contributing
    system
-
-A full video on what EV3Sim is and how you can install it can be found here:
-
-.. raw:: html
-
-   <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/wm9WApUwiVc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-   </div>
-
 
 .. TODO: Support randomisation through settings.
