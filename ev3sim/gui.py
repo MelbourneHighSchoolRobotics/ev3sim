@@ -13,10 +13,13 @@ from ev3sim.visual.manager import ScreenObjectManager
 
 
 def get_latest_version(q):
-    from luddite import get_version_pypi
+    try:
+        from luddite import get_version_pypi
 
-    v = get_version_pypi("ev3sim")
-    q.put(v)
+        v = get_version_pypi("ev3sim")
+        q.put(v)
+    except:
+        q.put(ev3sim.__version__)
 
 
 def checkVersion():
