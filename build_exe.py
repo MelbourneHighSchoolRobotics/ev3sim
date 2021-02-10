@@ -16,4 +16,5 @@ PyInstaller.__main__.run(
 )
 
 import os
+
 os.remove("dist/ev3sim/ev3sim/user_config.yaml")
