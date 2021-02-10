@@ -25,8 +25,8 @@ class WorkspaceMenu(BaseMenu):
         )
         self._all_objs.append(self.text_panel)
 
-        button_ratio = 2
-        button_size = (self._size[0] / 6, self._size[1] / 4)
+        button_ratio = 4
+        button_size = (self._size[0] / 4, self._size[1] / 3)
         button_size = (
             min(button_size[0], button_size[1] * button_ratio),
             min(button_size[1], button_size[0] / button_ratio),
@@ -44,18 +44,9 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
         )
         self._all_objs.append(self.text)
 
-        self.skip = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(text_size[0] / 2 + 30, 3 * text_size[1] / 2 - button_size[1] - 30, *button_size),
-            text="Skip",
-            manager=self,
-            object_id=pygame_gui.core.ObjectID("skip_button", "menu_button"),
-        )
-        self.addButtonEvent("skip_button", self.clickSkip)
-        self._all_objs.append(self.skip)
-
         self.select = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                3 * text_size[0] / 2 - 30 - button_size[0], 3 * text_size[1] / 2 - button_size[1] - 30, *button_size
+                text_size[0] - button_size[0] / 2, 3 * text_size[1] / 2 - button_size[1] - 30, *button_size
             ),
             text="Select",
             manager=self,
@@ -64,12 +55,6 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
         self.addButtonEvent("select_button", self.clickSelect)
         self._all_objs.append(self.select)
         super().generateObjects()
-
-    def clickSkip(self):
-        from ev3sim.visual.manager import ScreenObjectManager
-
-        ScreenObjectManager.instance.popScreen()
-        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
 
     def clickSelect(self):
         # Open file dialog.
