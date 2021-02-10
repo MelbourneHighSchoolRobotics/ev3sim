@@ -14,3 +14,7 @@ PyInstaller.__main__.run(
         "executable_entry.spec",
     ]
 )
+
+import os
+
+os.remove("dist/ev3sim/ev3sim/user_config.yaml")

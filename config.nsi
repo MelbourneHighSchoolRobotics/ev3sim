@@ -87,8 +87,10 @@ Section "Dummy Section" SecDummy
 SetOutPath "$INSTDIR"
 File /nonfatal /a /r "dist\ev3sim\"
 WriteRegStr HKCU "Software\EV3Sim" "" $INSTDIR
-;Generate the default user config.
+IfFileExists "$INSTDIR\ev3sim\user_config.yaml" update
+;Generate the default user config if not in update.
 CopyFiles "$INSTDIR\ev3sim\presets\default_config.yaml" "$INSTDIR\ev3sim\user_config.yaml"
+update:
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
 createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$INSTDIR\ev3sim.exe" "" "$INSTDIR\ev3sim.exe" 0

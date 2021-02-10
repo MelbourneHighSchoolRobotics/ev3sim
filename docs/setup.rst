@@ -34,6 +34,23 @@ You can install this package using pip as follows:
 
 (This command also updates EV3Sim if you already have it installed.)
 
+Updating
+--------
+
+Windows Executable
+^^^^^^^^^^^^^^^^^^
+
+If a new one-click installer comes out, you can simply run this and it will update your existing installation of EV3Sim. Your workspace and any settings will remain the same, unless some breaking changes are required.
+
+Pip install
+^^^^^^^^^^^
+
+As with any other pip package, you can update ev3sim with the same command you used to install it, passing in the `-U` flag:
+
+.. code-block:: bash
+
+    python -m pip install -U ev3sim
+
 Starting EV3Sim
 ---------------
 
