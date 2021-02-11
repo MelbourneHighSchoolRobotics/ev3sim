@@ -84,8 +84,8 @@ class BaseMenu(pygame_gui.UIManager):
         self.window_mode = self.WINDOW_MODE_NORMAL
         self.regenerateObjects()
 
-    def handleEvent(self, event):
+    def handleEvent(self, event, button_filter=lambda x: True):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
             for id, method, args, kwargs in self._button_events:
-                if event.ui_object_id.split(".")[-1] == id:
+                if event.ui_object_id.split(".")[-1] == id and button_filter(id):
                     method(*args, **kwargs)
