@@ -46,7 +46,7 @@ class BatchMenu(BaseMenu):
                             )
                     except Exception as e:
                         sentry_sdk.capture_exception(e)
-                        error_batches.append(batch)
+                        error_batches.append(os.path.join(actual_dir, batch))
             if self.first_launch and error_batches:
                 self.first_launch = False
                 self.in_error = True
