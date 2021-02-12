@@ -59,16 +59,29 @@ class BatchMenu(BaseMenu):
 
         for i, bot in enumerate(self.available_batches):
             if i == self.batch_index:
-                with open(bot[1], "r") as f:
-                    config = yaml.safe_load(f)
-                # Update bot information
-                bots = config["bots"]
-                self.bot_list = bots
-                preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations())
-                with open(preset_path, "r") as f:
-                    preset_config = yaml.safe_load(f)
-                preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations())
-                self.preview_image_source = pygame.image.load(preset_preview)
+                try:
+                    with open(bot[1], "r") as f:
+                        config = yaml.safe_load(f)
+                    # Update bot information
+                    bots = config["bots"]
+                    self.bot_list = bots
+                    for bot in self.bot_list:
+                        fname = find_abs(bot, bot_locations())
+                    preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations())
+                    with open(preset_path, "r") as f:
+                        preset_config = yaml.safe_load(f)
+                    preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations())
+                    self.preview_image_source = pygame.image.load(preset_preview)
+                except Exception as e:
+                    sentry_sdk.capture_exception(e)
+                    self.setBatchIndex(-1)
+                    self.addErrorDialog(
+                        "<font color=\"#cc0000\">The batch you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>" +
+                        "This can be caused by moving/renaming a bot as well as a few other things.<br><br>" +
+                        "If you'd like to fix this, then try manually editing the sim file in a text editor."
+                    )
+                    return
+
 
         # Draw Background
         self.bg = pygame_gui.elements.UIPanel(
@@ -588,6 +601,8 @@ class BatchMenu(BaseMenu):
         self.settings_enable = new_index != -1
         self.bot_enable = new_index != -1
         self.remove_enable = new_index != -1 and not self.available_batches[new_index][2].startswith("package")
+        if new_index == -1:
+            self.bot_list = []
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):
