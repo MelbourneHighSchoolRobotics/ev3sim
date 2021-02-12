@@ -50,7 +50,7 @@ class BaseMenu(pygame_gui.UIManager):
 
             class ErrorWindow(pygame_gui.elements.UIWindow):
                 def kill(self2):
-                    self.window_mode = self.MODE_NORMAL
+                    self.window_mode = self.WINDOW_MODE_NORMAL
                     self.regenerateObjects()
                     return super().kill()
 
