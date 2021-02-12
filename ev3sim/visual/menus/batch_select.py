@@ -44,7 +44,7 @@ class BatchMenu(BaseMenu):
                             self.available_batches.append(
                                 (batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch, preset["button_bg"])
                             )
-                    except ValueError as e:
+                    except Exception as e:
                         sentry_sdk.capture_exception(e)
                         error_batches.append(batch)
             if self.first_launch and error_batches:
