@@ -51,9 +51,9 @@ class BatchMenu(BaseMenu):
                 self.first_launch = False
                 self.in_error = True
                 self.addErrorDialog(
-                    "A problem occured loading the following batches:<br><br><font color=\"#cc0000\">" +
-                    "<br>".join(batch for batch in error_batches) +
-                    "</font>"
+                    'A problem occured loading the following batches:<br><br><font color="#cc0000">'
+                    + "<br>".join(batch for batch in error_batches)
+                    + "</font>"
                 )
                 return
 
@@ -76,12 +76,11 @@ class BatchMenu(BaseMenu):
                     sentry_sdk.capture_exception(e)
                     self.setBatchIndex(-1)
                     self.addErrorDialog(
-                        "<font color=\"#cc0000\">The batch you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>" +
-                        "This can be caused by moving/renaming a bot as well as a few other things.<br><br>" +
-                        "If you'd like to fix this, then try manually editing the sim file in a text editor."
+                        '<font color="#cc0000">The batch you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>'
+                        + "This can be caused by moving/renaming a bot as well as a few other things.<br><br>"
+                        + "If you'd like to fix this, then try manually editing the sim file in a text editor."
                     )
                     return
-
 
         # Draw Background
         self.bg = pygame_gui.elements.UIPanel(

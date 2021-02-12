@@ -47,12 +47,11 @@ class BotMenu(BaseMenu):
                 self.first_launch = False
                 self.in_error = True
                 self.addErrorDialog(
-                    "A problem occured loading the following bots:<br><br><font color=\"#cc0000\">" +
-                    "<br>".join(bot for bot in error_bots) +
-                    "</font>"
+                    'A problem occured loading the following bots:<br><br><font color="#cc0000">'
+                    + "<br>".join(bot for bot in error_bots)
+                    + "</font>"
                 )
                 return
-                
 
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
@@ -132,8 +131,8 @@ class BotMenu(BaseMenu):
             sentry_sdk.capture_exception(e)
             self.setBotIndex(-1)
             self.addErrorDialog(
-                "<font color=\"#cc0000\">The bot you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>" +
-                "If you'd like to fix this, then try manually editing the bot file in a text editor."
+                '<font color="#cc0000">The bot you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>'
+                + "If you'd like to fix this, then try manually editing the bot file in a text editor."
             )
             return
         if image.get_size() != preview_size:
