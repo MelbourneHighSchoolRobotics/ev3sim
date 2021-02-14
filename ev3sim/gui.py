@@ -1,5 +1,6 @@
 import argparse
 import pygame
+import sentry_sdk
 import sys
 import yaml
 from os.path import join
@@ -72,6 +73,11 @@ parser.add_argument(
 def main(passed_args=None):
     if passed_args is None:
         args = parser.parse_args(sys.argv[1:])
+        # We are entering from main. Initialise sentry
+        sentry_sdk.init(
+            "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
+            release=ev3sim.__version__,
+        )
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
@@ -210,6 +216,7 @@ def main(passed_args=None):
         ScreenObjectManager.instance.screen_stack = []
         ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, **args.simulation_kwargs)
 
+    actual_error = None
     error = None
 
     try:
@@ -218,6 +225,7 @@ def main(passed_args=None):
         import traceback, os
 
         print("An error occured in the Simulator :( Please see `error_log.txt` in your workspace.")
+        actual_error = e
         error = traceback.format_exc()
         with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
             f.write(error)
@@ -228,7 +236,7 @@ def main(passed_args=None):
     except:
         pass
     if error is not None:
-        sys.exit(1)
+        raise actual_error
 
 
 if __name__ == "__main__":
