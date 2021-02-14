@@ -698,7 +698,11 @@ class RescueMapEditMenu(BaseMenu):
         self.previous_info["settings"]["rescue"]["BOT_SPAWN_POSITION"][0][0] = pos
 
     def handleEvent(self, event):
-        super().handleEvent(event)
+        if self.mode == self.MODE_NORMAL or self.mode == self.MODE_CAN_DRAGGING:
+            button_filter = lambda x: True
+        else:
+            button_filter = lambda x: False
+        super().handleEvent(event, button_filter=button_filter)
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.MOUSEMOTION:
                 self.current_mpos = event.pos
