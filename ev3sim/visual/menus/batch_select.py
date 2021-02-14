@@ -3,6 +3,7 @@ import yaml
 import os
 import pygame
 import pygame_gui
+import sentry_sdk
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.validation.preset_files import PresetValidator
@@ -24,35 +25,62 @@ class BatchMenu(BaseMenu):
 
     def generateObjects(self):
         # First, find all batch files.
-        self.available_batches = []
-        for rel_dir in batch_locations():
-            try:
-                actual_dir = find_abs_directory(rel_dir)
-            except:
-                continue
-            for batch in BatchValidator.all_valid_in_dir(actual_dir):
-                # Show everything except dir and .sim
-                with open(os.path.join(actual_dir, batch), "r") as f:
-                    config = yaml.safe_load(f)
-                with open(find_abs(config["preset_file"], preset_locations()), "r") as f:
-                    preset = yaml.safe_load(f)
-                if not config.get("hidden", False):
-                    self.available_batches.append(
-                        (batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch, preset["button_bg"])
-                    )
+        if not self.in_error:
+            self.available_batches = []
+            error_batches = []
+            for rel_dir in batch_locations():
+                try:
+                    actual_dir = find_abs_directory(rel_dir)
+                except:
+                    continue
+                for batch in BatchValidator.all_valid_in_dir(actual_dir):
+                    # Show everything except dir and .sim
+                    try:
+                        with open(os.path.join(actual_dir, batch), "r") as f:
+                            config = yaml.safe_load(f)
+                        with open(find_abs(config["preset_file"], preset_locations()), "r") as f:
+                            preset = yaml.safe_load(f)
+                        if not config.get("hidden", False):
+                            self.available_batches.append(
+                                (batch[:-4], os.path.join(actual_dir, batch), rel_dir, batch, preset["button_bg"])
+                            )
+                    except Exception as e:
+                        sentry_sdk.capture_exception(e)
+                        error_batches.append(os.path.join(actual_dir, batch))
+            if self.first_launch and error_batches:
+                self.first_launch = False
+                self.in_error = True
+                self.addErrorDialog(
+                    'A problem occured loading the following batches:<br><br><font color="#cc0000">'
+                    + "<br>".join(batch for batch in error_batches)
+                    + "</font>"
+                )
+                return
 
         for i, bot in enumerate(self.available_batches):
             if i == self.batch_index:
-                with open(bot[1], "r") as f:
-                    config = yaml.safe_load(f)
-                # Update bot information
-                bots = config["bots"]
-                self.bot_list = bots
-                preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations())
-                with open(preset_path, "r") as f:
-                    preset_config = yaml.safe_load(f)
-                preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations())
-                self.preview_image_source = pygame.image.load(preset_preview)
+                try:
+                    with open(bot[1], "r") as f:
+                        config = yaml.safe_load(f)
+                    # Update bot information
+                    bots = config["bots"]
+                    self.bot_list = bots
+                    for bot in self.bot_list:
+                        fname = find_abs(bot, bot_locations())
+                    preset_path = find_abs(config["preset_file"], allowed_areas=preset_locations())
+                    with open(preset_path, "r") as f:
+                        preset_config = yaml.safe_load(f)
+                    preset_preview = find_abs(preset_config["preview_path"], allowed_areas=asset_locations())
+                    self.preview_image_source = pygame.image.load(preset_preview)
+                except Exception as e:
+                    sentry_sdk.capture_exception(e)
+                    self.setBatchIndex(-1)
+                    self.addErrorDialog(
+                        '<font color="#cc0000">The batch you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>'
+                        + "This can be caused by moving/renaming a bot as well as a few other things.<br><br>"
+                        + "If you'd like to fix this, then try manually editing the sim file in a text editor."
+                    )
+                    return
 
         # Draw Background
         self.bg = pygame_gui.elements.UIPanel(
@@ -410,6 +438,8 @@ class BatchMenu(BaseMenu):
 
     def initWithKwargs(self, **kwargs):
         self.mode = self.MODE_NORMAL
+        self.first_launch = True
+        self.in_error = False
         self.setBatchIndex(-1)
         super().initWithKwargs(**kwargs)
         self.mode = self.MODE_NORMAL
@@ -570,6 +600,8 @@ class BatchMenu(BaseMenu):
         self.settings_enable = new_index != -1
         self.bot_enable = new_index != -1
         self.remove_enable = new_index != -1 and not self.available_batches[new_index][2].startswith("package")
+        if new_index == -1:
+            self.bot_list = []
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):

@@ -3,6 +3,7 @@ import yaml
 import os
 import pygame
 import pygame_gui
+import sentry_sdk
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.bot_files import BotValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
@@ -21,21 +22,36 @@ class BotMenu(BaseMenu):
 
     def generateObjects(self):
         # First, find all bot files.
-        self.available_bots = []
-        for rel_dir in bot_locations():
-            try:
-                actual_dir = find_abs_directory(rel_dir)
-            except:
-                continue
-            for bot in BotValidator.all_valid_in_dir(actual_dir):
-                # Show everything except dir and .noy
-                with open(os.path.join(actual_dir, bot), "r") as f:
-                    config = yaml.safe_load(f)
-                # If we are hidden, or in edit mode with hidden_edit, then don't show.
-                if not config.get("hidden", False) and not (
-                    config.get("hidden_edit", False) and len(self.bot_keys) == 0
-                ):
-                    self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
+        if not self.in_error:
+            self.available_bots = []
+            error_bots = []
+            for rel_dir in bot_locations():
+                try:
+                    actual_dir = find_abs_directory(rel_dir)
+                except:
+                    continue
+                for bot in BotValidator.all_valid_in_dir(actual_dir):
+                    try:
+                        # Show everything except dir and .bot
+                        with open(os.path.join(actual_dir, bot), "r") as f:
+                            config = yaml.safe_load(f)
+                        # If we are hidden, or in edit mode with hidden_edit, then don't show.
+                        if not config.get("hidden", False) and not (
+                            config.get("hidden_edit", False) and len(self.bot_keys) == 0
+                        ):
+                            self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
+                    except Exception as e:
+                        sentry_sdk.capture_exception(e)
+                        error_bots.append(os.path.join(actual_dir, bot))
+            if self.first_launch and error_bots:
+                self.first_launch = False
+                self.in_error = True
+                self.addErrorDialog(
+                    'A problem occured loading the following bots:<br><br><font color="#cc0000">'
+                    + "<br>".join(bot for bot in error_bots)
+                    + "</font>"
+                )
+                return
 
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
@@ -102,14 +118,23 @@ class BotMenu(BaseMenu):
             min(preview_size[0], (preview_size[1] * 4) // 3),
             min(preview_size[1], (preview_size[0] * 3) // 4),
         )
-        if self.bot_index == -1:
-            image = pygame.Surface(preview_size)
-            image.fill(pygame.Color(self.bg.background_colour))
-        else:
-            with open(self.available_bots[self.bot_index][1], "r") as f:
-                config = yaml.safe_load(f)
-            bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
-            image = pygame.image.load(bot_preview)
+        try:
+            if self.bot_index == -1:
+                image = pygame.Surface(preview_size)
+                image.fill(pygame.Color(self.bg.background_colour))
+            else:
+                with open(self.available_bots[self.bot_index][1], "r") as f:
+                    config = yaml.safe_load(f)
+                bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
+                image = pygame.image.load(bot_preview)
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            self.setBotIndex(-1)
+            self.addErrorDialog(
+                '<font color="#cc0000">The bot you have selected has some internal errors EV3Sim cannot resolve.</font><br><br>'
+                + "If you'd like to fix this, then try manually editing the bot file in a text editor."
+            )
+            return
         if image.get_size() != preview_size:
             image = pygame.transform.smoothscale(image, [int(v) for v in preview_size])
         self.preview_image = pygame_gui.elements.UIImage(
@@ -212,6 +237,7 @@ class BotMenu(BaseMenu):
             )
             self._all_objs.append(self.remove_bot)
             self._all_objs.append(self.remove_icon)
+            super().generateObjects()
         else:
             # Bot key locations, for selecting bots in batch files.
             self.bot_loc_spots = []
@@ -318,6 +344,8 @@ class BotMenu(BaseMenu):
             )
 
     def initWithKwargs(self, **kwargs):
+        self.in_error = False
+        self.first_launch = True
         batch = kwargs.get("batch_file", None)
         self.batch = batch
         if batch is None:

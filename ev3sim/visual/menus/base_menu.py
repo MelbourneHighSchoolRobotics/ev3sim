@@ -50,7 +50,7 @@ class BaseMenu(pygame_gui.UIManager):
 
             class ErrorWindow(pygame_gui.elements.UIWindow):
                 def kill(self2):
-                    self.window_mode = self.MODE_NORMAL
+                    self.window_mode = self.WINDOW_MODE_NORMAL
                     self.regenerateObjects()
                     return super().kill()
 
@@ -69,7 +69,6 @@ class BaseMenu(pygame_gui.UIManager):
                 container=self.dialog,
                 object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
             )
-            self._all_objs.append(self.error_msg)
 
     def addErrorDialog(self, msg):
         self.window_mode = self.WINDOW_MODE_ERROR
