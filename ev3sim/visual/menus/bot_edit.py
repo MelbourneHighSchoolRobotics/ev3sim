@@ -674,7 +674,11 @@ class BotEditMenu(BaseMenu):
             self.onSave(self.bot_dir_file[1])
 
     def handleEvent(self, event):
-        super().handleEvent(event)
+        if self.mode == self.MODE_NORMAL:
+            button_filter = lambda x: True
+        else:
+            button_filter = lambda x: False
+        super().handleEvent(event, button_filter=button_filter)
         if self.mode == self.MODE_NORMAL:
             if event.type == pygame.MOUSEMOTION:
                 self.actual_mpos = event.pos
