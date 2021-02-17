@@ -68,7 +68,7 @@ class ScriptLoader:
 
             format_filename = join(self.scriptnames[robot_id])
             # This ensures that as long as the code sits in the bot directory, relative imports will work fine.
-            possible_locations = ["workspace/robots/", "workspace"]
+            possible_locations = ["workspace/robots/", "workspace", "package/examples/robots"]
             extra_dirs = []
             for loc in possible_locations:
                 loc_path = find_abs_directory(loc, create=True)
