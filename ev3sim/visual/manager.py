@@ -359,6 +359,7 @@ class ScreenObjectManager:
             config = yaml.safe_load(f)
         pygame.image.save(screen, join(find_abs(filename, [directory]), config.get("preview_path", "preview.png")))
 
+
 screen_settings = {
     attr: ObjectSetting(ScreenObjectManager, attr)
     for attr in [

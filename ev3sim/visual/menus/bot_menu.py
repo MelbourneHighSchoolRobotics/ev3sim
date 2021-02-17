@@ -125,7 +125,9 @@ class BotMenu(BaseMenu):
             else:
                 with open(os.path.join(self.available_bots[self.bot_index][1], "config.bot"), "r") as f:
                     config = yaml.safe_load(f)
-                bot_preview = os.path.join(self.available_bots[self.bot_index][1], config.get("preview_path", "preview.png"))
+                bot_preview = os.path.join(
+                    self.available_bots[self.bot_index][1], config.get("preview_path", "preview.png")
+                )
                 image = pygame.image.load(bot_preview)
         except Exception as e:
             sentry_sdk.capture_exception(e)
@@ -434,6 +436,7 @@ class BotMenu(BaseMenu):
         if self.bot_index == -1:
             return
         import shutil
+
         shutil.rmtree(self.available_bots[self.bot_index][1])
         self.setBotIndex(-1)
 
@@ -466,9 +469,7 @@ class BotMenu(BaseMenu):
         self.setBotIndex(new_index)
 
     def setBotAtIndex(self, index):
-        self.bot_values[index] = (
-            self.available_bots[self.bot_index][0]
-        )
+        self.bot_values[index] = self.available_bots[self.bot_index][0]
         with open(os.path.join(self.available_bots[self.bot_index][1], "config.bot"), "r") as f:
             config = yaml.safe_load(f)
         bot_preview = os.path.join(self.available_bots[self.bot_index][1], config.get("preview_path", "preview.png"))

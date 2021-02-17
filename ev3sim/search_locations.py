@@ -16,8 +16,9 @@ def code_locations(bot_path):
             break
     else:
         raise ValueError(f"Bot path {bot_path} does not appear in any valid bot location.")
-    relative = location + bot_path[len(actual_dir):]
+    relative = location + bot_path[len(actual_dir) :]
     return [relative]
+
 
 def batch_locations():
     """Batch files can also be in the custom folders."""
