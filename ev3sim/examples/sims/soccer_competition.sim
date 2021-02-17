@@ -1,6 +1,6 @@
 bots:
-- demo.bot
-- demo.bot
+- demo
+- demo
 preset_file: soccer.yaml
 settings:
   soccer:

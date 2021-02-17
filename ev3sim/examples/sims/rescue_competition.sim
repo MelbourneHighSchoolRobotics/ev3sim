@@ -1,5 +1,5 @@
 bots:
-- rescue_bot.bot
+- rescue_bot
 preset_file: rescue.yaml
 settings:
   rescue:

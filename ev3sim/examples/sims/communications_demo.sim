@@ -1,7 +1,7 @@
 bots:
-- communication_server.bot
-- communication_client.bot
-- communication_client.bot
+- communication_server
+- communication_client
+- communication_client
 preset_file: soccer.yaml
 settings:
   soccer:
