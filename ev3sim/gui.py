@@ -11,6 +11,7 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.updates import handle_updates
 
 
 def get_latest_version(q):
@@ -205,6 +206,13 @@ def main(passed_args=None):
         # We want to start on the simulation screen.
         ScreenObjectManager.instance.screen_stack = []
         ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, **args.simulation_kwargs)
+
+    updates = handle_updates()
+    if updates:
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.instance.SCREEN_UPDATE,
+            panels=updates,
+        )
 
     actual_error = None
     error = None

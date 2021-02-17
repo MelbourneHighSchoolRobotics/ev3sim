@@ -21,6 +21,7 @@ class ScreenObjectManager:
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
+    SCREEN_UPDATE = "UPDATE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
     SCREEN_RESCUE_EDIT = "RESCUE_EDIT"
 
@@ -78,6 +79,10 @@ class ScreenObjectManager:
 
     def initScreens(self):
         self.screens = {}
+        # Update dialog
+        from ev3sim.visual.menus.update_dialog import UpdateMenu
+
+        self.screens[self.SCREEN_UPDATE] = UpdateMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Workspace select dialog
         from ev3sim.visual.menus.workspace_menu import WorkspaceMenu
 
