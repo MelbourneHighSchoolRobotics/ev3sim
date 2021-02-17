@@ -146,39 +146,39 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.preview_image)
 
         if len(self.bot_keys) == 0:
-            settings_size = preview_size[0] * 0.4, preview_size[1] * 0.4
-            settings_button_pos = (
-                self._size[0] * 0.9 - settings_size[0] - 10,
+            folder_size = preview_size[0] * 0.4, preview_size[1] * 0.4
+            folder_button_pos = (
+                self._size[0] * 0.9 - folder_size[0] - 10,
                 self._size[1] * 0.1 + preview_size[1] + 10,
             )
-            settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
-            self.settings_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(*settings_button_pos, *settings_size),
+            folder_icon_size = folder_size[1] * 0.6, folder_size[1] * 0.6
+            self.folder_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(*folder_button_pos, *folder_size),
                 text="",
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("bot-settings", "settings_buttons"),
+                object_id=pygame_gui.core.ObjectID("bot-folder", "settings_buttons"),
             )
-            self.addButtonEvent("bot-settings", self.clickSettings)
-            if not self.settings_enable:
-                self.settings_button.disable()
-            settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations())
-            self.settings_icon = pygame_gui.elements.UIImage(
+            self.addButtonEvent("bot-folder", self.clickFolder)
+            if not self.folder_enable:
+                self.folder_button.disable()
+            folder_icon_path = find_abs("ui/folder_white.png", allowed_areas=asset_locations())
+            self.folder_icon = pygame_gui.elements.UIImage(
                 relative_rect=pygame.Rect(
-                    *self.iconPos(settings_button_pos, settings_size, settings_icon_size), *settings_icon_size
+                    *self.iconPos(folder_button_pos, folder_size, folder_icon_size), *folder_icon_size
                 ),
-                image_surface=pygame.image.load(settings_icon_path),
+                image_surface=pygame.image.load(folder_icon_path),
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("settings-icon"),
             )
-            self._all_objs.append(self.settings_button)
-            self._all_objs.append(self.settings_icon)
+            self._all_objs.append(self.folder_button)
+            self._all_objs.append(self.folder_icon)
 
             edit_button_pos = (
                 self._size[0] * 0.9 - preview_size[0],
                 self._size[1] * 0.1 + preview_size[1] + 10,
             )
             self.edit_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(*edit_button_pos, *settings_size),
+                relative_rect=pygame.Rect(*edit_button_pos, *folder_size),
                 text="",
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-edit", "settings_buttons"),
@@ -189,7 +189,7 @@ class BotMenu(BaseMenu):
             edit_icon_path = find_abs("ui/edit.png", allowed_areas=asset_locations())
             self.edit_icon = pygame_gui.elements.UIImage(
                 relative_rect=pygame.Rect(
-                    *self.iconPos(edit_button_pos, settings_size, settings_icon_size), *settings_icon_size
+                    *self.iconPos(edit_button_pos, folder_size, folder_icon_size), *folder_icon_size
                 ),
                 image_surface=pygame.image.load(edit_icon_path),
                 manager=self,
@@ -364,7 +364,7 @@ class BotMenu(BaseMenu):
             self.preview_images = [None] * len(self.bot_keys)
         self.bot_select_index = 0
         self.select_enable = False
-        self.settings_enable = False
+        self.folder_enable = False
         self.edit_enable = False
         self.remove_enable = False
         self.bot_index = -1
@@ -384,25 +384,17 @@ class BotMenu(BaseMenu):
 
         ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].clearEvents()
 
-    def clickSettings(self):
+    def clickFolder(self):
         # No more renaming.
-        # TODO: Redesign bot menu.
-        return
-        # Shouldn't happen but lets be safe.
-        if self.bot_index == -1:
-            return
-        from ev3sim.visual.manager import ScreenObjectManager
-        from ev3sim.robot import visual_settings
+        import platform
+        import subprocess
 
-        ScreenObjectManager.instance.pushScreen(
-            ScreenObjectManager.SCREEN_SETTINGS,
-            file=self.available_bots[self.bot_index][1],
-            settings=visual_settings,
-            allows_filename_change=not self.available_bots[self.bot_index][2].startswith("package"),
-            extension="bot",
-        )
-
-        ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+        if platform.system() == "Windows":
+            subprocess.Popen(["explorer", "/select,", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
+        else:
+            subprocess.Popen(["xdg-open", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
 
     def clickSelect(self):
         # Shouldn't happen but lets be safe.
@@ -453,12 +445,12 @@ class BotMenu(BaseMenu):
             elif event.key in [pygame.K_UP, pygame.K_s]:
                 self.incrementBotIndex(-1)
             elif event.key == pygame.K_RETURN:
-                self.clickSettings()
+                self.clickFolder()
 
     def setBotIndex(self, new_index):
         self.bot_index = new_index
         if len(self.bot_keys) == 0:
-            self.settings_enable = new_index != -1
+            self.folder_enable = new_index != -1
             self.edit_enable = new_index != -1
             self.remove_enable = new_index != -1 and not self.available_bots[new_index][2].startswith("package")
         else:
