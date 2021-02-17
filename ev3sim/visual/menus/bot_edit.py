@@ -1071,7 +1071,7 @@ class BotEditMenu(BaseMenu):
             def kill(self2):
                 super().kill()
                 self.removeNamePicker()
-            
+
             def process_event(self2, event: pygame.event.Event):
                 if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if "create_bot" in event.ui_object_id:
@@ -1083,9 +1083,7 @@ class BotEditMenu(BaseMenu):
                         except:
                             pass
                         if found:
-                            self.addErrorDialog(
-                                '<font color="#cc0000">This name is already taken.</font>'
-                            )
+                            self.addErrorDialog('<font color="#cc0000">This name is already taken.</font>')
                             return True
                         # Now, create the necessary files/folders.
                         self.bot_file = os.path.join(find_abs_directory("workspace/robots/"), name)
@@ -1096,7 +1094,7 @@ class BotEditMenu(BaseMenu):
                         self.saveBot()
                         ScreenObjectManager.instance.popScreen()
                 return super().process_event(event)
-        
+
         picker_size = (self._size[0] * 0.7, max(self._size[1] * 0.4, 100))
 
         self.picker = NamePicker(
