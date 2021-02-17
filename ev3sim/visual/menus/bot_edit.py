@@ -4,7 +4,7 @@ import pygame_gui
 import pymunk
 import yaml
 import numpy as np
-from ev3sim.file_helper import find_abs
+from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.objects.base import DYNAMIC_CATEGORY
 from ev3sim.robot import add_devices
 from ev3sim.simulation.randomisation import Randomiser
@@ -22,6 +22,7 @@ class BotEditMenu(BaseMenu):
     MODE_NORMAL = "NORMAL"
     MODE_COLOUR_DIALOG = "COLOUR"
     MODE_BASEPLATE_DIALOG = "BASEPLATE"
+    MODE_NAME_DIALOG = "NAME"
 
     SELECTED_CIRCLE = "CIRCLE"
     SELECTED_RECTANGLE = "RECTANGLE"
@@ -627,27 +628,8 @@ class BotEditMenu(BaseMenu):
         self.lock_grid_image.set_image(img)
 
     def clickSave(self):
-        from ev3sim.robot import visual_settings
-
         if self.creating:
-            # TODO: Create save dialog.
-            ScreenObjectManager.instance.pushScreen(
-                ScreenObjectManager.SCREEN_SETTINGS,
-                settings=visual_settings,
-                creating=True,
-                creation_area="workspace/robots/",
-                starting_data={},
-                extension="bot",
-            )
-
-            def onSave(filename):
-                self.bot_file = find_abs(filename, ["workspace/robots/"])
-                self.bot_dir_file = ["workspace/robots/", filename]
-                self.saveBot()
-                ScreenObjectManager.instance.popScreen()
-
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+            self.addNamePicker()
         else:
             self.saveBot()
             ScreenObjectManager.instance.popScreen()
@@ -1082,6 +1064,67 @@ class BotEditMenu(BaseMenu):
         self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
         self.stroke_img.rebuild_from_changed_theme_data()
 
+    def addNamePicker(self):
+        self.mode = self.MODE_NAME_DIALOG
+
+        class NamePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removeNamePicker()
+            
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if "create_bot" in event.ui_object_id:
+                        name = self.bot_name_entry.text
+                        found = False
+                        try:
+                            find_abs(name, ["workspace/robots/"])
+                            found = True
+                        except:
+                            pass
+                        if found:
+                            self.addErrorDialog(
+                                '<font color="#cc0000">This name is already taken.</font>'
+                            )
+                            return True
+                        # Now, create the necessary files/folders.
+                        self.bot_file = os.path.join(find_abs_directory("workspace/robots/"), name)
+                        self.bot_dir_file = ["workspace/robots/", name]
+                        os.mkdir(self.bot_file)
+                        _ = open(os.path.join(self.bot_file, "code.py"), "w")
+                        self.removeNamePicker()
+                        self.saveBot()
+                        ScreenObjectManager.instance.popScreen()
+                return super().process_event(event)
+        
+        picker_size = (self._size[0] * 0.7, max(self._size[1] * 0.4, 100))
+
+        self.picker = NamePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Name Your Bot",
+            object_id=pygame_gui.core.ObjectID("name_dialog"),
+        )
+
+        self.bot_name_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                30,
+                40,
+                picker_size[0] - 105,
+                40,
+            ),
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("bot_name_entry"),
+        )
+        self.bot_name_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(picker_size[0] - 195, picker_size[1] - 150, 120, 40),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("create_bot", "action_button"),
+            container=self.picker,
+            text="Create",
+        )
+
     def addColourPicker(self, title, start_colour):
         from ev3sim.visual.utils import rgb_to_hex
 
@@ -1422,6 +1465,13 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             pass
 
     def removeColourPicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+        except:
+            pass
+
+    def removeNamePicker(self):
         try:
             self.mode = self.MODE_NORMAL
             self.drawOptions()
