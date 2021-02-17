@@ -544,10 +544,10 @@ class BatchMenu(BaseMenu):
 
     def createBotImage(self, index):
 
-        fname = find_abs(self.bot_list[index], bot_locations())
+        fname = os.path.join(find_abs(self.bot_list[index], bot_locations()), "config.bot")
         with open(fname, "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
+        bot_preview = os.path.join(find_abs(self.bot_list[index], bot_locations()), config.get("preview_path", "preview.png"))
         img = pygame.image.load(bot_preview)
         img = pygame.transform.smoothscale(img, self._size)
         return pygame_gui.elements.UIImage(

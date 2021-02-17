@@ -3,7 +3,7 @@ import pygame
 import sentry_sdk
 import sys
 import yaml
-from os.path import join
+from os.path import join, split
 from multiprocessing import Queue, Process
 
 import ev3sim
@@ -156,7 +156,7 @@ def main(passed_args=None):
                 pass
             if not found:
                 try:
-                    fname = args.elem
+                    fname = split(args.elem)[0]
                     for possible_dir in bot_locations():
                         dir_path = find_abs_directory(possible_dir, create=True)
                         if fname.startswith(dir_path):
@@ -177,16 +177,6 @@ def main(passed_args=None):
                                     break
                                 except:
                                     continue
-                        elif args.edit:
-                            from ev3sim.robot import visual_settings
-
-                            pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
-                            pushed_kwargs = {
-                                "file": bot_path,
-                                "settings": visual_settings,
-                                "allows_filename_change": True,
-                                "extension": "bot",
-                            }
                         found = True
                 except:
                     pass

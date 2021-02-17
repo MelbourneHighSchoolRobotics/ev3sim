@@ -33,13 +33,13 @@ class BotMenu(BaseMenu):
                 for bot in BotValidator.all_valid_in_dir(actual_dir):
                     try:
                         # Show everything except dir and .bot
-                        with open(os.path.join(actual_dir, bot), "r") as f:
+                        with open(os.path.join(actual_dir, bot, "config.bot"), "r") as f:
                             config = yaml.safe_load(f)
                         # If we are hidden, or in edit mode with hidden_edit, then don't show.
                         if not config.get("hidden", False) and not (
                             config.get("hidden_edit", False) and len(self.bot_keys) == 0
                         ):
-                            self.available_bots.append((bot[:-4], os.path.join(actual_dir, bot), rel_dir, bot))
+                            self.available_bots.append((bot, os.path.join(actual_dir, bot), rel_dir, bot))
                     except Exception as e:
                         sentry_sdk.capture_exception(e)
                         error_bots.append(os.path.join(actual_dir, bot))
@@ -123,9 +123,9 @@ class BotMenu(BaseMenu):
                 image = pygame.Surface(preview_size)
                 image.fill(pygame.Color(self.bg.background_colour))
             else:
-                with open(self.available_bots[self.bot_index][1], "r") as f:
+                with open(os.path.join(self.available_bots[self.bot_index][1], "config.bot"), "r") as f:
                     config = yaml.safe_load(f)
-                bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
+                bot_preview = os.path.join(self.available_bots[self.bot_index][1], config.get("preview_path", "preview.png"))
                 image = pygame.image.load(bot_preview)
         except Exception as e:
             sentry_sdk.capture_exception(e)
@@ -385,6 +385,9 @@ class BotMenu(BaseMenu):
         ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].clearEvents()
 
     def clickSettings(self):
+        # No more renaming.
+        # TODO: Redesign bot menu.
+        return
         # Shouldn't happen but lets be safe.
         if self.bot_index == -1:
             return
@@ -438,7 +441,8 @@ class BotMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.bot_index == -1:
             return
-        os.remove(self.available_bots[self.bot_index][1])
+        import shutil
+        shutil.rmtree(self.available_bots[self.bot_index][1])
         self.setBotIndex(-1)
 
     def handleEvent(self, event):
@@ -471,11 +475,11 @@ class BotMenu(BaseMenu):
 
     def setBotAtIndex(self, index):
         self.bot_values[index] = (
-            self.available_bots[self.bot_index][0] + "." + self.available_bots[self.bot_index][1].split(".")[-1]
+            self.available_bots[self.bot_index][0]
         )
-        with open(self.available_bots[self.bot_index][1], "r") as f:
+        with open(os.path.join(self.available_bots[self.bot_index][1], "config.bot"), "r") as f:
             config = yaml.safe_load(f)
-        bot_preview = find_abs(config["preview_path"], allowed_areas=asset_locations())
+        bot_preview = os.path.join(self.available_bots[self.bot_index][1], config.get("preview_path", "preview.png"))
         self.preview_images[index] = pygame.image.load(bot_preview)
         self.regenerateObjects()
 

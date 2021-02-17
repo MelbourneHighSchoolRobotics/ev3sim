@@ -13,10 +13,15 @@ class Validator:
 
     @classmethod
     def validate_file(cls, filepath) -> bool:
-        if filepath.endswith(f".{cls.FILE_EXT}"):
-            with open(filepath, "r") as f:
-                config = yaml.safe_load(f)
-                return cls.validate_json(config)
+        try:
+            if os.path.isdir(filepath):
+                return False
+            if filepath.endswith(f".{cls.FILE_EXT}"):
+                with open(filepath, "r") as f:
+                    config = yaml.safe_load(f)
+                    return cls.validate_json(config)
+        except:
+            return False
         return False
 
     @classmethod
@@ -24,9 +29,8 @@ class Validator:
         """Check for valid files in a specific directory. This is NOT recursive by design."""
         for path in os.listdir(dirpath):
             total = os.path.join(dirpath, path)
-            if os.path.isfile(total):
-                if cls.validate_file(total):
-                    yield path
+            if cls.validate_file(total):
+                yield path
 
     # Methods for json parsing where JSON is dict.
 

@@ -1,3 +1,4 @@
+import os
 import pygame
 import pygame_gui
 import pymunk
@@ -65,7 +66,7 @@ class BotEditMenu(BaseMenu):
         else:
             self.creating = False
             self.mode = self.MODE_NORMAL
-            with open(self.bot_file, "r") as f:
+            with open(os.path.join(self.bot_file, "config.bot"), "r") as f:
                 bot = yaml.safe_load(f)
             self.previous_info = bot
             self.current_object = bot["base_plate"]
@@ -629,6 +630,7 @@ class BotEditMenu(BaseMenu):
         from ev3sim.robot import visual_settings
 
         if self.creating:
+            # TODO: Create save dialog.
             ScreenObjectManager.instance.pushScreen(
                 ScreenObjectManager.SCREEN_SETTINGS,
                 settings=visual_settings,
@@ -667,7 +669,7 @@ class BotEditMenu(BaseMenu):
                 child["visual"]["verts"] = verts
 
         self.previous_info["devices"] = self.current_devices
-        with open(self.bot_file, "w") as f:
+        with open(os.path.join(self.bot_file, "config.bot"), "w") as f:
             f.write(yaml.dump(self.previous_info))
         ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
         if self.onSave is not None:
