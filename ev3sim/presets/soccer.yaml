@@ -7,7 +7,7 @@ bot_names:
   - "Team 1\nBot 2"
   - "Team 2\nBot 2"
 
-visual_settings: ev3sim.presets.soccer.visual_settings
+visual_settings: ev3sim.presets.soccer_files.settings.visual_settings
 
 preset_description: "2 to 4 bots compete on a soccer field, attempting to detect and push a ball into the opposing goal."
 
@@ -30,9 +30,11 @@ colours:
 interactors:
 - class_path: ev3sim.presets.pick_up_interactor.PickUpInteractor
 - class_path: ev3sim.presets.pause_interactor.PauseInteractor
-- class_path: ev3sim.presets.soccer.SoccerInteractor
+- class_path: ev3sim.presets.soccer_files.game_logic.SoccerLogicInteractor
   settings_name: soccer
-  settings_defn: ev3sim.presets.soccer.soccer_settings
+  settings_defn: ev3sim.presets.soccer_files.settings.soccer_settings
+- class_path: ev3sim.presets.soccer_files.ui.SoccerUIInteractor
+- class_path: ev3sim.presets.soccer_files.events.SoccerEventsInteractor
 
 settings:
   app:
