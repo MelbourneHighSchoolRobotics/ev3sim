@@ -5,7 +5,7 @@ bot_names:
   - "Bot"
 
 visual_settings: ev3sim.presets.rescue.visual_settings
-sim_location: rescue_competition.sim
+sim_location: rescue.sim
 
 preset_description: "1 bot works its way through a set of tiles in order to rescue a can from a toxic spill."
 
