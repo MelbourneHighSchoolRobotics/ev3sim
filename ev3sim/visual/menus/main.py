@@ -103,10 +103,7 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent(
             "bots_button",
-            lambda: ScreenObjectManager.instance.pushScreen(
-                ScreenObjectManager.SCREEN_BOTS,
-                batch_file=sim_path,
-            ),
+            lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS),
         )
         self._all_objs.append(self.bot_button)
 
