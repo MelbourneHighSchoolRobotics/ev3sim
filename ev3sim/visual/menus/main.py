@@ -98,7 +98,7 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent("soccer_button", lambda: self.playSim("soccer.yaml"))
         self._all_objs.append(self.soccer_button)
-        
+
         soccer_settings_button_pos = [self.buttonPos(0)[0] + self.button_size[0] + 20, self.buttonPos(0)[1]]
         self.soccer_settings_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*soccer_settings_button_pos, *settings_size),
@@ -117,7 +117,10 @@ class MainMenu(BaseMenu):
         )
         self._all_objs.append(self.soccer_settings_button)
         self._all_objs.append(self.soccer_settings_icon)
-        soccer_bot_button_pos = [self.buttonPos(0)[0] + self.button_size[0] + settings_size[0] + 40, self.buttonPos(0)[1]]
+        soccer_bot_button_pos = [
+            self.buttonPos(0)[0] + self.button_size[0] + settings_size[0] + 40,
+            self.buttonPos(0)[1],
+        ]
         self.soccer_bot_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*soccer_bot_button_pos, *bot_size),
             text="",
@@ -126,9 +129,7 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent("soccer-bot", self.clickSimBots, "soccer.yaml")
         self.soccer_bot_icon = pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect(
-                *self.iconPos(soccer_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size
-            ),
+            relative_rect=pygame.Rect(*self.iconPos(soccer_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size),
             image_surface=pygame.image.load(bot_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("soccer-bot-icon"),
@@ -163,7 +164,10 @@ class MainMenu(BaseMenu):
         )
         self._all_objs.append(self.rescue_settings_button)
         self._all_objs.append(self.rescue_settings_icon)
-        rescue_bot_button_pos = [self.buttonPos(1)[0] + self.button_size[0] + settings_size[0] + 40, self.buttonPos(1)[1]]
+        rescue_bot_button_pos = [
+            self.buttonPos(1)[0] + self.button_size[0] + settings_size[0] + 40,
+            self.buttonPos(1)[1],
+        ]
         self.rescue_bot_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*rescue_bot_button_pos, *bot_size),
             text="",
@@ -172,9 +176,7 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent("rescue-bot", self.clickSimBots, "rescue.yaml")
         self.rescue_bot_icon = pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect(
-                *self.iconPos(rescue_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size
-            ),
+            relative_rect=pygame.Rect(*self.iconPos(rescue_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size),
             image_surface=pygame.image.load(bot_icon_path),
             manager=self,
             object_id=pygame_gui.core.ObjectID("rescue-bot-icon"),
