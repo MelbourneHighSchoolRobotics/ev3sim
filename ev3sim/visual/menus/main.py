@@ -1,9 +1,12 @@
+from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.validation.bot_files import BotValidator
 import pygame
 import pygame_gui
+import yaml
 from ev3sim.file_helper import find_abs
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
-from ev3sim.search_locations import asset_locations, config_locations
+from ev3sim.search_locations import asset_locations, batch_locations, bot_locations, config_locations, preset_locations
 
 
 class MainMenu(BaseMenu):
@@ -14,7 +17,42 @@ class MainMenu(BaseMenu):
     def buttonPos(self, i):
         return (
             (self._size[0] - self.button_size[0]) / 2,
-            (self._size[1] - self.button_size[1]) / 2 + self.button_size[1] * (1.5 * i - 1.5) + 50,
+            (self._size[1] - self.button_size[1]) / 2 + self.button_size[1] * (1.5 * i - 2) + 50,
+        )
+
+    def playSim(self, preset):
+        abs_path = find_abs(preset, allowed_areas=preset_locations())
+        with open(abs_path, "r") as f:
+            preset_config = yaml.safe_load(f)
+        sim_path = find_abs(preset_config["sim_location"], allowed_areas=batch_locations())
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+        to_remove = []
+        for index in range(len(sim_config["bots"])):
+            # Try loading this bot.
+            try:
+                with open(find_abs(sim_config["bots"][index], bot_locations()), "r") as f:
+                    bot_config = yaml.safe_load(f)
+                if not BotValidator.validate_json(bot_config):
+                    to_remove.append(index)
+            except:
+                to_remove.append(index)
+        if to_remove:
+            for index in to_remove[::-1]:
+                del sim_config["bots"][index]
+            with open(sim_path, "w") as f:
+                f.write(yaml.dump(sim_config))
+        if not sim_config["bots"]:
+            # We cannot play, there no are valid bots.
+            return ScreenObjectManager.instance.pushScreen(
+                ScreenObjectManager.SCREEN_BOTS,
+                batch_file=sim_path,
+                next=ScreenObjectManager.instance.SCREEN_SIM,
+                next_kwargs={"batch": sim_path},
+            )
+        return ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.instance.SCREEN_SIM,
+            batch=sim_path,
         )
 
     def generateObjects(self):
@@ -39,30 +77,41 @@ class MainMenu(BaseMenu):
         self._all_objs.append(self.title)
 
         self.button_size = self._size[0] / 4, self._size[1] / 8
-        self.simulate_button = pygame_gui.elements.UIButton(
+        self.soccer_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*self.buttonPos(0), *self.button_size),
-            text="Simulate",
+            text="Soccer",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("simulate_button", "menu_button"),
+            object_id=pygame_gui.core.ObjectID("soccer_button", "menu_button"),
         )
-        self.addButtonEvent(
-            "simulate_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
+        self.addButtonEvent("soccer_button", lambda: self.playSim("soccer.yaml"))
+        self._all_objs.append(self.soccer_button)
+
+        self.rescue_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*self.buttonPos(1), *self.button_size),
+            text="Rescue",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rescue_button", "menu_button"),
         )
-        self._all_objs.append(self.simulate_button)
+        self.addButtonEvent("rescue_button", lambda: self.playSim("rescue.yaml"))
+        self._all_objs.append(self.rescue_button)
 
         self.bot_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(*self.buttonPos(1), *self.button_size),
+            relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
             text="Bots",
             manager=self,
             object_id=pygame_gui.core.ObjectID("bots_button", "menu_button"),
         )
         self.addButtonEvent(
-            "bots_button", lambda: ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BOTS)
+            "bots_button",
+            lambda: ScreenObjectManager.instance.pushScreen(
+                ScreenObjectManager.SCREEN_BOTS,
+                batch_file=sim_path,
+            ),
         )
         self._all_objs.append(self.bot_button)
 
         self.settings_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
+            relative_rect=pygame.Rect(*self.buttonPos(3), *self.button_size),
             text="Settings",
             manager=self,
             object_id=pygame_gui.core.ObjectID("main_settings_button", "menu_button"),
