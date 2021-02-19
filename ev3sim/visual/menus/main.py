@@ -55,6 +55,12 @@ class MainMenu(BaseMenu):
             batch=sim_path,
         )
 
+    def iconPos(self, buttonPos, buttonSize, iconSize):
+        return (
+            buttonPos[0] + buttonSize[0] / 2 - iconSize[0] / 2,
+            buttonPos[1] + buttonSize[1] * 0.2,
+        )
+
     def generateObjects(self):
         from ev3sim.visual.manager import ScreenObjectManager
 
@@ -77,6 +83,13 @@ class MainMenu(BaseMenu):
         self._all_objs.append(self.title)
 
         self.button_size = self._size[0] / 4, self._size[1] / 8
+        settings_size = self.button_size[0] * 0.3, self.button_size[1]
+        bot_size = settings_size
+        settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
+        bot_icon_size = bot_size[1] * 0.6, bot_size[1] * 0.6
+        settings_icon_path = find_abs("ui/settings.png", allowed_areas=asset_locations())
+        bot_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
+
         self.soccer_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*self.buttonPos(0), *self.button_size),
             text="Soccer",
@@ -85,6 +98,43 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent("soccer_button", lambda: self.playSim("soccer.yaml"))
         self._all_objs.append(self.soccer_button)
+        
+        soccer_settings_button_pos = [self.buttonPos(0)[0] + self.button_size[0] + 20, self.buttonPos(0)[1]]
+        self.soccer_settings_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*soccer_settings_button_pos, *settings_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("soccer-settings", "settings_buttons"),
+        )
+        self.addButtonEvent("soccer-settings", self.clickSimSettings, "soccer.yaml")
+        self.soccer_settings_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                *self.iconPos(soccer_settings_button_pos, settings_size, settings_icon_size), *settings_icon_size
+            ),
+            image_surface=pygame.image.load(settings_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("soccer-settings-icon"),
+        )
+        self._all_objs.append(self.soccer_settings_button)
+        self._all_objs.append(self.soccer_settings_icon)
+        soccer_bot_button_pos = [self.buttonPos(0)[0] + self.button_size[0] + settings_size[0] + 40, self.buttonPos(0)[1]]
+        self.soccer_bot_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*soccer_bot_button_pos, *bot_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("soccer-bot", "settings_buttons"),
+        )
+        self.addButtonEvent("soccer-bot", self.clickSimBots, "soccer.yaml")
+        self.soccer_bot_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                *self.iconPos(soccer_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size
+            ),
+            image_surface=pygame.image.load(bot_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("soccer-bot-icon"),
+        )
+        self._all_objs.append(self.soccer_bot_button)
+        self._all_objs.append(self.soccer_bot_icon)
 
         self.rescue_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*self.buttonPos(1), *self.button_size),
@@ -94,6 +144,43 @@ class MainMenu(BaseMenu):
         )
         self.addButtonEvent("rescue_button", lambda: self.playSim("rescue.yaml"))
         self._all_objs.append(self.rescue_button)
+
+        rescue_settings_button_pos = [self.buttonPos(1)[0] + self.button_size[0] + 20, self.buttonPos(1)[1]]
+        self.rescue_settings_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*rescue_settings_button_pos, *settings_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rescue-settings", "settings_buttons"),
+        )
+        self.addButtonEvent("rescue-settings", self.clickSimSettings, "rescue.yaml")
+        self.rescue_settings_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                *self.iconPos(rescue_settings_button_pos, settings_size, settings_icon_size), *settings_icon_size
+            ),
+            image_surface=pygame.image.load(settings_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rescue-settings-icon"),
+        )
+        self._all_objs.append(self.rescue_settings_button)
+        self._all_objs.append(self.rescue_settings_icon)
+        rescue_bot_button_pos = [self.buttonPos(1)[0] + self.button_size[0] + settings_size[0] + 40, self.buttonPos(1)[1]]
+        self.rescue_bot_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*rescue_bot_button_pos, *bot_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rescue-bot", "settings_buttons"),
+        )
+        self.addButtonEvent("rescue-bot", self.clickSimBots, "rescue.yaml")
+        self.rescue_bot_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                *self.iconPos(rescue_bot_button_pos, bot_size, bot_icon_size), *bot_icon_size
+            ),
+            image_surface=pygame.image.load(bot_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("rescue-bot-icon"),
+        )
+        self._all_objs.append(self.rescue_bot_button)
+        self._all_objs.append(self.rescue_bot_icon)
 
         self.bot_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
@@ -159,6 +246,33 @@ class MainMenu(BaseMenu):
         bg_image.blit(self.slide_surface_prev, pygame.Rect(0, 0, *self._size))
         bg_image.blit(self.slide_surface_next, pygame.Rect(0, 0, *self._size))
         self.bg.set_image(bg_image)
+
+    def clickSimSettings(self, preset):
+        import importlib
+
+        abs_path = find_abs(preset, allowed_areas=preset_locations())
+        with open(abs_path, "r") as f:
+            preset_config = yaml.safe_load(f)
+        sim_path = find_abs(preset_config["sim_location"], allowed_areas=batch_locations())
+        mname, cname = preset_config["visual_settings"].rsplit(".", 1)
+        klass = getattr(importlib.import_module(mname), cname)
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SETTINGS,
+            file=sim_path,
+            settings=klass,
+            allows_filename_change=False,
+            extension="sim",
+        )
+
+    def clickSimBots(self, preset):
+        abs_path = find_abs(preset, allowed_areas=preset_locations())
+        with open(abs_path, "r") as f:
+            preset_config = yaml.safe_load(f)
+        sim_path = find_abs(preset_config["sim_location"], allowed_areas=batch_locations())
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOTS,
+            batch_file=sim_path,
+        )
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         super().draw_ui(window_surface)
