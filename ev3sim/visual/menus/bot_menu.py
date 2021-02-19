@@ -279,6 +279,8 @@ class BotMenu(BaseMenu):
                 object_id=pygame_gui.core.ObjectID("select-done", "action_button"),
             )
             self.addButtonEvent("select-done", self.clickDone)
+            if self.key_index == 0:
+                self.done_button.disable()
             self._all_objs.append(self.done_button)
             super().generateObjects()
 
