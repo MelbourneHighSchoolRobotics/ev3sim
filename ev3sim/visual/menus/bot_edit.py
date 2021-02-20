@@ -457,7 +457,8 @@ class BotEditMenu(BaseMenu):
         # Bot blitting
         self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
         self.bot_screen = pygame.Surface(self.surf_size)
-        self.drawOptions()
+        if self.selected_index:
+            self.drawOptions()
         self.resetBotVisual()
         super().generateObjects()
 
@@ -625,8 +626,24 @@ class BotEditMenu(BaseMenu):
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
         self.lock_grid_image.set_image(img)
 
+    def checkBot(self):
+        # Returns true if there are any errors with the bot.
+        ports = set()
+        for device in self.current_devices:
+            ports.add(device[list(device.keys())[0]]["port"])
+        if len(ports) != len(self.current_devices):
+            self.addErrorDialog(
+                '<font color="#cc0000">You have multiple devices using the same port.</font><br><br>'
+                + "Select some of your existing devices and change the ports."
+            )
+            return True
+        return False
+
     def clickSave(self):
         from ev3sim.robot import visual_settings
+
+        if self.checkBot():
+            return
 
         if self.creating:
             ScreenObjectManager.instance.pushScreen(
