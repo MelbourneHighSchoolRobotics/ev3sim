@@ -227,6 +227,8 @@ def main(passed_args=None):
         print("An error occured in the Simulator :( Please see `error_log.txt` in your workspace.")
         actual_error = e
         error = traceback.format_exc()
+        if os.path.exists(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt")):
+            os.remove(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"))
         with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
             f.write(error)
     pygame.quit()
