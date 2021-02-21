@@ -22,7 +22,10 @@ class Logger:
         return os.path.join(log_dir, f"{robot_id}_log.txt")
 
     def beginLog(self, robot_id):
-        with open(self.getFilename(robot_id), "w") as _:
+        fname = self.getFilename(robot_id)
+        if os.path.exists(fname):
+            os.remove(fname)
+        with open(fname, "w") as _:
             # Don't write anything
             pass
 
