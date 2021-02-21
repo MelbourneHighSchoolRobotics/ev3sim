@@ -1,5 +1,4 @@
-bots:
-- rescue_bot
+bots: []
 preset_file: rescue.yaml
 settings:
   rescue:
@@ -10,11 +9,6 @@ settings:
     CAN_SPAWN_POSITION:
     - 63.242812500000014
     - -88.05555555555554
-    FOLLOW_POINT_RADIUS: 1
-    GAME_LENGTH_MINUTES: 5
-    MAX_FOLLOW_DIST: 8
-    ROBOT_CENTRE_RADIUS: 3
-    SHOW_FOLLOW_POINTS: false
     TILE_DEFINITIONS:
     - path: tiles/definitions/city_limits.yaml
       position:
