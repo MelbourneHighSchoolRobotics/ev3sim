@@ -142,25 +142,20 @@ class FileEntry(SettingsVisualElement):
 
     def handlePressed(self, idx):
         assert idx == 2, f"{idx} expected to be 2."
-        # Open file dialog.
-        from tkinter import Tk
-        from tkinter.filedialog import askdirectory, askopenfilename
 
-        Tk().withdraw()
-        if self.is_directory:
-            directory = askdirectory()
-            if not directory:
+        def onComplete(path):
+            if self.is_directory:
+                if not path:
+                    return
+                self.current = path
+                self.filename.set_text(self.current)
                 return
-            self.current = directory
-            self.filename.set_text(self.current)
-        else:
-            filename = askopenfilename().replace("/", "\\")
-            if not filename:
+            if not path:
                 return
             for pathname in self.relative_paths:
                 dirpath = find_abs_directory(pathname, create=True)
-                if filename.startswith(dirpath):
-                    actual_filename = filename[len(dirpath) :]
+                if path.startswith(dirpath):
+                    actual_path = path[len(dirpath) :]
                     break
             else:
                 msg = '<font color="#DD4045">This file must be contained in one of the following directories:</font>'
@@ -170,8 +165,15 @@ class FileEntry(SettingsVisualElement):
                 msg = msg + "</font>"
                 self.menu.addErrorDialog(msg)
                 return
-            self.current = actual_filename
+            self.current = actual_path
             self.filename.set_text(self.current)
+
+        self.menu.addFileDialog(
+            "Select " + self.title,
+            find_abs_directory(self.relative_paths[0], create=True) if self.relative_paths else None,
+            self.is_directory,
+            onComplete,
+        )
 
 
 class TextEntry(SettingsVisualElement):
