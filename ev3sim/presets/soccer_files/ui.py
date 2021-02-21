@@ -10,6 +10,8 @@ class SoccerUIInteractor(IInteractor):
     SORT_ORDER = -10
     instance = None
 
+    SHOW_GOAL_COLLIDERS = True
+
     TEAM_NAME_1 = ""
     TEAM_NAME_2 = ""
 

@@ -76,6 +76,11 @@ class SoccerLogicInteractor(IInteractor):
                 "key": f"Goal-{x}",
             }
             self.goal_colliders.append(objectFactory(**obj))
+        if SoccerUIInteractor.instance.SHOW_GOAL_COLLIDERS:
+            from ev3sim.visual.manager import ScreenObjectManager
+
+            for i, collider in enumerate(self.goal_colliders):
+                ScreenObjectManager.instance.registerVisual(collider.visual, f"Soccer_DEBUG_collider-{i}")
 
     def setUpColliderEvents(self):
         saved_world_no = World.instance.spawn_no

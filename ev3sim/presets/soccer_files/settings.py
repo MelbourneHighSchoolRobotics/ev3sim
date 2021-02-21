@@ -8,11 +8,11 @@ soccer_settings = {
     for attr, klass in [
         ("TEAM_NAME_1", SoccerUIInteractor),
         ("TEAM_NAME_2", SoccerUIInteractor),
+        ("SHOW_GOAL_COLLIDERS", SoccerUIInteractor),
         ("SPAWN_LOCATIONS", SoccerLogicInteractor),
         ("PENALTY_LOCATIONS", SoccerLogicInteractor),
         ("GOALS", SoccerLogicInteractor),
         ("GAME_HALF_LENGTH_MINUTES", SoccerLogicInteractor),
-        ("SHOW_GOAL_COLLIDERS", SoccerLogicInteractor),
         ("ENFORCE_OUT_ON_WHITE", SoccerLogicInteractor),
         ("BALL_RESET_ON_WHITE", SoccerLogicInteractor),
         ("BALL_RESET_WHITE_DELAY_SECONDS", SoccerLogicInteractor),
