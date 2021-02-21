@@ -59,24 +59,28 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
     def clickSelect(self):
         # Open file dialog.
         import yaml
-        from tkinter import Tk
-        from tkinter.filedialog import askdirectory
         from ev3sim.simulation.loader import StateHandler
         from ev3sim.visual.manager import ScreenObjectManager
 
-        Tk().withdraw()
-        directory = askdirectory()
-        if not directory:
-            return
-        conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
-        with open(conf_file, "r") as f:
-            conf = yaml.safe_load(f)
-        conf["app"]["workspace_folder"] = directory
-        with open(conf_file, "w") as f:
-            f.write(yaml.dump(conf))
-        StateHandler.WORKSPACE_FOLDER = directory
-        ScreenObjectManager.instance.popScreen()
-        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
+        def onComplete(directory):
+            if not directory:
+                return
+            conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
+            with open(conf_file, "r") as f:
+                conf = yaml.safe_load(f)
+            conf["app"]["workspace_folder"] = directory
+            with open(conf_file, "w") as f:
+                f.write(yaml.dump(conf))
+            StateHandler.WORKSPACE_FOLDER = directory
+            ScreenObjectManager.instance.popScreen()
+            ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
+
+        self.addFileDialog(
+            "Select Workspace",
+            None,
+            True,
+            onComplete,
+        )
 
     def onPop(self):
         pass
