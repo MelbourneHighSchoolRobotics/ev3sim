@@ -1205,16 +1205,20 @@ class BotEditMenu(BaseMenu):
         )
 
         for i, port in enumerate(ports):
-            but_rect = pygame.Rect(
-                80 + ((i % 2)) * ((picker_size[0] - 120) / 2 + 30),
-                50 + ((picker_size[1] - 160) / 3 + 20) * (i // 2),
-                (picker_size[0] - 150) / 3,
-                (picker_size[1] - 160) / 3 - 30,
-            ) if len(ports) == 4 else pygame.Rect(
-                30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
-                20 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
-                (picker_size[0] - 150) / 3,
-                (picker_size[1] - 160) / 3 - 30,
+            but_rect = (
+                pygame.Rect(
+                    80 + ((i % 2)) * ((picker_size[0] - 120) / 2 + 30),
+                    50 + ((picker_size[1] - 160) / 3 + 20) * (i // 2),
+                    (picker_size[0] - 150) / 3,
+                    (picker_size[1] - 160) / 3 - 30,
+                )
+                if len(ports) == 4
+                else pygame.Rect(
+                    30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
+                    20 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
+                    (picker_size[0] - 150) / 3,
+                    (picker_size[1] - 160) / 3 - 30,
+                )
             )
             setattr(
                 self,
