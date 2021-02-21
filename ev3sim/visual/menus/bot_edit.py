@@ -1172,8 +1172,10 @@ class BotEditMenu(BaseMenu):
             if self.selected_index == "Holding"
             else list(self.current_devices[self.selected_index[1]].keys())[0]
         )
-        if device_type in ["UltrasonicSensor"]:
+        if device_type in ["UltrasonicSensor", "ColorSensor", "InfraredSensor", "CompassSensor"]:
             ports = ["in1", "in2", "in3", "in4"]
+        elif device_type in ["Button"]:
+            ports = ["up", "down", "left", "right", "enter", "backspace"]
         else:
             ports = ["outA", "outB", "outC", "outD"]
 
@@ -1206,6 +1208,11 @@ class BotEditMenu(BaseMenu):
             but_rect = pygame.Rect(
                 80 + ((i % 2)) * ((picker_size[0] - 120) / 2 + 30),
                 50 + ((picker_size[1] - 160) / 3 + 20) * (i // 2),
+                (picker_size[0] - 150) / 3,
+                (picker_size[1] - 160) / 3 - 30,
+            ) if len(ports) == 4 else pygame.Rect(
+                30 + ((i % 3) + (i // 6)) * ((picker_size[0] - 150) / 3 + 30),
+                20 + ((picker_size[1] - 160) / 3 + 20) * (i // 3),
                 (picker_size[0] - 150) / 3,
                 (picker_size[1] - 160) / 3 - 30,
             )
