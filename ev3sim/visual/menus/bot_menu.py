@@ -279,6 +279,8 @@ class BotMenu(BaseMenu):
                 object_id=pygame_gui.core.ObjectID("select-done", "action_button"),
             )
             self.addButtonEvent("select-done", self.clickDone)
+            if self.key_index == 0:
+                self.done_button.disable()
             self._all_objs.append(self.done_button)
             super().generateObjects()
 
@@ -368,6 +370,8 @@ class BotMenu(BaseMenu):
         self.edit_enable = False
         self.remove_enable = False
         self.bot_index = -1
+        self.next = kwargs.get("next", None)
+        self.next_kwargs = kwargs.get("next_kwargs", {})
         super().initWithKwargs(**kwargs)
 
     def clickEdit(self):
@@ -419,6 +423,8 @@ class BotMenu(BaseMenu):
         from ev3sim.visual.manager import ScreenObjectManager
 
         ScreenObjectManager.instance.popScreen()
+        if self.next is not None:
+            ScreenObjectManager.instance.pushScreen(self.next, **self.next_kwargs)
 
     def clickNew(self):
         from ev3sim.visual.manager import ScreenObjectManager

@@ -13,7 +13,7 @@ def batch_locations():
     from ev3sim.file_helper import find_abs_directory
     from ev3sim.simulation.loader import StateHandler
 
-    locations = ["workspace/sims/", "workspace", "package/examples/sims/"]
+    locations = ["package/presets/"]
     if StateHandler.WORKSPACE_FOLDER:
         custom_path = find_abs_directory("workspace/custom/", create=True)
         for name in os.listdir(custom_path):
