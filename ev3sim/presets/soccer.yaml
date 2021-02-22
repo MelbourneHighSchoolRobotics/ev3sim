@@ -8,6 +8,7 @@ bot_names:
   - "Team 2\nBot 2"
 
 visual_settings: ev3sim.presets.soccer_files.settings.visual_settings
+sim_location: soccer.sim
 
 preset_description: "2 to 4 bots compete on a soccer field, attempting to detect and push a ball into the opposing goal."
 

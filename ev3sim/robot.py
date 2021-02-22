@@ -38,11 +38,12 @@ def add_to_zpos(obj, amount):
             add_to_zpos(v, amount)
 
 
-def initialise_bot(topLevelConfig, filename, prefix, path_index):
+def initialise_bot(topLevelConfig, robotFolder, prefix, path_index):
     # Returns the robot class, as well as a completed robot to add to the elements list.
     import yaml
+    from os.path import join
 
-    with open(filename, "r") as f:
+    with open(join(robotFolder, "config.bot"), "r") as f:
         try:
             config = yaml.safe_load(f)
             mname, cname = config.get("robot_class", "ev3sim.robot.Robot").rsplit(".", 1)
@@ -65,7 +66,7 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
                         "base_key": bot_config["key"],
                         "path_index": path_index,
                         # Don't include directories here, since that shouldn't affect randomisation.
-                        "filename": filename.replace("\\", "/").rsplit("/", 1)[-1],
+                        "filename": robotFolder.replace("\\", "/").rsplit("/", 1)[-1],
                     }
                 )
             )
@@ -73,13 +74,13 @@ def initialise_bot(topLevelConfig, filename, prefix, path_index):
             robot._follow_collider_offset = config.get("follow_collider", [0, 0])
             ScriptLoader.instance.robots[prefix] = robot
             ScriptLoader.instance.outstanding_events[prefix] = []
-            scriptname = config.get("script", None)
+            scriptname = config.get("script", "code.py")
             if scriptname is not None:
-                scriptname = find_abs(scriptname, code_locations())
+                scriptname = find_abs(scriptname, code_locations(robotFolder))
             ScriptLoader.instance.scriptnames[prefix] = scriptname
 
         except yaml.YAMLError as exc:
-            print(f"An error occurred while loading robot preset {filename}. Exited with error: {exc}")
+            print(f"An error occurred while loading robot preset {robotFolder}. Exited with error: {exc}")
 
 
 class RobotInteractor(IInteractor):
@@ -192,22 +193,8 @@ class Robot:
         pass
 
 
-from ev3sim.visual.settings.elements import TextEntry, FileEntry
-from ev3sim.search_locations import code_locations
+from ev3sim.visual.settings.elements import TextEntry
 
 visual_settings = [
     {"height": lambda s: 90, "objects": [TextEntry("__filename__", "BOT NAME", None, (lambda s: (0, 20)))]},
-    {
-        "height": (lambda s: 90),
-        "objects": [
-            FileEntry(
-                ["script"],
-                None,
-                False,
-                code_locations(),
-                "Bot script",
-                (lambda s: (0, 20)),
-            ),
-        ],
-    },
 ]

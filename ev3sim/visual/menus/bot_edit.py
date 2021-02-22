@@ -1,9 +1,10 @@
+import os
 import pygame
 import pygame_gui
 import pymunk
 import yaml
 import numpy as np
-from ev3sim.file_helper import find_abs
+from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.objects.base import DYNAMIC_CATEGORY
 from ev3sim.robot import add_devices
 from ev3sim.simulation.randomisation import Randomiser
@@ -17,10 +18,12 @@ class BotEditMenu(BaseMenu):
 
     onSave = None
 
-    MODE_DEVICE_DIALOG = "DEVICE_SELECT"
     MODE_NORMAL = "NORMAL"
+    MODE_DEVICE_DIALOG = "DEVICE_SELECT"
     MODE_COLOUR_DIALOG = "COLOUR"
     MODE_BASEPLATE_DIALOG = "BASEPLATE"
+    MODE_NAME_DIALOG = "NAME"
+    MODE_PORT_DIALOG = "PORT"
 
     SELECTED_CIRCLE = "CIRCLE"
     SELECTED_RECTANGLE = "RECTANGLE"
@@ -65,7 +68,7 @@ class BotEditMenu(BaseMenu):
         else:
             self.creating = False
             self.mode = self.MODE_NORMAL
-            with open(self.bot_file, "r") as f:
+            with open(os.path.join(self.bot_file, "config.bot"), "r") as f:
                 bot = yaml.safe_load(f)
             self.previous_info = bot
             self.current_object = bot["base_plate"]
@@ -187,12 +190,22 @@ class BotEditMenu(BaseMenu):
 
     def placeHolding(self, pos):
         if self.current_holding_kwargs["type"] == "device":
-            dev_name = self.current_holding_kwargs["name"]
-            rest = self.current_holding_kwargs.copy()
-            rest["position"] = [float(self.current_mpos[0]), float(self.current_mpos[1])]
-            del rest["type"]
-            del rest["name"]
-            self.current_devices.append({dev_name: rest})
+
+            def on_close(port):
+                if port is None or port == "":
+                    return
+                dev_name = self.current_holding_kwargs["name"]
+                rest = self.current_holding_kwargs.copy()
+                rest["position"] = [float(self.current_mpos[0]), float(self.current_mpos[1])]
+                rest["port"] = port
+                del rest["type"]
+                del rest["name"]
+                self.current_devices.append({dev_name: rest})
+                self.updateZpos()
+                self.resetBotVisual()
+                self.generateHoldingItem()
+
+            self.addPortPicker(on_close)
         else:
             obj = {
                 "physics": True,
@@ -204,9 +217,9 @@ class BotEditMenu(BaseMenu):
                 "friction": 0.8,
             }
             self.current_object["children"].append(obj)
-        self.updateZpos()
-        self.resetBotVisual()
-        self.generateHoldingItem()
+            self.updateZpos()
+            self.resetBotVisual()
+            self.generateHoldingItem()
 
     def removeSelected(self):
         if self.selected_index in ["Holding", None, "Baseplate"]:
@@ -457,7 +470,8 @@ class BotEditMenu(BaseMenu):
         # Bot blitting
         self.surf_size = (self._size[0] - self.side_width + 5, self._size[1] - self.bot_height + 5)
         self.bot_screen = pygame.Surface(self.surf_size)
-        self.drawOptions()
+        if self.selected_index:
+            self.drawOptions()
         self.resetBotVisual()
         super().generateObjects()
 
@@ -625,27 +639,24 @@ class BotEditMenu(BaseMenu):
             img = pygame.transform.smoothscale(img, (self.lock_grid_image.rect.width, self.lock_grid_image.rect.height))
         self.lock_grid_image.set_image(img)
 
-    def clickSave(self):
-        from ev3sim.robot import visual_settings
-
-        if self.creating:
-            ScreenObjectManager.instance.pushScreen(
-                ScreenObjectManager.SCREEN_SETTINGS,
-                settings=visual_settings,
-                creating=True,
-                creation_area="workspace/robots/",
-                starting_data={},
-                extension="bot",
+    def checkBot(self):
+        # Returns true if there are any errors with the bot.
+        ports = set()
+        for device in self.current_devices:
+            ports.add(device[list(device.keys())[0]]["port"])
+        if len(ports) != len(self.current_devices):
+            self.addErrorDialog(
+                '<font color="#cc0000">You have multiple devices using the same port.</font><br><br>'
+                + "Select some of your existing devices and change the ports."
             )
+            return True
+        return False
 
-            def onSave(filename):
-                self.bot_file = find_abs(filename, ["workspace/robots/"])
-                self.bot_dir_file = ["workspace/robots/", filename]
-                self.saveBot()
-                ScreenObjectManager.instance.popScreen()
-
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
-            ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].onSave = onSave
+    def clickSave(self):
+        if self.checkBot():
+            return
+        if self.creating:
+            self.addNamePicker()
         else:
             self.saveBot()
             ScreenObjectManager.instance.popScreen()
@@ -667,7 +678,7 @@ class BotEditMenu(BaseMenu):
                 child["visual"]["verts"] = verts
 
         self.previous_info["devices"] = self.current_devices
-        with open(self.bot_file, "w") as f:
+        with open(os.path.join(self.bot_file, "config.bot"), "w") as f:
             f.write(yaml.dump(self.previous_info))
         ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
         if self.onSave is not None:
@@ -775,7 +786,6 @@ class BotEditMenu(BaseMenu):
                             "size_entry",
                             "stroke_entry",
                             "sides_entry",
-                            "port_entry",
                         ]:
                             if hasattr(self, attr) and getattr(self, attr).is_focused:
                                 good = False
@@ -1009,12 +1019,21 @@ class BotEditMenu(BaseMenu):
             manager=self,
             object_id=pygame_gui.core.ObjectID("port-label", "bot_edit_label"),
         )
-        self.port_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=self.entryRect(0, 1),
+        rect = self.entryRect(0, 1)
+        rect.width += 70
+        self.port_entry = pygame_gui.elements.UIButton(
+            relative_rect=rect,
+            text=self.getSelectedAttribute("port"),
             manager=self,
-            object_id=pygame_gui.core.ObjectID("port-entry", "num_entry"),
+            object_id=pygame_gui.core.ObjectID("port-value", "any_button"),
         )
-        self.port_entry.set_text(self.getSelectedAttribute("port"))
+
+        def on_close(port):
+            if port is None or port == "":
+                return
+            self.setSelectedAttribute("port", port)
+
+        self.addButtonEvent("port-value", lambda: self.addPortPicker(on_close))
 
     def generateColourPickers(self):
         # Colour pickers
@@ -1080,6 +1099,65 @@ class BotEditMenu(BaseMenu):
         self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
         self.stroke_img.rebuild_from_changed_theme_data()
 
+    def addNamePicker(self):
+        self.mode = self.MODE_NAME_DIALOG
+
+        class NamePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removeNamePicker()
+
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if "create_bot" in event.ui_object_id:
+                        name = self.bot_name_entry.text
+                        found = False
+                        try:
+                            find_abs(name, ["workspace/robots/"])
+                            found = True
+                        except:
+                            pass
+                        if found:
+                            self.addErrorDialog('<font color="#cc0000">This name is already taken.</font>')
+                            return True
+                        # Now, create the necessary files/folders.
+                        self.bot_file = os.path.join(find_abs_directory("workspace/robots/"), name)
+                        self.bot_dir_file = ["workspace/robots/", name]
+                        os.mkdir(self.bot_file)
+                        _ = open(os.path.join(self.bot_file, "code.py"), "w")
+                        self.removeNamePicker()
+                        self.saveBot()
+                        ScreenObjectManager.instance.popScreen()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, max(self._size[1] * 0.4, 100))
+
+        self.picker = NamePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Name Your Bot",
+            object_id=pygame_gui.core.ObjectID("name_dialog"),
+        )
+
+        self.bot_name_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                30,
+                40,
+                picker_size[0] - 105,
+                40,
+            ),
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("bot_name_entry"),
+        )
+        self.bot_name_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(picker_size[0] - 195, picker_size[1] - 150, 120, 40),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("create_bot", "action_button"),
+            container=self.picker,
+            text="Create",
+        )
+
     def addColourPicker(self, title, start_colour):
         from ev3sim.visual.utils import rgb_to_hex
 
@@ -1125,6 +1203,91 @@ class BotEditMenu(BaseMenu):
             initial_colour=pygame.Color(start_colour),
             window_title=title,
             object_id=pygame_gui.core.ObjectID("colour_dialog"),
+        )
+
+    def addPortPicker(self, on_close):
+
+        self.mode = self.MODE_PORT_DIALOG
+
+        device_type = (
+            self.current_holding_kwargs["name"]
+            if self.selected_index == "Holding"
+            else list(self.current_devices[self.selected_index[1]].keys())[0]
+        )
+        if device_type in ["UltrasonicSensor"]:
+            ports = ["in1", "in2", "in3", "in4"]
+        else:
+            ports = ["outA", "outB", "outC", "outD"]
+
+        class PortPicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removePortPicker()
+
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    for port in ports:
+                        if f"{port}_button" in event.ui_object_id:
+                            on_close(port)
+                            self2.kill()
+                    if "custom_accept" in event.ui_object_id:
+                        on_close(self.custom_port_entry.get_text())
+                        self2.kill()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+
+        self.picker = PortPicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="Pick Port",
+            object_id=pygame_gui.core.ObjectID("port_dialog"),
+        )
+
+        for i, port in enumerate(ports):
+            but_rect = pygame.Rect(
+                80 + ((i % 2)) * ((picker_size[0] - 120) / 2 + 30),
+                50 + ((picker_size[1] - 160) / 3 + 20) * (i // 2),
+                (picker_size[0] - 150) / 3,
+                (picker_size[1] - 160) / 3 - 30,
+            )
+            setattr(
+                self,
+                f"{port}_button",
+                pygame_gui.elements.UIButton(
+                    relative_rect=but_rect,
+                    text=port,
+                    manager=self,
+                    container=self.picker,
+                    object_id=pygame_gui.core.ObjectID(f"{port}_button", "any_button"),
+                ),
+            )
+        self.custom_port_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(80, picker_size[1] - 130, (picker_size[0] - 150) / 3 - 50, self.side_width / 3),
+            text="Custom Port",
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("custom-port-label", "bot_edit_label"),
+        )
+        self.custom_port_entry = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect(
+                80 + (picker_size[0] - 150) / 3, picker_size[1] - 125, (picker_size[0] - 150) / 3, self.side_width / 3
+            ),
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("port-entry", "num_entry"),
+        )
+        self.custom_port_accept = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                80 + 2 * (picker_size[0] - 150) / 3 + 50,
+                picker_size[1] - 130,
+                (picker_size[0] - 150) / 3 - 100,
+                self.side_width / 3,
+            ),
+            text="Ok",
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID(f"custom_accept", "any_button"),
         )
 
     def addDevicePicker(self):
@@ -1419,7 +1582,21 @@ All other objects are placed on this baseplate. After creating it, the baseplate
         except:
             pass
 
+    def removePortPicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+        except:
+            pass
+
     def removeColourPicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+        except:
+            pass
+
+    def removeNamePicker(self):
         try:
             self.mode = self.MODE_NORMAL
             self.drawOptions()
@@ -1577,7 +1754,6 @@ All other objects are placed on this baseplate. After creating it, the baseplate
                     pass
             if self.mode == self.MODE_NORMAL and self.selected_type == self.SELECTED_DEVICE:
                 self.updateAttribute("rotation", self.rotation_entry, float, generate)
-                self.setSelectedAttribute("port", self.port_entry.text)
             if self.mode == self.MODE_NORMAL:
                 try:
                     self.grid_size = float(self.grid_size_entry.text)

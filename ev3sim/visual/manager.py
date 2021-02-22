@@ -5,7 +5,6 @@ from ev3sim.settings import BindableValue, ObjectSetting
 from ev3sim.search_locations import theme_locations
 import pygame
 import pygame.freetype
-import os
 import yaml
 from typing import Dict, List, Tuple
 
@@ -18,10 +17,10 @@ class ScreenObjectManager:
 
     SCREEN_MENU = "MAIN_MENU"
     SCREEN_SIM = "SIMULATOR"
-    SCREEN_BATCH = "BATCH_SELECT"
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
+    SCREEN_UPDATE = "UPDATE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
     SCREEN_RESCUE_EDIT = "RESCUE_EDIT"
 
@@ -79,6 +78,10 @@ class ScreenObjectManager:
 
     def initScreens(self):
         self.screens = {}
+        # Update dialog
+        from ev3sim.visual.menus.update_dialog import UpdateMenu
+
+        self.screens[self.SCREEN_UPDATE] = UpdateMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Workspace select dialog
         from ev3sim.visual.menus.workspace_menu import WorkspaceMenu
 
@@ -87,10 +90,6 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.main import MainMenu
 
         self.screens[self.SCREEN_MENU] = MainMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        # Batch screen
-        from ev3sim.visual.menus.batch_select import BatchMenu
-
-        self.screens[self.SCREEN_BATCH] = BatchMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Bots screen
         from ev3sim.visual.menus.bot_menu import BotMenu
 
@@ -355,27 +354,10 @@ class ScreenObjectManager:
                 screen.set_at((x, y), val)
         self.resetVisualElements()
         ScriptLoader.instance.reset()
-        if filename.startswith("custom"):
-            show_dir = os.path.split(os.path.split(filename)[0])[0] + "/images/"
-            rel_dir = "workspace/" + show_dir
-            directory = "workspace/" + os.path.split(filename)[0]
-            filename = os.path.split(filename)[1]
-        elif directory.startswith("workspace"):
-            show_dir = "images/"
-            rel_dir = "workspace/images/"
-        elif directory.startswith("package"):
-            show_dir = "bots/"
-            rel_dir = "packages/assets/bots/"
-        else:
-            raise ValueError(f"Don't know where to save the preview for {filename} in {directory}")
-        dirname = find_abs_directory(rel_dir, create=True)
-        pygame.image.save(screen, join(dirname, filename.replace(".bot", ".png")))
-        actual_bot_path = find_abs(filename, [directory])
-        with open(actual_bot_path, "r") as f:
-            conf = yaml.safe_load(f)
-        conf["preview_path"] = join(show_dir, filename.replace(".bot", ".png"))
-        with open(actual_bot_path, "w") as f:
-            f.write(yaml.dump(conf))
+        config_path = join(find_abs(filename, [directory]), "config.bot")
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+        pygame.image.save(screen, join(find_abs(filename, [directory]), config.get("preview_path", "preview.png")))
 
 
 screen_settings = {

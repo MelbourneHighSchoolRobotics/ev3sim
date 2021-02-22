@@ -6,6 +6,7 @@ class BaseMenu(pygame_gui.UIManager):
 
     WINDOW_MODE_NORMAL = "normal"
     WINDOW_MODE_ERROR = "error"
+    WINDOW_MODE_FILE = "file"
 
     def __init__(self, size, *args, **kwargs):
         self.window_mode = self.WINDOW_MODE_NORMAL
@@ -69,10 +70,35 @@ class BaseMenu(pygame_gui.UIManager):
                 container=self.dialog,
                 object_id=pygame_gui.core.ObjectID("error_msg", "text_dialog"),
             )
+        if self.window_mode == self.WINDOW_MODE_FILE:
+
+            class FileWindow(pygame_gui.windows.UIFileDialog):
+                def kill(self2):
+                    self.window_mode = self.WINDOW_MODE_NORMAL
+                    self.regenerateObjects()
+                    return super().kill()
+
+            dialog_size = (self._size[0] * 0.7, self._size[1] * 0.7)
+            self.dialog = FileWindow(
+                rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *dialog_size),
+                manager=self,
+                window_title=self.file_picker_title,
+                object_id=pygame_gui.core.ObjectID("error_dialog"),
+                initial_file_path=self.file_picker_path,
+                allow_picking_directories=self.file_is_dir,
+            )
 
     def addErrorDialog(self, msg):
         self.window_mode = self.WINDOW_MODE_ERROR
         self.error_msg_text = msg
+        self.regenerateObjects()
+
+    def addFileDialog(self, title, path, directory, onComplete):
+        self.window_mode = self.WINDOW_MODE_FILE
+        self.file_picker_title = title
+        self.file_picker_path = path
+        self.file_is_dir = directory
+        self.file_on_complete = onComplete
         self.regenerateObjects()
 
     def regenerateObjects(self):
@@ -88,3 +114,5 @@ class BaseMenu(pygame_gui.UIManager):
             for id, method, args, kwargs in self._button_events:
                 if event.ui_object_id.split(".")[-1] == id and button_filter(id):
                     method(*args, **kwargs)
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
+            self.file_on_complete(event.text)
