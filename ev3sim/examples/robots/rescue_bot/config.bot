@@ -64,5 +64,4 @@ devices:
 follow_collider:
 - 5
 - 0
-preview_path: bots/rescue_bot.png
 hidden_edit: true

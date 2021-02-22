@@ -109,15 +109,14 @@ devices:
 - CompassSensor:
     port: in4
     position:
-    - 0
-    - 0
+    - 0.0
+    - 0.0
+    rotation: 0.0
     zPos: 3.96875
 - Button:
     port: up
     position:
-    - -4
-    - 0
+    - -4.0
+    - 0.0
     zPos: 3.984375
-preview_path: bots/communication_server.png
-script: communication_server.py
-hidden: true
+hidden_edit: true

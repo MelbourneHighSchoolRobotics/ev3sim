@@ -16,7 +16,7 @@ class IInteractor:
 
     constants: dict
 
-    AUTOSTART_BOTS = True
+    AUTOSTART_BOTS = False
 
     def __init__(self, **kwargs):
         pass
