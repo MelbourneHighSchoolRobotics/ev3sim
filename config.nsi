@@ -100,7 +100,6 @@ ${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
 ${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
 ;Open bots by default.
 ${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
-${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
 WriteUninstaller "$INSTDIR\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"

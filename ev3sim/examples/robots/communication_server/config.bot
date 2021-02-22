@@ -118,6 +118,4 @@ devices:
     - -4
     - 0
     zPos: 3.984375
-preview_path: bots/communication_client.png
-script: communication_client.py
 hidden: true

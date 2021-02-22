@@ -3,7 +3,7 @@ import pygame
 import sentry_sdk
 import sys
 import yaml
-from os.path import join
+from os.path import join, split
 from multiprocessing import Queue, Process
 
 import ev3sim
@@ -11,6 +11,7 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
+from ev3sim.updates import handle_updates
 
 
 def get_latest_version(q):
@@ -156,7 +157,7 @@ def main(passed_args=None):
                 pass
             if not found:
                 try:
-                    fname = args.elem
+                    fname = split(args.elem)[0]
                     for possible_dir in bot_locations():
                         dir_path = find_abs_directory(possible_dir, create=True)
                         if fname.startswith(dir_path):
@@ -177,16 +178,6 @@ def main(passed_args=None):
                                     break
                                 except:
                                     continue
-                        elif args.edit:
-                            from ev3sim.robot import visual_settings
-
-                            pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
-                            pushed_kwargs = {
-                                "file": bot_path,
-                                "settings": visual_settings,
-                                "allows_filename_change": True,
-                                "extension": "bot",
-                            }
                         found = True
                 except:
                     pass
@@ -215,6 +206,13 @@ def main(passed_args=None):
         # We want to start on the simulation screen.
         ScreenObjectManager.instance.screen_stack = []
         ScreenObjectManager.instance.pushScreen(ScreenObjectManager.instance.SCREEN_SIM, **args.simulation_kwargs)
+
+    updates = handle_updates()
+    if updates:
+        ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.instance.SCREEN_UPDATE,
+            panels=updates,
+        )
 
     actual_error = None
     error = None

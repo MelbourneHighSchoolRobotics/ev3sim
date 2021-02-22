@@ -59,6 +59,5 @@ devices:
     - 0
     rotation: 0
     zPos: 3.9375
-preview_path: bots/controllable.png
 robot_class: ev3sim.examples.robots.scripts.controllable.ControllableBot
 hidden_edit: true
