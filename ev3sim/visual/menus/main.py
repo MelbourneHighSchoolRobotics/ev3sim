@@ -1,5 +1,6 @@
 from ev3sim.visual.manager import ScreenObjectManager
 from ev3sim.validation.bot_files import BotValidator
+import os
 import pygame
 import pygame_gui
 import yaml
@@ -31,7 +32,7 @@ class MainMenu(BaseMenu):
         for index in range(len(sim_config["bots"])):
             # Try loading this bot.
             try:
-                with open(find_abs(sim_config["bots"][index], bot_locations()), "r") as f:
+                with open(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), "config.bot"), "r") as f:
                     bot_config = yaml.safe_load(f)
                 if not BotValidator.validate_json(bot_config):
                     to_remove.append(index)

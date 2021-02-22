@@ -230,7 +230,7 @@ class TextEntry(SettingsVisualElement):
 
 class NumberEntry(TextEntry):
     def setToJson(self, json_obj):
-        self.current = int(self.obj.text)
+        self.current = float(self.obj.text)
         SettingsVisualElement.setToJson(self, json_obj)
 
     def getEntryRect(self, off):

@@ -67,10 +67,8 @@ class ScriptLoader:
             from ev3sim.attach_bot import attach_bot
 
             format_filename = join(self.scriptnames[robot_id])
-            # workspace/code/ is used so that code.package imports aren't used.
-            # This means we can copy a students entire /code/ directory and copy it into our code directory,
-            # and since all imports are below /code/, the imports won't fail.
-            possible_locations = ["workspace/code/", "package", "workspace/custom/"]
+            # This ensures that as long as the code sits in the bot directory, relative imports will work fine.
+            possible_locations = ["workspace/robots/", "workspace", "package/examples/robots"]
             extra_dirs = []
             for loc in possible_locations:
                 loc_path = find_abs_directory(loc, create=True)
