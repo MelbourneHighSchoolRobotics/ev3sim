@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+from ev3sim.visual.animation_utils import rgb_to_hex
 
 
 class BaseMenu(pygame_gui.UIManager):
@@ -108,6 +109,8 @@ class BaseMenu(pygame_gui.UIManager):
     def initWithKwargs(self, **kwargs):
         self.window_mode = self.WINDOW_MODE_NORMAL
         self.regenerateObjects()
+        # Reset all animations
+        self.animations = []
 
     def handleEvent(self, event, button_filter=lambda x: True):
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -116,3 +119,78 @@ class BaseMenu(pygame_gui.UIManager):
                     method(*args, **kwargs)
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
             self.file_on_complete(event.text)
+
+    def animateProperty(self, object, properties, start_values, end_values, rate_func, duration, dependent=None):
+        """
+        Animates object properties for a certain amount of time.
+        dependent: the index of an animation to finish before this one starts.
+        Returns the index of this animation.
+        """
+        if dependent == "follow":
+            dependent = len(self.animations) - 1
+        self.animations.append(
+            {
+                "object": object,
+                "properties": properties,
+                "start_values": start_values,
+                "end_values": end_values,
+                "rate_func": rate_func,
+                "remaining": duration,
+                "total": duration,
+                "dependent": dependent,
+            }
+        )
+        return len(self.animations) - 1
+
+    def removeAnimation(self, index):
+        for i in range(index + 1, len(self.animations)):
+            if self.animations[i]["dependent"] == index:
+                self.animations[i]["dependent"] = None
+        for i in range(len(self.animations)):
+            if self.animations[i]["dependent"] is not None and self.animations[i]["dependent"] > i:
+                self.animations[i]["dependent"] -= 1
+        self.animations = self.animations[:index] + self.animations[index + 1 :]
+
+    colour_types = ("normal", "hovered", "active", "disabled", "selected")
+    colour_ends = ("bg", "text", "border")
+
+    def _setPropertyValue(self, object, properties, start_values, end_values, alpha):
+        new_pos = None
+        new_size = None
+        requires_rebuild = False
+        for property, start, end in zip(properties, start_values, end_values):
+            if property == "position":
+                new_pos = [s + (e - s) * alpha for s, e in zip(start, end)]
+            if property == "dimensions":
+                new_size = [s + (e - s) * alpha for s, e in zip(start, end)]
+            if property in [f"{t}_{e}" for t in self.colour_types for e in self.colour_ends]:
+                # For optimization purposes, start_v and end_v are rgb tuples, not hex strings.
+                # TODO: Not sure if straight line interpolation in RGB space is the best approach.
+                interp = [min(max(int(s + (e - s) * alpha), 0), 255) for s, e in zip(start, end)]
+                object.colours[property] = pygame.Color(*interp)
+                requires_rebuild = True
+        if new_pos is not None:
+            object.set_position(new_pos)
+        if new_size is not None:
+            object.set_dimensions(new_size)
+        if requires_rebuild:
+            object.rebuild()
+
+    def update(self, time_delta: float):
+        to_remove = []
+        for i, anim in enumerate(self.animations):
+            if anim["dependent"] is None:
+                anim["remaining"] -= time_delta
+                if anim["remaining"] < 0:
+                    to_remove.append(i)
+                    anim["remaining"] = 0
+                self._setPropertyValue(
+                    anim["object"],
+                    anim["properties"],
+                    anim["start_values"],
+                    anim["end_values"],
+                    anim["rate_func"](1 - anim["remaining"] / anim["total"]),
+                )
+        for idx in to_remove[::-1]:
+            self.removeAnimation(idx)
+        super().update(time_delta)
