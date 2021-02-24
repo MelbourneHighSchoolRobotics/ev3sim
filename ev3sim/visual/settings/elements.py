@@ -32,6 +32,8 @@ class SettingsVisualElement:
     def setToJson(self, json_obj):
         cur = json_obj
         for key in self.json_keys[:-1]:
+            if key not in cur:
+                cur[key] = {}
             cur = cur[key]
         cur[self.json_keys[-1]] = self.current
 
