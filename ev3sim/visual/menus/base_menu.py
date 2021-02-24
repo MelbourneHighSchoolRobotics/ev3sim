@@ -127,6 +127,7 @@ class BaseMenu(pygame_gui.UIManager):
         Returns the index of this animation.
         """
         from ev3sim.visual.manager import ScreenObjectManager
+
         if dependent == "follow":
             dependent = len(self.animations) - 1
         self.animations.append(
