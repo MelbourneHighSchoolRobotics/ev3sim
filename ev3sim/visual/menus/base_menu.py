@@ -126,6 +126,7 @@ class BaseMenu(pygame_gui.UIManager):
         dependent: the index of an animation to finish before this one starts.
         Returns the index of this animation.
         """
+        from ev3sim.visual.manager import ScreenObjectManager
         if dependent == "follow":
             dependent = len(self.animations) - 1
         self.animations.append(
@@ -135,9 +136,10 @@ class BaseMenu(pygame_gui.UIManager):
                 "start_values": start_values,
                 "end_values": end_values,
                 "rate_func": rate_func,
-                "remaining": duration,
+                # Finish immediately if animations are disabled.
+                "remaining": duration if ScreenObjectManager.instance.PLAY_ANIMATIONS else 0,
                 "total": duration,
-                "dependent": dependent,
+                "dependent": dependent if ScreenObjectManager.instance.PLAY_ANIMATIONS else None,
             }
         )
         return len(self.animations) - 1
