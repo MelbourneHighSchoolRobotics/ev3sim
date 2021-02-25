@@ -116,20 +116,12 @@ def main(passed_args=None):
 
             found = False
             try:
-                fname = args.elem
-                for possible_dir in batch_locations():
-                    dir_path = find_abs_directory(possible_dir, create=True)
-                    if fname.startswith(dir_path):
-                        fname = fname[len(dir_path) :]
-                        fname = fname.replace("\\", "/")
-                        break
-                batch_path = find_abs(fname, batch_locations())
-                if BatchValidator.validate_file(batch_path):
+                if BatchValidator.validate_file(args.elem):
                     # Valid batch file.
                     if args.open:
                         from ev3sim.sim import main
 
-                        args.batch = fname
+                        args.batch = args.elem
 
                         should_quit = True
                         main(args.__dict__)
@@ -138,7 +130,7 @@ def main(passed_args=None):
                     elif args.edit:
                         import importlib
 
-                        with open(batch_path, "r") as f:
+                        with open(args.elem, "r") as f:
                             conf = yaml.safe_load(f)
                         with open(find_abs(conf["preset_file"], preset_locations())) as f:
                             preset = yaml.safe_load(f)
@@ -147,7 +139,7 @@ def main(passed_args=None):
 
                         pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
                         pushed_kwargs = {
-                            "file": batch_path,
+                            "file": args.elem,
                             "settings": klass,
                             "allows_filename_change": True,
                             "extension": "sim",
