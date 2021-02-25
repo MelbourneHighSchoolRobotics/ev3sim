@@ -33,10 +33,12 @@ def batch_locations():
                 locations.append(f"workspace/custom/{name}/")
     return locations
 
+
 def bot_locations():
     import os
     from ev3sim.file_helper import find_abs_directory
     from ev3sim.simulation.loader import StateHandler
+
     locations = ["workspace/robots/", "package/examples/robots/", "workspace"]
     if StateHandler.WORKSPACE_FOLDER:
         custom_path = find_abs_directory("workspace/custom/", create=True)
