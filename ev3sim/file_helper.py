@@ -65,7 +65,7 @@ def find_abs(filepath, allowed_areas=None):
     raise ValueError(f"File not found: {filepath}")
 
 
-def find_abs_directory(dirpath, create=False):
+def find_abs_directory(dirpath, create=True):
     try:
         return find_abs("", allowed_areas=[dirpath])
     except ValueError as e:
