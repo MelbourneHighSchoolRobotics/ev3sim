@@ -32,6 +32,8 @@ class SettingsVisualElement:
     def setToJson(self, json_obj):
         cur = json_obj
         for key in self.json_keys[:-1]:
+            if key not in cur:
+                cur[key] = {}
             cur = cur[key]
         cur[self.json_keys[-1]] = self.current
 
@@ -229,8 +231,12 @@ class TextEntry(SettingsVisualElement):
 
 
 class NumberEntry(TextEntry):
+    def __init__(self, json_keys, default_value, title, offset, conversion):
+        self.conversion = conversion
+        super().__init__(json_keys, default_value, title, offset)
+
     def setToJson(self, json_obj):
-        self.current = float(self.obj.text)
+        self.current = self.conversion(self.obj.text)
         SettingsVisualElement.setToJson(self, json_obj)
 
     def getEntryRect(self, off):
