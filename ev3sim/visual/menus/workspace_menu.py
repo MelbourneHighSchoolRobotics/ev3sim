@@ -75,12 +75,22 @@ In order to use ev3sim, you need to specify a <font color="#06d6a0">workspace fo
             ScreenObjectManager.instance.popScreen()
             ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
 
-        self.addFileDialog(
-            "Select Workspace",
-            None,
-            True,
-            onComplete,
-        )
+        import platform
+
+        if platform.system() == "Windows":
+            from tkinter import Tk
+            from tkinter.filedialog import askdirectory
+
+            Tk().withdraw()
+            directory = askdirectory()
+            onComplete(directory)
+        else:
+            self.addFileDialog(
+                "Select Workspace",
+                None,
+                True,
+                onComplete,
+            )
 
     def onPop(self):
         pass
