@@ -7,15 +7,28 @@
   "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat)](#contributors)",
   "contributors": [
     {
-      "login": "peter-drew",
-      "name": "Peter Drew",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/10608341?v=4",
-      "profile": "https://pdrew.com/",
+      "login": "glipR",
+      "name": "Jackson Goerner",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/37640160?v=4",
+      "profile": "https://github.com/glipR",
       "contributions": [
         "code",
         "doc",
-        "eventOrganizing",
-        "ideas"
+        "maintenance",
+        "ideas",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "jtbui20",
+      "name": "James Bui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/29140560?v=4",
+      "profile": "https://github.com/jtbui20",
+      "contributions": [
+        "code",
+        "design",
+        "review"
       ]
     },
     {
@@ -33,6 +46,18 @@
       ]
     },
     {
+      "login": "peter-drew",
+      "name": "Peter Drew",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10608341?v=4",
+      "profile": "https://pdrew.com/",
+      "contributions": [
+        "code",
+        "doc",
+        "eventOrganizing",
+        "ideas"
+      ]
+    },
+    {
       "login": "Dalordish",
       "name": "Richard",
       "avatar_url": "https://avatars2.githubusercontent.com/u/5959205?v=4",
@@ -46,37 +71,12 @@
       ]
     },
     {
-      "login": "jtbui20",
-      "name": "James Bui",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/29140560?v=4",
-      "profile": "https://github.com/jtbui20",
-      "contributions": [
-        "code",
-        "design",
-        "review"
-      ]
-    },
-    {
       "login": "platy11",
       "name": "Max",
       "avatar_url": "https://avatars0.githubusercontent.com/u/17060983?v=4",
       "profile": "https://github.com/platy11",
       "contributions": [
         "code",
-        "review"
-      ]
-    },
-    {
-      "login": "glipR",
-      "name": "Jackson Goerner",
-      "avatar_url": "https://avatars1.githubusercontent.com/u/37640160?v=4",
-      "profile": "https://github.com/glipR",
-      "contributions": [
-        "code",
-        "doc",
-        "maintenance",
-        "ideas",
-        "question",
         "review"
       ]
     },
@@ -100,7 +100,7 @@
       ]
     }
   ],
-  "contributorsPerLine": 7,
+  "contributorsPerLine": 4,
   "projectName": "ev3sim",
   "projectOwner": "MelbourneHighSchoolRobotics",
   "repoType": "github",
