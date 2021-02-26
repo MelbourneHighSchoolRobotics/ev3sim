@@ -54,7 +54,8 @@
         "code",
         "doc",
         "eventOrganizing",
-        "ideas"
+        "ideas",
+        "test"
       ]
     },
     {
@@ -105,5 +106,5 @@
   "projectOwner": "MelbourneHighSchoolRobotics",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": false
 }
