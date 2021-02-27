@@ -114,6 +114,14 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
 
             def fake_input(*args):
                 print(*args)
+                sq.put(
+                    (
+                        MESSAGE_INPUT_REQUESTED,
+                        {
+                            "robot_id": robot_id,
+                        },
+                    )
+                )
                 while True:
                     try:
                         _, msg = input_messages.get_nowait()

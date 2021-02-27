@@ -18,6 +18,7 @@ class SimulatorMenu(BaseMenu):
     ERROR_COLOUR = "#d90429"
 
     def initWithKwargs(self, **kwargs):
+        self._inputs_requested = 0
         batch = kwargs.get("batch")
         from ev3sim.simulation.world import World
 
@@ -45,6 +46,18 @@ class SimulatorMenu(BaseMenu):
         # And reset the script loader.
         ScriptLoader.instance.reset()
 
+    def requestInput(self):
+        self._inputs_requested += 1
+        if self._inputs_requested == 1:
+            self.regenerateObjects()
+
+    def postInput(self, msg):
+        self._inputs_requested -= 1
+        ScriptLoader.instance.sendInputEvent(msg)
+        self.console_input.set_text("")
+        if self._inputs_requested <= 0:
+            self.regenerateObjects()
+
     def regenerateObjects(self):
         super().regenerateObjects()
         for interactor in ScriptLoader.instance.active_scripts:
@@ -67,49 +80,51 @@ class SimulatorMenu(BaseMenu):
         self._all_objs.extend(self.gen_messages)
 
         self.console_bg = pygame_gui.elements.UIPanel(
-            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + 30),
+            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + (30 if self._inputs_requested > 0 else 0)),
             starting_layer_height=0.5,
             manager=self,
             object_id=ObjectID("console-bg"),
         )
-
-        class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
-
-            _text = ""
-            _edit_pos = 0
-
-            @property
-            def text(self2):
-                return self2._text
-
-            @property
-            def edit_position(self2):
-                return self2._edit_pos
-
-            @text.setter
-            def text(self2, val):
-                self.current_console = val
-                self2._text = val
-
-            @edit_position.setter
-            def edit_position(self2, val):
-                self.current_edit = val
-                self2._edit_pos = val
-
-        prev_text = self.current_console
-        prev_edit = self.current_edit
-
-        self.console_input = WatchedUITextEntryLine(
-            relative_rect=pygame.Rect(5, current_y, self._size[0] / 2 - 20, 20),
-            manager=self,
-            object_id=ObjectID("console-input"),
-        )
-        self.console_input.set_text(prev_text)
-        self.console_input.edit_position = prev_edit
-        # Always focus the console on regenerate.
-        self.console_input.focus()
         self._all_objs.append(self.console_bg)
-        self._all_objs.append(self.console_input)
+
+        if self._inputs_requested > 0:
+
+            class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
+
+                _text = ""
+                _edit_pos = 0
+
+                @property
+                def text(self2):
+                    return self2._text
+
+                @property
+                def edit_position(self2):
+                    return self2._edit_pos
+
+                @text.setter
+                def text(self2, val):
+                    self.current_console = val
+                    self2._text = val
+
+                @edit_position.setter
+                def edit_position(self2, val):
+                    self.current_edit = val
+                    self2._edit_pos = val
+
+            prev_text = self.current_console
+            prev_edit = self.current_edit
+
+            self.console_input = WatchedUITextEntryLine(
+                relative_rect=pygame.Rect(5, current_y, self._size[0] / 2 - 20, 20),
+                manager=self,
+                object_id=ObjectID("console-input"),
+            )
+            self.console_input.set_text(prev_text)
+            self.console_input.edit_position = prev_edit
+            # Always focus the console on regenerate.
+            self.console_input.focus()
+            self._all_objs.append(self.console_input)
         super().generateObjects()
 
     def formatMessage(self, msg):
@@ -191,8 +206,7 @@ class SimulatorMenu(BaseMenu):
             return
         if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
             # Post input.
-            ScriptLoader.instance.sendInputEvent(event.text)
-            self.console_input.set_text("")
+            self.postInput(event.text)
         for interactor in ScriptLoader.instance.active_scripts:
             if hasattr(interactor, "process_events"):
                 res = res or interactor.process_events(event)
