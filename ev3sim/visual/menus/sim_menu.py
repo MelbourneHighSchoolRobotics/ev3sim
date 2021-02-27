@@ -117,6 +117,9 @@ class SimulatorMenu(BaseMenu):
                 self.messages[i][1] -= time_delta
                 if self.messages[i][1] < 0:
                     to_remove.append(i)
+        if len(to_remove) == len(self.messages):
+            # If timing out all messages, leave the latest one.
+            to_remove = to_remove[:-1]
         for index in to_remove[::-1]:
             del self.messages[index]
         if len(to_remove) != 0:
