@@ -13,6 +13,7 @@ tick_rate = 30
 current_data = {}
 last_checked_tick = -1
 communications_messages = NonMultiQueue()
+input_messages = NonMultiQueue()
 
 
 def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_internal, rq, rq_internal, sq, sq_internal):
@@ -66,6 +67,8 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     for ev in msg["events"]:
                         cur_events.put(ev)
                     return msg_type, msg
+                elif msg_type == SIM_INPUT:
+                    input_messages.put((msg_type, msg))
                 else:
                     communications_messages.put((msg_type, msg))
 
@@ -106,6 +109,15 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                             wait_for_tick()
                         else:
                             return msg
+                    except Empty:
+                        wait_for_tick()
+
+            def fake_input(*args):
+                print(*args)
+                while True:
+                    try:
+                        _, msg = input_messages.get_nowait()
+                        return msg
                     except Empty:
                         wait_for_tick()
 
@@ -440,6 +452,7 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             @mock.patch("ev3sim.code_helpers.CommandSystem", MockCommandSystem)
             @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
             @mock.patch("sys.path", fake_path)
+            @mock.patch("builtins.input", fake_input)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
 

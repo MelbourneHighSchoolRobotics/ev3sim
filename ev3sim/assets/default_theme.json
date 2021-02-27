@@ -512,5 +512,16 @@
             "normal_border": "#00000000",
             "normal_text": "#ffffff"
         }
+    },
+    "console-input": {
+        "colours": {
+            "dark_bg": "#444444",
+            "normal_border": "#ffffff40",
+            "normal_text": "#ffffff"
+        },
+        "font": {
+            "name": "fira_code",
+            "size": "14"
+        }
     }
 }

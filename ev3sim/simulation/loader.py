@@ -233,6 +233,11 @@ class ScriptLoader:
             self.outstanding_events[key] = []
             s_queue.put((SIM_DATA, info))
 
+    def sendInputEvent(self, msg):
+        for key in self.robots:
+            s_queue = self.queues[key][self.SEND]
+            s_queue.put((SIM_INPUT, msg))
+
     def handleEvents(self, events):
         for event in events:
             for interactor in self.active_scripts:

@@ -23,6 +23,9 @@ class SimulatorMenu(BaseMenu):
 
         World.instance.resetWorld()
 
+        self.current_console = ""
+        self.current_edit = 0
+
         self.messages = []
         StateHandler.instance.beginSimulation(batch=batch)
         super().initWithKwargs(**kwargs)
@@ -64,12 +67,49 @@ class SimulatorMenu(BaseMenu):
         self._all_objs.extend(self.gen_messages)
 
         self.console_bg = pygame_gui.elements.UIPanel(
-            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y),
+            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + 30),
             starting_layer_height=0.5,
             manager=self,
             object_id=ObjectID("console-bg"),
         )
+
+        class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
+
+            _text = ""
+            _edit_pos = 0
+
+            @property
+            def text(self2):
+                return self2._text
+
+            @property
+            def edit_position(self2):
+                return self2._edit_pos
+
+            @text.setter
+            def text(self2, val):
+                self.current_console = val
+                self2._text = val
+
+            @edit_position.setter
+            def edit_position(self2, val):
+                self.current_edit = val
+                self2._edit_pos = val
+
+        prev_text = self.current_console
+        prev_edit = self.current_edit
+
+        self.console_input = WatchedUITextEntryLine(
+            relative_rect=pygame.Rect(5, current_y, self._size[0] / 2 - 20, 20),
+            manager=self,
+            object_id=ObjectID("console-input"),
+        )
+        self.console_input.set_text(prev_text)
+        self.console_input.edit_position = prev_edit
+        # Always focus the console on regenerate.
+        self.console_input.focus()
         self._all_objs.append(self.console_bg)
+        self._all_objs.append(self.console_input)
         super().generateObjects()
 
     def formatMessage(self, msg):
@@ -149,6 +189,10 @@ class SimulatorMenu(BaseMenu):
         res = super().process_events(event)
         if res:
             return
+        if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+            # Post input.
+            ScriptLoader.instance.sendInputEvent(event.text)
+            self.console_input.set_text("")
         for interactor in ScriptLoader.instance.active_scripts:
             if hasattr(interactor, "process_events"):
                 res = res or interactor.process_events(event)
