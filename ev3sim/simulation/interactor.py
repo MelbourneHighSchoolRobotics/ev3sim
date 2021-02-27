@@ -95,6 +95,9 @@ class IInteractor:
             ScriptLoader.instance.startProcess(robotID, kill_recent=True)
             ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
 
+    def handleInput(self, msg):
+        pass
+
 
 class PygameGuiInteractor(BaseMenu, IInteractor):
     def __init__(self, **kwargs):

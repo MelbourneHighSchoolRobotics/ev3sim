@@ -18,7 +18,6 @@ class SimulatorMenu(BaseMenu):
     ERROR_COLOUR = "#d90429"
 
     def initWithKwargs(self, **kwargs):
-        self._inputs_requested = 0
         batch = kwargs.get("batch")
         from ev3sim.simulation.world import World
 
@@ -46,17 +45,9 @@ class SimulatorMenu(BaseMenu):
         # And reset the script loader.
         ScriptLoader.instance.reset()
 
-    def requestInput(self):
-        self._inputs_requested += 1
-        if self._inputs_requested == 1:
-            self.regenerateObjects()
-
     def postInput(self, msg):
-        self._inputs_requested -= 1
-        ScriptLoader.instance.sendInputEvent(msg)
         self.console_input.set_text("")
-        if self._inputs_requested <= 0:
-            self.regenerateObjects()
+        ScriptLoader.instance.postInput(msg)
 
     def regenerateObjects(self):
         super().regenerateObjects()
@@ -65,6 +56,8 @@ class SimulatorMenu(BaseMenu):
                 interactor.regenerateObjects()
 
     def generateObjects(self):
+        draw_input = len(ScriptLoader.instance.input_requests) > 0
+
         self.gen_messages = []
         current_y = 0
         for i, (_, __, msg) in enumerate(self.messages):
@@ -80,14 +73,14 @@ class SimulatorMenu(BaseMenu):
         self._all_objs.extend(self.gen_messages)
 
         self.console_bg = pygame_gui.elements.UIPanel(
-            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + (30 if self._inputs_requested > 0 else 0)),
+            relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + (30 if draw_input else 0)),
             starting_layer_height=0.5,
             manager=self,
             object_id=ObjectID("console-bg"),
         )
         self._all_objs.append(self.console_bg)
 
-        if self._inputs_requested > 0:
+        if draw_input:
 
             class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
 

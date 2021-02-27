@@ -136,6 +136,8 @@ class ScriptLoader:
         self.object_map = {}
         self.physics_tick = 0
         self.current_tick = 0
+        self.input_messages = []
+        self.input_requests = []
 
     def loadElements(self, items, preview_mode=False):
         # Handle any programmatic color references.
@@ -200,7 +202,7 @@ class ScriptLoader:
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
                     elif write_type == MESSAGE_INPUT_REQUESTED:
-                        ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].requestInput()
+                        self.requestInput(data["robot_id"])
                     elif write_type == BOT_COMMAND:
 
                         class Event:
@@ -235,11 +237,6 @@ class ScriptLoader:
             self.outstanding_events[key] = []
             s_queue.put((SIM_DATA, info))
 
-    def sendInputEvent(self, msg):
-        for key in self.robots:
-            s_queue = self.queues[key][self.SEND]
-            s_queue.put((SIM_INPUT, msg))
-
     def handleEvents(self, events):
         for event in events:
             for interactor in self.active_scripts:
@@ -260,6 +257,37 @@ class ScriptLoader:
             interactor.afterPhysics()
         self.incrementPhysicsTick()
         self.current_tick += 1
+
+    def consumeMessage(self, message, output):
+        if isinstance(output, IInteractor):
+            output.handleInput(message)
+        else:
+            # Assumed to be robot id.
+            self.queues[output][self.SEND].put((SIM_INPUT, message))
+
+    def postInput(self, message, preffered_output=None):
+        # First, try to grab an existing request from the queue.
+        for i, output in enumerate(self.input_requests):
+            if preffered_output is None or preffered_output == output:
+                self.consumeMessage(message, output)
+                del self.input_requests[i]
+                break
+        else:
+            self.input_messages.append([message, preffered_output])
+        if len(self.input_requests) == 0:
+            ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
+
+    def requestInput(self, output):
+        # First, try to grab an existing message from the queue.
+        for i, (msg, out) in enumerate(self.input_messages):
+            if out is None or out == output:
+                self.consumeMessage(msg, out)
+                del self.input_messages[i]
+                break
+        else:
+            self.input_requests.append(output)
+        if len(self.input_requests) > 0:
+            ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
 
 
 class StateHandler:
