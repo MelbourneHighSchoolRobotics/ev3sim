@@ -11,18 +11,20 @@ OutFile "one_click.exe"
 Unicode true
 InstallDirRegKey HKCU "Software\EV3Sim" ""
 Var IsAdminMode
+Var oldDir
 !macro SetAdminMode
 StrCpy $IsAdminMode 1
 SetShellVarContext All
-${IfThen} $InstDir == "" ${|} StrCpy $InstDir "$Programfiles\$(^Name)" ${|}
 !macroend
 !macro SetUserMode
 StrCpy $IsAdminMode 0
 SetShellVarContext Current
-${IfThen} $InstDir == "" ${|} StrCpy $InstDir "$LocalAppData\Programs\$(^Name)" ${|}
 !macroend
 
 Function .onInit
+StrCpy $oldDir "$Programfiles\$(^Name)"
+; Need to do this before SetShellVarContext
+StrCpy $InstDir "$LocalAppData\$(^Name)"
 UserInfo::GetAccountType
 Pop $0
 ${IfThen} $0 != "Admin" ${|} Goto setmode_currentuser ${|}
@@ -50,6 +52,8 @@ FunctionEnd
 !define MUI_PAGE_HEADER_TEXT "EV3Sim"
 !define MUI_PAGE_HEADER_SUBTEXT "Robotics Simulator"
 
+!define MUI_DIRECTORYPAGE_VARIABLE $InstDir
+
 !define MUI_WELCOMEPAGE_TITLE "Welcome to EV3Sim!"
 !define MUI_WELCOMEPAGE_TEXT "You'll need to select a few options before you can get started with ev3sim."
 
@@ -59,7 +63,7 @@ FunctionEnd
 !define MUI_INSTFILESPAGE_ABORTHEADER_TEXT "Installation Aborted."
 
 !define MUI_FINISHPAGE_TITLE "All Done!"
-!define MUI_FINISHPAGE_RUN "$INSTDIR\ev3sim.exe"
+!define MUI_FINISHPAGE_RUN "$InstDir\ev3sim.exe"
 !define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhsrobotics.club/"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Go to documentation."
@@ -84,27 +88,40 @@ FunctionEnd
 ;---------------------------------
 ;Sections
 Section "Dummy Section" SecDummy
-SetOutPath "$INSTDIR"
+SetOutPath "$InstDir"
 File /nonfatal /a /r "dist\ev3sim\"
-WriteRegStr HKCU "Software\EV3Sim" "" $INSTDIR
-IfFileExists "$INSTDIR\ev3sim\user_config.yaml" update
+WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
+IfFileExists "$InstDir\ev3sim\user_config.yaml" update
 ;Generate the default user config if not in update.
-CopyFiles "$INSTDIR\ev3sim\presets\default_config.yaml" "$INSTDIR\ev3sim\user_config.yaml"
+CopyFiles "$InstDir\ev3sim\presets\default_config.yaml" "$InstDir\ev3sim\user_config.yaml"
 update:
+; Check for old installation in program files.
+${IfThen} $IsAdminMode == 0 ${|} Goto after_previous_install ${|}
+IfFileExists "$oldDir\ev3sim\user_config.yaml" next_step after_previous_install
+next_step:
+; Keep old settings and remove the install directory.
+CopyFiles "$oldDir\ev3sim\user_config.yaml" "$InstDir\ev3sim\user_config.yaml"
+Delete /REBOOTOK "$InstDir\Uninstall.exe"
+RMDir /R /REBOOTOK "$oldDir"
+;Remove Start Menu launcher
+Delete /REBOOTOK "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk"
+;Try to remove the Start Menu folder - this will only happen if it is empty
+RMDir /R /REBOOTOK "$SMPROGRAMS\MHS_Robotics"
+after_previous_install:
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
-createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$INSTDIR\ev3sim.exe" "" "$INSTDIR\ev3sim.exe" 0
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$InstDir\ev3sim.exe" "" "$InstDir\ev3sim.exe" 0
 ;File Associations
 ;Open sims by default.
-${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
-${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
+${registerExtensionOpen} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"
+${registerExtensionEdit} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"
 ;Open bots by default.
-${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
+${registerExtensionOpen} "$InstDir\ev3sim.exe" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
-WriteUninstaller "$INSTDIR\Uninstall.exe"
+WriteUninstaller "$InstDir\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "QuietUninstallString" "$\"$INSTDIR\Uninstall.exe$\" /S"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "UninstallString" "$\"$InstDir\Uninstall.exe$\""
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "QuietUninstallString" "$\"$InstDir\Uninstall.exe$\" /S"
 SectionEnd
 
 ;---------------------------------
@@ -122,8 +139,8 @@ LangString DESC_SecDummy ${LANG_ENGLISH} "A test section."
 ;Uninstaller Section
 
 Section "Uninstall"
-Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
-RMDir /R /REBOOTOK "$INSTDIR"
+Delete /REBOOTOK "$InstDir\Uninstall.exe"
+RMDir /R /REBOOTOK "$InstDir"
 DeleteRegKey /ifempty HKCU "Software\EV3Sim"
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim"
 ;File Associations
