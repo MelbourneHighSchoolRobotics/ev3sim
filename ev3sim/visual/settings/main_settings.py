@@ -9,13 +9,19 @@ main_settings = [
                 ["screen", "SCREEN_HEIGHT"], 960, "Screen Height", (lambda s: (0, 70) if s[0] < 540 else (s[0] / 2, 20))
             ),
             NumberEntry(["app", "FPS"], 30, "FPS", (lambda s: (0, 120) if s[0] < 540 else (0, 70))),
-            Checkbox(["app", "console_log"], True, "Console", (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70))),
+            Checkbox(
+                ["screen", "PLAY_ANIMATIONS"],
+                True,
+                "UI Animations",
+                (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+            ),
         ],
     },
     {
-        "height": (lambda s: 90),
+        "height": (lambda s: 140),
         "objects": [
             FileEntry(["app", "workspace_folder"], "", True, None, "Workspace", (lambda s: (0, 20))),
+            Checkbox(["app", "console_log"], True, "Sim Console", (lambda s: (0, 70))),
         ],
     },
 ]
