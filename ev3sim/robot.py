@@ -123,6 +123,12 @@ class RobotInteractor(IInteractor):
             res[device.device_type][device._getObjName(port)] = device.toObject()
         return res
 
+    def resetBot(self):
+        ScriptLoader.instance.object_map[self.robot_key].body.velocity = (0, 0)
+        ScriptLoader.instance.object_map[self.robot_key].body.angular_velocity = 0
+        for dev in getattr(self, "devices", {}).values():
+            dev.reset()
+
 
 class Robot:
     """

@@ -104,3 +104,7 @@ class ColorSensor(ColourSensorMixin, Device):
     def reflected_light_intensity(self):
         """Not implemented"""
         raise NotImplementedError("`reflected_light_intensity` is currently not implemented.")
+
+    def reset(self):
+        self.mode = self.RGB_RAW
+        self.saved_raw = (0, 0, 0)
