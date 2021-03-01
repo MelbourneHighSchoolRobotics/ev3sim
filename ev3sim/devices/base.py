@@ -29,6 +29,9 @@ class Device:
             ]
         )
 
+    def reset(self):
+        pass
+
     @property
     def global_rotation(self):
         return self.parent.rotation + self.relativeRot

@@ -117,3 +117,6 @@ class CompassSensor(CompassSensorMixin, Device):
         self._setRelative()
         self.current_offset = 0
         self.current_sample_point = Randomiser.random() * self.NOISE_SAMPLE_HEIGHT
+
+    def reset(self):
+        self.calibrate()
