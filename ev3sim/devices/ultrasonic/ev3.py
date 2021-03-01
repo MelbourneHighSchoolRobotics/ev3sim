@@ -59,3 +59,6 @@ class UltrasonicSensor(UltrasonicSensorMixin, Device):
         Get the distance between the ultrasonic sensor and the object, in inches.
         """
         return int(self.distance_centimeters * 0.3937008)
+
+    def reset(self):
+        self.saved = 0
