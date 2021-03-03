@@ -17,3 +17,6 @@ class ButtonMixin:
             "pressed": int(self.pressed),
         }
         return data
+
+    def reset(self):
+        self.pressed = False
