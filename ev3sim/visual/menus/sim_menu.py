@@ -160,11 +160,17 @@ class SimulatorMenu(BaseMenu):
             if hasattr(interactor, "update"):
                 interactor.update(time_delta)
         to_remove = []
+        kill_last = False
         for i in range(len(self.messages)):
             if self.messages[i][0]:
                 self.messages[i][1] -= time_delta
                 if self.messages[i][1] < 0:
+                    if not kill_last and i == len(self.messages) - 1:
+                        # Don't kill the last message if nothing else before is permanent.
+                        continue
                     to_remove.append(i)
+            else:
+                kill_last = True
         for index in to_remove[::-1]:
             del self.messages[index]
         if len(to_remove) != 0:
