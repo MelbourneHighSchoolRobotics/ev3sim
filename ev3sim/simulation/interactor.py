@@ -88,6 +88,7 @@ class IInteractor:
     def restartBots(self):
         """Kill all ongoing robot scripts and start them again"""
         from ev3sim.simulation.loader import ScriptLoader
+        from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.events import GAME_RESET
 
         for robotID in ScriptLoader.instance.robots.keys():
@@ -96,6 +97,25 @@ class IInteractor:
                 ScriptLoader.instance.robots[robotID]._interactor.resetBot()
             ScriptLoader.instance.startProcess(robotID, kill_recent=True)
             ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
+
+        # Remove all requested input from robots
+        to_remove = []
+        for i, output in enumerate(ScriptLoader.instance.input_requests):
+            if not isinstance(output, IInteractor):
+                to_remove.append(i)
+        for i in to_remove[::-1]:
+            del ScriptLoader.instance.input_requests[i]
+        sim = ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM]
+        to_remove = []
+        for i, message in enumerate(sim.messages):
+            if isinstance(message[1], str) and message[1].startswith("input_Robot-"):
+                to_remove.append(i)
+        for i in to_remove[::-1]:
+            del sim.messages[i]
+        ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
+
+    def handleInput(self, msg):
+        pass
 
 
 class PygameGuiInteractor(BaseMenu, IInteractor):
