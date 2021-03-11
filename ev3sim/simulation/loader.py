@@ -296,7 +296,9 @@ class ScriptLoader:
             if message is not None:
                 preamble = "[System] " if isinstance(output, IInteractor) else f"[{output}] "
                 ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].printStyledMessage(
-                    preamble + message, alive_id=f"input_{str(output)}"
+                    preamble + message,
+                    alive_id=f"input_{str(output)}",
+                    push_to_front=True,
                 )
         if len(self.input_requests) > 0:
             ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()

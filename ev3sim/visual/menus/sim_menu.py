@@ -128,15 +128,17 @@ class SimulatorMenu(BaseMenu):
             msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
         return msg
 
-    def printStyledMessage(self, msg, alive_id=None, life=3):
+    def printStyledMessage(self, msg, alive_id=None, life=3, push_to_front=False):
         if alive_id is not None:
             life = alive_id
-        self.printMessage(self.formatMessage(msg), msg_life=life, kill=alive_id is None)
+        self.printMessage(self.formatMessage(msg), msg_life=life, kill=alive_id is None, push_to_front=push_to_front)
 
-    def printMessage(self, msg, msg_life=3, kill=True):
+    def printMessage(self, msg, msg_life=3, kill=True, push_to_front=False):
         for i, message in enumerate(self.messages):
             if not kill and not message[0] and message[1] == msg_life:
                 self.messages[i] = [kill, msg_life, msg]
+                if push_to_front:
+                    self.messages = self.messages[:i] + self.messages[i + 1 :] + [self.messages[i]]
                 break
         else:
             self.messages.append([kill, msg_life, msg])
