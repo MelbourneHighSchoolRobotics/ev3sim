@@ -93,6 +93,8 @@ class IInteractor:
 
         for robotID in ScriptLoader.instance.robots.keys():
             # Restart the robot scripts.
+            if hasattr(ScriptLoader.instance.robots[robotID], "_interactor"):
+                ScriptLoader.instance.robots[robotID]._interactor.resetBot()
             ScriptLoader.instance.startProcess(robotID, kill_recent=True)
             ScriptLoader.instance.sendEvent(robotID, GAME_RESET, {})
 
