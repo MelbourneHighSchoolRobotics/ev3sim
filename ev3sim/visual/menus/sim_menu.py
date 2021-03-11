@@ -123,6 +123,7 @@ class SimulatorMenu(BaseMenu):
     def formatMessage(self, msg):
         """Adds additional formatting to any messages printed to console."""
         msg = msg.replace("\n", "<br>")
+        msg = msg.replace("[System]", f'<font color="{self.ERROR_COLOUR}">[System]</font>')
         for i, col in enumerate(self.ROBOT_COLOURS):
             repl = f"[Robot-{i}]"
             msg = msg.replace(repl, f'<font color="{col}">{repl}</font>')
