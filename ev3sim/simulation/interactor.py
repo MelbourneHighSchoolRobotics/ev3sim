@@ -103,6 +103,13 @@ class IInteractor:
                 to_remove.append(i)
         for i in to_remove[::-1]:
             del ScriptLoader.instance.input_requests[i]
+        sim = ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM]
+        to_remove = []
+        for i, message in enumerate(sim.messages):
+            if isinstance(message[1], str) and message[1].startswith("input_Robot-"):
+                to_remove.append(i)
+        for i in to_remove[::-1]:
+            del sim.messages[i]
         ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
 
     def handleInput(self, msg):
