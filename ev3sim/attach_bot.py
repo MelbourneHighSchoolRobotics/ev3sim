@@ -112,13 +112,13 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     except Empty:
                         wait_for_tick()
 
-            def fake_input(*args):
-                print(*args)
+            def fake_input(message=None):
                 sq.put(
                     (
                         MESSAGE_INPUT_REQUESTED,
                         {
                             "robot_id": robot_id,
+                            "message": str(message),
                         },
                     )
                 )

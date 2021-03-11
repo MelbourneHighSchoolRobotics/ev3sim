@@ -202,7 +202,7 @@ class ScriptLoader:
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
                     elif write_type == MESSAGE_INPUT_REQUESTED:
-                        self.requestInput(data["robot_id"])
+                        self.requestInput(data["robot_id"], data["message"])
                     elif write_type == BOT_COMMAND:
 
                         class Event:
@@ -264,6 +264,15 @@ class ScriptLoader:
         else:
             # Assumed to be robot id.
             self.queues[output][self.SEND].put((SIM_INPUT, message))
+        # If there is a prompt being shown in console, remove it.
+        sim = ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM]
+        to_remove = []
+        for i, message in enumerate(sim.messages):
+            if message[1] == f"input_{str(output)}":
+                to_remove.append(i)
+        for index in to_remove[::-1]:
+            del sim.messages[index]
+        sim.regenerateObjects()
 
     def postInput(self, message, preffered_output=None):
         # First, try to grab an existing request from the queue.
@@ -274,10 +283,8 @@ class ScriptLoader:
                 break
         else:
             self.input_messages.append([message, preffered_output])
-        if len(self.input_requests) == 0:
-            ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
 
-    def requestInput(self, output):
+    def requestInput(self, output, message):
         # First, try to grab an existing message from the queue.
         for i, (msg, out) in enumerate(self.input_messages):
             if out is None or out == output:
@@ -286,6 +293,11 @@ class ScriptLoader:
                 break
         else:
             self.input_requests.append(output)
+            if message is not None:
+                preamble = "[System] " if isinstance(output, IInteractor) else f"[{output}] "
+                ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].printStyledMessage(
+                    preamble + message, alive_id=f"input_{str(output)}"
+                )
         if len(self.input_requests) > 0:
             ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
 
