@@ -110,6 +110,9 @@ class IInteractor:
         for i, message in enumerate(sim.messages):
             if isinstance(message[1], str) and message[1].startswith("input_Robot-"):
                 to_remove.append(i)
+            elif not (isinstance(message[1], str) and message[1].startswith("input")):
+                # Also remove any other messages that are not system input requests.
+                to_remove.append(i)
         for i in to_remove[::-1]:
             del sim.messages[i]
         ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
