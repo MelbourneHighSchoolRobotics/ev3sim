@@ -461,6 +461,13 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
             @mock.patch("sys.path", fake_path)
             @mock.patch("builtins.input", fake_input)
+            # These ev3dev2 objects are not implemented in the sim.
+            @mock.patch("ev3dev2.led.Leds", mock.Mock())
+            @mock.patch("ev3dev2.sound.Sound", mock.Mock())
+            @mock.patch("ev3dev2.display.Display", mock.Mock())
+            @mock.patch("ev3dev2.console.Console", mock.Mock())
+            # TODO: This should probably actually give reasonable values for voltage/current/amps
+            @mock.patch("ev3dev2.power.PowerSupply", mock.Mock())
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
 
