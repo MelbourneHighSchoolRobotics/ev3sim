@@ -16,6 +16,7 @@ last_checked_tick = -1
 communications_messages = NonMultiQueue()
 input_messages = NonMultiQueue()
 
+
 def safe_patch(mname, cname, obj):
     try:
         getattr(importlib.import_module(mname), cname.split(".", 1)[0])
