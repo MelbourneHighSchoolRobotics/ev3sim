@@ -81,10 +81,10 @@ def main(passed_args=None):
     if passed_args is None:
         args = parser.parse_args(sys.argv[1:])
         # We are entering from main. Initialise sentry
-        """sentry_sdk.init(
+        sentry_sdk.init(
             "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
             release=ev3sim.__version__,
-        )"""
+        )
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
@@ -125,8 +125,8 @@ def main(passed_args=None):
 
                 zip_url = args.elem.replace("ev3simc://", "https://")
 
-                namespace = sys._getframe(1).f_globals  # caller's globals
-                c_path = os.path.dirname(namespace["__file__"])
+                # Save the temp file here.
+                c_path = os.path.dirname(__file__)
                 fn = os.path.basename(urlparse(zip_url).path)
                 fn = fn if fn.strip() else f"dload{rand_fn()}"
                 zip_path = save(zip_url, f"{c_path}/{fn}")
