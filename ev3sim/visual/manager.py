@@ -136,7 +136,7 @@ class ScreenObjectManager:
         else:
             self.screens[self.screen_stack[-1]].regenerateObjects()
 
-    def startScreen(self, push_screen=None, push_kwargs={}):
+    def startScreen(self, push_screens=None, push_kwargss={}):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
         from ev3sim.simulation.loader import StateHandler
@@ -153,9 +153,9 @@ class ScreenObjectManager:
         pygame.display.set_icon(img)
 
         self.initScreens()
-        if push_screen is not None:
-            self.pushScreen(push_screen, **push_kwargs)
-        else:
+        for screen, kwargs in zip(push_screens, push_kwargss):
+            self.pushScreen(screen, **kwargs)
+        if not push_screens:
             if not StateHandler.WORKSPACE_FOLDER:
                 self.pushScreen(self.SCREEN_WORKSPACE)
             else:
