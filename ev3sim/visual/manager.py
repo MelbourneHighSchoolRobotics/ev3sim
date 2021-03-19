@@ -18,6 +18,7 @@ class ScreenObjectManager:
     SCREEN_MENU = "MAIN_MENU"
     SCREEN_SIM = "SIMULATOR"
     SCREEN_BOTS = "BOT_SELECT"
+    SCREEN_BATCH = "BATCH_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
     SCREEN_UPDATE = "UPDATE"
@@ -98,6 +99,10 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.bot_edit import BotEditMenu
 
         self.screens[self.SCREEN_BOT_EDIT] = BotEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Batch screen
+        from ev3sim.visual.menus.batch_select import BatchMenu
+
+        self.screens[self.SCREEN_BATCH] = BatchMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
