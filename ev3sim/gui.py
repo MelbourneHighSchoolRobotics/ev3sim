@@ -137,8 +137,37 @@ def main(passed_args=None):
                 if os.path.isfile(zip_path):
                     os.remove(zip_path)
                 found = True
-                pushed_screens = [ScreenObjectManager.SCREEN_MENU, ScreenObjectManager.SCREEN_BATCH]
-                pushed_kwargss = [{}, {"selected": os.path.join(extract_path, name, "sim.sim")}]
+                pushed_screens = [
+                    ScreenObjectManager.SCREEN_MENU,
+                    ScreenObjectManager.SCREEN_BATCH,
+                    ScreenObjectManager.SCREEN_UPDATE,
+                ]
+
+                def action(result):
+                    if not result:
+                        # Delete
+                        import shutil
+
+                        shutil.rmtree(os.path.join(extract_path, name))
+
+                pushed_kwargss = [
+                    {},
+                    {"selected": os.path.join(extract_path, name, "sim.sim")},
+                    {
+                        "panels": [
+                            {
+                                "type": "boolean",
+                                "text": (
+                                    "Custom tasks downloaded from the internet can do <i>anything</i> to your computer."
+                                    " Only use custom tasks from a developer you <b>trust</b>."
+                                ),
+                                "button_yes": "Accept",
+                                "button_no": "Delete",
+                                "action": action,
+                            }
+                        ]
+                    },
+                ]
 
             from ev3sim.validation.batch_files import BatchValidator
             from ev3sim.validation.bot_files import BotValidator
