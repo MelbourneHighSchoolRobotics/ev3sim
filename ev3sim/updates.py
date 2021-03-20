@@ -77,6 +77,7 @@ def check_for_bot_files():
                     'Since you\'ve last used EV3Sim, the <font color="#4cc9f0">bot format</font> has changed.<br><br>'
                     + 'EV3Sim will now fix your current bots to use the new format (code and images will now appear in the <font color="#4cc9f0">bots</font> folder).'
                 ),
+                "type": "accept",
                 "button": "Convert",
                 "action": action,
             }
