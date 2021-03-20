@@ -185,24 +185,17 @@ def main(passed_args=None):
                             dir_path = find_abs_directory(possible_dir, create=True)
                             if fname.startswith(dir_path):
                                 fname = fname[len(dir_path) :]
-                                fname = fname.replace("\\", "/")
+                                bot_path = os.path.join(dir_path, fname)
                                 break
-                        bot_path = find_abs(fname, bot_locations())
                         if BotValidator.validate_file(bot_path):
                             if args.open:
                                 pushed_screens = [ScreenObjectManager.SCREEN_BOT_EDIT]
-                                for possible_dir in bot_locations():
-                                    try:
-                                        n_bot_path = find_abs(fname, [possible_dir])
-                                        pushed_kwargss = [
-                                            {
-                                                "bot_file": n_bot_path,
-                                                "bot_dir_file": (possible_dir, fname),
-                                            }
-                                        ]
-                                        break
-                                    except:
-                                        continue
+                                pushed_kwargss = [
+                                    {
+                                        "bot_file": bot_path,
+                                        "bot_dir_file": (possible_dir, fname),
+                                    }
+                                ]
                             found = True
                     except:
                         pass
