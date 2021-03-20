@@ -1,5 +1,6 @@
 """Various functions for updating the workspace from earlier versions of ev3sim."""
 
+from ev3sim.settings import SettingsManager
 from ev3sim.file_helper import find_abs
 
 
@@ -85,8 +86,31 @@ def check_for_bot_files():
     return None
 
 
+def check_for_sentry_preference():
+    """First launch. User must select whether or not to send crashes to sentry."""
+    from ev3sim.simulation.loader import StateHandler
+
+    if StateHandler.SEND_CRASH_REPORTS is None:
+
+        def action(result):
+            SettingsManager.instance.setMany(
+                {
+                    "app": {
+                        "send_crash_reports": result,
+                    }
+                }
+            )
+
+        return {
+            "text": "Send crash reports to make EV3Sim better?",
+            "type": "boolean",
+            "action": action,
+        }
+
+
 UPDATE_CHECKS = [
     check_for_bot_files,
+    check_for_sentry_preference,
 ]
 
 

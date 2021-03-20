@@ -74,11 +74,6 @@ parser.add_argument(
 def main(passed_args=None):
     if passed_args is None:
         args = parser.parse_args(sys.argv[1:])
-        # We are entering from main. Initialise sentry
-        sentry_sdk.init(
-            "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
-            release=ev3sim.__version__,
-        )
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
@@ -108,6 +103,13 @@ def main(passed_args=None):
         handler = StateHandler()
         checkVersion()
         handler.setConfig(**conf)
+
+        if handler.SEND_CRASH_REPORTS:
+            # We are entering from main. Initialise sentry
+            sentry_sdk.init(
+                "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
+                release=ev3sim.__version__,
+            )
 
         if args.elem:
             # First, figure out what type it is.

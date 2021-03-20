@@ -317,6 +317,7 @@ class StateHandler:
     shared_info: dict
 
     WORKSPACE_FOLDER = None
+    SEND_CRASH_REPORTS = None
 
     def __init__(self):
         StateHandler.instance = self
@@ -330,6 +331,7 @@ class StateHandler:
             "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
             "console_log": ObjectSetting(Logger, "LOG_CONSOLE"),
             "workspace_folder": ObjectSetting(StateHandler, "WORKSPACE_FOLDER"),
+            "send_crash_reports": ObjectSetting(StateHandler, "SEND_CRASH_REPORTS"),
         }
         settings.addSettingGroup("app", loader_settings)
         settings.addSettingGroup("screen", screen_settings)
