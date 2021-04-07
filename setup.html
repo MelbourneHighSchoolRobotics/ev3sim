@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Setting up and Running EV3Sim &mdash; ev3sim  documentation</title>
@@ -83,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting up and Running EV3Sim</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
@@ -184,22 +185,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="setting-up-and-running-ev3sim">
+  <section id="setting-up-and-running-ev3sim">
 <h1>Setting up and Running EV3Sim<a class="headerlink" href="#setting-up-and-running-ev3sim" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installation">
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="windows-executable">
+<section id="windows-executable">
 <h3>Windows Executable<a class="headerlink" href="#windows-executable" title="Permalink to this headline">¶</a></h3>
 <p>By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available on the <a class="reference external" href="https://github.com/MelbourneHighSchoolRobotics/ev3sim/releases">releases page on github</a>.</p>
 <a class="reference internal image-reference" href="images/releases.jpg"><img alt="An image of the releases page on github." src="images/releases.jpg" style="width: 600px;" /></a>
 <p>Simply download the asset file named <code class="docutils literal notranslate"><span class="pre">one_click.exe</span></code>, and follow the prompts to get the executable installed.</p>
-</div>
-<div class="section" id="windows-bundle">
+</section>
+<section id="windows-bundle">
 <h3>Windows Bundle<a class="headerlink" href="#windows-bundle" title="Permalink to this headline">¶</a></h3>
 <p>Another way to get EV3Sim is by downloading the package from the same releases page (<code class="docutils literal notranslate"><span class="pre">windows_package</span></code>). Simply unzip and place this folder in a program directory such as <code class="docutils literal notranslate"><span class="pre">Program</span> <span class="pre">Files</span></code> or <code class="docutils literal notranslate"><span class="pre">Applications</span></code>.
 In future we aim to also support this method for Mac/Linux, but currently there’s not much point to. Let us now if you’d prefer this!</p>
-</div>
-<div class="section" id="pip-install">
+</section>
+<section id="pip-install">
 <h3>Pip install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h3>
 <p>If installing via this method, EV3sim requires Python 3.7+ to be installed on your system. If you don’t already have Python installed, you can download it from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a> .</p>
 <p>You can install this package using pip as follows:</p>
@@ -207,23 +208,23 @@ In future we aim to also support this method for Mac/Linux, but currently there�
 </pre></div>
 </div>
 <p>(This command also updates EV3Sim if you already have it installed.)</p>
-</div>
-</div>
-<div class="section" id="updating">
+</section>
+</section>
+<section id="updating">
 <h2>Updating<a class="headerlink" href="#updating" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
+<section id="id1">
 <h3>Windows Executable<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>If a new one-click installer comes out, you can simply run this and it will update your existing installation of EV3Sim. Your workspace and any settings will remain the same, unless some breaking changes are required.</p>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h3>Pip install<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>As with any other pip package, you can update ev3sim with the same command you used to install it, passing in the <cite>-U</cite> flag:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install -U ev3sim
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="starting-ev3sim">
+</section>
+</section>
+<section id="starting-ev3sim">
 <h2>Starting EV3Sim<a class="headerlink" href="#starting-ev3sim" title="Permalink to this headline">¶</a></h2>
 <p>Depending on you installation method, you might start EV3Sim differently:</p>
 <ul class="simple">
@@ -234,8 +235,8 @@ In future we aim to also support this method for Mac/Linux, but currently there�
 <p>The first time you run EV3Sim, you will be prompted with a dialog, asking you to specify a <em>workspace folder</em>.
 A workspace folder is where all of your local bots, code and simulation presets are stored.</p>
 <p>We’d recommend creating a new folder on your Desktop to be your workspace folder, for easy access.</p>
-</div>
-<div class="section" id="running-ev3sim">
+</section>
+<section id="running-ev3sim">
 <h2>Running EV3Sim<a class="headerlink" href="#running-ev3sim" title="Permalink to this headline">¶</a></h2>
 <p>Once your workspace folder has been set, you can start using the application.</p>
 <ul class="simple">
@@ -243,26 +244,26 @@ A workspace folder is where all of your local bots, code and simulation presets 
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Bots</span></code> tab allows you to edit and create bots to use in the simulation.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Settings</span></code> tab allows you to change a few configurations when running EV3Sim.</p></li>
 </ul>
-</div>
-<div class="section" id="further-information-on-installing">
+</section>
+<section id="further-information-on-installing">
 <h2>Further Information on installing<a class="headerlink" href="#further-information-on-installing" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="windows">
+<section id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="command-not-recognised">
+<section id="command-not-recognised">
 <h4>Command not recognised<a class="headerlink" href="#command-not-recognised" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-batch notranslate"><div class="highlight"><pre><span></span>&#39;pip&#39; is not recognized as an internal or external command, operable program, or batch file
 </pre></div>
 </div>
 <p>Make sure you install python with the “Add python to PATH” option selected. This makes sure that the windows command line will understand the python and pip commands. For more information, see <a class="reference external" href="https://docs.python.org/3/using/windows.html#installation-steps">https://docs.python.org/3/using/windows.html#installation-steps</a></p>
-</div>
-<div class="section" id="ev3sim-runs-but-no-pygame-window-is-created">
+</section>
+<section id="ev3sim-runs-but-no-pygame-window-is-created">
 <h4>EV3Sim runs, but no pygame window is created<a class="headerlink" href="#ev3sim-runs-but-no-pygame-window-is-created" title="Permalink to this headline">¶</a></h4>
 <p>This is a known issue with pygame. A possible cause is not having the English (US) Language pack in windows installed. This should install itself after a few minutes, once you’ve installed the package, but if that doesn’t occur, you may wish to try manually installing it.</p>
-</div>
-</div>
-<div class="section" id="unix">
+</section>
+</section>
+<section id="unix">
 <h3>Unix<a class="headerlink" href="#unix" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="dependancy-or-binary-package-errors">
+<section id="dependancy-or-binary-package-errors">
 <h4>Dependancy or binary package errors<a class="headerlink" href="#dependancy-or-binary-package-errors" title="Permalink to this headline">¶</a></h4>
 <p>Pygame requires binary dependencies that aren’t always installed by default.</p>
 <p>Debian/Ubuntu/Mint</p>
@@ -271,10 +272,10 @@ A workspace folder is where all of your local bots, code and simulation presets 
 <p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">yum</span> <span class="pre">install</span> <span class="pre">python3-pygame</span></code></p>
 <p>Arch</p>
 <p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pacman</span> <span class="pre">-S</span> <span class="pre">python-pygame</span></code></p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>

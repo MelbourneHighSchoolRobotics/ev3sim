@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Bot editing &mdash; ev3sim  documentation</title>
@@ -83,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
@@ -166,11 +167,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="bot-editing">
+  <section id="bot-editing">
 <h1>Bot editing<a class="headerlink" href="#bot-editing" title="Permalink to this headline">¶</a></h1>
 <p>EV3Sim allows you to design, test and simulate your own bots, all through the application!
 The only thing you’ll want an external program for is writing the code to be run on your bot.</p>
-<div class="section" id="designing-a-bot">
+<section id="designing-a-bot">
 <h2>Designing a bot<a class="headerlink" href="#designing-a-bot" title="Permalink to this headline">¶</a></h2>
 <p>To create a new bot, go to the <code class="docutils literal notranslate"><span class="pre">Bots</span></code> menu and click the ‘+’ Button.
 If you want to change the design of an existing bot, you can select that bot and click the pencil icon instead.</p>
@@ -180,7 +181,7 @@ If you want to change the design of an existing bot, you can select that bot and
 The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.</p>
 <a class="reference internal image-reference" href="_images/baseplate_dialog.png"><img alt="The baseplate dialog, selecting circle, rectangle or polygon." src="_images/baseplate_dialog.png" style="width: 600px;" /></a>
 <p>After you’ve created the baseplate for your robot, you can starting adding and removing elements from the baseplate.</p>
-<div class="section" id="placing-elements">
+<section id="placing-elements">
 <h3>Placing elements<a class="headerlink" href="#placing-elements" title="Permalink to this headline">¶</a></h3>
 <p>Before you can place an element, you need to select what type of element you’ll be placing.
 There are 4 types of elements:</p>
@@ -198,8 +199,8 @@ If you instead click the cursor icon, you will be return to select mode, where y
 <li><p>Edit the properties of your held item in the bottom bar.</p></li>
 <li><p>Click on the bot to place the element at a certain location.</p></li>
 </ol>
-</div>
-<div class="section" id="modifying-elements">
+</section>
+<section id="modifying-elements">
 <h3>Modifying elements<a class="headerlink" href="#modifying-elements" title="Permalink to this headline">¶</a></h3>
 <p>To modify an element on the robot, we first need to enter the selecting mode, by clicking the cursor icon on the left sidebar.
 Then, click on the element to select it. After this, the bottom bar should populate with properties to edit:</p>
@@ -215,15 +216,15 @@ You can also scroll while hovering over the value to increase/decrease it with e
 <p>The fill and stroke properties can be change by clicking the colour swatch next to it. This should open a colour picker.</p>
 <p>The device port entry can be whatever you want it to be, but this property tends to be <code class="docutils literal notranslate"><span class="pre">in1,in2,in3...</span></code> for sensors, and <code class="docutils literal notranslate"><span class="pre">outA,outB,outC...</span></code> for motors.</p>
 <a class="reference internal image-reference" href="_images/bot_edit_properties.png"><img alt="The bot select screen highlighting the editing fields for certain elements." src="_images/bot_edit_properties.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="removing-elements">
+</section>
+<section id="removing-elements">
 <h3>Removing elements<a class="headerlink" href="#removing-elements" title="Permalink to this headline">¶</a></h3>
 <p>Just as before, enter the selecting mode and select the element.
 On the left sidebar, a ‘Remove’ button should appear, you can press this to delete the element.
 Additionally, the backspace key should also remove the element.</p>
-</div>
-</div>
-<div class="section" id="adding-code-to-a-bot">
+</section>
+</section>
+<section id="adding-code-to-a-bot">
 <h2>Adding code to a bot<a class="headerlink" href="#adding-code-to-a-bot" title="Permalink to this headline">¶</a></h2>
 <p>Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.</p>
 <p>If you have the windows one click install, you can also find your bot in <code class="docutils literal notranslate"><span class="pre">workspace/robots</span></code> and right click, select <code class="docutils literal notranslate"><span class="pre">Edit</span></code> to go to the same window.</p>
@@ -231,8 +232,8 @@ Additionally, the backspace key should also remove the element.</p>
 <p>Then press the button next to ‘Bot script’ to open the file selector.
 All code you want to run on your bot should be located in the <code class="docutils literal notranslate"><span class="pre">code</span></code> folder of your workspace!</p>
 <a class="reference internal image-reference" href="_images/bot_edit_code.png"><img alt="The bot property editing screen, showing the code location button." src="_images/bot_edit_code.png" style="width: 600px;" /></a>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

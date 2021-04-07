@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Contributing &mdash; ev3sim  documentation</title>
@@ -83,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
@@ -161,10 +162,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="contributing">
+  <section id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
 <p>If you would like to contribute to the project, there’s a few things you should know, to assist your development efforts and make the pull request workflow easier on everyone</p>
-<div class="section" id="running-locally">
+<section id="running-locally">
 <h2>Running locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
 <p>To test your changes locally, we recommend pip installing the local changes - this ensures the build process is also working fine.
 While in the top level directory, you can run</p>
@@ -176,15 +177,15 @@ While in the top level directory, you can run</p>
 </pre></div>
 </div>
 <p>To install the project. This creates a .pth link from your python installation to your ev3sim directory. This means any changes made will immediately take effect. Note that this will remove your existing install of stable ev3sim (if installed via pip), so be aware of this.</p>
-</div>
-<div class="section" id="linting-code">
+</section>
+<section id="linting-code">
 <h2>Linting code<a class="headerlink" href="#linting-code" title="Permalink to this headline">¶</a></h2>
 <p>Pull requests are linted with <a class="reference external" href="https://github.com/psf/black">black</a>. To run black locally to fix any formatting errors you’ve made, run the following:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black --config pyproject.toml .
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
