@@ -41,6 +41,37 @@ class SettingsVisualElement:
         raise NotImplementedError()
 
 
+class Title(SettingsVisualElement):
+
+    num_objs = 1
+
+    def __init__(self, title, offset):
+        self.title = title
+        self.offset = offset
+        self.menu = None
+        self.json_keys = "__filename__"
+
+    def getFromJson(self, json_obj):
+        pass
+
+    def setToJson(self, json_obj):
+        pass
+
+    def generateVisual(self, size, container, manager, idx):
+        self.container = container
+        off = self.offset(size)
+        label_size = ((size[0] - 40), 40)
+        label_pos = (off[0] + 20, off[1])
+        self.button = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(*label_pos, *label_size),
+            manager=manager,
+            object_id=pygame_gui.core.ObjectID(f"{idx}-title-label", "settings-title"),
+            container=container,
+            text=self.title,
+        )
+        return [self.button]
+
+
 class Button(SettingsVisualElement):
 
     num_objs = 1
