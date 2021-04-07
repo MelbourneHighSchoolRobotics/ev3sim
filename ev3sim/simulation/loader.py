@@ -288,7 +288,7 @@ class ScriptLoader:
         # First, try to grab an existing message from the queue.
         for i, (msg, out) in enumerate(self.input_messages):
             if out is None or out == output:
-                self.consumeMessage(msg, out)
+                self.consumeMessage(msg, output)
                 del self.input_messages[i]
                 break
         else:
