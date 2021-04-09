@@ -19,6 +19,7 @@ class ScreenObjectManager:
     SCREEN_SIM = "SIMULATOR"
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
+    SCREEN_RANDOM_SETTINGS = "RANDOM_SETTINGS"
     SCREEN_WORKSPACE = "WORKSPACE"
     SCREEN_UPDATE = "UPDATE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
@@ -106,6 +107,7 @@ class ScreenObjectManager:
         from ev3sim.visual.settings.menu import SettingsMenu
 
         self.screens[self.SCREEN_SETTINGS] = SettingsMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.screens[self.SCREEN_RANDOM_SETTINGS] = SettingsMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Rescue edit screen
         from ev3sim.visual.menus.rescue_edit import RescueMapEditMenu
 

@@ -8,11 +8,11 @@ def onClickConfigEditor(filename):
     from ev3sim.visual.manager import ScreenObjectManager
 
     ScreenObjectManager.instance.pushScreen(
-        ScreenObjectManager.SCREEN_SETTINGS,
+        ScreenObjectManager.SCREEN_RANDOM_SETTINGS,
         file=find_abs("user_config.yaml", config_locations()),
         settings=randomisation_settings,
     )
-    ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_SETTINGS].clearEvents()
+    ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_RANDOM_SETTINGS].clearEvents()
 
 
 main_settings = [
