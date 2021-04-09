@@ -23,7 +23,7 @@ class SettingsMenu(BaseMenu):
 
     def generateObjects(self):
         # Scrolling container
-        old_y = getattr(getattr(self, "scrolling_container", None), "cur_y", 0)
+        old_y = 0
         self.scrolling_container = CustomScroll(
             relative_rect=pygame.Rect(0, 0, *self._size),
             manager=self,
