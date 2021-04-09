@@ -1,5 +1,5 @@
 Simulation Objects
-===============================
+==================
 
 .. toctree::
    :maxdepth: 1

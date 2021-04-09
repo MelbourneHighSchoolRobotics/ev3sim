@@ -27,11 +27,10 @@ A full video on what EV3Sim is and how you can install it can be found here:
    :caption: Contents:
 
    setup
-   batched_commands
+   simulation_settings
    bot_editing
    ev3_extensions
    custom_presets
+   randomisation
    contributing
    system
-
-.. TODO: Support randomisation through settings.
