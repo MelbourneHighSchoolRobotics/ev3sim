@@ -1,3 +1,4 @@
+from ev3sim.visual.menus.utils import CustomScroll
 from ev3sim.settings import SettingsManager
 from ev3sim.visual.settings.elements import TextEntry
 import os
@@ -21,6 +22,25 @@ class SettingsMenu(BaseMenu):
         self.onCancel = None
 
     def generateObjects(self):
+        # Scrolling container
+        old_y = getattr(getattr(self, "scrolling_container", None), "cur_y", 0)
+        self.scrolling_container = CustomScroll(
+            relative_rect=pygame.Rect(0, 0, *self._size),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("scroll_container"),
+        )
+        self.scrolling_container.num_elems = 1
+        self.scrolling_container.elems_size = 1
+        self.scrolling_container.span_elems = 1
+        scroll_height = self._size[1] - 90
+        scrolling_size = (self._size[0], scroll_height)
+        # Setting dimensions and positions on a UIScrollingContainer seems buggy. This works.
+        self.scrolling_container.set_dimensions(scrolling_size)
+        self.scrolling_container.set_position(scrolling_size)
+        self.scrolling_container.cur_y = old_y
+        self.scrolling_container.set_scroll(old_y)
+        self._all_objs.append(self.scrolling_container)
+
         yPadding = 20
         yOffset = 0
         index = 0
@@ -30,6 +50,7 @@ class SettingsMenu(BaseMenu):
                 relative_rect=pygame.Rect(0, 0, *self._size),
                 starting_layer_height=-1,
                 manager=self,
+                container=self.scrolling_container,
                 object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
             )
             self._all_objs.append(container)
@@ -49,6 +70,10 @@ class SettingsMenu(BaseMenu):
             yOffset += group["height"](self._size)
         yOffset += yPadding
 
+        self.scrolling_container.elems_size = yOffset
+        self.scrolling_container.span_elems = min(1, scroll_height / yOffset)
+        self.scrolling_container.set_scrollable_area_dimensions((self._size[0], yOffset))
+
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
             starting_layer_height=-2,
@@ -58,7 +83,7 @@ class SettingsMenu(BaseMenu):
         self._all_objs.append(self.bg)
 
         container = pygame_gui.elements.UIPanel(
-            relative_rect=pygame.Rect(20, yOffset, self._size[0] - 40, 80),
+            relative_rect=pygame.Rect(20, min(yOffset, self._size[1] - 80), self._size[0] - 40, 80),
             starting_layer_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
@@ -66,7 +91,7 @@ class SettingsMenu(BaseMenu):
         self._all_objs.append(container)
 
         self.save = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(self._size[0] - 300, yOffset + 10, 120, 60),
+            relative_rect=pygame.Rect(self._size[0] - 300, min(yOffset + 10, self._size[1] - 70), 120, 60),
             manager=self,
             object_id=pygame_gui.core.ObjectID("save-changes", "action_button"),
             text="Create" if self.creating else "Save",
@@ -75,7 +100,7 @@ class SettingsMenu(BaseMenu):
         self._all_objs.append(self.save)
 
         self.cancel = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(self._size[0] - 160, yOffset + 10, 120, 60),
+            relative_rect=pygame.Rect(self._size[0] - 160, min(yOffset + 10, self._size[1] - 70), 120, 60),
             manager=self,
             object_id=pygame_gui.core.ObjectID("cancel-changes", "action_button"),
             text="Cancel",
