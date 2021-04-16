@@ -3,7 +3,7 @@ import pygame
 import sentry_sdk
 import sys
 import yaml
-from os.path import join, split
+import os
 from multiprocessing import Queue, Process
 
 import ev3sim
@@ -69,6 +69,12 @@ parser.add_argument(
     help="Edits the current bot/sim file.",
     dest="edit",
 )
+parser.add_argument(
+    "--custom-url",
+    action="store_true",
+    help="Downloads and installs a custom task",
+    dest="custom_url",
+)
 
 
 def main(passed_args=None):
@@ -83,8 +89,8 @@ def main(passed_args=None):
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
 
-    pushed_screen = None
-    pushed_kwargs = {}
+    pushed_screens = []
+    pushed_kwargss = [{}]
     should_quit = False
 
     if not args.from_main:
@@ -94,9 +100,9 @@ def main(passed_args=None):
             with open(conf_file, "r") as f:
                 conf = yaml.safe_load(f)
         except:
-            with open(join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
+            with open(os.path.join(find_abs("default_config.yaml", ["package/presets/"])), "r") as fr:
                 conf = yaml.safe_load(fr)
-            with open(join(find_abs_directory(config_locations()[-1]), "user_config.yaml"), "w") as fw:
+            with open(os.path.join(find_abs_directory(config_locations()[-1]), "user_config.yaml"), "w") as fw:
                 fw.write(yaml.dump(conf))
 
         if args.config is not None:
@@ -111,68 +117,117 @@ def main(passed_args=None):
 
         if args.elem:
             # First, figure out what type it is.
+            found = False
+            if args.custom_url:
+                from urllib.parse import urlparse
+                from dload import rand_fn, save
+                import zipfile
+
+                zip_url = args.elem.replace("ev3simc://", "https://")
+
+                # Save the temp file here.
+                c_path = os.path.dirname(__file__)
+                fn = os.path.basename(urlparse(zip_url).path)
+                fn = fn if fn.strip() else f"dload{rand_fn()}"
+                zip_path = save(zip_url, f"{c_path}/{fn}")
+                extract_path = find_abs_directory("workspace/custom/")
+                with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                    name = zip_ref.namelist()[0].split("\\")[0].split("/")[0]
+                    zip_ref.extractall(extract_path)
+                if os.path.isfile(zip_path):
+                    os.remove(zip_path)
+                found = True
+                pushed_screens = [
+                    ScreenObjectManager.SCREEN_MENU,
+                    ScreenObjectManager.SCREEN_BATCH,
+                    ScreenObjectManager.SCREEN_UPDATE,
+                ]
+
+                def action(result):
+                    if not result:
+                        # Delete
+                        import shutil
+
+                        shutil.rmtree(os.path.join(extract_path, name))
+
+                pushed_kwargss = [
+                    {},
+                    {"selected": os.path.join(extract_path, name, "sim.sim")},
+                    {
+                        "panels": [
+                            {
+                                "type": "boolean",
+                                "text": (
+                                    "Custom tasks downloaded from the internet can do <i>anything</i> to your computer."
+                                    " Only use custom tasks from a developer you <b>trust</b>."
+                                ),
+                                "button_yes": "Accept",
+                                "button_no": "Delete",
+                                "action": action,
+                            }
+                        ]
+                    },
+                ]
+
             from ev3sim.validation.batch_files import BatchValidator
             from ev3sim.validation.bot_files import BotValidator
 
-            found = False
-            try:
-                if BatchValidator.validate_file(args.elem):
-                    # Valid batch file.
-                    if args.open:
-                        from ev3sim.sim import main
-
-                        args.batch = args.elem
-
-                        should_quit = True
-                        main(args.__dict__)
-                        found = True
-                        return
-                    elif args.edit:
-                        import importlib
-
-                        with open(args.elem, "r") as f:
-                            conf = yaml.safe_load(f)
-                        with open(find_abs(conf["preset_file"], preset_locations())) as f:
-                            preset = yaml.safe_load(f)
-                        mname, cname = preset["visual_settings"].rsplit(".", 1)
-                        klass = getattr(importlib.import_module(mname), cname)
-
-                        pushed_screen = ScreenObjectManager.SCREEN_SETTINGS
-                        pushed_kwargs = {
-                            "file": args.elem,
-                            "settings": klass,
-                            "allows_filename_change": True,
-                            "extension": "sim",
-                        }
-                        found = True
-            except:
-                pass
             if not found:
                 try:
-                    fname = split(args.elem)[0]
-                    for possible_dir in bot_locations():
-                        dir_path = find_abs_directory(possible_dir, create=True)
-                        if fname.startswith(dir_path):
-                            fname = fname[len(dir_path) :]
-                            fname = fname.replace("\\", "/")
-                            break
-                    bot_path = find_abs(fname, bot_locations())
-                    if BotValidator.validate_file(bot_path):
+                    if BatchValidator.validate_file(args.elem):
+                        # Valid batch file.
                         if args.open:
-                            pushed_screen = ScreenObjectManager.SCREEN_BOT_EDIT
-                            for possible_dir in bot_locations():
-                                try:
-                                    n_bot_path = find_abs(fname, [possible_dir])
-                                    pushed_kwargs = {
-                                        "bot_file": n_bot_path,
-                                        "bot_dir_file": (possible_dir, fname),
-                                    }
-                                    break
-                                except:
-                                    continue
-                        found = True
+                            from ev3sim.sim import main
+
+                            args.batch = args.elem
+
+                            should_quit = True
+                            main(args.__dict__)
+                            found = True
+                            return
+                        elif args.edit:
+                            import importlib
+
+                            with open(args.elem, "r") as f:
+                                conf = yaml.safe_load(f)
+                            with open(find_abs(conf["preset_file"], preset_locations())) as f:
+                                preset = yaml.safe_load(f)
+                            mname, cname = preset["visual_settings"].rsplit(".", 1)
+                            klass = getattr(importlib.import_module(mname), cname)
+
+                            pushed_screens = [ScreenObjectManager.SCREEN_SETTINGS]
+                            pushed_kwargss = [
+                                {
+                                    "file": args.elem,
+                                    "settings": klass,
+                                    "allows_filename_change": True,
+                                    "extension": "sim",
+                                }
+                            ]
+                            found = True
                 except:
                     pass
+                if not found:
+                    try:
+                        fname = os.path.split(args.elem)[0]
+                        for possible_dir in bot_locations():
+                            dir_path = find_abs_directory(possible_dir, create=True)
+                            if fname.startswith(dir_path):
+                                fname = fname[len(dir_path) :]
+                                bot_path = os.path.join(dir_path, fname)
+                                break
+                        if BotValidator.validate_file(bot_path):
+                            if args.open:
+                                pushed_screens = [ScreenObjectManager.SCREEN_BOT_EDIT]
+                                pushed_kwargss = [
+                                    {
+                                        "bot_file": bot_path,
+                                        "bot_dir_file": (possible_dir, fname),
+                                    }
+                                ]
+                            found = True
+                    except:
+                        pass
 
     if should_quit:
         # WHY DOES THIS HAPPEN?
@@ -186,7 +241,7 @@ def main(passed_args=None):
             "Seems like something died :( Most likely the preset you are trying to load caused some issues."
         )
 
-    StateHandler.instance.startUp(push_screen=pushed_screen, push_kwargs=pushed_kwargs)
+    StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
 
     if args.elem and args.from_main:
         args.simulation_kwargs.update(
@@ -212,7 +267,7 @@ def main(passed_args=None):
     try:
         StateHandler.instance.mainLoop()
     except Exception as e:
-        import traceback, os
+        import traceback
 
         print("An error occured in the Simulator :( Please see `error_log.txt` in your workspace.")
         actual_error = e

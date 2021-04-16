@@ -112,6 +112,13 @@ after_previous_install:
 createDirectory "$SMPROGRAMS\MHS_Robotics"
 createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$InstDir\ev3sim.exe" "" "$InstDir\ev3sim.exe" 0
 ;File Associations
+;URL associations for custom tasks.
+WriteRegStr HKCR "ev3simc" "" "URL:ev3simc Protocol"
+WriteRegStr HKCR "ev3simc" "URL Protocol" ""
+WriteRegStr HKCR "ev3simc\shell" "" ""
+WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$InstDir\ev3sim.exe,0"
+WriteRegStr HKCR "ev3simc\shell\open" "" ""
+WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$InstDir\ev3sim.exe" "%l" --custom-url'
 ;Open sims by default.
 ${registerExtensionOpen} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"
 ${registerExtensionEdit} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"

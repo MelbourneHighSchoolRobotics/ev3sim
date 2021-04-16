@@ -9,3 +9,4 @@ opensimplex>=0.3
 luddite>=1.0.1
 pygame-gui>=0.5.7
 sentry-sdk>=0.20.0
+dload>=0.6
