@@ -17,8 +17,10 @@ def split_names(path):
         names.append(name2)
     return names[::-1]
 
+
 class WorkspaceError(Exception):
     pass
+
 
 def find_abs(filepath, allowed_areas=None):
     """
@@ -76,6 +78,7 @@ def find_abs(filepath, allowed_areas=None):
         import yaml
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.search_locations import config_locations
+
         def clear():
             # Change user_config to have workspace_folder = ""
             config_file = find_abs("user_config.yaml", config_locations())
@@ -84,7 +87,11 @@ def find_abs(filepath, allowed_areas=None):
             conf["app"]["workspace_folder"] = ""
             with open(config_file, "w") as f:
                 f.write(yaml.dump(conf))
-        ScreenObjectManager.instance.forceCloseError("Your workspace location is incorrect. This could be caused by a bug in the system, or you renaming some folders. If you'd like, ev3sim can prompt you again for the workspace location. To do this, click the clear button, then open ev3sim again.", ("Clear", clear))
+
+        ScreenObjectManager.instance.forceCloseError(
+            "Your workspace location is incorrect. This could be a bug in the system, or you renaming some folders. To fix this, click the clear button, then open ev3sim again and select your workspace folder.",
+            ("Clear", clear),
+        )
         raise WorkspaceError()
     raise ValueError(f"File not found: {filepath}")
 
