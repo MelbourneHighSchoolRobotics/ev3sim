@@ -17,6 +17,8 @@ def split_names(path):
         names.append(name2)
     return names[::-1]
 
+class WorkspaceError(Exception):
+    pass
 
 def find_abs(filepath, allowed_areas=None):
     """
@@ -33,8 +35,15 @@ def find_abs(filepath, allowed_areas=None):
     """
     from ev3sim.simulation.loader import StateHandler
 
+    workspace_missing = False
+
     if StateHandler.WORKSPACE_FOLDER:
         WORKSPACE = os.path.abspath(StateHandler.WORKSPACE_FOLDER)
+        for area in allowed_areas:
+            if area.startswith("workspace"):
+                if not os.path.exists(WORKSPACE):
+                    workspace_missing = True
+                break
     else:
         WORKSPACE = ""
 
@@ -62,6 +71,21 @@ def find_abs(filepath, allowed_areas=None):
             raise ValueError(f"Unknown file area {area}")
         if os.path.isdir(path) or os.path.isfile(path):
             return path
+    if workspace_missing:
+        # We got problems with workspace from user_config.
+        import yaml
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.search_locations import config_locations
+        def clear():
+            # Change user_config to have workspace_folder = ""
+            config_file = find_abs("user_config.yaml", config_locations())
+            with open(config_file, "r") as f:
+                conf = yaml.safe_load(f)
+            conf["app"]["workspace_folder"] = ""
+            with open(config_file, "w") as f:
+                f.write(yaml.dump(conf))
+        ScreenObjectManager.instance.forceCloseError("Your workspace location is incorrect. This could be caused by a bug in the system, or you renaming some folders. If you'd like, ev3sim can prompt you again for the workspace location. To do this, click the clear button, then open ev3sim again.", ("Clear", clear))
+        raise WorkspaceError()
     raise ValueError(f"File not found: {filepath}")
 
 

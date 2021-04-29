@@ -7,7 +7,7 @@ import os
 from multiprocessing import Queue, Process
 
 import ev3sim
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
@@ -241,7 +241,10 @@ def main(passed_args=None):
             "Seems like something died :( Most likely the preset you are trying to load caused some issues."
         )
 
-    StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    try:
+        StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    except WorkspaceError:
+        pass
 
     if args.elem and args.from_main:
         args.simulation_kwargs.update(

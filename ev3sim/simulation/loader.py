@@ -13,7 +13,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory
 from multiprocessing import Process
 
 
@@ -364,39 +364,42 @@ class StateHandler:
         total_lag_ticks = 0
         lag_printed = False
         while self.is_running:
-            new_time = time.time()
-            if self.is_simulating:
-                if (
-                    new_time - last_game_update
-                    > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
-                ):
-                    ScriptLoader.instance.simulation_tick()
+            try:
+                new_time = time.time()
+                if self.is_simulating:
                     if (
                         new_time - last_game_update
-                        > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                        > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
                     ):
-                        total_lag_ticks += 1
-                    last_game_update = new_time
-                    if (
-                        ScriptLoader.instance.current_tick > 10
-                        and total_lag_ticks / ScriptLoader.instance.current_tick > 0.5
-                    ) and not lag_printed:
-                        lag_printed = True
-                        print("The simulation is currently lagging, you may want to turn down the game tick rate.")
-                try:
-                    r = self.shared_info["result_queue"].get_nowait()
-                    if r is not True:
-                        Logger.instance.reportError(r[0], r[1])
-                except Empty:
-                    pass
-            if new_time - last_vis_update > 1 / ScriptLoader.instance.VISUAL_TICK_RATE:
-                last_vis_update = new_time
-                events = ScreenObjectManager.instance.handleEvents()
-                if self.is_running:
-                    # We might've closed with those events.
-                    if self.is_simulating:
-                        ScriptLoader.instance.handleEvents(events)
-                    ScreenObjectManager.instance.applyToScreen()
+                        ScriptLoader.instance.simulation_tick()
+                        if (
+                            new_time - last_game_update
+                            > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                        ):
+                            total_lag_ticks += 1
+                        last_game_update = new_time
+                        if (
+                            ScriptLoader.instance.current_tick > 10
+                            and total_lag_ticks / ScriptLoader.instance.current_tick > 0.5
+                        ) and not lag_printed:
+                            lag_printed = True
+                            print("The simulation is currently lagging, you may want to turn down the game tick rate.")
+                    try:
+                        r = self.shared_info["result_queue"].get_nowait()
+                        if r is not True:
+                            Logger.instance.reportError(r[0], r[1])
+                    except Empty:
+                        pass
+                if new_time - last_vis_update > 1 / ScriptLoader.instance.VISUAL_TICK_RATE:
+                    last_vis_update = new_time
+                    events = ScreenObjectManager.instance.handleEvents()
+                    if self.is_running:
+                        # We might've closed with those events.
+                        if self.is_simulating:
+                            ScriptLoader.instance.handleEvents(events)
+                        ScreenObjectManager.instance.applyToScreen()
+            except WorkspaceError:
+                pass
 
 
 def initialiseFromConfig(config, send_queues, recv_queues):
