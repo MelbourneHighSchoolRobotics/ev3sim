@@ -136,6 +136,26 @@ class ScreenObjectManager:
         else:
             self.screens[self.screen_stack[-1]].regenerateObjects()
 
+    def forceCloseError(self, errorInfo, errorButton=None):
+        # We hit some error which is either unexpected or expected. 
+        # In either case remove all previous windows, give them the option to fix (highlight the user_config file for example)
+        # And then close.
+        self.screen_stack = []
+        if errorButton is not None:
+            self.pushScreen(self.SCREEN_UPDATE, panels=[{
+                "text": errorInfo,
+                "type": "boolean",
+                "button_yes": errorButton[0],
+                "button_no": "Close",
+                "action": lambda v: v and errorButton[1](),
+            }])
+        else:
+            self.pushScreen(self.SCREEN_UPDATE, panels=[{
+                "text": errorInfo,
+                "type": "accept",
+                "button": "Close",
+            }])
+
     def startScreen(self, push_screens=None, push_kwargss={}):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
