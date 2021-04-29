@@ -269,6 +269,8 @@ def main(passed_args=None):
 
     try:
         StateHandler.instance.mainLoop()
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         import traceback
 
