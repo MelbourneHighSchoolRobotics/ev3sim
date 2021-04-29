@@ -274,8 +274,13 @@ def main(passed_args=None):
         error = traceback.format_exc()
         if os.path.exists(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt")):
             os.remove(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"))
-        with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
-            f.write(error)
+        try:
+            with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
+                f.write(error)
+        except FileNotFoundError:
+            # If workspace is not defined, this might be useful.
+            with open("error_log.txt", "w") as f:
+                f.write(error)
     pygame.quit()
     StateHandler.instance.is_running = False
     try:
