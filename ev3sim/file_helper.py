@@ -80,18 +80,25 @@ def find_abs(filepath, allowed_areas=None):
         from ev3sim.visual.manager import ScreenObjectManager
         from ev3sim.search_locations import config_locations
 
-        def clear():
+        def fix():
             # Change user_config to have workspace_folder = ""
             config_file = find_abs("user_config.yaml", config_locations())
             with open(config_file, "r") as f:
                 conf = yaml.safe_load(f)
-            conf["app"]["workspace_folder"] = ""
+            if conf["app"]["workspace_folder"][-1] in "/":
+                conf["app"]["workspace_folder"] = conf["app"]["workspace_folder"][:-1]
+            s = conf["app"]["workspace_folder"].split("/")
+            if len(s) >= 2 and s[-1] == s[-2]:
+                # This fixes a bug with pygame_gui's file selector (mac only)
+                conf["app"]["workspace_folder"] = "/".join(s[:-1])
+            else:
+                conf["app"]["workspace_folder"] = ""
             with open(config_file, "w") as f:
                 f.write(yaml.dump(conf))
 
         ScreenObjectManager.instance.forceCloseError(
-            "Your workspace location is incorrect. This could be a bug in the system, or you renaming some folders. To fix this, click the clear button, then open ev3sim again and select your workspace folder.",
-            ("Clear", clear),
+            "Your workspace location is incorrect. This could be a bug in the system, or you renaming some folders. Click the Fix button if you want ev3sim to attempt to fix this.",
+            ("Fix", fix),
         )
         raise WorkspaceError()
     raise ValueError(f"File not found: {filepath}")
