@@ -37,6 +37,9 @@ def find_abs(filepath, allowed_areas=None):
     """
     from ev3sim.simulation.loader import StateHandler
 
+    if allowed_areas is None:
+        allowed_areas = ["workspace", "local", "package"]
+
     workspace_missing = False
 
     if StateHandler.WORKSPACE_FOLDER:
@@ -50,8 +53,6 @@ def find_abs(filepath, allowed_areas=None):
         WORKSPACE = ""
 
     fnames = split_names(filepath)
-    if allowed_areas is None:
-        allowed_areas = ["workspace", "local", "package"]
     for area in allowed_areas:
         if area == "package":
             path = os.path.join(ROOT, *fnames)
