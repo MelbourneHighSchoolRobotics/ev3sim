@@ -13,7 +13,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
 from multiprocessing import Process
 
 
@@ -304,6 +304,12 @@ class ScriptLoader:
             ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
 
 
+class WorkspaceSetting(ObjectSetting):
+    def on_change(self, new_value):
+        super().on_change(new_value)
+        ensure_workspace_filled(new_value)
+
+
 class StateHandler:
     """
     Handles the current sim state, and passes information to the simulator, or other menus where appropriate.
@@ -329,7 +335,7 @@ class StateHandler:
             "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
             "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
             "console_log": ObjectSetting(Logger, "LOG_CONSOLE"),
-            "workspace_folder": ObjectSetting(StateHandler, "WORKSPACE_FOLDER"),
+            "workspace_folder": WorkspaceSetting(StateHandler, "WORKSPACE_FOLDER"),
         }
         settings.addSettingGroup("app", loader_settings)
         settings.addSettingGroup("screen", screen_settings)
