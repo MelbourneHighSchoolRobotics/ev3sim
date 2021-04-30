@@ -399,19 +399,22 @@ class BotMenu(BaseMenu):
 
             if platform.system() == "Windows":
                 # If Mindstorms is in the start menu, we can likely find it.
-                path = os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs")
                 found = False
-                if os.path.exists(path):
-                    for folder in os.listdir(path):
-                        # There are multiple versions of mindstorms.
-                        if "MINDSTORMS" in folder:
-                            f = os.path.join(path, folder)
-                            for file in os.listdir(f):
-                                found = True
-                                subprocess.run(
-                                    f'start "{os.path.join(f, file)}" "{os.path.join(self.available_bots[self.bot_index][1], script_location)}"',
-                                    shell=True,
-                                )
+                for path in [
+                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                ]:
+                    if os.path.exists(path):
+                        for folder in os.listdir(path):
+                            # There are multiple versions of mindstorms.
+                            if "MINDSTORMS" in folder:
+                                f = os.path.join(path, folder)
+                                for file in os.listdir(f):
+                                    found = True
+                                    subprocess.run(
+                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_bots[self.bot_index][1], script_location)}"',
+                                        shell=True,
+                                    )
                 if not found:
                     subprocess.Popen(
                         ["explorer", "/select,", os.path.join(self.available_bots[self.bot_index][1], script_location)]
@@ -426,9 +429,27 @@ class BotMenu(BaseMenu):
             import subprocess
 
             if platform.system() == "Windows":
-                subprocess.Popen(
-                    ["explorer", "/select,", os.path.join(self.available_bots[self.bot_index][1], script_location)]
-                )
+                # If Mindstorms is in the start menu, we can likely find it.
+                found = False
+                for path in [
+                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                ]:
+                    if os.path.exists(path):
+                        for folder in os.listdir(path):
+                            # There are multiple versions of mindstorms.
+                            if "Visual Studio Code" in folder:
+                                f = os.path.join(path, folder)
+                                for file in os.listdir(f):
+                                    found = True
+                                    subprocess.run(
+                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_bots[self.bot_index][1], script_location)}"',
+                                        shell=True,
+                                    )
+                if not found:
+                    subprocess.Popen(
+                        ["explorer", "/select,", os.path.join(self.available_bots[self.bot_index][1], script_location)]
+                    )
             elif platform.system() == "Darwin":
                 subprocess.Popen(["open", os.path.join(self.available_bots[self.bot_index][1], script_location)])
             else:
