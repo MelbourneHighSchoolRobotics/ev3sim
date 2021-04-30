@@ -477,11 +477,16 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             @safe_patch("builtins", "input", fake_input)
             # These ev3dev2 objects are not implemented in the sim.
             @safe_patch("ev3dev2", "led", mock.Mock())
+            @safe_patch("ev3dev2.led", "Leds", mock.Mock())
             @safe_patch("ev3dev2", "sound", mock.Mock())
+            @safe_patch("ev3dev2.sound", "Sound", mock.Mock())
             @safe_patch("ev3dev2", "display", mock.Mock())
+            @safe_patch("ev3dev2.display", "Display", mock.Mock())
             @safe_patch("ev3dev2", "console", mock.Mock())
+            @safe_patch("ev3dev2.console", "Console", mock.Mock())
             # TODO: This should probably actually give reasonable values for voltage/current/amps
             @safe_patch("ev3dev2", "power", mock.Mock())
+            @safe_patch("ev3dev2.power", "Power", mock.Mock())
             @safe_patch("ev3dev.core", "Device.__init__", raiseEV3Error)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
