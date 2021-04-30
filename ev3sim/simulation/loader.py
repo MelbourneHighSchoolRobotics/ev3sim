@@ -69,17 +69,13 @@ class ScriptLoader:
             if self.scriptnames[robot_id].endswith(".ev3"):
                 actual_script = join(dirname(self.scriptnames[robot_id]), ".compiled.py")
                 try:
-                    from mindpile import to_python
+                    from mindpile import from_ev3
 
                     with open(actual_script, "w") as f:
-                        f.write(to_python(self.scriptnames[robot_id]))
+                        f.write(from_ev3(self.scriptnames[robot_id]))
                 except Exception as e:
                     with open(actual_script, "w") as f:
                         f.write(f'print("Mindstorms compilation failed! {e}")')
-                # Hide the file.
-                import subprocess
-
-                subprocess.check_call(["attrib", "+H", actual_script])
             else:
                 actual_script = self.scriptnames[robot_id]
 
