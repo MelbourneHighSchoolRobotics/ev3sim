@@ -1142,7 +1142,9 @@ class BotEditMenu(BaseMenu):
             text="Mindstorms",
         )
         self.mindstorms_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8),
+            relative_rect=pygame.Rect(
+                horiz_size / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8
+            ),
             text="Mindstorms",
             manager=self,
             container=self.picker,
@@ -1150,21 +1152,27 @@ class BotEditMenu(BaseMenu):
         )
         mindstorms = pygame.image.load(find_abs(f"ui/mindstorms.png", asset_locations()))
         self.mindstorms_image = pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8),
+            relative_rect=pygame.Rect(
+                horiz_size / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8
+            ),
             image_surface=mindstorms,
             manager=self,
             container=self.picker,
             object_id=pygame_gui.core.ObjectID(f"mindstorms_img", "baseplate_img"),
         )
         self.python_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2),
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2
+            ),
             manager=self,
             object_id=pygame_gui.core.ObjectID("pick_python", "invis_button"),
             container=self.picker,
             text="Python",
         )
         self.python_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8),
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8
+            ),
             text="Python",
             manager=self,
             container=self.picker,
@@ -1172,7 +1180,9 @@ class BotEditMenu(BaseMenu):
         )
         python = pygame.image.load(find_abs(f"ui/python.png", asset_locations()))
         self.python_image = pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8),
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8
+            ),
             image_surface=python,
             manager=self,
             container=self.picker,
