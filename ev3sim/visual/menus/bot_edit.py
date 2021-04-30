@@ -1123,7 +1123,7 @@ class BotEditMenu(BaseMenu):
                         self.addNamePicker()
                 return super().process_event(event)
 
-        picker_size = (self._size[0] * 0.7, max(self._size[1] * 0.4, 100))
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.6)
 
         self.picker = CodePicker(
             rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
@@ -1132,21 +1132,51 @@ class BotEditMenu(BaseMenu):
             object_id=pygame_gui.core.ObjectID("code_dialog"),
         )
 
+        horiz_size = picker_size[0] - 40
+
         self.mindstorms_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(picker_size[0] / 8, picker_size[1] / 4, picker_size[0] / 4, picker_size[1] / 2),
+            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2),
             manager=self,
-            object_id=pygame_gui.core.ObjectID("pick_mindstorms", "action_button"),
+            object_id=pygame_gui.core.ObjectID("pick_mindstorms", "invis_button"),
             container=self.picker,
             text="Mindstorms",
         )
-        self.python_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(
-                5 * picker_size[0] / 8, picker_size[1] / 4, picker_size[0] / 4, picker_size[1] / 2
-            ),
+        self.mindstorms_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8),
+            text="Mindstorms",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("pick_python", "action_button"),
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("mindstorms_label", "bot_edit_label"),
+        )
+        mindstorms = pygame.image.load(find_abs(f"ui/mindstorms.png", asset_locations()))
+        self.mindstorms_image = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8),
+            image_surface=mindstorms,
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID(f"mindstorms_img", "baseplate_img"),
+        )
+        self.python_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("pick_python", "invis_button"),
             container=self.picker,
             text="Python",
+        )
+        self.python_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8),
+            text="Python",
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("python_label", "bot_edit_label"),
+        )
+        python = pygame.image.load(find_abs(f"ui/python.png", asset_locations()))
+        self.python_image = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(horiz_size * 9 / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8),
+            image_surface=python,
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID(f"python_img", "baseplate_img"),
         )
 
     def addNamePicker(self):
