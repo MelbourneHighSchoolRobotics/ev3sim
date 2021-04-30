@@ -75,6 +75,12 @@ parser.add_argument(
     help="Downloads and installs a custom task",
     dest="custom_url",
 )
+parser.add_argument(
+    "--no-debug",
+    action="store_true",
+    help="Disable the debug interface",
+    dest="no_debug",
+)
 
 
 def main(passed_args=None):
@@ -263,6 +269,14 @@ def main(passed_args=None):
 
     actual_error = None
     error = None
+
+    if not args.no_debug:
+        try:
+            import debugpy
+
+            debugpy.listen(15995)
+        except RuntimeError as e:
+            print("Warning: Couldn't start the debugger")
 
     try:
         StateHandler.instance.mainLoop()

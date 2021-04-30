@@ -1,6 +1,6 @@
 """Various functions for updating the workspace from earlier versions of ev3sim."""
 
-from ev3sim.file_helper import find_abs
+from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
 
 
 def check_for_bot_files():
@@ -86,8 +86,15 @@ def check_for_bot_files():
     return None
 
 
+def fill_workspace():
+    """Always ensure workspace has the necessary folders."""
+    ensure_workspace_filled(find_abs_directory("workspace"))
+    return None
+
+
 UPDATE_CHECKS = [
     check_for_bot_files,
+    fill_workspace,
 ]
 
 
