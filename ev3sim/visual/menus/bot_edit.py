@@ -56,7 +56,6 @@ class BotEditMenu(BaseMenu):
         self.dragging = False
         self.bot_dir_file = kwargs.get("bot_dir_file", None)
         self.bot_file = kwargs.get("bot_file", None)
-        self.current_type = "python"
         self.current_holding = None
         if self.bot_dir_file is None or self.bot_file is None:
             if (self.bot_dir_file is not None) or (self.bot_dir_file is not None):
@@ -681,7 +680,6 @@ class BotEditMenu(BaseMenu):
                 child["visual"]["verts"] = verts
 
         self.previous_info["devices"] = self.current_devices
-        self.previous_info["type"] = self.current_type
         with open(os.path.join(self.bot_file, "config.bot"), "w") as f:
             f.write(yaml.dump(self.previous_info))
         ScreenObjectManager.instance.captureBotImage(*self.bot_dir_file)
@@ -1114,11 +1112,11 @@ class BotEditMenu(BaseMenu):
             def process_event(self2, event: pygame.event.Event):
                 if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if "pick_mindstorms" in event.ui_object_id:
-                        self.current_type = "mindstorms"
+                        self.previous_info["type"] = "mindstorms"
                         self2.kill()
                         self.addNamePicker()
                     elif "pick_python" in event.ui_object_id:
-                        self.current_type = "python"
+                        self.previous_info["type"] = "python"
                         self2.kill()
                         self.addNamePicker()
                 return super().process_event(event)
@@ -1214,7 +1212,7 @@ class BotEditMenu(BaseMenu):
                         self.bot_file = os.path.join(find_abs_directory("workspace/robots/"), name)
                         self.bot_dir_file = ["workspace/robots/", name]
                         os.mkdir(self.bot_file)
-                        if self.current_type == "python":
+                        if self.previous_info.get("type", "python") == "python":
                             _ = open(os.path.join(self.bot_file, "code.py"), "w")
                         else:
                             shutil.copy(
