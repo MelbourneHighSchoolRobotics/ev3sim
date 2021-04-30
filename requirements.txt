@@ -11,3 +11,4 @@ pygame-gui>=0.5.7
 sentry-sdk>=0.20.0
 dload>=0.6
 debugpy>=1.2.1
+mindpile>=0.0.1
