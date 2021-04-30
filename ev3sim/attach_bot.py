@@ -487,6 +487,7 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
             # TODO: This should probably actually give reasonable values for voltage/current/amps
             @safe_patch("ev3dev2", "power", mock.Mock())
             @safe_patch("ev3dev2.power", "Power", mock.Mock())
+            @safe_patch("ev3dev2", "fonts", mock.Mock())
             @safe_patch("ev3dev.core", "Device.__init__", raiseEV3Error)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
