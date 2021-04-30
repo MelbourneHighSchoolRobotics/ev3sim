@@ -273,6 +273,7 @@ def main(passed_args=None):
     if not args.no_debug:
         try:
             import debugpy
+
             debugpy.listen(15995)
         except RuntimeError as e:
             print("Warning: Couldn't start the debugger")
