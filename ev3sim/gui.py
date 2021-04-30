@@ -75,6 +75,12 @@ parser.add_argument(
     help="Downloads and installs a custom task",
     dest="custom_url",
 )
+parser.add_argument(
+    "--open_user_config",
+    action="store_true",
+    help="Debug tool to open the user_config file",
+    dest="open_config",
+)
 
 
 def main(passed_args=None):
@@ -88,6 +94,20 @@ def main(passed_args=None):
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
+
+    if args.open_config:
+        import platform
+        import subprocess
+
+        fname = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_config.yaml")
+
+        if platform.system() == "Windows":
+            subprocess.Popen(["explorer", "/select,", fname])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", fname])
+        else:
+            subprocess.Popen(["xdg-open", fname])
+        return
 
     pushed_screens = []
     pushed_kwargss = [{}]
