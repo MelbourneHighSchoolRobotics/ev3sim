@@ -72,7 +72,7 @@ class ScriptLoader:
                     from mindpile import from_ev3
 
                     with open(actual_script, "w") as f:
-                        f.write(from_ev3(self.scriptnames[robot_id]))
+                        f.write(from_ev3(self.scriptnames[robot_id], ev3sim_support=True))
                 except Exception as e:
                     with open(actual_script, "w") as f:
                         f.write(f'print("Mindstorms compilation failed! {e}")')
