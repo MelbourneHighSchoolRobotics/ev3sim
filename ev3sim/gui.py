@@ -7,7 +7,7 @@ import os
 from multiprocessing import Queue, Process
 
 import ev3sim
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
@@ -76,6 +76,12 @@ parser.add_argument(
     dest="custom_url",
 )
 parser.add_argument(
+    "--open_user_config",
+    action="store_true",
+    help="Debug tool to open the user_config file",
+    dest="open_config",
+)
+parser.add_argument(
     "--no-debug",
     action="store_true",
     help="Disable the debug interface",
@@ -94,6 +100,20 @@ def main(passed_args=None):
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
+
+    if args.open_config:
+        import platform
+        import subprocess
+
+        fname = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_config.yaml")
+
+        if platform.system() == "Windows":
+            subprocess.Popen(["explorer", "/select,", fname])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", fname])
+        else:
+            subprocess.Popen(["xdg-open", fname])
+        return
 
     pushed_screens = []
     pushed_kwargss = [{}]
@@ -247,7 +267,10 @@ def main(passed_args=None):
             "Seems like something died :( Most likely the preset you are trying to load caused some issues."
         )
 
-    StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    try:
+        StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    except WorkspaceError:
+        pass
 
     if args.elem and args.from_main:
         args.simulation_kwargs.update(
@@ -280,6 +303,8 @@ def main(passed_args=None):
 
     try:
         StateHandler.instance.mainLoop()
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         import traceback
 
@@ -288,8 +313,13 @@ def main(passed_args=None):
         error = traceback.format_exc()
         if os.path.exists(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt")):
             os.remove(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"))
-        with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
-            f.write(error)
+        try:
+            with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
+                f.write(error)
+        except FileNotFoundError:
+            # If workspace is not defined, this might be useful.
+            with open("error_log.txt", "w") as f:
+                f.write(error)
     pygame.quit()
     StateHandler.instance.is_running = False
     try:
