@@ -3,6 +3,7 @@
 from ev3sim.settings import SettingsManager
 from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
 
+
 def check_for_bot_files():
     """v2.0.1 -> v2.1.0. Bots no longer config files, but folders with all information."""
     import os
@@ -107,7 +108,7 @@ def check_for_sentry_preference():
             "action": action,
         }
 
-      
+
 def fill_workspace():
     """Always ensure workspace has the necessary folders."""
     ensure_workspace_filled(find_abs_directory("workspace"))
