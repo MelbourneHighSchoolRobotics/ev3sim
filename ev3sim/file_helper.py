@@ -18,6 +18,10 @@ def split_names(path):
     return names[::-1]
 
 
+class WorkspaceError(Exception):
+    pass
+
+
 def find_abs(filepath, allowed_areas=None):
     """
     Attempt to find a reference file, from this list of appropriate places specified.
@@ -33,14 +37,22 @@ def find_abs(filepath, allowed_areas=None):
     """
     from ev3sim.simulation.loader import StateHandler
 
+    if allowed_areas is None:
+        allowed_areas = ["workspace", "local", "package"]
+
+    workspace_missing = False
+
     if StateHandler.WORKSPACE_FOLDER:
         WORKSPACE = os.path.abspath(StateHandler.WORKSPACE_FOLDER)
+        for area in allowed_areas:
+            if area.startswith("workspace"):
+                if not os.path.exists(WORKSPACE):
+                    workspace_missing = True
+                break
     else:
         WORKSPACE = ""
 
     fnames = split_names(filepath)
-    if allowed_areas is None:
-        allowed_areas = ["workspace", "local", "package"]
     for area in allowed_areas:
         if area == "package":
             path = os.path.join(ROOT, *fnames)
@@ -62,6 +74,33 @@ def find_abs(filepath, allowed_areas=None):
             raise ValueError(f"Unknown file area {area}")
         if os.path.isdir(path) or os.path.isfile(path):
             return path
+    if workspace_missing:
+        # We got problems with workspace from user_config.
+        import yaml
+        from ev3sim.visual.manager import ScreenObjectManager
+        from ev3sim.search_locations import config_locations
+
+        def fix():
+            # Change user_config to have workspace_folder = ""
+            config_file = find_abs("user_config.yaml", config_locations())
+            with open(config_file, "r") as f:
+                conf = yaml.safe_load(f)
+            if conf["app"]["workspace_folder"][-1] in "/":
+                conf["app"]["workspace_folder"] = conf["app"]["workspace_folder"][:-1]
+            s = conf["app"]["workspace_folder"].split("/")
+            if len(s) >= 2 and s[-1] == s[-2]:
+                # This fixes a bug with pygame_gui's file selector (mac only)
+                conf["app"]["workspace_folder"] = "/".join(s[:-1])
+            else:
+                conf["app"]["workspace_folder"] = ""
+            with open(config_file, "w") as f:
+                f.write(yaml.dump(conf))
+
+        ScreenObjectManager.instance.forceCloseError(
+            "Your workspace location is incorrect. This could be a bug in the system, or you renaming some folders. Click the Fix button if you want ev3sim to attempt to fix this.",
+            ("Fix", fix),
+        )
+        raise WorkspaceError()
     raise ValueError(f"File not found: {filepath}")
 
 

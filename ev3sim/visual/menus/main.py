@@ -8,7 +8,14 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
-from ev3sim.search_locations import asset_locations, batch_locations, bot_locations, config_locations, preset_locations
+from ev3sim.search_locations import (
+    asset_locations,
+    batch_locations,
+    bot_locations,
+    code_locations,
+    config_locations,
+    preset_locations,
+)
 
 
 class MainMenu(BaseMenu):
@@ -39,6 +46,18 @@ class MainMenu(BaseMenu):
                     bot_config = yaml.safe_load(f)
                 if not BotValidator.validate_json(bot_config):
                     to_remove.append(index)
+                fname = bot_config.get("script", "code.py")
+                if not os.path.exists(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname)):
+
+                    def action():
+                        with open(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname), "w") as f:
+                            f.write("# Put your code here!\n")
+
+                    ScreenObjectManager.instance.forceCloseError(
+                        f"Your bot {sim_config['bots'][index]} does not contain the file {fname}. You may have renamed or deleted it by accident. In order to use this bot, you need to add this file back. Click \"Add {fname}\" to create this file, or do it manually.",
+                        (f"Add {fname}", action),
+                    )
+                    return
             except:
                 to_remove.append(index)
         if to_remove:
