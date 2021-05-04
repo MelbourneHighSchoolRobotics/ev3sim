@@ -1,8 +1,7 @@
 """Various functions for updating the workspace from earlier versions of ev3sim."""
 
 from ev3sim.settings import SettingsManager
-from ev3sim.file_helper import find_abs
-
+from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
 
 def check_for_bot_files():
     """v2.0.1 -> v2.1.0. Bots no longer config files, but folders with all information."""
@@ -78,6 +77,7 @@ def check_for_bot_files():
                     'Since you\'ve last used EV3Sim, the <font color="#4cc9f0">bot format</font> has changed.<br><br>'
                     + 'EV3Sim will now fix your current bots to use the new format (code and images will now appear in the <font color="#4cc9f0">bots</font> folder).'
                 ),
+                "type": "accept",
                 "button": "Convert",
                 "action": action,
             }
@@ -107,10 +107,17 @@ def check_for_sentry_preference():
             "action": action,
         }
 
+      
+def fill_workspace():
+    """Always ensure workspace has the necessary folders."""
+    ensure_workspace_filled(find_abs_directory("workspace"))
+    return None
+
 
 UPDATE_CHECKS = [
     check_for_bot_files,
     check_for_sentry_preference,
+    fill_workspace,
 ]
 
 

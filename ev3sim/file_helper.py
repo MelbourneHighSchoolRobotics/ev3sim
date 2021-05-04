@@ -80,3 +80,18 @@ def find_abs_directory(dirpath, create=True):
             fpath = os.path.join(dirname, single)
             os.mkdir(fpath)
             return fpath
+
+
+def ensure_workspace_filled(ws_path):
+    # If the workspace changes, then we should create the necessary folders
+    if not os.path.exists(ws_path):
+        return
+    for dirname in ["custom", "robots", ".vscode"]:
+        if not os.path.exists(os.path.join(ws_path, dirname)):
+            os.mkdir(os.path.join(ws_path, dirname))
+    # Additionally, add a launch.json to .vscode.
+    launch_path = os.path.join(ws_path, ".vscode", "launch.json")
+    if not os.path.exists(launch_path):
+        with open(os.path.join(find_abs("default_launch.json", ["package/presets/"])), "r") as fr:
+            with open(launch_path, "w") as fw:
+                fw.write(fr.read())

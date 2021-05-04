@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Attach to EV3Sim",
+        "type": "python",
+        "request": "attach",
+        "connect": {
+          "host": "localhost",
+          "port": 15995
+        }
+      }
+    ]
+  }
