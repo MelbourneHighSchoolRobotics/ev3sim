@@ -111,7 +111,6 @@ def check_for_sentry_preference():
             with open(config_file, "w") as f:
                 f.write(yaml.dump(conf))
 
-
         return {
             "text": "Send crash reports to make EV3Sim better?",
             "type": "boolean",
