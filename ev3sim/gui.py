@@ -82,10 +82,10 @@ parser.add_argument(
     dest="open_config",
 )
 parser.add_argument(
-    "--no-debug",
+    "--debug",
     action="store_true",
-    help="Disable the debug interface",
-    dest="no_debug",
+    help="Enable the debug interface",
+    dest="debug",
 )
 
 
@@ -295,7 +295,7 @@ def main(passed_args=None):
     actual_error = None
     error = None
 
-    if not args.no_debug:
+    if args.debug:
         try:
             import debugpy
 

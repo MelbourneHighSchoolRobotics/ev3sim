@@ -1,7 +1,9 @@
 """Various functions for updating the workspace from earlier versions of ev3sim."""
 
+import yaml
 from ev3sim.settings import SettingsManager
 from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
+from ev3sim.search_locations import config_locations
 
 
 def check_for_bot_files():
@@ -101,6 +103,13 @@ def check_for_sentry_preference():
                     }
                 }
             )
+            # Change user_config to have workspace_folder = ""
+            config_file = find_abs("user_config.yaml", config_locations())
+            with open(config_file, "r") as f:
+                conf = yaml.safe_load(f)
+            conf["app"]["send_crash_reports"] = result
+            with open(config_file, "w") as f:
+                f.write(yaml.dump(conf))
 
         return {
             "text": "Send crash reports to make EV3Sim better?",
