@@ -120,7 +120,10 @@ def check_for_sentry_preference():
 
 def fill_workspace():
     """Always ensure workspace has the necessary folders."""
-    ensure_workspace_filled(find_abs_directory("workspace"))
+    from ev3sim.simulation.loader import StateHandler
+
+    if StateHandler.WORKSPACE_FOLDER:
+        ensure_workspace_filled(find_abs_directory("workspace"))
     return None
 
 
