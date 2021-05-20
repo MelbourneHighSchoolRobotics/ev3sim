@@ -1,5 +1,6 @@
 import argparse
 import pygame
+import requests
 import sentry_sdk
 import sys
 import yaml
@@ -157,7 +158,11 @@ def main(passed_args=None):
                 c_path = os.path.dirname(__file__)
                 fn = os.path.basename(urlparse(zip_url).path)
                 fn = fn if fn.strip() else f"dload{rand_fn()}"
-                zip_path = save(zip_url, f"{c_path}/{fn}")
+                zip_path = c_path + os.path.sep + fn
+                r = requests.get(zip_url, verify=True)
+                with open(zip_path, "wb") as f:
+                    f.write(r.content)
+
                 extract_path = find_abs_directory("workspace/custom/")
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
                     name = zip_ref.namelist()[0].split("\\")[0].split("/")[0]
