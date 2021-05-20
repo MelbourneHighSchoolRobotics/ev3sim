@@ -147,3 +147,6 @@ cython_debug/
 ev3sim/user_config.yaml
 # Generated logs
 ev3sim/logs
+
+# Python embeddable with pip
+python_embed
