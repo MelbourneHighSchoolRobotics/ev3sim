@@ -278,7 +278,7 @@ class SoccerLogicInteractor(IInteractor):
         self.robots[botIndex].clickable = True
         self.robots[botIndex].body.position = self.spawns[botIndex % len(self.spawns)][botIndex // len(self.spawns)][0]
         self.robots[botIndex].body.angle = (
-            self.spawns[botIndex // len(self.spawns)][botIndex % len(self.spawns)][1] * np.pi / 180
+            self.spawns[botIndex % len(self.spawns)][botIndex // len(self.spawns)][1] * np.pi / 180
         )
         self.robots[botIndex].body.velocity = (0.0, 0.0)
         self.robots[botIndex].body.angular_velocity = 0
