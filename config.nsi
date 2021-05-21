@@ -2,40 +2,18 @@
 ;Includes
 !include MUI2.nsh
 !include "FileAssociation.nsh"
-RequestExecutionLevel admin
 
 ;---------------------------------
 ;About
 Name "EV3Sim"
-OutFile "one_click.exe"
+OutFile "installer.exe"
 Unicode true
 InstallDirRegKey HKCU "Software\EV3Sim" ""
-Var IsAdminMode
-Var oldDir
-!macro SetAdminMode
-StrCpy $IsAdminMode 1
-SetShellVarContext All
-!macroend
-!macro SetUserMode
-StrCpy $IsAdminMode 0
-SetShellVarContext Current
-!macroend
 
 Function .onInit
-StrCpy $oldDir "$Programfiles\$(^Name)"
-; Need to do this before SetShellVarContext
 StrCpy $InstDir "$LocalAppData\$(^Name)"
-UserInfo::GetAccountType
-Pop $0
-${IfThen} $0 != "Admin" ${|} Goto setmode_currentuser ${|}
-
-!insertmacro SetAdminMode
-Goto finalize_mode
-
-setmode_currentuser:
-!insertmacro SetUserMode
-
-finalize_mode:
+StrCpy $ExePath "$InstDir\python_embed\Scripts\ev3sim.exe"
+SetShellVarContext Current
 FunctionEnd 
 
 ;---------------------------------
@@ -63,7 +41,7 @@ FunctionEnd
 !define MUI_INSTFILESPAGE_ABORTHEADER_TEXT "Installation Aborted."
 
 !define MUI_FINISHPAGE_TITLE "All Done!"
-!define MUI_FINISHPAGE_RUN "$InstDir\ev3sim.exe"
+!define MUI_FINISHPAGE_RUN "$ExePath"
 !define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhsrobotics.club/"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Go to documentation."
@@ -89,41 +67,30 @@ FunctionEnd
 ;Sections
 Section "Dummy Section" SecDummy
 SetOutPath "$InstDir"
-File /nonfatal /a /r "dist\ev3sim\"
+File /nonfatal /a /r "dist\"
 WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
 IfFileExists "$InstDir\ev3sim\user_config.yaml" update
 ;Generate the default user config if not in update.
 CopyFiles "$InstDir\ev3sim\presets\default_config.yaml" "$InstDir\ev3sim\user_config.yaml"
 update:
-; Check for old installation in program files.
-${IfThen} $IsAdminMode == 0 ${|} Goto after_previous_install ${|}
-IfFileExists "$oldDir\ev3sim\user_config.yaml" next_step after_previous_install
-next_step:
-; Keep old settings and remove the install directory.
-CopyFiles "$oldDir\ev3sim\user_config.yaml" "$InstDir\ev3sim\user_config.yaml"
-Delete /REBOOTOK "$InstDir\Uninstall.exe"
-RMDir /R /REBOOTOK "$oldDir"
-;Remove Start Menu launcher
-Delete /REBOOTOK "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk"
-;Try to remove the Start Menu folder - this will only happen if it is empty
-RMDir /R /REBOOTOK "$SMPROGRAMS\MHS_Robotics"
-after_previous_install:
+;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
+ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install ev3sim' $0
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
-createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$InstDir\ev3sim.exe" "" "$InstDir\ev3sim.exe" 0
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExePath" "" "$ExePath" 0
 ;File Associations
 ;URL associations for custom tasks.
 WriteRegStr HKCR "ev3simc" "" "URL:ev3simc Protocol"
 WriteRegStr HKCR "ev3simc" "URL Protocol" ""
 WriteRegStr HKCR "ev3simc\shell" "" ""
-WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$InstDir\ev3sim.exe,0"
+WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$ExePath,0"
 WriteRegStr HKCR "ev3simc\shell\open" "" ""
-WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$InstDir\ev3sim.exe" "%l" --custom-url'
+WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$ExePath" "%l" --custom-url'
 ;Open sims by default.
-${registerExtensionOpen} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"
-${registerExtensionEdit} "$InstDir\ev3sim.exe" ".sim" "ev3sim.sim_file"
+${registerExtensionOpen} "$ExePath" ".sim" "ev3sim.sim_file"
+${registerExtensionEdit} "$ExePath" ".sim" "ev3sim.sim_file"
 ;Open bots by default.
-${registerExtensionOpen} "$InstDir\ev3sim.exe" ".bot" "ev3sim.bot_file"
+${registerExtensionOpen} "$ExePath" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
 WriteUninstaller "$InstDir\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
