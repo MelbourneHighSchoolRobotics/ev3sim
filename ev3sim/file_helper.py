@@ -134,3 +134,19 @@ def ensure_workspace_filled(ws_path):
         with open(os.path.join(find_abs("default_launch.json", ["package/presets/"])), "r") as fr:
             with open(launch_path, "w") as fw:
                 fw.write(fr.read())
+    # add settings.json, redirecting pythonpath.
+    settings_path = os.path.join(ws_path, ".vscode", "settings.json")
+    if not os.path.exists(settings_path):
+        up = os.path.dirname
+        file_location = os.path.join(up(up(up(__file__))), "python.exe").replace("/", "\\").replace("\\", "\\\\")
+        settings = (
+            """\
+{
+    "python.pythonPath": \""""
+            + file_location
+            + """\"
+}"""
+        )
+
+        with open(settings_path, "w") as fw:
+            fw.write(settings)
