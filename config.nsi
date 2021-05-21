@@ -74,7 +74,7 @@ IfFileExists "$InstDir\ev3sim\user_config.yaml" update
 CopyFiles "$InstDir\ev3sim\presets\default_config.yaml" "$InstDir\ev3sim\user_config.yaml"
 update:
 ;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
-ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install ev3sim' $0
+ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' $0
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
 createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExePath" "" "$ExePath" 0
