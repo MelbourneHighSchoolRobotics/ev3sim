@@ -439,13 +439,13 @@ class BotMenu(BaseMenu):
                 ]:
                     if os.path.exists(path):
                         for folder in os.listdir(path):
-                            # There are multiple versions of mindstorms.
+                            # There are multiple versions of vscode.
                             if "Visual Studio Code" in folder:
                                 f = os.path.join(path, folder)
                                 for file in os.listdir(f):
                                     found = True
                                     subprocess.run(
-                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_bots[self.bot_index][1], script_location)}"',
+                                        f'start "code" "{os.path.join(f, file)}" ""{os.path.join(find_abs_directory("workspace"))}" --goto "{os.path.join(self.available_bots[self.bot_index][1], script_location)}""',
                                         shell=True,
                                     )
                 if not found:
