@@ -9,9 +9,12 @@ with open("version_file_template.txt", "r") as f:
 with open("version_file.txt", "w") as f:
     f.write(string)
 
+if os.path.exists("dist"):
+    shutil.rmtree("dist")
 os.makedirs("dist", exist_ok=True)
 os.makedirs("dist/ev3sim", exist_ok=True)
-shutil.rmtree("dist/python_embed")
+if os.path.exists("dist/python_embed"):
+    shutil.rmtree("dist/python_embed")
 shutil.copytree("python_embed", "dist/python_embed")
 
 if os.path.exists("dist/ev3sim/user_config.yaml"):
