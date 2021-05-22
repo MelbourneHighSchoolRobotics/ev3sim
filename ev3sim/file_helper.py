@@ -138,7 +138,7 @@ def ensure_workspace_filled(ws_path):
     settings_path = os.path.join(ws_path, ".vscode", "settings.json")
     if not os.path.exists(settings_path):
         up = os.path.dirname
-        file_location = os.path.join(up(up(up(__file__))), "python.exe").replace("/", "\\").replace("\\", "\\\\")
+        file_location = os.path.join(up(up(up(up(__file__)))), "python.exe").replace("/", "\\").replace("\\", "\\\\")
         settings = (
             """\
 {
