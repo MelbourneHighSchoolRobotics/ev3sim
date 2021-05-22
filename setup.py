@@ -1,7 +1,7 @@
 import os.path
 from setuptools import setup
 
-REQUIRES_PYTHON = ">=3.7.0"
+REQUIRES_PYTHON = ">=3.9.0"
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
