@@ -10,9 +10,11 @@ OutFile "installer.exe"
 Unicode true
 InstallDirRegKey HKCU "Software\EV3Sim" ""
 
+Var ExeLocation
+
 Function .onInit
 StrCpy $InstDir "$LocalAppData\$(^Name)"
-StrCpy $ExePath "$InstDir\python_embed\Scripts\ev3sim.exe"
+StrCpy $ExeLocation "$InstDir\python_embed\Scripts\ev3sim.exe"
 SetShellVarContext Current
 FunctionEnd 
 
@@ -41,7 +43,7 @@ FunctionEnd
 !define MUI_INSTFILESPAGE_ABORTHEADER_TEXT "Installation Aborted."
 
 !define MUI_FINISHPAGE_TITLE "All Done!"
-!define MUI_FINISHPAGE_RUN "$ExePath"
+!define MUI_FINISHPAGE_RUN "$ExeLocation"
 !define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhsrobotics.club/"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Go to documentation."
@@ -66,6 +68,8 @@ FunctionEnd
 ;---------------------------------
 ;Sections
 Section "Dummy Section" SecDummy
+; Remove previous installation
+RMDir /r "$InstDir\python_embed"
 SetOutPath "$InstDir"
 File /nonfatal /a /r "dist\"
 WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
@@ -74,23 +78,24 @@ IfFileExists "$InstDir\ev3sim\user_config.yaml" update
 CopyFiles "$InstDir\ev3sim\presets\default_config.yaml" "$InstDir\ev3sim\user_config.yaml"
 update:
 ;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
+;To use test.pypi: ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1' $0
 ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' $0
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
-createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExePath" "" "$ExePath" 0
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExeLocation" "" "$ExeLocation" 0
 ;File Associations
 ;URL associations for custom tasks.
 WriteRegStr HKCR "ev3simc" "" "URL:ev3simc Protocol"
 WriteRegStr HKCR "ev3simc" "URL Protocol" ""
 WriteRegStr HKCR "ev3simc\shell" "" ""
-WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$ExePath,0"
+WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$ExeLocation,0"
 WriteRegStr HKCR "ev3simc\shell\open" "" ""
-WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$ExePath" "%l" --custom-url'
+WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$ExeLocation" "%l" --custom-url'
 ;Open sims by default.
-${registerExtensionOpen} "$ExePath" ".sim" "ev3sim.sim_file"
-${registerExtensionEdit} "$ExePath" ".sim" "ev3sim.sim_file"
+${registerExtensionOpen} "$ExeLocation" ".sim" "ev3sim.sim_file"
+${registerExtensionEdit} "$ExeLocation" ".sim" "ev3sim.sim_file"
 ;Open bots by default.
-${registerExtensionOpen} "$ExePath" ".bot" "ev3sim.bot_file"
+${registerExtensionOpen} "$ExeLocation" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
 WriteUninstaller "$InstDir\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
