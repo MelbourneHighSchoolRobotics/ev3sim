@@ -119,6 +119,8 @@ class BotMenu(BaseMenu):
             min(preview_size[1], (preview_size[0] * 3) // 4),
         )
         try:
+            if self.bot_index >= len(self.available_bots):
+                self.bot_index = -1
             if self.bot_index == -1:
                 image = pygame.Surface(preview_size)
                 image.fill(pygame.Color(self.bg.background_colour))

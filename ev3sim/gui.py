@@ -1,13 +1,15 @@
 import argparse
 import pygame
+import requests
 import sentry_sdk
 import sys
 import yaml
 import os
+import time
 from multiprocessing import Queue, Process
 
 import ev3sim
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.search_locations import batch_locations, bot_locations, config_locations, preset_locations
 from ev3sim.visual.manager import ScreenObjectManager
@@ -76,24 +78,39 @@ parser.add_argument(
     dest="custom_url",
 )
 parser.add_argument(
-    "--no-debug",
+    "--open_user_config",
     action="store_true",
-    help="Disable the debug interface",
-    dest="no_debug",
+    help="Debug tool to open the user_config file",
+    dest="open_config",
+)
+parser.add_argument(
+    "--debug",
+    action="store_true",
+    help="Enable the debug interface",
+    dest="debug",
 )
 
 
 def main(passed_args=None):
     if passed_args is None:
         args = parser.parse_args(sys.argv[1:])
-        # We are entering from main. Initialise sentry
-        sentry_sdk.init(
-            "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
-            release=ev3sim.__version__,
-        )
     else:
         args = parser.parse_args([])
         args.__dict__.update(passed_args)
+
+    if args.open_config:
+        import platform
+        import subprocess
+
+        fname = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_config.yaml")
+
+        if platform.system() == "Windows":
+            subprocess.Popen(["explorer", "/select,", fname])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", fname])
+        else:
+            subprocess.Popen(["xdg-open", fname])
+        return
 
     pushed_screens = []
     pushed_kwargss = [{}]
@@ -121,12 +138,18 @@ def main(passed_args=None):
         checkVersion()
         handler.setConfig(**conf)
 
+        if handler.SEND_CRASH_REPORTS:
+            # We are entering from main. Initialise sentry
+            sentry_sdk.init(
+                "https://847cb34de3b548bd9cf0ca4434ab02ed@o522431.ingest.sentry.io/5633878",
+                release=ev3sim.__version__,
+            )
+
         if args.elem:
             # First, figure out what type it is.
             found = False
             if args.custom_url:
                 from urllib.parse import urlparse
-                from dload import rand_fn, save
                 import zipfile
 
                 zip_url = args.elem.replace("ev3simc://", "https://")
@@ -134,8 +157,12 @@ def main(passed_args=None):
                 # Save the temp file here.
                 c_path = os.path.dirname(__file__)
                 fn = os.path.basename(urlparse(zip_url).path)
-                fn = fn if fn.strip() else f"dload{rand_fn()}"
-                zip_path = save(zip_url, f"{c_path}/{fn}")
+                fn = fn if fn.strip() else f"dload{str(int(time.time()))[:5]}"
+                zip_path = c_path + os.path.sep + fn
+                r = requests.get(zip_url, verify=True)
+                with open(zip_path, "wb") as f:
+                    f.write(r.content)
+
                 extract_path = find_abs_directory("workspace/custom/")
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
                     name = zip_ref.namelist()[0].split("\\")[0].split("/")[0]
@@ -247,7 +274,10 @@ def main(passed_args=None):
             "Seems like something died :( Most likely the preset you are trying to load caused some issues."
         )
 
-    StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    try:
+        StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
+    except WorkspaceError:
+        pass
 
     if args.elem and args.from_main:
         args.simulation_kwargs.update(
@@ -270,7 +300,7 @@ def main(passed_args=None):
     actual_error = None
     error = None
 
-    if not args.no_debug:
+    if args.debug:
         try:
             import debugpy
 
@@ -280,6 +310,8 @@ def main(passed_args=None):
 
     try:
         StateHandler.instance.mainLoop()
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         import traceback
 
@@ -288,8 +320,13 @@ def main(passed_args=None):
         error = traceback.format_exc()
         if os.path.exists(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt")):
             os.remove(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"))
-        with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
-            f.write(error)
+        try:
+            with open(os.path.join(StateHandler.WORKSPACE_FOLDER, "error_log.txt"), "w") as f:
+                f.write(error)
+        except FileNotFoundError:
+            # If workspace is not defined, this might be useful.
+            with open("error_log.txt", "w") as f:
+                f.write(error)
     pygame.quit()
     StateHandler.instance.is_running = False
     try:

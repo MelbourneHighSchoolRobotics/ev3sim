@@ -1,6 +1,9 @@
 """Various functions for updating the workspace from earlier versions of ev3sim."""
 
+import yaml
+from ev3sim.settings import SettingsManager
 from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory
+from ev3sim.search_locations import config_locations
 
 
 def check_for_bot_files():
@@ -86,14 +89,47 @@ def check_for_bot_files():
     return None
 
 
+def check_for_sentry_preference():
+    """First launch. User must select whether or not to send crashes to sentry."""
+    from ev3sim.simulation.loader import StateHandler
+
+    if StateHandler.SEND_CRASH_REPORTS is None:
+
+        def action(result):
+            SettingsManager.instance.setMany(
+                {
+                    "app": {
+                        "send_crash_reports": result,
+                    }
+                }
+            )
+            # Change user_config to have workspace_folder = ""
+            config_file = find_abs("user_config.yaml", config_locations())
+            with open(config_file, "r") as f:
+                conf = yaml.safe_load(f)
+            conf["app"]["send_crash_reports"] = result
+            with open(config_file, "w") as f:
+                f.write(yaml.dump(conf))
+
+        return {
+            "text": "Send crash reports to make EV3Sim better?",
+            "type": "boolean",
+            "action": action,
+        }
+
+
 def fill_workspace():
     """Always ensure workspace has the necessary folders."""
-    ensure_workspace_filled(find_abs_directory("workspace"))
+    from ev3sim.simulation.loader import StateHandler
+
+    if StateHandler.WORKSPACE_FOLDER:
+        ensure_workspace_filled(find_abs_directory("workspace"))
     return None
 
 
 UPDATE_CHECKS = [
     check_for_bot_files,
+    check_for_sentry_preference,
     fill_workspace,
 ]
 
