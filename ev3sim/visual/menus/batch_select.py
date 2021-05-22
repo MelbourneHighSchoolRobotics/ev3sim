@@ -167,32 +167,30 @@ class BatchMenu(BaseMenu):
         )
         self._all_objs.append(self.preview_image)
 
-        folder_size = preview_size[0] * 0.4, preview_size[1] * 0.4
-        folder_button_pos = (
-            self._size[0] * 0.9 - folder_size[0] - 10,
+        code_size = preview_size[0] * 0.4, preview_size[1] * 0.4
+        code_button_pos = (
+            self._size[0] * 0.9 - code_size[0] - 10,
             self._size[1] * 0.1 + preview_size[1] + 10,
         )
-        folder_icon_size = folder_size[1] * 0.6, folder_size[1] * 0.6
-        self.folder_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(*folder_button_pos, *folder_size),
+        code_icon_size = code_size[1] * 0.6, code_size[1] * 0.6
+        self.code_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*code_button_pos, *code_size),
             text="",
             manager=self,
-            object_id=pygame_gui.core.ObjectID("bot-folder", "settings_buttons"),
+            object_id=pygame_gui.core.ObjectID("bot-code", "settings_buttons"),
         )
-        self.addButtonEvent("bot-folder", self.clickFolder)
-        if not self.folder_enable:
-            self.folder_button.disable()
-        folder_icon_path = find_abs("ui/folder_white.png", allowed_areas=asset_locations())
-        self.folder_icon = pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect(
-                *self.iconPos(folder_button_pos, folder_size, folder_icon_size), *folder_icon_size
-            ),
-            image_surface=pygame.image.load(folder_icon_path),
+        self.addButtonEvent("bot-code", self.clickCode)
+        if not self.code_enable:
+            self.code_button.disable()
+        code_icon_path = find_abs("ui/code.png", allowed_areas=asset_locations())
+        self.code_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(*self.iconPos(code_button_pos, code_size, code_icon_size), *code_icon_size),
+            image_surface=pygame.image.load(code_icon_path),
             manager=self,
-            object_id=pygame_gui.core.ObjectID("settings-icon"),
+            object_id=pygame_gui.core.ObjectID("code-icon"),
         )
-        self._all_objs.append(self.folder_button)
-        self._all_objs.append(self.folder_icon)
+        self._all_objs.append(self.code_button)
+        self._all_objs.append(self.code_icon)
 
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
@@ -262,22 +260,90 @@ class BatchMenu(BaseMenu):
         shutil.rmtree(self.available_batches[self.batch_index][2])
         self.setBatchIndex(-1)
 
-    def clickFolder(self):
+    def clickCode(self):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
-        # No more renaming.
-        import platform
-        import subprocess
+        with open(os.path.join(self.available_batches[self.batch_index][2], "bot", "config.bot")) as f:
+            conf = yaml.safe_load(f)
+        if conf.get("type", "python") == "mindstorms":
+            script_location = conf.get("script", "program.ev3")
+            import platform
+            import subprocess
 
-        if platform.system() == "Windows":
-            subprocess.Popen(
-                ["explorer", "/select,", os.path.join(self.available_batches[self.batch_index][2], "bot", "code.py")]
-            )
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", os.path.join(self.available_batches[self.batch_index][2], "bot", "code.py")])
+            if platform.system() == "Windows":
+                # If Mindstorms is in the start menu, we can likely find it.
+                found = False
+                for path in [
+                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                ]:
+                    if os.path.exists(path):
+                        for folder in os.listdir(path):
+                            # There are multiple versions of mindstorms.
+                            if "MINDSTORMS" in folder:
+                                f = os.path.join(path, folder)
+                                for file in os.listdir(f):
+                                    found = True
+                                    subprocess.run(
+                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}"',
+                                        shell=True,
+                                    )
+                if not found:
+                    subprocess.Popen(
+                        [
+                            "explorer",
+                            "/select,",
+                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                        ]
+                    )
+            elif platform.system() == "Darwin":
+                subprocess.Popen(
+                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
+                )
+            else:
+                subprocess.Popen(
+                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
+                )
         else:
-            subprocess.Popen(["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", "code.py")])
+            script_location = conf.get("script", "code.py")
+            import platform
+            import subprocess
+
+            if platform.system() == "Windows":
+                # If Mindstorms is in the start menu, we can likely find it.
+                found = False
+                for path in [
+                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                ]:
+                    if os.path.exists(path):
+                        for folder in os.listdir(path):
+                            # There are multiple versions of vscode.
+                            if "Visual Studio Code" in folder:
+                                f = os.path.join(path, folder)
+                                for file in os.listdir(f):
+                                    found = True
+                                    subprocess.run(
+                                        f'start "code" "{os.path.join(f, file)}" ""{os.path.join(find_abs_directory("workspace"))}" --goto "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}""',
+                                        shell=True,
+                                    )
+                if not found:
+                    subprocess.Popen(
+                        [
+                            "explorer",
+                            "/select,",
+                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                        ]
+                    )
+            elif platform.system() == "Darwin":
+                subprocess.Popen(
+                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
+                )
+            else:
+                subprocess.Popen(
+                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
+                )
 
     def handleEvent(self, event):
         super().handleEvent(event)
@@ -295,7 +361,7 @@ class BatchMenu(BaseMenu):
         self.batch_index = new_index
         self.start_enable = new_index != -1
         self.remove_enable = new_index != -1
-        self.folder_enable = new_index != -1
+        self.code_enable = new_index != -1
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):
