@@ -1,9 +1,11 @@
 import argparse
 import pygame
+import requests
 import sentry_sdk
 import sys
 import yaml
 import os
+import time
 from multiprocessing import Queue, Process
 
 import ev3sim
@@ -148,7 +150,6 @@ def main(passed_args=None):
             found = False
             if args.custom_url:
                 from urllib.parse import urlparse
-                from dload import rand_fn, save
                 import zipfile
 
                 zip_url = args.elem.replace("ev3simc://", "https://")
@@ -156,8 +157,12 @@ def main(passed_args=None):
                 # Save the temp file here.
                 c_path = os.path.dirname(__file__)
                 fn = os.path.basename(urlparse(zip_url).path)
-                fn = fn if fn.strip() else f"dload{rand_fn()}"
-                zip_path = save(zip_url, f"{c_path}/{fn}")
+                fn = fn if fn.strip() else f"dload{str(int(time.time()))[:5]}"
+                zip_path = c_path + os.path.sep + fn
+                r = requests.get(zip_url, verify=True)
+                with open(zip_path, "wb") as f:
+                    f.write(r.content)
+
                 extract_path = find_abs_directory("workspace/custom/")
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
                     name = zip_ref.namelist()[0].split("\\")[0].split("/")[0]
