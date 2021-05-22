@@ -1,4 +1,5 @@
 import os
+import shutil
 import pygame
 import pygame_gui
 import pymunk
@@ -24,6 +25,7 @@ class BotEditMenu(BaseMenu):
     MODE_BASEPLATE_DIALOG = "BASEPLATE"
     MODE_NAME_DIALOG = "NAME"
     MODE_PORT_DIALOG = "PORT"
+    MODE_CODE_DIALOG = "CODE"
 
     SELECTED_CIRCLE = "CIRCLE"
     SELECTED_RECTANGLE = "RECTANGLE"
@@ -656,7 +658,7 @@ class BotEditMenu(BaseMenu):
         if self.checkBot():
             return
         if self.creating:
-            self.addNamePicker()
+            self.addCodePicker()
         else:
             self.saveBot()
             ScreenObjectManager.instance.popScreen()
@@ -1099,6 +1101,92 @@ class BotEditMenu(BaseMenu):
         self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
         self.stroke_img.rebuild_from_changed_theme_data()
 
+    def addCodePicker(self):
+        self.mode = self.MODE_CODE_DIALOG
+
+        class CodePicker(pygame_gui.elements.UIWindow):
+            def kill(self2):
+                super().kill()
+                self.removeCodePicker()
+
+            def process_event(self2, event: pygame.event.Event):
+                if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if "pick_mindstorms" in event.ui_object_id:
+                        self.previous_info["type"] = "mindstorms"
+                        self2.kill()
+                        self.addNamePicker()
+                    elif "pick_python" in event.ui_object_id:
+                        self.previous_info["type"] = "python"
+                        self2.kill()
+                        self.addNamePicker()
+                return super().process_event(event)
+
+        picker_size = (self._size[0] * 0.7, self._size[1] * 0.6)
+
+        self.picker = CodePicker(
+            rect=pygame.Rect(self._size[0] * 0.15, self._size[1] * 0.15, *picker_size),
+            manager=self,
+            window_display_title="How will you program?",
+            object_id=pygame_gui.core.ObjectID("code_dialog"),
+        )
+
+        horiz_size = picker_size[0] - 40
+
+        self.mindstorms_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(horiz_size / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("pick_mindstorms", "invis_button"),
+            container=self.picker,
+            text="Mindstorms",
+        )
+        self.mindstorms_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                horiz_size / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8
+            ),
+            text="Mindstorms",
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("mindstorms_label", "bot_edit_label"),
+        )
+        mindstorms = pygame.image.load(find_abs(f"ui/mindstorms.png", asset_locations()))
+        self.mindstorms_image = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                horiz_size / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8
+            ),
+            image_surface=mindstorms,
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID(f"mindstorms_img", "baseplate_img"),
+        )
+        self.python_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] / 4 - 75, horiz_size * 3 / 8, picker_size[1] / 2
+            ),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("pick_python", "invis_button"),
+            container=self.picker,
+            text="Python",
+        )
+        self.python_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] * 2 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 1 / 8
+            ),
+            text="Python",
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID("python_label", "bot_edit_label"),
+        )
+        python = pygame.image.load(find_abs(f"ui/python.png", asset_locations()))
+        self.python_image = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                horiz_size * 9 / 16, picker_size[1] * 3 / 8 - 75, horiz_size * 3 / 8, picker_size[1] * 3 / 8
+            ),
+            image_surface=python,
+            manager=self,
+            container=self.picker,
+            object_id=pygame_gui.core.ObjectID(f"python_img", "baseplate_img"),
+        )
+
     def addNamePicker(self):
         self.mode = self.MODE_NAME_DIALOG
 
@@ -1124,7 +1212,13 @@ class BotEditMenu(BaseMenu):
                         self.bot_file = os.path.join(find_abs_directory("workspace/robots/"), name)
                         self.bot_dir_file = ["workspace/robots/", name]
                         os.mkdir(self.bot_file)
-                        _ = open(os.path.join(self.bot_file, "code.py"), "w")
+                        if self.previous_info.get("type", "python") == "python":
+                            _ = open(os.path.join(self.bot_file, "code.py"), "w")
+                        else:
+                            shutil.copy(
+                                find_abs("default_mindstorms.ev3", ["package/presets/"]),
+                                os.path.join(self.bot_file, "program.ev3"),
+                            )
                         self.removeNamePicker()
                         self.saveBot()
                         ScreenObjectManager.instance.popScreen()
@@ -1608,6 +1702,13 @@ All other objects are placed on this baseplate. After creating it, the baseplate
             pass
 
     def removeNamePicker(self):
+        try:
+            self.mode = self.MODE_NORMAL
+            self.drawOptions()
+        except:
+            pass
+
+    def removeCodePicker(self):
         try:
             self.mode = self.MODE_NORMAL
             self.drawOptions()

@@ -14,6 +14,7 @@ class BotValidator(Validator):
         "follow_collider",
         "hidden",
         "hidden_edit",
+        "type",
     ]
 
     @classmethod

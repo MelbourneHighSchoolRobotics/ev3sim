@@ -74,7 +74,10 @@ def initialise_bot(topLevelConfig, robotFolder, prefix, path_index):
             robot._follow_collider_offset = config.get("follow_collider", [0, 0])
             ScriptLoader.instance.robots[prefix] = robot
             ScriptLoader.instance.outstanding_events[prefix] = []
-            scriptname = config.get("script", "code.py")
+            if config.get("type", "python") == "mindstorms":
+                scriptname = config.get("script", "program.ev3")
+            else:
+                scriptname = config.get("script", "code.py")
             if scriptname is not None:
                 scriptname = find_abs(scriptname, code_locations(robotFolder))
             ScriptLoader.instance.scriptnames[prefix] = scriptname

@@ -63,10 +63,23 @@ class ScriptLoader:
             else:
                 raise ValueError("Did not expect an existing process!")
         if self.scriptnames[robot_id] is not None:
-            from os.path import join, split
+            from os.path import join, split, dirname
             from ev3sim.attach_bot import attach_bot
 
-            format_filename = join(self.scriptnames[robot_id])
+            if self.scriptnames[robot_id].endswith(".ev3"):
+                actual_script = join(dirname(self.scriptnames[robot_id]), ".compiled.py")
+                try:
+                    from mindpile import from_ev3
+
+                    with open(actual_script, "w") as f:
+                        f.write(from_ev3(self.scriptnames[robot_id], ev3sim_support=True))
+                except Exception as e:
+                    with open(actual_script, "w") as f:
+                        f.write(f'print("Mindstorms compilation failed! {e}")')
+            else:
+                actual_script = self.scriptnames[robot_id]
+
+            format_filename = join(actual_script)
             # This ensures that as long as the code sits in the bot directory, relative imports will work fine.
             possible_locations = ["workspace/robots/", "workspace", "package/examples/robots"]
             extra_dirs = []
@@ -84,7 +97,7 @@ class ScriptLoader:
                 target=attach_bot,
                 args=(
                     robot_id,
-                    self.scriptnames[robot_id],
+                    actual_script,
                     extra_dirs[::-1],
                     StateHandler.instance.shared_info["result_queue"],
                     StateHandler.instance.shared_info["result_queue"]._internal_size,
