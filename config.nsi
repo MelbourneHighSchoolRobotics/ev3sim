@@ -69,17 +69,32 @@ FunctionEnd
 ;Sections
 Section "Dummy Section" SecDummy
 ; Remove previous installation
+IfFileExists "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" update no_update
+update:
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" "$InstDir\default_config.yaml"
+no_update:
 RMDir /r "$InstDir\python_embed"
 SetOutPath "$InstDir"
 File /nonfatal /a /r "dist\"
 WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
-IfFileExists "$InstDir\ev3sim\user_config.yaml" update
-;Generate the default user config if not in update.
-CopyFiles "$InstDir\ev3sim\presets\default_config.yaml" "$InstDir\ev3sim\user_config.yaml"
-update:
+
 ;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
-;To use test.pypi: ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1' $0
-ExecWait '"$INSTDIR\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' $0
+;To use test.pypi: '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1'
+ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' "" "$InstDir\pip.log"
+Pop $0
+StrCmp "0" $0 fine
+
+MessageBox MB_OK "Installation failed, check '$InstDir\pip.log'"
+Quit
+
+fine:
+
+;Do user_config stuff
+IfFileExists "$InstDir\default_config.yaml" second_update
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\presets\default_config.yaml" "$InstDir\default_config.yaml"
+second_update:
+CopyFiles "$InstDir\default_config.yaml" "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml"
+
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
 createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExeLocation" "" "$ExeLocation" 0
