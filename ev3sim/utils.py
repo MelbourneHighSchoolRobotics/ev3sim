@@ -72,9 +72,11 @@ def checkVersion():
     else:
         ScreenObjectManager.NEW_VERSION = Q.get() != __version__
 
+
 APP_VSCODE = "VSCODE"
 APP_MINDSTORMS = "MINDSTORMS"
 APP_EXPLORER = "EXPLORER"
+
 
 def open_file(filepath, pref_app, folder=""):
     import os

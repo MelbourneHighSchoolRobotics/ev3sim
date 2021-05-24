@@ -404,8 +404,11 @@ class BotMenu(BaseMenu):
         else:
             script_location = conf.get("script", "code.py")
 
-            open_file(os.path.join(self.available_bots[self.bot_index][1], script_location), APP_VSCODE, folder=os.path.join(find_abs_directory("workspace")))
-
+            open_file(
+                os.path.join(self.available_bots[self.bot_index][1], script_location),
+                APP_VSCODE,
+                folder=os.path.join(find_abs_directory("workspace")),
+            )
 
     def clickSelect(self):
         # Shouldn't happen but lets be safe.

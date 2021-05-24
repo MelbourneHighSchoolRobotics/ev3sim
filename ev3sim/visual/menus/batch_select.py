@@ -262,6 +262,7 @@ class BatchMenu(BaseMenu):
 
     def clickCode(self):
         from ev3sim.utils import open_file, APP_VSCODE, APP_MINDSTORMS
+
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
@@ -274,7 +275,11 @@ class BatchMenu(BaseMenu):
         else:
             script_location = conf.get("script", "code.py")
 
-            open_file(os.path.join(self.available_batches[self.batch_index][2], "bot", script_location), APP_VSCODE, folder=os.path.join(find_abs_directory("workspace")))
+            open_file(
+                os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                APP_VSCODE,
+                folder=os.path.join(find_abs_directory("workspace")),
+            )
 
     def handleEvent(self, event):
         super().handleEvent(event)
