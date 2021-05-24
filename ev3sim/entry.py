@@ -104,6 +104,13 @@ def main(passed_args=None):
         handler = StateHandler()
         checkVersion()
         handler.setConfig(**conf)
+        # If no workspace has been set, place it in the package directory.
+        if not handler.WORKSPACE_FOLDER:
+            handler.setConfig(**{
+                "app": {
+                    "workspace_folder": find_abs_directory("package/workspace", create=True),
+                }
+            })
     except Exception as e:
         import traceback as tb
 

@@ -20,7 +20,6 @@ class ScreenObjectManager:
     SCREEN_BOTS = "BOT_SELECT"
     SCREEN_BATCH = "BATCH_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
-    SCREEN_WORKSPACE = "WORKSPACE"
     SCREEN_UPDATE = "UPDATE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
     SCREEN_RESCUE_EDIT = "RESCUE_EDIT"
@@ -83,10 +82,6 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.update_dialog import UpdateMenu
 
         self.screens[self.SCREEN_UPDATE] = UpdateMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        # Workspace select dialog
-        from ev3sim.visual.menus.workspace_menu import WorkspaceMenu
-
-        self.screens[self.SCREEN_WORKSPACE] = WorkspaceMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Menu screen
         from ev3sim.visual.menus.main import MainMenu
 
@@ -186,10 +181,7 @@ class ScreenObjectManager:
         for screen, kwargs in zip(push_screens, push_kwargss):
             self.pushScreen(screen, **kwargs)
         if not push_screens:
-            if not StateHandler.WORKSPACE_FOLDER:
-                self.pushScreen(self.SCREEN_WORKSPACE)
-            else:
-                self.pushScreen(self.SCREEN_MENU)
+            self.pushScreen(self.SCREEN_MENU)
 
     def registerVisual(
         self, obj: "visual.objects.IVisualElement", key, kill_time=None, overwrite_key=False
