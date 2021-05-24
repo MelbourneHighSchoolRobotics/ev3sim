@@ -80,17 +80,10 @@ def main(passed_args=None):
         return
 
     if args.open_config:
-        import platform
-        import subprocess
+        from ev3sim.utils import open_file, APP_EXPLORER
 
         fname = join(ev3sim_folder, "user_config.yaml")
-
-        if platform.system() == "Windows":
-            subprocess.Popen(["explorer", "/select,", fname])
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", fname])
-        else:
-            subprocess.Popen(["xdg-open", fname])
+        open_file(fname, APP_EXPLORER)
         return
 
     # Step 2: Safely load configs and set up error reporting

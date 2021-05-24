@@ -71,3 +71,53 @@ def checkVersion():
         ScreenObjectManager.NEW_VERSION = False
     else:
         ScreenObjectManager.NEW_VERSION = Q.get() != __version__
+
+APP_VSCODE = "VSCODE"
+APP_MINDSTORMS = "MINDSTORMS"
+APP_EXPLORER = "EXPLORER"
+
+def open_file(filepath, pref_app, folder=""):
+    import os
+    import platform
+    import subprocess
+
+    if pref_app != APP_EXPLORER:
+        # Try opening with vs or mindstorms
+        if platform.system() == "Windows":
+            paths = [
+                os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
+                os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
+            ]
+            for path in paths:
+                if os.path.exists(path):
+                    for fd in os.listdir(path):
+                        if pref_app == APP_VSCODE and "Visual Studio Code" in fd:
+                            f = os.path.join(path, fd)
+                            for file in os.listdir(f):
+                                if folder:
+                                    subprocess.run(
+                                        f'start "code" "{os.path.join(f, file)}" ""{folder}" --goto "{filepath}""',
+                                        shell=True,
+                                    )
+                                else:
+                                    subprocess.run(
+                                        f'start "code" "{os.path.join(f, file)}" ""{filepath}""',
+                                        shell=True,
+                                    )
+                                return
+                        if pref_app == APP_MINDSTORMS and "MINDSTORMS" in fd:
+                            f = os.path.join(path, fd)
+                            for file in os.listdir(f):
+                                subprocess.run(
+                                    f'start "{os.path.join(f, file)}" "{filepath}"',
+                                    shell=True,
+                                )
+                                return
+
+    if platform.system() == "Windows":
+        subprocess.Popen(["explorer", "/select,", filepath])
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", filepath])
+    else:
+        subprocess.Popen(["xdg-open", filepath])
+    return
