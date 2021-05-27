@@ -214,7 +214,7 @@ class ScriptLoader:
                         )
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
-                        
+
                         class Event:
                             pass
 
@@ -302,8 +302,10 @@ class ScriptLoader:
             if preffered_output is None or preffered_output == output:
                 self.consumeMessage(message, output)
                 del self.input_requests[i]
+
                 class Event:
                     pass
+
                 event = Event()
                 event.type = EV3SIM_MESSAGE_POSTED
                 event.output = output
