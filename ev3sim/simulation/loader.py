@@ -302,6 +302,13 @@ class ScriptLoader:
             if preffered_output is None or preffered_output == output:
                 self.consumeMessage(message, output)
                 del self.input_requests[i]
+                class Event:
+                    pass
+                event = Event()
+                event.type = EV3SIM_MESSAGE_POSTED
+                event.output = output
+                event.message = message
+                ScreenObjectManager.instance.unhandled_events.append(event)
                 break
         else:
             self.input_messages.append([message, preffered_output])
