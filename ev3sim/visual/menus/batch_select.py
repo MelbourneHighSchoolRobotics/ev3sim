@@ -310,9 +310,7 @@ class BatchMenu(BaseMenu):
                 next_kwargs={"batch": sim_path},
             )
 
-        return ScreenObjectManager.instance.pushScreen(
-            ScreenObjectManager.SCREEN_SIM, batch=sim_path
-        )
+        return ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_SIM, batch=sim_path)
 
     def clickBots(self):
         # Shouldn't happen but lets be safe.
@@ -331,7 +329,6 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_BOTS,
             batch_file=sim_path,
         )
-                
 
     def clickRemove(self):
         # Shouldn't happen but lets be safe.
@@ -348,12 +345,12 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
-            
+
         sim_path = self.available_batches[self.batch_index][1]
 
         with open(sim_path, "r") as f:
             sim_config = yaml.safe_load(f)
-        
+
         bot_path = find_abs(sim_config["bots"][0], bot_locations())
 
         with open(os.path.join(bot_path, "config.bot")) as f:
