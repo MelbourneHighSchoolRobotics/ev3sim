@@ -6,7 +6,7 @@ class BatchValidator(Validator):
     FILE_EXT = "sim"
 
     REQUIRED_KEYS = ["preset_file", "bots"]
-    AVAILABLE_KEYS = REQUIRED_KEYS + ["settings", "hidden"]
+    AVAILABLE_KEYS = REQUIRED_KEYS + ["settings", "hidden", "choose_bots"]
 
     @classmethod
     def validate_json(cls, json_obj) -> bool:

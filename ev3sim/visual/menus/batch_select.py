@@ -1,4 +1,3 @@
-from ev3sim.visual.menus.utils import CustomScroll
 import yaml
 import os
 import pygame
@@ -6,8 +5,10 @@ import pygame_gui
 import sentry_sdk
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
+from ev3sim.validation.bot_files import BotValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
-from ev3sim.search_locations import asset_locations, batch_locations
+from ev3sim.visual.menus.utils import CustomScroll
+from ev3sim.search_locations import asset_locations, batch_locations, bot_locations
 
 
 class BatchMenu(BaseMenu):
@@ -192,6 +193,29 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.code_button)
         self._all_objs.append(self.code_icon)
 
+        bots_button_pos = (
+            self._size[0] * 0.9 - preview_size[0] + 10,
+            self._size[1] * 0.1 + preview_size[1] + 10,
+        )
+        self.bots_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*bots_button_pos, *code_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bot-bots", "settings_buttons"),
+        )
+        self.addButtonEvent("bot-bots", self.clickBots)
+        if not self.bots_enable:
+            self.bots_button.disable()
+        bots_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
+        self.bots_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(*self.iconPos(bots_button_pos, code_size, code_icon_size), *code_icon_size),
+            image_surface=pygame.image.load(bots_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bots-icon"),
+        )
+        self._all_objs.append(self.bots_button)
+        self._all_objs.append(self.bots_icon)
+
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
         start_button_pos = (self._size[0] * 0.9 - start_size[0], self._size[1] * 0.9 - start_size[1])
@@ -244,12 +268,70 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
-
         from ev3sim.visual.manager import ScreenObjectManager
 
-        ScreenObjectManager.instance.pushScreen(
-            ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
+        sim_path = self.available_batches[self.batch_index][1]
+
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+        to_remove = []
+        for index in range(len(sim_config["bots"])):
+            # Try loading this bot.
+            try:
+                with open(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), "config.bot"), "r") as f:
+                    bot_config = yaml.safe_load(f)
+                if not BotValidator.validate_json(bot_config):
+                    to_remove.append(index)
+                fname = bot_config.get("script", "code.py")
+                if not os.path.exists(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname)):
+
+                    def action():
+                        with open(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname), "w") as f:
+                            f.write("# Put your code here!\n")
+
+                    ScreenObjectManager.instance.forceCloseError(
+                        f"Your bot {sim_config['bots'][index]} does not contain the file {fname}. You may have renamed or deleted it by accident. In order to use this bot, you need to add this file back. Click \"Add {fname}\" to create this file, or do it manually.",
+                        (f"Add {fname}", action),
+                    )
+                    return
+            except:
+                to_remove.append(index)
+        if to_remove:
+            for index in to_remove[::-1]:
+                del sim_config["bots"][index]
+            with open(sim_path, "w") as f:
+                f.write(yaml.dump(sim_config))
+
+        if not sim_config["bots"] and sim_config.get("choose_bots", False):
+            return ScreenObjectManager.instance.pushScreen(
+                ScreenObjectManager.SCREEN_BOTS,
+                batch_file=sim_path,
+                next=ScreenObjectManager.instance.SCREEN_SIM,
+                next_kwargs={"batch": sim_path},
+            )
+
+        return ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_SIM, batch=sim_path
         )
+
+    def clickBots(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        sim_path = self.available_batches[self.batch_index][1]
+
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+
+        if not sim_config.get("choose_bots", False):
+            return
+        return ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOTS,
+            batch_file=sim_path,
+        )
+                
 
     def clickRemove(self):
         # Shouldn't happen but lets be safe.
@@ -266,17 +348,25 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
-        with open(os.path.join(self.available_batches[self.batch_index][2], "bot", "config.bot")) as f:
+            
+        sim_path = self.available_batches[self.batch_index][1]
+
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+        
+        bot_path = find_abs(sim_config["bots"][0], bot_locations())
+
+        with open(os.path.join(bot_path, "config.bot")) as f:
             conf = yaml.safe_load(f)
         if conf.get("type", "python") == "mindstorms":
             script_location = conf.get("script", "program.ev3")
 
-            open_file(os.path.join(self.available_batches[self.batch_index][2], "bot", script_location), APP_MINDSTORMS)
+            open_file(os.path.join(bot_path, script_location), APP_MINDSTORMS)
         else:
             script_location = conf.get("script", "code.py")
 
             open_file(
-                os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                os.path.join(bot_path, script_location),
                 APP_VSCODE,
                 folder=os.path.join(find_abs_directory("workspace")),
             )
@@ -297,7 +387,16 @@ class BatchMenu(BaseMenu):
         self.batch_index = new_index
         self.start_enable = new_index != -1
         self.remove_enable = new_index != -1
-        self.code_enable = new_index != -1
+        if new_index != -1:
+            sim_path = self.available_batches[self.batch_index][1]
+
+            with open(sim_path, "r") as f:
+                sim_config = yaml.safe_load(f)
+            self.bots_enable = sim_config.get("choose_bots", False)
+            self.code_enable = len(sim_config.get("bots", [])) == 1
+        else:
+            self.bots_enable = False
+            self.code_enable = False
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):
