@@ -7,7 +7,7 @@ import sentry_sdk
 from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
-from ev3sim.search_locations import asset_locations, batch_locations
+from ev3sim.search_locations import asset_locations, batch_locations, bot_locations
 
 
 class BatchMenu(BaseMenu):
@@ -192,6 +192,29 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.code_button)
         self._all_objs.append(self.code_icon)
 
+        bots_button_pos = (
+            self._size[0] * 0.9 - preview_size[0] + 10,
+            self._size[1] * 0.1 + preview_size[1] + 10,
+        )
+        self.bots_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*bots_button_pos, *code_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bot-bots", "settings_buttons"),
+        )
+        self.addButtonEvent("bot-bots", self.clickBots)
+        if not self.bots_enable:
+            self.bots_button.disable()
+        bots_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
+        self.bots_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(*self.iconPos(bots_button_pos, code_size, code_icon_size), *code_icon_size),
+            image_surface=pygame.image.load(bots_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bots-icon"),
+        )
+        self._all_objs.append(self.bots_button)
+        self._all_objs.append(self.bots_icon)
+
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
         start_button_pos = (self._size[0] * 0.9 - start_size[0], self._size[1] * 0.9 - start_size[1])
@@ -251,6 +274,29 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
         )
 
+    def clickBots(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from os.path import abspath, dirname, basename
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        sim_path = self.available_batches[self.batch_index][1]
+
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+
+        complete_path = find_abs(sim_config["bots"][0], bot_locations())
+
+        ignore = abspath(find_abs_directory("workspace"))
+        top_dir = abspath(dirname(complete_path))
+
+        return ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOT_EDIT,
+            bot_file=complete_path,
+            bot_dir_file=("workspace" + top_dir.replace(ignore, ""), basename(complete_path)),
+        )
+
     def clickRemove(self):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
@@ -298,6 +344,14 @@ class BatchMenu(BaseMenu):
         self.start_enable = new_index != -1
         self.remove_enable = new_index != -1
         self.code_enable = new_index != -1
+        if new_index != -1:
+            sim_path = self.available_batches[self.batch_index][1]
+
+            with open(sim_path, "r") as f:
+                sim_config = yaml.safe_load(f)
+            self.bots_enable = sim_config.get("edit_allowed", True)
+        else:
+            self.bots_enable = False
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):
