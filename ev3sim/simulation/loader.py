@@ -300,8 +300,8 @@ class ScriptLoader:
         # First, try to grab an existing request from the queue.
         for i, output in enumerate(self.input_requests):
             if preffered_output is None or preffered_output == output:
-                self.consumeMessage(message, output)
                 del self.input_requests[i]
+                self.consumeMessage(message, output)
 
                 class Event:
                     pass
@@ -319,8 +319,8 @@ class ScriptLoader:
         # First, try to grab an existing message from the queue.
         for i, (msg, out) in enumerate(self.input_messages):
             if out is None or out == output:
-                self.consumeMessage(msg, output)
                 del self.input_messages[i]
+                self.consumeMessage(msg, output)
                 break
         else:
             self.input_requests.append(output)
