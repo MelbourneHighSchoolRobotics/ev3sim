@@ -326,6 +326,16 @@
             "size": "24"
         }
     },
+    "settings-title": {
+        "colours": {
+            "normal_text": "#f7ede2",
+            "dark_bg": "#00000000"
+        },
+        "font": {
+            "name": "Roboto",
+            "size": "24"
+        }
+    },
     "checkbox-button": {
         "colours": {
             "normal_bg": "#ffffff00",

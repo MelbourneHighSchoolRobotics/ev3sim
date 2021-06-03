@@ -9,22 +9,16 @@ Windows Executable
 
 By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available on the `releases page on github`_.
 
-.. image:: images/releases.jpg
+.. image:: images/releases.png
   :width: 600
   :alt: An image of the releases page on github.
 
 Simply download the asset file named ``one_click.exe``, and follow the prompts to get the executable installed.
 
-Windows Bundle
-^^^^^^^^^^^^^^
-
-Another way to get EV3Sim is by downloading the package from the same releases page (``windows_package``). Simply unzip and place this folder in a program directory such as ``Program Files`` or ``Applications``.
-In future we aim to also support this method for Mac/Linux, but currently there's not much point to. Let us now if you'd prefer this!
-
 Pip install
 ^^^^^^^^^^^
 
-If installing via this method, EV3sim requires Python 3.7+ to be installed on your system. If you don't already have Python installed, you can download it from https://www.python.org/ .
+If installing via this method, EV3sim requires Python 3.7+ to be installed on your system. If you don't already have Python installed, you can download it from https://www.python.org/ (Make sure to tick "Add Python to PATH"!).
 
 You can install this package using pip as follows:
 
@@ -40,7 +34,7 @@ Updating
 Windows Executable
 ^^^^^^^^^^^^^^^^^^
 
-If a new one-click installer comes out, you can simply run this and it will update your existing installation of EV3Sim. Your workspace and any settings will remain the same, unless some breaking changes are required.
+If a new one-click installer comes out, you can simply download and run this new version and it will update your existing installation of EV3Sim. Your workspace and any settings will remain the same, unless some breaking changes are required.
 
 Pip install
 ^^^^^^^^^^^
@@ -57,11 +51,10 @@ Starting EV3Sim
 Depending on you installation method, you might start EV3Sim differently:
 
 * If you installed on windows with the one click install, EV3Sim should be in your start menu.
-* If using the bundle installation, you can go into the folder and run ``ev3sim`` or ``ev3sim.exe``.
 * If installed via pip, then run ``ev3sim`` in the command line.
 
 The first time you run EV3Sim, you will be prompted with a dialog, asking you to specify a *workspace folder*.
-A workspace folder is where all of your local bots, code and simulation presets are stored.
+A workspace folder is where all of your local bots and code are stored.
 
 We'd recommend creating a new folder on your Desktop to be your workspace folder, for easy access.
 
@@ -70,9 +63,11 @@ Running EV3Sim
 
 Once your workspace folder has been set, you can start using the application.
 
-* The ``Simulate`` tab allows you to run simulations, and select simulations to edit the bots or settings.
-* The ``Bots`` tab allows you to edit and create bots to use in the simulation.
+* The ``Soccer`` tab allows you to run soccer simulations, and the two buttons to the right let you change the settings for this simulation, and what bots will be simulated.
+* The ``Rescue`` tab allows you to run rescue simulations, and the two buttons to the right let you change the settings for this simulation, and what bots will be simulated.
+* The ``Bots`` tab allows you to edit and create bots to use in the simulations.
 * The ``Settings`` tab allows you to change a few configurations when running EV3Sim.
+* (If shown) The ``Custom`` tab allows you to simulate custom environments, if they are installed.
 
 
 Further Information on installing
@@ -82,8 +77,8 @@ Windows
 ^^^^^^^
 
 
-Command not recognised
-""""""""""""""""""""""
+Command not recognised - Python / Pip installation
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. code-block:: batch
 

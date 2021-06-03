@@ -13,8 +13,6 @@ If you want to change the design of an existing bot, you can select that bot and
   :width: 600
   :alt: The bot select screen highlighting the new and edit buttons.
 
-If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Open`` to edit the bot.
-
 If you are creating a new bot, you'll be prompted to pick a baseplate for the bot.
 The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.
 
@@ -36,7 +34,7 @@ There are 4 types of elements:
 * Devices (Motors, Sensors, Buttons)
 
 Click the respective icon on the left sidebar to select that element. 
-If you instead click the cursor icon, you will be return to select mode, where you can select elements already on the bot, and change/remove them.
+If you instead click the cursor icon, you will be returned to select mode, where you can select elements already on the bot, and change/remove them.
 
 .. image:: images/bot_edit_holding_elements.png
   :width: 600
@@ -51,7 +49,7 @@ Modifying elements
 ^^^^^^^^^^^^^^^^^^
 
 To modify an element on the robot, we first need to enter the selecting mode, by clicking the cursor icon on the left sidebar.
-Then, click on the element to select it. After this, the bottom bar should populate with properties to edit:
+Then, click and drag to move an element, or click on the element to select it. After this, the bottom bar should populate with properties to edit:
 
 * Rotation
 * Fill and Stroke colour
@@ -63,9 +61,7 @@ And many others. You can edit these properties and see them change in real time 
 Any numerical property can be edited simply by typing out the value you want, after clicking in the box. 
 You can also scroll while hovering over the value to increase/decrease it with ease.
 
-The fill and stroke properties can be change by clicking the colour swatch next to it. This should open a colour picker.
-
-The device port entry can be whatever you want it to be, but this property tends to be ``in1,in2,in3...`` for sensors, and ``outA,outB,outC...`` for motors.
+The fill and stroke properties can be changed by clicking the colour swatch next to it. This should open a colour picker.
 
 .. image:: images/bot_edit_properties.png
   :width: 600
@@ -81,17 +77,12 @@ Additionally, the backspace key should also remove the element.
 Adding code to a bot
 --------------------
 
-Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.
+Designing a good bot also includes designing code to run!
 
-If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Edit`` to go to the same window.
+You can design this code by selecting the Folder icon when the bot is selected. This should open up a window with a folder containing three items:
 
-.. image:: images/bot_menu_settings.png
-  :width: 600
-  :alt: The bot menu screen, showing the bot properties cog.
+* ``code.py`` - The python file your program will run.
+* ``config.bot`` - Your robot information stored in a file.
+* ``preview.png`` - A preview of your bot.
 
-Then press the button next to 'Bot script' to open the file selector. 
-All code you want to run on your bot should be located in the ``code`` folder of your workspace!
-
-.. image:: images/bot_edit_code.png
-  :width: 600
-  :alt: The bot property editing screen, showing the code location button.
+To design code for your robot, simply edit the contents of ``code.py``.

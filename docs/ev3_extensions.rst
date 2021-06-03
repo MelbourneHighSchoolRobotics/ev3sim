@@ -5,12 +5,12 @@ While your robots still run python-ev3dev2 code in the simulation, you also have
 
 Almost all of the below functionality is available in the package ``ev3sim.code_helpers``. In order for this code to work on your physical robot, there also needs to be a package on the physical bot filesystem called ``ev3sim.code_helpers``, containing `this file`_.
 
-For a demo of most of these features, see ``demo.bot`` in the simulator. The code it runs is available `here`_.
+For a demo of most of these features, see the ``demo`` bot in the simulator. The code it runs is available `here`_.
 
 Waiting for simulation ticks
 ----------------------------
 
-As most ev3 programs tend to have a single loop which handles all of the robot's logic, in the interest of efficiency on simulator we highly recommend you attempt to sync this program loop up with each tick of the simulator.
+As most ev3 programs tend to have a single loop which handles all of the robot's logic, in the interest of efficiency on simulator it is essentially required that you attempt to sync this program loop up with each tick of the simulator.
 This is because running multiple program loops per simulation tick is useless (as sensor values won't change) and it can degrade the reliability of sensor values in future, if this program is spending a lot of CPU time running these pointless loops.
 
 You can achieve such a sync with the ``wait_for_tick`` method from the code helpers:
@@ -21,9 +21,10 @@ You can achieve such a sync with the ``wait_for_tick`` method from the code help
 
     while True:
         # Program logic...
+        # Wait for the next simulation tick before I continue...
         wait_for_tick()
 
-Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run on a physical bot (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
 Robot ID
 --------
@@ -38,7 +39,7 @@ Since you might be running multiple instances of the same code on different robo
 
 This will also work on the brick, it should print "Robot-0".
 
-Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run on a physical bot (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
 Printing to console
 -------------------
@@ -81,7 +82,7 @@ Example:
     # This message will stay on the console for 3 seconds
     format_print("Hello world!")
     # This message will stay on the console for 5 seconds
-    format_print("Hello world!", life=3)
+    format_print("Hello world!", life=5)
     # This message will stay on the console for 1 second.
     format_print("Hello world!", life=1)
 
@@ -107,7 +108,7 @@ This message will stay open in the console, and its message contents will change
 Logs
 ----
 
-All prints made to the console will also be stored in log files. These log files are available in your workspace if the workspace is defined. Otherwise they will be stored in your EV3Sim install location.
+All prints made to the console will also be stored in log files (As well as error messages). These log files are available in your workspace if the workspace is defined. Otherwise they will be stored in your EV3Sim install location.
 
 Simulation testing
 ------------------
@@ -126,7 +127,7 @@ As an example, the simulator currently does not implement the ``Led`` functional
     if is_sim:
         print("Hello from the sim! Sadly I can't do lights at the moment :(")
 
-Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run on a physical bot (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
 Handling simulation events
 --------------------------
@@ -149,12 +150,12 @@ To handle such events you can use the code helpers EventSystem:
     EventSystem.on_goal_scored = handle_scored
 
     while True:
-        EventSystem.handle_events()
         wait_for_tick()
+        EventSystem.handle_events()
 
 ``EventSystem.handle_events`` must be called often (ie in every loop iteration, simply add this line after every occurrence of ``wait_for_tick``) to allow such events to fire the related code. Any event in the system returns a data object, which will contain any useful information about the event.
 
-Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+Importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run on a physical bot (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
 The full list of events is:
 
@@ -169,7 +170,7 @@ Fires whenever a goal is scored by either team.
 Fires whenever the game is reset manually.
 
 ``on_penalty_start``
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 Fires whenever you are placed in the penalty box.
 
 ``on_penalty_end``
@@ -188,7 +189,7 @@ Here is the list of supported commands:
 ``CommandSystem.TYPE_DRAW``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Draws an object to the screen using the same syntax as the simulator. The data passed in must be a dictionary with the following keys:
+Draws an object to the screen using the same syntax as the simulator source code. The data passed in must be a dictionary with the following keys:
 
 - ``obj``: The visual representation of the object.
 - ``key``: The key the visual object will be referenced by (This means you can update the object position by sending the same key).
@@ -198,7 +199,7 @@ Draws an object to the screen using the same syntax as the simulator. The data p
 ``CommandSystem.TYPE_CUSTOM``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A custom event that can be caught by any custom presets you want to define.
+A custom event that can be caught by any custom simulations you want to define.
 
 Example:
 
@@ -247,14 +248,14 @@ As bluetooth communications are a popular option for complicated strategies with
 
 The communications are written in a client/server architecture, as with normal use of bluetooth comms.
 
-This should also work on the physical robots over bluetooth, provided that the MAC Address and port are correct (Follow the instructions for normal bluetooth connectivity). As with above importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
+This should also work on the physical robots over bluetooth, provided that the MAC Address and port are correct (Follow the instructions for normal bluetooth connectivity). As with above importing this means you need to transfer ``ev3sim/code_helpers.py`` onto the brick for this to run on a physical bot (Just create a folder named ``ev3sim`` and place `code_helpers.py`_ in there).
 
 For an example of robots communicating device data to each other (in this case through a server, but client/server messaging could also simply work between two robots) try this example (place all 4 commands in separate terminals), you can run the simulation preset ``ev3sim/examples/sims/communications_demo.yaml``
 
 Sources: `communication_client.py`_, `communication_server.py`_
 
-.. _here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/demo.py
+.. _here: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/demo/code.py
 .. _this file: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
 .. _code_helpers.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/code_helpers.py
-.. _communication_client.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_client.py
-.. _communication_server.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/robots/communication_server.py
+.. _communication_client.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/communication_client/code.py
+.. _communication_server.py: https://github.com/MelbourneHighSchoolRobotics/ev3sim/tree/main/ev3sim/examples/robots/communication_server/code.py
