@@ -121,6 +121,15 @@ def find_abs_directory(dirpath, create=True):
             return fpath
 
 
+def make_relative(fpath, relative_dirs):
+    apath = os.path.normpath(fpath)
+    for rdir in relative_dirs:
+        real = os.path.normpath(find_abs_directory(rdir))
+        if apath.startswith(real):
+            return rdir, os.path.relpath(apath, start=real).replace("\\", "/")
+    raise ValueError(f"Could not find {fpath} in any of {relative_dirs}")
+
+
 def ensure_workspace_filled(ws_path):
     # If the workspace changes, then we should create the necessary folders
     if not os.path.exists(ws_path):
