@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Bot editing &mdash; ev3sim  documentation</title>
+  <title>The basics &mdash; ev3sim  documentation</title>
   
 
   
@@ -31,7 +31,6 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -39,7 +38,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Extensions to normal EV3 Code" href="ev3_extensions.html" />
-    <link rel="prev" title="Simulation Presets" href="batched_commands.html" /> 
+    <link rel="prev" title="Setting up and Running EV3Sim" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,21 +86,23 @@
               <p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Bot editing</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The basics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#designing-a-bot">Designing a bot</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#placing-elements">Placing elements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#modifying-elements">Modifying elements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removing-elements">Removing elements</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#saving-the-bot">Saving the bot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-code-to-a-bot">Adding code to a bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-your-bot">Using your bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changing-the-simulation">Changing the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ev3sim-settings">EV3Sim settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
 
             
@@ -148,13 +149,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Bot editing</li>
+      <li>The basics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/bot_editing.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/basics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -167,16 +168,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="bot-editing">
-<h1>Bot editing<a class="headerlink" href="#bot-editing" title="Permalink to this headline">¶</a></h1>
+  <section id="the-basics">
+<h1>The basics<a class="headerlink" href="#the-basics" title="Permalink to this headline">¶</a></h1>
+<p>Now that we’ve got EV3Sim installed, we can try out a few of the features EV3Sim has on offer.</p>
 <p>EV3Sim allows you to design, test and simulate your own bots, all through the application!
-The only thing you’ll want an external program for is writing the code to be run on your bot.</p>
+The only thing you’ll need an external program for is writing the program to be run on your bot.</p>
 <section id="designing-a-bot">
 <h2>Designing a bot<a class="headerlink" href="#designing-a-bot" title="Permalink to this headline">¶</a></h2>
 <p>To create a new bot, go to the <code class="docutils literal notranslate"><span class="pre">Bots</span></code> menu and click the ‘+’ Button.
 If you want to change the design of an existing bot, you can select that bot and click the pencil icon instead.</p>
 <a class="reference internal image-reference" href="_images/bot_menu_edit.png"><img alt="The bot select screen highlighting the new and edit buttons." src="_images/bot_menu_edit.png" style="width: 600px;" /></a>
-<p>If you have the windows one click install, you can also find your bot in <code class="docutils literal notranslate"><span class="pre">workspace/robots</span></code> and right click, select <code class="docutils literal notranslate"><span class="pre">Open</span></code> to edit the bot.</p>
 <p>If you are creating a new bot, you’ll be prompted to pick a baseplate for the bot.
 The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.</p>
 <a class="reference internal image-reference" href="_images/baseplate_dialog.png"><img alt="The baseplate dialog, selecting circle, rectangle or polygon." src="_images/baseplate_dialog.png" style="width: 600px;" /></a>
@@ -224,14 +225,40 @@ On the left sidebar, a ‘Remove’ button should appear, you can press this to 
 Additionally, the backspace key should also remove the element.</p>
 </section>
 </section>
+<section id="saving-the-bot">
+<h2>Saving the bot<a class="headerlink" href="#saving-the-bot" title="Permalink to this headline">¶</a></h2>
+<p>After you are happy with the components on you bot, you click the Create/Save button on the bottom right.
+If you are creating a robot, this will first prompt you for:</p>
+<ul class="simple">
+<li><p>The programming language this bot will use (Mindstorms or Python)</p></li>
+<li><p>The name of the robot (This must be a valid filename)</p></li>
+</ul>
+</section>
 <section id="adding-code-to-a-bot">
 <h2>Adding code to a bot<a class="headerlink" href="#adding-code-to-a-bot" title="Permalink to this headline">¶</a></h2>
-<p>Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.</p>
-<p>If you have the windows one click install, you can also find your bot in <code class="docutils literal notranslate"><span class="pre">workspace/robots</span></code> and right click, select <code class="docutils literal notranslate"><span class="pre">Edit</span></code> to go to the same window.</p>
-<a class="reference internal image-reference" href="_images/bot_menu_settings.png"><img alt="The bot menu screen, showing the bot properties cog." src="_images/bot_menu_settings.png" style="width: 600px;" /></a>
-<p>Then press the button next to ‘Bot script’ to open the file selector.
-All code you want to run on your bot should be located in the <code class="docutils literal notranslate"><span class="pre">code</span></code> folder of your workspace!</p>
-<a class="reference internal image-reference" href="_images/bot_edit_code.png"><img alt="The bot property editing screen, showing the code location button." src="_images/bot_edit_code.png" style="width: 600px;" /></a>
+<p>After creating your bot, you can press the code icon on the right of the bot menu to edit the code it will run.
+If on windows, this will try to detect VSCode / Mindstorms and open it accordingly. Otherwise it will focus the code in a file explorer window.</p>
+<a class="reference internal image-reference" href="_images/open_code.png"><img alt="The button for opening a bot's program." src="_images/open_code.png" style="width: 600px;" /></a>
+</section>
+<section id="using-your-bot">
+<h2>Using your bot<a class="headerlink" href="#using-your-bot" title="Permalink to this headline">¶</a></h2>
+<p>Provided you’ve now created a bot, you can start using it in simulations be going back to the main menu with the Escape button.
+From here, select the robot icon next to Soccer.</p>
+<a class="reference internal image-reference" href="_images/bot_select.png"><img alt="The bot selection screen for a simulation." src="_images/bot_select.png" style="width: 600px;" /></a>
+<p>Now, your bot should show up in the list on the left, click it, then click Select. Finally, click done. This should take you back to the main menu.</p>
+<p>From here, you can press “Soccer” to simulate with your robot!</p>
+</section>
+<section id="changing-the-simulation">
+<h2>Changing the simulation<a class="headerlink" href="#changing-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>When you opened the soccer simulation, you might have noticed that certain rules were enforced, such as halftimes of 5 minutes, and robots being penalised for venturing past the white line.
+To change this, we can press the cog icon on the main menu:</p>
+<a class="reference internal image-reference" href="_images/cog_main.png"><img alt="The soccer settings button." src="_images/cog_main.png" style="width: 600px;" /></a>
+<p>After pressing “Soccer” again, you should notice the changes taking effect.</p>
+</section>
+<section id="ev3sim-settings">
+<h2>EV3Sim settings<a class="headerlink" href="#ev3sim-settings" title="Permalink to this headline">¶</a></h2>
+<p>Lastly, there are some general settings available for ev3sim, such as the FPS, Default screen width and height, as well as disabling/enabling the console in simulation:</p>
+<a class="reference internal image-reference" href="_images/settings_main.png"><img alt="The main settings menu of EV3Sim." src="_images/settings_main.png" style="width: 600px;" /></a>
 </section>
 </section>
 
@@ -246,7 +273,7 @@ All code you want to run on your bot should be located in the <code class="docut
         <a href="ev3_extensions.html" class="btn btn-neutral float-right" title="Extensions to normal EV3 Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="batched_commands.html" class="btn btn-neutral float-left" title="Simulation Presets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setting up and Running EV3Sim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

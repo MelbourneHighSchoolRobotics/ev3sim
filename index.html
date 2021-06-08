@@ -31,7 +31,6 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -86,12 +85,10 @@
               <p><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">The basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_presets.html">Custom Preset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a></li>
 </ul>
 
             
@@ -159,33 +156,29 @@
             
   <section id="welcome-to-ev3sim-s-documentation">
 <h1>Welcome to ev3sim’s documentation!<a class="headerlink" href="#welcome-to-ev3sim-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms using ev3dev2 in python. EV3sim targets the Robocup Junior Australia Soccer competition, however can be adapted for use in many different environments.</p>
+<p>ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms using ev3dev2 in python.</p>
 <a class="reference internal image-reference" href="_images/sim.jpg"><img alt="An image of the simulation" src="_images/sim.jpg" style="width: 600px;" /></a>
-<p>A full video on what EV3Sim is and how you can install it can be found here:</p>
+<p>A full video on the main features of EV3Sim can be found here:</p>
 <div style="position: relative; max-width: 100%; height: auto;">
    <iframe width="560" height="315" src="https://www.youtube.com/embed/wm9WApUwiVc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div><div class="toctree-wrapper compound">
 <p><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up and Running EV3Sim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html#updating">Updating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#starting-ev3sim">Starting EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#running-ev3sim">Running EV3Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html#further-information-on-installing">Further Information on installing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="batched_commands.html">Simulation Presets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#what-is-a-simulation-preset">What is a simulation preset?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#changing-the-robots-in-a-simulation">Changing the robots in a simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#changing-simulation-settings">Changing simulation settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#creating-a-simulation-preset">Creating a simulation preset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batched_commands.html#running-the-simulation-preset">Running the simulation preset</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="bot_editing.html">Bot editing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bot_editing.html#designing-a-bot">Designing a bot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bot_editing.html#adding-code-to-a-bot">Adding code to a bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">The basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#designing-a-bot">Designing a bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#saving-the-bot">Saving the bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#adding-code-to-a-bot">Adding code to a bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#using-your-bot">Using your bot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#changing-the-simulation">Changing the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#ev3sim-settings">EV3Sim settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ev3_extensions.html">Extensions to normal EV3 Code</a><ul>
@@ -203,13 +196,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#running-locally">Running locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#linting-code">Linting code</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="system.html">Simulation Objects</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="visual.html">Visuals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="robot.html">Robot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devices.html">Devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="interactor.html">Interactors</a></li>
 </ul>
 </li>
 </ul>
