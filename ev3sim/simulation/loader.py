@@ -348,12 +348,38 @@ class StateHandler:
             "FPS": ObjectSetting(ScriptLoader, "VISUAL_TICK_RATE"),
             "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
             "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
+            "randomise_sensors": ObjectSetting(ScriptLoader, "RANDOMISE_SENSORS"),
             "console_log": ObjectSetting(Logger, "LOG_CONSOLE"),
             "workspace_folder": WorkspaceSetting(StateHandler, "WORKSPACE_FOLDER"),
             "send_crash_reports": ObjectSetting(StateHandler, "SEND_CRASH_REPORTS"),
         }
+        from ev3sim.devices.colour.base import ColourSensorMixin
+        from ev3sim.devices.colour.ev3 import ColorSensor
+        from ev3sim.devices.compass.ev3 import CompassSensor
+        from ev3sim.devices.infrared.base import InfraredSensorMixin
+        from ev3sim.devices.motor.base import MotorMixin
+        from ev3sim.devices.ultrasonic.base import UltrasonicSensorMixin
+
+        randomisation_settings = {
+            "COLOUR_SENSOR_RADIUS": ObjectSetting(ColourSensorMixin, "SENSOR_RADIUS"),
+            "COLOUR_SENSOR_SAMPLING_POINTS": ObjectSetting(ColourSensorMixin, "SENSOR_POINTS"),
+            "COLOUR_MAX_RGB_BIAS": ObjectSetting(ColorSensor, "MAX_RGB_BIAS"),
+            "COLOUR_MIN_RGB_BIAS": ObjectSetting(ColorSensor, "MIN_RGB_BIAS"),
+            "COMPASS_N_POINTS": ObjectSetting(CompassSensor, "NEAREST_POINTS_NUMBER"),
+            "COMPASS_POINT_VARIANCE": ObjectSetting(CompassSensor, "NEAREST_POINTS_VARIANCE"),
+            "COMPASS_NOISE_RATE": ObjectSetting(CompassSensor, "NOISE_WIDTH_PER_TICK"),
+            "COMPASS_NOISE_AMP": ObjectSetting(CompassSensor, "NOISE_AMPLIFIER"),
+            "COMPASS_MAXIMUM_NOISE_EFFECT": ObjectSetting(CompassSensor, "NOISE_EFFECT_MAX"),
+            "INFRARED_BIAS_AMP": ObjectSetting(InfraredSensorMixin, "SUBSENSOR_BIAS_MAGNITUDE"),
+            "MOTOR_MIN_MULT": ObjectSetting(MotorMixin, "MIN_FORCE_PCT"),
+            "MOTOR_MAX_MULT": ObjectSetting(MotorMixin, "MAX_FORCE_PCT"),
+            "MOTOR_N_SPEEDS": ObjectSetting(MotorMixin, "FIXED_SPEED_POINTS"),
+            "ULTRASONIC_NOISE_ANGLE_AMPLITUDE": ObjectSetting(UltrasonicSensorMixin, "ANGLE_RANDOM_AMPLITUDE"),
+            "ULTRASONIC_OFFSET_AMP": ObjectSetting(UltrasonicSensorMixin, "OFFSET_MAX"),
+        }
         settings.addSettingGroup("app", loader_settings)
         settings.addSettingGroup("screen", screen_settings)
+        settings.addSettingGroup("randomisation", randomisation_settings)
         self.shared_info = {}
 
     def closeProcesses(self):
