@@ -73,6 +73,10 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     tick = msg["tick"]
                     tick_rate = msg["tick_rate"]
                     current_data = msg["data"]
+                    if isinstance(current_data, str):
+                        # Not pretty but it works.
+                        e = Exception(current_data)
+                        raise e
                     for ev in msg["events"]:
                         cur_events.put(ev)
                     return msg_type, msg
