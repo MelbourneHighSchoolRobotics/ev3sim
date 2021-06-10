@@ -5,6 +5,8 @@ from ev3sim.simulation.randomisation import Randomiser
 class ColourSensorMixin:
 
     RGB_RAW = "RGB-RAW"
+    COL_REFLECT = "COL-REFLECT"
+    COL_COLOR = "COL-COLOR"
 
     device_type = "lego-sensor"
     mode = RGB_RAW
@@ -44,6 +46,10 @@ class ColourSensorMixin:
         }
         if self.mode == self.RGB_RAW:
             data["value0"], data["value1"], data["value2"] = res
+        elif self.mode == self.COL_REFLECT:
+            data["value0"] = self.reflected_light_intensity()
+        elif self.mode == self.COL_COLOR:
+            data["value0"] = self.predict_color()
         else:
             raise ValueError(f"Unhandled mode {self.mode}")
         return data
