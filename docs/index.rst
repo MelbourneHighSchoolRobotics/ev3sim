@@ -6,7 +6,7 @@
 Welcome to ev3sim's documentation!
 ==================================
 
-ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms using ev3dev2 in python. EV3sim targets the Robocup Junior Australia Soccer competition, however can be adapted for use in many different environments. 
+ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms using ev3dev2 in python.
 
 
 .. image:: images/sim.jpg
@@ -14,7 +14,9 @@ ev3sim is a pygame based 2D simulator for robots built using LEGO mindstorms usi
   :alt: An image of the simulation
 
 
-A full video on what EV3Sim is and how you can install it can be found here:
+A full video on the main features of EV3Sim can be found here:
+
+.. TODO: Change this video.
 
 .. raw:: html
 
@@ -27,11 +29,7 @@ A full video on what EV3Sim is and how you can install it can be found here:
    :caption: Contents:
 
    setup
-   batched_commands
-   bot_editing
+   basics
    ev3_extensions
    custom_presets
    contributing
-   system
-
-.. TODO: Support randomisation through settings.
