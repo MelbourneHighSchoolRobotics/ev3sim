@@ -149,4 +149,4 @@ ev3sim/user_config.yaml
 ev3sim/logs
 
 # Python embeddable with pip
-python_embed
+python_embed*
