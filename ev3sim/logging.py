@@ -50,12 +50,6 @@ class Logger:
             f.write(traceback)
 
     def openLog(self, robot_id):
-        import platform
-        import subprocess
+        from ev3sim.utils import open_file, APP_EXPLORER
 
-        if platform.system() == "Windows":
-            subprocess.Popen(["explorer", "/select,", self.getFilename(robot_id)])
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", self.getFilename(robot_id)])
-        else:
-            subprocess.Popen(["xdg-open", self.getFilename(robot_id)])
+        open_file(self.getFilename(robot_id), APP_EXPLORER)

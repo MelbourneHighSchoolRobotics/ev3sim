@@ -261,6 +261,8 @@ class BatchMenu(BaseMenu):
         self.setBatchIndex(-1)
 
     def clickCode(self):
+        from ev3sim.utils import open_file, APP_VSCODE, APP_MINDSTORMS
+
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
@@ -268,82 +270,16 @@ class BatchMenu(BaseMenu):
             conf = yaml.safe_load(f)
         if conf.get("type", "python") == "mindstorms":
             script_location = conf.get("script", "program.ev3")
-            import platform
-            import subprocess
 
-            if platform.system() == "Windows":
-                # If Mindstorms is in the start menu, we can likely find it.
-                found = False
-                for path in [
-                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                ]:
-                    if os.path.exists(path):
-                        for folder in os.listdir(path):
-                            # There are multiple versions of mindstorms.
-                            if "MINDSTORMS" in folder:
-                                f = os.path.join(path, folder)
-                                for file in os.listdir(f):
-                                    found = True
-                                    subprocess.run(
-                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}"',
-                                        shell=True,
-                                    )
-                if not found:
-                    subprocess.Popen(
-                        [
-                            "explorer",
-                            "/select,",
-                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
-                        ]
-                    )
-            elif platform.system() == "Darwin":
-                subprocess.Popen(
-                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
-            else:
-                subprocess.Popen(
-                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
+            open_file(os.path.join(self.available_batches[self.batch_index][2], "bot", script_location), APP_MINDSTORMS)
         else:
             script_location = conf.get("script", "code.py")
-            import platform
-            import subprocess
 
-            if platform.system() == "Windows":
-                # If Mindstorms is in the start menu, we can likely find it.
-                found = False
-                for path in [
-                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                ]:
-                    if os.path.exists(path):
-                        for folder in os.listdir(path):
-                            # There are multiple versions of vscode.
-                            if "Visual Studio Code" in folder:
-                                f = os.path.join(path, folder)
-                                for file in os.listdir(f):
-                                    found = True
-                                    subprocess.run(
-                                        f'start "code" "{os.path.join(f, file)}" ""{os.path.join(find_abs_directory("workspace"))}" --goto "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}""',
-                                        shell=True,
-                                    )
-                if not found:
-                    subprocess.Popen(
-                        [
-                            "explorer",
-                            "/select,",
-                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
-                        ]
-                    )
-            elif platform.system() == "Darwin":
-                subprocess.Popen(
-                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
-            else:
-                subprocess.Popen(
-                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
+            open_file(
+                os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                APP_VSCODE,
+                folder=os.path.join(find_abs_directory("workspace")),
+            )
 
     def handleEvent(self, event):
         super().handleEvent(event)
