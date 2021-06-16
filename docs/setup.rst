@@ -1,6 +1,17 @@
 Setting up and Running EV3Sim
 =============================
 
+Requirements
+------------
+
+Depending on how you want to use EV3Sim, different additional software may be required.
+
+If you want your robots to run Python code, `VSCode`_ is highly recommended to edit this python code. 
+We say this as we have made many integrations with VSCode to make using VSCode + Python a very simple experience.
+
+On the other hand, if you want your robots to run Mindstorms programs, you'll need to install the `Mindstorms EV3 Home App`_.
+
+
 Installation
 ------------
 
@@ -9,22 +20,18 @@ Windows Executable
 
 By far the easiest way to install and use EV3Sim if you have a windows computer is using the one-click installer available on the `releases page on github`_.
 
-.. image:: images/releases.jpg
+.. TODO: Change image.
+
+.. image:: images/releases.png
   :width: 600
   :alt: An image of the releases page on github.
 
-Simply download the asset file named ``one_click.exe``, and follow the prompts to get the executable installed.
-
-Windows Bundle
-^^^^^^^^^^^^^^
-
-Another way to get EV3Sim is by downloading the package from the same releases page (``windows_package``). Simply unzip and place this folder in a program directory such as ``Program Files`` or ``Applications``.
-In future we aim to also support this method for Mac/Linux, but currently there's not much point to. Let us now if you'd prefer this!
+Simply download the asset file named ``installer.exe``, and follow the prompts to get ev3sim installed.
 
 Pip install
 ^^^^^^^^^^^
 
-If installing via this method, EV3sim requires Python 3.7+ to be installed on your system. If you don't already have Python installed, you can download it from https://www.python.org/ .
+If installing via this method, EV3sim requires Python 3.9+ to be installed on your system. If you don't already have Python installed, you can download it from https://www.python.org/ .
 
 You can install this package using pip as follows:
 
@@ -34,46 +41,24 @@ You can install this package using pip as follows:
 
 (This command also updates EV3Sim if you already have it installed.)
 
-Updating
---------
-
-Windows Executable
-^^^^^^^^^^^^^^^^^^
-
-If a new one-click installer comes out, you can simply run this and it will update your existing installation of EV3Sim. Your workspace and any settings will remain the same, unless some breaking changes are required.
-
-Pip install
-^^^^^^^^^^^
-
-As with any other pip package, you can update ev3sim with the same command you used to install it, passing in the `-U` flag:
-
-.. code-block:: bash
-
-    python -m pip install -U ev3sim
-
 Starting EV3Sim
 ---------------
 
-Depending on you installation method, you might start EV3Sim differently:
+Depending on you installation method, you will start EV3Sim differently:
 
-* If you installed on windows with the one click install, EV3Sim should be in your start menu.
-* If using the bundle installation, you can go into the folder and run ``ev3sim`` or ``ev3sim.exe``.
+* If you installed on windows with the one click install, EV3Sim should appear in your start menu.
 * If installed via pip, then run ``ev3sim`` in the command line.
-
-The first time you run EV3Sim, you will be prompted with a dialog, asking you to specify a *workspace folder*.
-A workspace folder is where all of your local bots, code and simulation presets are stored.
-
-We'd recommend creating a new folder on your Desktop to be your workspace folder, for easy access.
 
 Running EV3Sim
 --------------
 
-Once your workspace folder has been set, you can start using the application.
+The main menu of EV3Sim contains a few buttons
 
-* The ``Simulate`` tab allows you to run simulations, and select simulations to edit the bots or settings.
+* The ``Soccer / Rescue`` buttons allow you to run simulations, as well as set the bots and settings in these simulations.
 * The ``Bots`` tab allows you to edit and create bots to use in the simulation.
 * The ``Settings`` tab allows you to change a few configurations when running EV3Sim.
 
+Each of these sections are covered in further detail in subsequent pages.
 
 Further Information on installing
 ---------------------------------
@@ -120,3 +105,7 @@ Arch
 ``sudo pacman -S python-pygame``
 
 .. _releases page on github: https://github.com/MelbourneHighSchoolRobotics/ev3sim/releases
+
+.. _VSCode: https://code.visualstudio.com/
+
+.. _Mindstorms EV3 Home App: https://www.lego.com/en-au/themes/mindstorms/downloads

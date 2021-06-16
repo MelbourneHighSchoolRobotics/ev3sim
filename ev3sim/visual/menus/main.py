@@ -46,7 +46,10 @@ class MainMenu(BaseMenu):
                     bot_config = yaml.safe_load(f)
                 if not BotValidator.validate_json(bot_config):
                     to_remove.append(index)
-                fname = bot_config.get("script", "code.py")
+                if bot_config.get("type", "python") == "python":
+                    fname = bot_config.get("script", "code.py")
+                else:
+                    fname = bot_config.get("script", "program.ev3")
                 if not os.path.exists(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname)):
 
                     def action():
