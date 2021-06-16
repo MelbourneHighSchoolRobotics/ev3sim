@@ -164,13 +164,10 @@ class ScreenObjectManager:
     def startScreen(self, push_screens=None, push_kwargss={}):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
-        from ev3sim.simulation.loader import StateHandler
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
         caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
-        if ScreenObjectManager.NEW_VERSION:
-            caption = f"[NEW VERSION AVAILABLE] {caption}"
         pygame.display.set_caption(caption)
         img_path = find_abs("Logo.png", allowed_areas=["package/assets/"])
         img = pygame.image.load(img_path)

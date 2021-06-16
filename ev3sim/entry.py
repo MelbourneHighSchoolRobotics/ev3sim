@@ -6,12 +6,11 @@ from os import remove
 from os.path import join, dirname, abspath, basename, isfile, sep, exists, relpath
 
 from ev3sim import __version__
-import ev3sim
 from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory, make_relative
 from ev3sim.search_locations import bot_locations, config_locations, preset_locations
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.updates import handle_updates
-from ev3sim.utils import checkVersion
+from ev3sim.utils import canUpdate
 from ev3sim.visual.manager import ScreenObjectManager
 
 parser = argparse.ArgumentParser(description="Run the ev3sim graphical user interface.")
@@ -226,7 +225,7 @@ def main(passed_args=None):
             conf = yaml.safe_load(f)
 
         handler = StateHandler()
-        checkVersion()
+        can_update = canUpdate()
         handler.setConfig(**conf)
         # If no workspace has been set, place it in the package directory.
         if not handler.WORKSPACE_FOLDER:
@@ -349,6 +348,51 @@ def main(passed_args=None):
                 pushed_screens, pushed_kwargss = raise_error(
                     f"EV3Sim does not know how to open {args.elem}{' for editing' if args.edit else ''}."
                 )
+
+    if can_update:
+        saved_screens = pushed_screens
+        saved_kwargs = pushed_kwargss
+
+        def maybe_complete_update(should):
+            if should:
+                # Start the update process.
+                import subprocess
+                import sys
+
+                subprocess.check_call(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        "--trusted-host",
+                        "pypi.org",
+                        "--trusted-host",
+                        "files.pythonhosted.org",
+                        "ev3sim",
+                    ]
+                )
+            else:
+                # Revert to original start up.
+                ScreenObjectManager.instance.screen_stack = []
+                for screen, kwargs in zip(saved_screens, saved_kwargs):
+                    ScreenObjectManager.instance.pushScreen(screen, **kwargs)
+                if not saved_screens:
+                    ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_MENU)
+                ScreenObjectManager.instance.screen_stack.append(ScreenObjectManager.SCREEN_UPDATE)
+
+        pushed_screens = [ScreenObjectManager.SCREEN_UPDATE]
+        pushed_kwargss = [
+            {
+                "panels": [
+                    {
+                        "text": "This installation of EV3Sim is outdated. It is <b>highly</b> recommend you update to ensure your experience is bug-free and contains the best features. Would you like to update?",
+                        "type": "boolean",
+                        "action": maybe_complete_update,
+                    }
+                ]
+            }
+        ]
 
     try:
         StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
