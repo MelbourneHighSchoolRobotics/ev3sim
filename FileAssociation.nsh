@@ -144,7 +144,7 @@ NoBackup:
     WriteRegStr HKCR "$R0\DefaultIcon" "" "$R2,0"
 Skip:
   WriteRegStr HKCR "$R0\shell\open" "" "Open"
-  WriteRegStr HKCR "$R0\shell\open\command" "" '"$R2" "%1" --open'
+  WriteRegStr HKCR "$R0\shell\open\command" "" '"$R2" "%1"'
 
   Pop $1
   Pop $0

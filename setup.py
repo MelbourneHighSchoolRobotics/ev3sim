@@ -38,8 +38,8 @@ setup(
     include_package_data=True,
     install_requires=REQUIREMENTS,
     entry_points={
-        "console_scripts": [
-            "ev3sim=ev3sim.gui:main",
+        "gui_scripts": [
+            "ev3sim=ev3sim.entry:main",
         ]
     },
 )

@@ -1,12 +1,7 @@
-import argparse, sys
-import PyInstaller.__main__
+import os
+import shutil
 from subprocess import Popen
 from ev3sim import __version__
-
-parse = argparse.ArgumentParser()
-parse.add_argument("--admin", action="store_true", dest="admin")
-
-res = parse.parse_args(sys.argv[1:])
 
 # First, generate the version file to be used in generation.
 with open("version_file_template.txt", "r") as f:
@@ -14,21 +9,32 @@ with open("version_file_template.txt", "r") as f:
 with open("version_file.txt", "w") as f:
     f.write(string)
 
-# Then generate the build.
-PyInstaller.__main__.run(
-    [
-        "-y",
-        "executable_entry.spec",
-    ]
-)
+if os.path.exists("dist"):
+    shutil.rmtree("dist")
+os.makedirs("dist", exist_ok=True)
+os.makedirs("dist/ev3sim", exist_ok=True)
+if os.path.exists("dist/python_embed"):
+    shutil.rmtree("dist/python_embed")
+shutil.copytree("python_embed-32", "dist/python_embed")
 
-import os
+if os.path.exists("dist/ev3sim/user_config.yaml"):
+    os.remove("dist/ev3sim/user_config.yaml")
 
-if os.path.exists("dist/ev3sim/ev3sim/user_config.yaml"):
-    os.remove("dist/ev3sim/ev3sim/user_config.yaml")
-
-if res.admin:
-    process = Popen("makensis config.nsi")
-else:
-    process = Popen("makensis config-no-admin.nsi")
+process = Popen("makensis config.nsi")
 process.wait()
+shutil.move("installer.exe", "installer-32bit.exe")
+
+if os.path.exists("dist"):
+    shutil.rmtree("dist")
+os.makedirs("dist", exist_ok=True)
+os.makedirs("dist/ev3sim", exist_ok=True)
+if os.path.exists("dist/python_embed"):
+    shutil.rmtree("dist/python_embed")
+shutil.copytree("python_embed-64", "dist/python_embed")
+
+if os.path.exists("dist/ev3sim/user_config.yaml"):
+    os.remove("dist/ev3sim/user_config.yaml")
+
+process = Popen("makensis config.nsi")
+process.wait()
+shutil.move("installer.exe", "installer-64bit.exe")

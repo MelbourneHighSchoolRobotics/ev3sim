@@ -16,10 +16,4 @@ main_settings = [
             Checkbox(["app", "console_log"], True, "Console", (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70))),
         ],
     },
-    {
-        "height": (lambda s: 90),
-        "objects": [
-            FileEntry(["app", "workspace_folder"], "", True, None, "Workspace", (lambda s: (0, 20))),
-        ],
-    },
 ]

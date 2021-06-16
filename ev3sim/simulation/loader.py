@@ -214,6 +214,15 @@ class ScriptLoader:
                         )
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
+
+                        class Event:
+                            pass
+
+                        event = Event()
+                        event.type = EV3SIM_PRINT
+                        event.robot_id = data["robot_id"]
+                        event.message = data["data"]
+                        ScreenObjectManager.instance.unhandled_events.append(event)
                     elif write_type == MESSAGE_INPUT_REQUESTED:
                         self.requestInput(data["robot_id"], data["message"])
                     elif write_type == BOT_COMMAND:
@@ -291,8 +300,17 @@ class ScriptLoader:
         # First, try to grab an existing request from the queue.
         for i, output in enumerate(self.input_requests):
             if preffered_output is None or preffered_output == output:
-                self.consumeMessage(message, output)
                 del self.input_requests[i]
+                self.consumeMessage(message, output)
+
+                class Event:
+                    pass
+
+                event = Event()
+                event.type = EV3SIM_MESSAGE_POSTED
+                event.output = output
+                event.message = message
+                ScreenObjectManager.instance.unhandled_events.append(event)
                 break
         else:
             self.input_messages.append([message, preffered_output])
@@ -301,8 +319,8 @@ class ScriptLoader:
         # First, try to grab an existing message from the queue.
         for i, (msg, out) in enumerate(self.input_messages):
             if out is None or out == output:
-                self.consumeMessage(msg, output)
                 del self.input_messages[i]
+                self.consumeMessage(msg, output)
                 break
         else:
             self.input_requests.append(output)
@@ -372,12 +390,11 @@ class StateHandler:
         man = ScreenObjectManager()
         man.startScreen(**kwargs)
 
-    def beginSimulation(self, **kwargs):
+    def beginSimulation(self, batch, seed=None):
         self.is_simulating = True
-        from ev3sim.sim import main
+        from ev3sim.sim import start_batch
 
-        kwargs["command_line"] = False
-        main(passed_args=kwargs)
+        start_batch(batch, seed=seed)
 
     def mainLoop(self):
         last_vis_update = time.time() - 1.1 / ScriptLoader.instance.VISUAL_TICK_RATE

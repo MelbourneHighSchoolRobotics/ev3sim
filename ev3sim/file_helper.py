@@ -121,6 +121,15 @@ def find_abs_directory(dirpath, create=True):
             return fpath
 
 
+def make_relative(fpath, relative_dirs):
+    apath = os.path.normpath(fpath)
+    for rdir in relative_dirs:
+        real = os.path.normpath(find_abs_directory(rdir))
+        if apath.startswith(real):
+            return rdir, os.path.relpath(apath, start=real).replace("\\", "/")
+    raise ValueError(f"Could not find {fpath} in any of {relative_dirs}")
+
+
 def ensure_workspace_filled(ws_path):
     # If the workspace changes, then we should create the necessary folders
     if not os.path.exists(ws_path):
@@ -134,3 +143,19 @@ def ensure_workspace_filled(ws_path):
         with open(os.path.join(find_abs("default_launch.json", ["package/presets/"])), "r") as fr:
             with open(launch_path, "w") as fw:
                 fw.write(fr.read())
+    # add settings.json, redirecting pythonpath.
+    settings_path = os.path.join(ws_path, ".vscode", "settings.json")
+    if not os.path.exists(settings_path):
+        up = os.path.dirname
+        file_location = os.path.join(up(up(up(up(__file__)))), "python.exe").replace("/", "\\").replace("\\", "\\\\")
+        settings = (
+            """\
+{
+    "python.pythonPath": \""""
+            + file_location
+            + """\"
+}"""
+        )
+
+        with open(settings_path, "w") as fw:
+            fw.write(settings)

@@ -4,10 +4,10 @@ import os
 import pygame
 import pygame_gui
 import sentry_sdk
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import find_abs, find_abs_directory, make_relative
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
-from ev3sim.search_locations import asset_locations, batch_locations
+from ev3sim.search_locations import asset_locations, batch_locations, bot_locations
 
 
 class BatchMenu(BaseMenu):
@@ -192,6 +192,29 @@ class BatchMenu(BaseMenu):
         self._all_objs.append(self.code_button)
         self._all_objs.append(self.code_icon)
 
+        bots_button_pos = (
+            self._size[0] * 0.9 - preview_size[0] + 10,
+            self._size[1] * 0.1 + preview_size[1] + 10,
+        )
+        self.bots_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(*bots_button_pos, *code_size),
+            text="",
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bot-bots", "settings_buttons"),
+        )
+        self.addButtonEvent("bot-bots", self.clickBots)
+        if not self.bots_enable:
+            self.bots_button.disable()
+        bots_icon_path = find_abs("ui/bot.png", allowed_areas=asset_locations())
+        self.bots_icon = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(*self.iconPos(bots_button_pos, code_size, code_icon_size), *code_icon_size),
+            image_surface=pygame.image.load(bots_icon_path),
+            manager=self,
+            object_id=pygame_gui.core.ObjectID("bots-icon"),
+        )
+        self._all_objs.append(self.bots_button)
+        self._all_objs.append(self.bots_icon)
+
         start_size = self._size[0] / 4, min(self._size[1] / 4, 120)
         start_icon_size = start_size[1] * 0.6, start_size[1] * 0.6
         start_button_pos = (self._size[0] * 0.9 - start_size[0], self._size[1] * 0.9 - start_size[1])
@@ -251,6 +274,26 @@ class BatchMenu(BaseMenu):
             ScreenObjectManager.SCREEN_SIM, batch=self.available_batches[self.batch_index][1]
         )
 
+    def clickBots(self):
+        # Shouldn't happen but lets be safe.
+        if self.batch_index == -1:
+            return
+        from ev3sim.visual.manager import ScreenObjectManager
+
+        sim_path = self.available_batches[self.batch_index][1]
+
+        with open(sim_path, "r") as f:
+            sim_config = yaml.safe_load(f)
+
+        complete_path = find_abs(sim_config["bots"][0], bot_locations())
+        relative_dir, relative_path = make_relative(complete_path, bot_locations())
+
+        return ScreenObjectManager.instance.pushScreen(
+            ScreenObjectManager.SCREEN_BOT_EDIT,
+            bot_file=complete_path,
+            bot_dir_file=(relative_dir, relative_path),
+        )
+
     def clickRemove(self):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
@@ -261,6 +304,8 @@ class BatchMenu(BaseMenu):
         self.setBatchIndex(-1)
 
     def clickCode(self):
+        from ev3sim.utils import open_file, APP_VSCODE, APP_MINDSTORMS
+
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
@@ -268,82 +313,16 @@ class BatchMenu(BaseMenu):
             conf = yaml.safe_load(f)
         if conf.get("type", "python") == "mindstorms":
             script_location = conf.get("script", "program.ev3")
-            import platform
-            import subprocess
 
-            if platform.system() == "Windows":
-                # If Mindstorms is in the start menu, we can likely find it.
-                found = False
-                for path in [
-                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                ]:
-                    if os.path.exists(path):
-                        for folder in os.listdir(path):
-                            # There are multiple versions of mindstorms.
-                            if "MINDSTORMS" in folder:
-                                f = os.path.join(path, folder)
-                                for file in os.listdir(f):
-                                    found = True
-                                    subprocess.run(
-                                        f'start "{os.path.join(f, file)}" "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}"',
-                                        shell=True,
-                                    )
-                if not found:
-                    subprocess.Popen(
-                        [
-                            "explorer",
-                            "/select,",
-                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
-                        ]
-                    )
-            elif platform.system() == "Darwin":
-                subprocess.Popen(
-                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
-            else:
-                subprocess.Popen(
-                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
+            open_file(os.path.join(self.available_batches[self.batch_index][2], "bot", script_location), APP_MINDSTORMS)
         else:
             script_location = conf.get("script", "code.py")
-            import platform
-            import subprocess
 
-            if platform.system() == "Windows":
-                # If Mindstorms is in the start menu, we can likely find it.
-                found = False
-                for path in [
-                    os.path.join(os.environ["ALLUSERSPROFILE"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                    os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs"),
-                ]:
-                    if os.path.exists(path):
-                        for folder in os.listdir(path):
-                            # There are multiple versions of vscode.
-                            if "Visual Studio Code" in folder:
-                                f = os.path.join(path, folder)
-                                for file in os.listdir(f):
-                                    found = True
-                                    subprocess.run(
-                                        f'start "code" "{os.path.join(f, file)}" ""{os.path.join(find_abs_directory("workspace"))}" --goto "{os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)}""',
-                                        shell=True,
-                                    )
-                if not found:
-                    subprocess.Popen(
-                        [
-                            "explorer",
-                            "/select,",
-                            os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
-                        ]
-                    )
-            elif platform.system() == "Darwin":
-                subprocess.Popen(
-                    ["open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
-            else:
-                subprocess.Popen(
-                    ["xdg-open", os.path.join(self.available_batches[self.batch_index][2], "bot", script_location)]
-                )
+            open_file(
+                os.path.join(self.available_batches[self.batch_index][2], "bot", script_location),
+                APP_VSCODE,
+                folder=os.path.join(find_abs_directory("workspace")),
+            )
 
     def handleEvent(self, event):
         super().handleEvent(event)
@@ -362,6 +341,14 @@ class BatchMenu(BaseMenu):
         self.start_enable = new_index != -1
         self.remove_enable = new_index != -1
         self.code_enable = new_index != -1
+        if new_index != -1:
+            sim_path = self.available_batches[self.batch_index][1]
+
+            with open(sim_path, "r") as f:
+                sim_config = yaml.safe_load(f)
+            self.bots_enable = sim_config.get("edit_allowed", True)
+        else:
+            self.bots_enable = False
         self.regenerateObjects()
 
     def incrementBatchIndex(self, amount):
