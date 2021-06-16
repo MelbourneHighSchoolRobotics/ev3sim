@@ -4,7 +4,7 @@ import os
 import pygame
 import pygame_gui
 import sentry_sdk
-from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.file_helper import find_abs, find_abs_directory, make_relative
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.search_locations import asset_locations, batch_locations, bot_locations
@@ -278,7 +278,6 @@ class BatchMenu(BaseMenu):
         # Shouldn't happen but lets be safe.
         if self.batch_index == -1:
             return
-        from os.path import abspath, dirname, basename
         from ev3sim.visual.manager import ScreenObjectManager
 
         sim_path = self.available_batches[self.batch_index][1]
@@ -287,14 +286,12 @@ class BatchMenu(BaseMenu):
             sim_config = yaml.safe_load(f)
 
         complete_path = find_abs(sim_config["bots"][0], bot_locations())
-
-        ignore = abspath(find_abs_directory("workspace"))
-        top_dir = abspath(dirname(complete_path))
+        relative_dir, relative_path = make_relative(complete_path, bot_locations())
 
         return ScreenObjectManager.instance.pushScreen(
             ScreenObjectManager.SCREEN_BOT_EDIT,
             bot_file=complete_path,
-            bot_dir_file=("workspace" + top_dir.replace(ignore, ""), basename(complete_path)),
+            bot_dir_file=(relative_dir, relative_path),
         )
 
     def clickRemove(self):

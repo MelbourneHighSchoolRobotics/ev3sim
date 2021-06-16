@@ -3,11 +3,12 @@ import sys
 import pygame
 import yaml
 from os import remove
-from os.path import join, dirname, abspath, basename, isfile, sep
+from os.path import join, dirname, abspath, basename, isfile, sep, exists, relpath
 
 from ev3sim import __version__
-from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory
-from ev3sim.search_locations import config_locations, preset_locations
+import ev3sim
+from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory, make_relative
+from ev3sim.search_locations import bot_locations, config_locations, preset_locations
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.updates import handle_updates
 from ev3sim.utils import checkVersion
@@ -19,18 +20,18 @@ parser.add_argument(
     nargs="?",
     type=str,
     default=None,
-    help="If specified, will begin the gui focusing on this file.",
-)
-parser.add_argument(
-    "--open",
-    action="store_true",
-    help="Opens the current bot/sim file.",
-    dest="open",
+    help="""If specified, will try to open this file for use in ev3sim. Valid selections are:
+    - Python files, separate from bots (open / edit)
+    - Python files, located within bots (open / edit)
+    - Bot folders / config.bot files (open / sometimes edit)
+    - Simulation preset files (.sim) (open / sometimes edit)
+    - Custom task folders (open)
+""",
 )
 parser.add_argument(
     "--edit",
     action="store_true",
-    help="Edits the current bot/sim file.",
+    help="Provided 'elem' is given, Edits the 'elem', rather than opening it.",
     dest="edit",
 )
 parser.add_argument(
@@ -58,6 +59,136 @@ parser.add_argument(
     help="Show the version of ev3sim.",
     dest="version",
 )
+
+
+def raise_error(error_message):
+    return [ScreenObjectManager.SCREEN_UPDATE], [
+        {
+            "panels": [
+                {
+                    "text": error_message,
+                    "type": "accept",
+                    "button": "Close",
+                    "action": None,
+                }
+            ]
+        }
+    ]
+
+
+def run_bot(bot_folder, script_name=None, edit=False):
+    from ev3sim.validation.bot_files import BotValidator
+
+    if not exists(join(bot_folder, "config.bot")):
+        return raise_error(
+            f"The bot {bot_folder} has been messed with, it is missing config.bot. If it has been deleted, please put it back there."
+        )
+
+    with open(join(bot_folder, "config.bot"), "r") as f:
+        config = yaml.safe_load(f)
+    if script_name is not None:
+        config["script"] = script_name
+        config["type"] = "mindstorms" if script_name.endswith(".ev3") else "python"
+        with open(join(bot_folder, "config.bot"), "w") as f:
+            f.write(yaml.dump(config))
+
+    if not BotValidator.validate_file(bot_folder):
+        return raise_error(f"There is something wrong with the robot {bot_folder}, and so it cannot be opened or used.")
+
+    try:
+        relative_dir, relative_path = make_relative(bot_folder, ["workspace"])
+        if relative_path.startswith("robots"):
+            raise ValueError()
+        sim_paths = [join(dirname(bot_folder), "sim.sim")]
+    except:
+        relative_dir, relative_path = make_relative(bot_folder, bot_locations())
+        sim_paths = [
+            find_abs("presets/soccer.sim", ["package"]),
+            find_abs("presets/rescue.sim", ["package"]),
+        ]
+
+    if not edit:
+        found = False
+        for sim in sim_paths:
+            with open(sim, "r") as f:
+                config = yaml.safe_load(f)
+            for botpath in config["bots"]:
+                if botpath == relative_path:
+                    found = True
+                    break
+            if found:
+                return run_sim(sim)
+        # Not in the predefined presets.
+        # Use the testing preset.
+        sim_path = find_abs("presets/testing.sim", ["package"])
+        with open(sim_path, "r") as f:
+            test_config = yaml.safe_load(f)
+
+        test_config["bots"] = [relative_path]
+        with open(sim_path, "w") as f:
+            f.write(yaml.dump(test_config))
+
+        return run_sim(sim_path)
+    else:
+        return [ScreenObjectManager.SCREEN_BOT_EDIT], [
+            {
+                "bot_file": bot_folder,
+                "bot_dir_file": (relative_dir, relative_path),
+            }
+        ]
+
+
+def run_code(script_name):
+    real = find_abs("examples/robots/default_testing", ["package"])
+    rel_dir, rel_path = make_relative(real, bot_locations())
+    with open(join(real, "config.bot"), "r") as f:
+        bot_config = yaml.safe_load(f)
+    bot_config["script"] = script_name
+    bot_config["type"] = "mindstorms" if script_name.endswith(".ev3") else "python"
+    with open(join(real, "config.bot"), "w") as f:
+        f.write(yaml.dump(bot_config))
+
+    sim_path = find_abs("presets/testing.sim", ["package"])
+    with open(sim_path, "r") as f:
+        test_config = yaml.safe_load(f)
+
+    test_config["bots"] = [rel_path]
+    with open(sim_path, "w") as f:
+        f.write(yaml.dump(test_config))
+
+    return run_sim(sim_path)
+
+
+def run_sim(sim_path, edit=False):
+    from ev3sim.validation.batch_files import BatchValidator
+
+    if not BatchValidator.validate_file(sim_path):
+        return raise_error(f"There is something wrong with the sim {sim_path}, and so it cannot be opened or used.")
+    if not edit:
+        return [ScreenObjectManager.SCREEN_SIM], [
+            {
+                "batch": sim_path,
+            }
+        ]
+    import importlib
+
+    with open(sim_path, "r") as f:
+        conf = yaml.safe_load(f)
+    with open(find_abs(conf["preset_file"], preset_locations())) as f:
+        preset = yaml.safe_load(f)
+    if "visual_settings" not in preset:
+        return raise_error("This preset cannot be edited.")
+    mname, cname = preset["visual_settings"].rsplit(".", 1)
+    klass = getattr(importlib.import_module(mname), cname)
+
+    return [ScreenObjectManager.SCREEN_SETTINGS], [
+        {
+            "file": sim_path,
+            "settings": klass,
+            "allows_filename_change": True,
+            "extension": "sim",
+        }
+    ]
 
 
 def main(passed_args=None):
@@ -127,13 +258,11 @@ def main(passed_args=None):
 
     pushed_screens = []
     pushed_kwargss = [{}]
-
     if args.elem:
-        # We have been given a file of some sort as an argument, figure out what it is and run with it.
+        # We have been given a path of some sort as an argument, figure out what it is and run with it.
         # First, figure out what type it is.
         if args.elem[-1] in "/\\":
             args.elem = args.elem[:-1]
-        found = False
 
         if args.custom_url:
             import time
@@ -191,62 +320,35 @@ def main(passed_args=None):
                 },
             ]
 
-        from ev3sim.validation.batch_files import BatchValidator
-        from ev3sim.validation.bot_files import BotValidator
-
-        if not found:
-            if BatchValidator.validate_file(args.elem):
-                # Valid batch file.
-                if args.open:
-                    pushed_screens = [ScreenObjectManager.SCREEN_SIM]
-                    pushed_kwargss = [
-                        {
-                            "batch": args.elem,
-                        }
-                    ]
-                elif args.edit:
-                    import importlib
-
-                    with open(args.elem, "r") as f:
-                        conf = yaml.safe_load(f)
-                    with open(find_abs(conf["preset_file"], preset_locations())) as f:
-                        preset = yaml.safe_load(f)
-                    if "visual_settings" not in preset:
-                        print("This preset cannot be edited.")
-                        sys.exit(1)
-                    mname, cname = preset["visual_settings"].rsplit(".", 1)
-                    klass = getattr(importlib.import_module(mname), cname)
-
-                    pushed_screens = [ScreenObjectManager.SCREEN_SETTINGS]
-                    pushed_kwargss = [
-                        {
-                            "file": args.elem,
-                            "settings": klass,
-                            "allows_filename_change": True,
-                            "extension": "sim",
-                        }
-                    ]
-                found = True
-            if not found:
-                if BotValidator.validate_file(args.elem):
-                    if args.open:
-                        pushed_screens = [ScreenObjectManager.SCREEN_BOT_EDIT]
-                        ignore = abspath(find_abs_directory("workspace"))
-                        top_dir = abspath(dirname(args.elem))
-                        pushed_kwargss = [
-                            {
-                                "bot_file": args.elem,
-                                "bot_dir_file": ("workspace" + top_dir.replace(ignore, ""), basename(args.elem)),
-                            }
-                        ]
-                    else:
-                        print("Bot files cannot be opened for editing.")
-                        sys.exit(1)
-                    found = True
-
-        if not found:
-            print(f"Unsure what to do with file {args.elem}")
-            sys.exit(1)
+        elif not exists(args.elem):
+            pushed_screens, pushed_kwargss = raise_error(f"Unknown path {args.elem}.")
+        elif args.elem.endswith(".py") or args.elem.endswith(".ev3"):
+            # Python file, either in bot or completely separate.
+            folder = dirname(args.elem)
+            config_path = join(folder, "config.bot")
+            if exists(config_path):
+                # We are in a bot directory.
+                pushed_screens, pushed_kwargss = run_bot(folder, basename(args.elem), edit=args.edit)
+            else:
+                pushed_screens, pushed_kwargss = run_code(args.elem)
+        elif args.elem.endswith(".bot"):
+            # Bot file.
+            folder = dirname(args.elem)
+            pushed_screens, pushed_kwargss = run_bot(folder, edit=args.edit)
+        elif args.elem.endswith(".sim"):
+            pushed_screens, pushed_kwargss = run_sim(args.elem, edit=args.edit)
+        else:
+            # Some sort of folder. Either a bot folder, or custom task folder.
+            config_path = join(args.elem, "config.bot")
+            sim_path = join(args.elem, "sim.sim")
+            if exists(config_path):
+                pushed_screens, pushed_kwargss = run_bot(args.elem, edit=args.edit)
+            elif exists(sim_path):
+                pushed_screens, pushed_kwargss = run_sim(sim_path, edit=args.edit)
+            else:
+                pushed_screens, pushed_kwargss = raise_error(
+                    f"EV3Sim does not know how to open {args.elem}{' for editing' if args.edit else ''}."
+                )
 
     try:
         StateHandler.instance.startUp(push_screens=pushed_screens, push_kwargss=pushed_kwargss)
