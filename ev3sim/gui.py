@@ -84,9 +84,9 @@ parser.add_argument(
     dest="open_config",
 )
 parser.add_argument(
-    "--debug",
-    action="store_true",
-    help="Enable the debug interface",
+    "--no-debug",
+    action="store_false",
+    help="Disables the debug interface",
     dest="debug",
 )
 
