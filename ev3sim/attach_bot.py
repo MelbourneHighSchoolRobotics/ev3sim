@@ -73,6 +73,10 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     tick = msg["tick"]
                     tick_rate = msg["tick_rate"]
                     current_data = msg["data"]
+                    if isinstance(current_data, str):
+                        # Not pretty but it works.
+                        e = Exception(current_data)
+                        raise e
                     for ev in msg["events"]:
                         cur_events.put(ev)
                     return msg_type, msg
@@ -298,6 +302,8 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
 
                 def write(self, value):
                     send_q.put((DEVICE_WRITE, (f"{self.k2} {self.k3} {self.k4}", value.decode())))
+                    while self.k4 == "mode" and current_data[self.k2][self.k3][self.k4] != value.decode():
+                        wait_for_tick()
 
                 def flush(self):
                     pass

@@ -31,6 +31,18 @@ class ColorSensor(ColourSensorMixin, Device):
     MIN_RGB_BIAS = 230
     STARTING_CALIBRATION = 300
 
+    PREDICTION_VECTORS = [
+        (0, 0, 0),
+        (0, 0, 255),
+        (85, 166, 48),
+        (255, 255, 0),
+        (255, 0, 0),
+        (255, 255, 255),
+        (165, 42, 42),
+    ]
+    PREDICTION_INCREASE_REQUIREMENT = 60
+    PREDICTION_LARGEST_DIFFERENCE = 110
+
     def generateBias(self):
         self.saved_raw = (0, 0, 0)
         if ScriptLoader.RANDOMISE_SENSORS:
@@ -102,8 +114,19 @@ class ColorSensor(ColourSensorMixin, Device):
         ]
 
     def reflected_light_intensity(self):
-        """Not implemented"""
-        raise NotImplementedError("`reflected_light_intensity` is currently not implemented.")
+        r, g, b = self.rgb()
+        return int((r / 255 + g / 255 + b / 255) * 100 / 3)
+
+    def predict_color(self):
+        r, g, b = self.rgb()
+        colors = sorted(
+            [(abs(r - c[0]) + abs(g - c[1]) + abs(b - c[2]), i) for i, c in enumerate(self.PREDICTION_VECTORS)]
+        )
+        if colors[0][0] > self.PREDICTION_LARGEST_DIFFERENCE:
+            return 0
+        if colors[1][0] - colors[0][0] < self.PREDICTION_INCREASE_REQUIREMENT:
+            return 0
+        return colors[0][1] + 1
 
     def reset(self):
         self.mode = self.RGB_RAW

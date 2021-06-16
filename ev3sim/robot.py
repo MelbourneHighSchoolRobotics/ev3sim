@@ -123,7 +123,11 @@ class RobotInteractor(IInteractor):
         for port, device in self.devices.items():
             if device.device_type not in res:
                 res[device.device_type] = {}
-            res[device.device_type][device._getObjName(port)] = device.toObject()
+            try:
+                res[device.device_type][device._getObjName(port)] = device.toObject()
+            except Exception as e:
+                # Something has failed, so let the attached script know.
+                return str(e)
         return res
 
     def resetBot(self):
