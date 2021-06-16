@@ -5,3 +5,4 @@ global-include *.png
 global-include *.py
 graft ev3sim/assets
 prune venv
+prune python_embed*
