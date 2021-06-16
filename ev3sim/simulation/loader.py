@@ -372,12 +372,11 @@ class StateHandler:
         man = ScreenObjectManager()
         man.startScreen(**kwargs)
 
-    def beginSimulation(self, **kwargs):
+    def beginSimulation(self, batch, seed=None):
         self.is_simulating = True
-        from ev3sim.sim import main
+        from ev3sim.sim import start_batch
 
-        kwargs["command_line"] = False
-        main(passed_args=kwargs)
+        start_batch(batch, seed=seed)
 
     def mainLoop(self):
         last_vis_update = time.time() - 1.1 / ScriptLoader.instance.VISUAL_TICK_RATE

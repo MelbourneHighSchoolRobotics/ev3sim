@@ -43,3 +43,31 @@ def recursive_merge(dict1, dict2):
             recursive_merge(dict1[key], dict2[key])
         else:
             dict1[key] = dict2[key]
+
+
+def _latest_version(q, i):
+    from ev3sim import __version__
+    from luddite import get_version_pypi
+
+    q._internal_size = i
+    try:
+        v = get_version_pypi("ev3sim")
+        q.put(v)
+    except:
+        q.put(__version__)
+
+
+def checkVersion():
+    from multiprocessing import Process
+    from ev3sim import __version__
+    from ev3sim.visual.manager import ScreenObjectManager
+
+    Q = Queue()
+    process = Process(target=_latest_version, args=(Q, Q._internal_size))
+    process.start()
+    process.join(2)
+    if process.is_alive():
+        process.terminate()
+        ScreenObjectManager.NEW_VERSION = False
+    else:
+        ScreenObjectManager.NEW_VERSION = Q.get() != __version__
