@@ -383,6 +383,7 @@ def main(passed_args=None):
         with open(join(ev3sim_folder, "error_log.txt"), "w") as f:
             f.write(error)
         print(f"An error occurred, check {join(ev3sim_folder, 'error_log.txt')} for details.")
+        sentry_sdk.capture_exception(e)
 
     pygame.quit()
     handler.is_running = False
