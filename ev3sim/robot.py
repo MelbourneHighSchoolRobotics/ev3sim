@@ -1,3 +1,4 @@
+import numpy as np
 from ev3sim.file_helper import find_abs
 from ev3sim.search_locations import code_locations
 from ev3sim.simulation.interactor import IInteractor
@@ -204,6 +205,30 @@ class Robot:
         Shouldn't be required for normal bots.
         """
         pass
+
+
+class AngleSnapRobot(Robot):
+
+    # This isn't very lenient, you still need to do most of the work.
+    SNAP_ANGLES = [0, np.pi / 2, np.pi, 3 * np.pi / 2]
+    ANGLE_CUTOFF = np.pi / 24
+    VELOCITY_CUTOFF = 0.2
+
+    def tick(self, tick):
+        super().tick(tick)
+        if self._interactor.robot_key in ScriptLoader.instance.object_map:
+            obj = ScriptLoader.instance.object_map[self._interactor.robot_key]
+            rot = obj.body.angle
+            if abs(obj.body.angular_velocity) < self.VELOCITY_CUTOFF:
+                for angle in self.SNAP_ANGLES:
+                    diff = rot - angle
+                    while diff >= np.pi:
+                        diff -= 2 * np.pi
+                    while diff < -np.pi:
+                        diff += 2 * np.pi
+                    if abs(diff) < self.ANGLE_CUTOFF:
+                        obj.body.angle = angle
+                        # Don't reset angular velocity, then we can't move.
 
 
 from ev3sim.visual.settings.elements import TextEntry
