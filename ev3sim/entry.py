@@ -377,6 +377,7 @@ def main(passed_args=None):
     except KeyboardInterrupt:
         pass
     except Exception as e:
+        import sentry_sdk
         import traceback as tb
 
         error = "".join(tb.format_exception(None, e, e.__traceback__))
