@@ -57,10 +57,9 @@ def _latest_version(q, i):
         q.put(__version__)
 
 
-def checkVersion():
+def canUpdate():
     from multiprocessing import Process
     from ev3sim import __version__
-    from ev3sim.visual.manager import ScreenObjectManager
 
     Q = Queue()
     process = Process(target=_latest_version, args=(Q, Q._internal_size))
@@ -68,9 +67,24 @@ def checkVersion():
     process.join(2)
     if process.is_alive():
         process.terminate()
-        ScreenObjectManager.NEW_VERSION = False
+        return False
     else:
-        ScreenObjectManager.NEW_VERSION = Q.get() != __version__
+
+        def transform_to_list(version_string):
+            s = version_string.split(".")
+            for x in range(len(s)):
+                try:
+                    s[x] = int(s[x])
+                except:
+                    # This ensures that an ordering can be made.
+                    # If the version number is text, we can assume this is a development version,
+                    # and so updates that match previous numbers but not the last don't need to be updated.
+                    s[x] = 9999
+            return s
+
+        online_version = transform_to_list(Q.get())
+        local_version = transform_to_list(__version__)
+        return online_version > local_version
 
 
 APP_VSCODE = "VSCODE"
