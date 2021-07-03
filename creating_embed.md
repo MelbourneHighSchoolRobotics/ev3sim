@@ -18,5 +18,7 @@ python39.zip
 3. Copy `tcl` to `tcl` (Local install to embed)
 4. Copy `Lib/tkinter` to `Lib/tkinter` (Local install to embed)
 5. Copy `DLLs/_tkinter.pyd`, `DLLs/tcl86t.dll`, `DLLs/tk86t.dll` to `_tkinter.pyd`, ... (NOT in DLLs folder in embed)
+6. Copy `pythonw.exe` to `pythonww.exe` (Don't ask why)
+7. Pip install `python-ev3dev2`.
 
 After this, `python -m build_exe` should generate a good installer.

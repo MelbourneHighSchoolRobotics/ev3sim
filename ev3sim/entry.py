@@ -3,7 +3,7 @@ import sys
 import pygame
 import yaml
 from os import remove
-from os.path import join, dirname, abspath, basename, isfile, sep, exists, relpath
+from os.path import join, dirname, abspath, basename, isfile, sep, exists
 
 from ev3sim import __version__
 from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory, make_relative
@@ -358,20 +358,40 @@ def main(passed_args=None):
                 # Start the update process.
                 import subprocess
                 import sys
+                import shutil
 
-                subprocess.check_call(
-                    [
-                        sys.executable,
-                        "-m",
-                        "pip",
-                        "install",
-                        "--trusted-host",
-                        "pypi.org",
-                        "--trusted-host",
-                        "files.pythonhosted.org",
-                        "ev3sim",
-                    ]
-                )
+                lib = dirname(dirname(ev3sim_folder))
+                # First, save the user_config and workspace if appropriate.
+                if exists(join(ev3sim_folder, "user_config.yaml")):
+                    shutil.copy(join(ev3sim_folder, "user_config.yaml"), join(lib, "user_config.yaml"))
+                if exists(join(ev3sim_folder, "workspace")):
+                    if exists(join(lib, "workspace")):
+                        shutil.rmtree(join(lib, "workspace"))
+                    shutil.copytree(join(ev3sim_folder, "workspace"), join(lib, "workspace"))
+                try:
+                    subprocess.check_call(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            "--trusted-host",
+                            "pypi.org",
+                            "--trusted-host",
+                            "files.pythonhosted.org",
+                            "ev3sim",
+                        ]
+                    )
+                except:
+                    pass
+                finally:
+                    # Move the user_config and workspace back.
+                    if exists(join(lib, "user_config.yaml")):
+                        shutil.move(join(lib, "user_config.yaml"), join(ev3sim_folder, "user_config.yaml"))
+                    if exists(join(lib, "workspace")):
+                        if exists(join(ev3sim_folder, "workspace")):
+                            shutil.rmtree(join(ev3sim_folder, "workspace"))
+                        shutil.move(join(lib, "workspace"), ev3sim_folder)
             else:
                 # Revert to original start up.
                 ScreenObjectManager.instance.screen_stack = []
