@@ -441,12 +441,14 @@ def main(passed_args=None):
     except KeyboardInterrupt:
         pass
     except Exception as e:
+        import sentry_sdk
         import traceback as tb
 
         error = "".join(tb.format_exception(None, e, e.__traceback__))
         with open(join(ev3sim_folder, "error_log.txt"), "w") as f:
             f.write(error)
         print(f"An error occurred, check {join(ev3sim_folder, 'error_log.txt')} for details.")
+        sentry_sdk.capture_exception(e)
 
     pygame.quit()
     handler.is_running = False
