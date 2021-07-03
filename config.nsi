@@ -72,6 +72,10 @@ Section "Dummy Section" SecDummy
 IfFileExists "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" update no_update
 update:
 CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" "$InstDir\default_config.yaml"
+IfFileExists "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace" ws_update ws_no_update
+ws_update:
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace" "$InstDir\workspace"
+ws_no_update:
 no_update:
 RMDir /r "$InstDir\python_embed"
 SetOutPath "$InstDir"
@@ -94,6 +98,13 @@ IfFileExists "$InstDir\default_config.yaml" second_update
 CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\presets\default_config.yaml" "$InstDir\default_config.yaml"
 second_update:
 CopyFiles "$InstDir\default_config.yaml" "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml"
+
+IfFileExists "$InstDir\workspace" second_ws_update second_ws_no_update
+
+second_ws_update:
+CopyFiles "$InstDir\workspace" "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace"
+RMDir /r /REBOOTOK "$InstDir\workspace"
+second_ws_no_update:
 
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
