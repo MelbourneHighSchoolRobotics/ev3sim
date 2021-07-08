@@ -1,0 +1,48 @@
+{
+  "nodes": {
+    "mindpile": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1625715715,
+        "narHash": "sha256-qPW9wGsmphrtWIm+dJDqUVPDTX+LORwJz4u3FJoAhpQ=",
+        "owner": "MelbourneHighSchoolRobotics",
+        "repo": "mindpile",
+        "rev": "83a2fda5f964bdc817463c93cde29bfe922c2b50",
+        "type": "github"
+      },
+      "original": {
+        "owner": "MelbourneHighSchoolRobotics",
+        "repo": "mindpile",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1622516815,
+        "narHash": "sha256-ZjBd81a6J3TwtlBr3rHsZspYUwT9OdhDk+a/SgSEf7I=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "7e9b0dff974c89e070da1ad85713ff3c20b0ca97",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "21.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "mindpile": "mindpile",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
