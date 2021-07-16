@@ -131,7 +131,7 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                         MESSAGE_INPUT_REQUESTED,
                         {
                             "robot_id": robot_id,
-                            "message": str(message),
+                            "message": str(message) if message is not None else None,
                         },
                     )
                 )
