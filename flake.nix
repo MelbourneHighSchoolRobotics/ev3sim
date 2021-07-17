@@ -12,7 +12,6 @@
       {
         pymunk = callPackage ./nix/pymunk.nix python39Packages;
         ev3dev2 = callPackage ./nix/ev3dev2.nix python39Packages;
-        opensimplex = callPackage ./nix/opensimplex.nix python39Packages;
         pygame-gui = callPackage ./nix/pygame-gui.nix python39Packages;
 
         ev3sim =
