@@ -1,2 +1,2 @@
 { pkgs, ... }:
-pkgs.wineWowPackages.stable
+pkgs.wineWowPackages.minimal
