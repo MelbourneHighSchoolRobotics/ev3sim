@@ -4,6 +4,7 @@
 , ...
 }:
 let
+  version = pkgs.callPackage ./version.nix {};
   winePkg = pkgs.callPackage ./wine.nix {};
   wine = "${winePkg}/bin/wine64";
   python64 = pkgs.callPackage ./python.nix {};
@@ -12,7 +13,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "ev3sim-windows-installer";
-  version = "0.0.2";
+  inherit version;
 
   src = builtins.path { path = ./..; name = "ev3sim"; };
 

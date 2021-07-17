@@ -17,9 +17,7 @@
 
         ev3sim =
           pkgs.python39Packages.buildPythonPackage (let
-            versionFile = builtins.readFile ./ev3sim/__init__.py;
-            versionLine = lib.findFirst (lib.hasPrefix "__version__") "" (lib.splitString "\n" versionFile);
-            version = lib.removePrefix "__version__ = \"" (lib.removeSuffix "\"" versionLine);
+            version = callPackage ./nix/version.nix {};
           in {
             pname = "ev3sim";
             version = version;
