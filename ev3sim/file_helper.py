@@ -3,21 +3,6 @@ import os
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-def split_names(path):
-    names = []
-    while True:
-        name1, name2 = os.path.split(path)
-        if name1 == path:
-            names.append(name1)
-            break
-        if name2 == path:
-            names.append(name2)
-            break
-        path = name1
-        names.append(name2)
-    return names[::-1]
-
-
 class WorkspaceError(Exception):
     pass
 
@@ -29,8 +14,9 @@ def find_abs(filepath, allowed_areas=None):
     allowed_areas can contain:
         - package: search from root level of package
         - package/path: search from path in package
-        - local: search from where the script is executed
-        - local/path: search from path in script execution
+        - workspace: search from workspace
+        - workspace/path: search from path in workspace
+        - local|path: search from current execution context (can be an absolute path or relative one)
 
     areas leftmost will be considered first.
     this defaults to local, then package.
@@ -52,24 +38,23 @@ def find_abs(filepath, allowed_areas=None):
     else:
         WORKSPACE = ""
 
-    fnames = split_names(filepath)
     for area in allowed_areas:
         if area == "package":
-            path = os.path.join(ROOT, *fnames)
+            path = os.path.join(ROOT, filepath)
         elif area.startswith("package"):
-            path = os.path.join(ROOT, *area[8:].replace("\\", "/").split("/"), *fnames)
+            path = os.path.join(ROOT, area[8:], filepath)
         elif area == "workspace":
             if not WORKSPACE:
                 continue
-            path = os.path.join(WORKSPACE, *fnames)
+            path = os.path.join(WORKSPACE, filepath)
         elif area.startswith("workspace"):
             if not WORKSPACE:
                 continue
-            path = os.path.join(WORKSPACE, *area[10:].replace("\\", "/").split("/"), *fnames)
+            path = os.path.join(WORKSPACE, area[10:], filepath)
         elif area == "local":
             path = filepath
         elif area.startswith("local"):
-            path = os.path.join(*area[6:].replace("\\", "/").split("/"), *fnames)
+            path = os.path.join(area[6:], filepath)
         else:
             raise ValueError(f"Unknown file area {area}")
         if os.path.isdir(path) or os.path.isfile(path):

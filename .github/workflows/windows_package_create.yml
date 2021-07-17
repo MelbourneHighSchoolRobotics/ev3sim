@@ -1,8 +1,7 @@
 name: Windows Executable Creation
 
-on:
-  push:
-    branches-ignore: gh-pages
+# Disabled as is broken
+on: []
 
 jobs:
   create-exe:
