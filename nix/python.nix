@@ -10,23 +10,26 @@
 let
   winePkg = pkgs.callPackage ./wine.nix {};
   wine = "${winePkg}/bin/wine64";
-  getPipSrc = fetchFromGitHub {
-    owner = "pypa";
-    repo = "get-pip";
-    rev = "21.1.3";
-    sha256 = "sha256-oAbZJZxCjL9kvBvN7KhJ1TC1iPUFJa+VYfes74q8dWU=";
+  winepath = "${winePkg}/bin/winepath";
+  pipWheelName = "pip-21.1.3-py3-none-any.whl";
+  pipWheelSrc = fetchurl {
+    url = "https://files.pythonhosted.org/packages/47/ca/f0d790b6e18b3a6f3bd5e80c2ee4edbb5807286c21cdd0862ca933f751dd/${pipWheelName}";
+    sha256 = "01520f9zj482ml1y2cnqxbzpldy59p402f2l8qr0gp7y243pdjvq";
   };
-  getPip = "${getPipSrc}/public/get-pip.py";
+  pipWheel = pkgs.runCommandNoCC "pip-wheel" {} ''
+    mkdir $out
+    cp ${pipWheelSrc} $out/${pipWheelName}
+  '';
 in
 stdenv.mkDerivation rec {
   pname = "python-windows-embed";
   version = "3.9.6";
 
-  src = (if is32bit then fetchzip {
+  src = fetchzip (if is32bit then {
     url = "https://www.python.org/ftp/python/${version}/python-${version}-embed-win32.zip";
     sha256 = "CrLZ2UBfHvJk4zCBERCyO/hNpJ0torFKtSEv5jJKY48=";
     stripRoot = false;
-  } else fetchzip {
+  } else {
     url = "https://www.python.org/ftp/python/${version}/python-${version}-embed-amd64.zip";
     sha256 = "yAfSN0U5QScV4JVvb6FbcQyakppN2qniB3LmhPitPzY=";
     stripRoot = false;
@@ -40,7 +43,8 @@ stdenv.mkDerivation rec {
 
     substituteInPlace $out/python39._pth --replace '#import site' 'import site'
     
+    export PIP=$(${winepath} -w ${pipWheel}/${pipWheelName})
     export HOME=$TMPDIR
-    ${wine} $out/python.exe ${getPip}
+    ${wine} $out/python.exe "$PIP\pip" install --no-index $PIP
   '';
 }

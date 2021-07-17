@@ -6,13 +6,6 @@
   inputs.mindpile.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, mindpile }: {
-
-    overlay = final: prev: {
-      python39Packages = prev.python39Packages // {
-        
-      };
-    };
-
     packages.x86_64-linux =
       with import nixpkgs { system = "x86_64-linux"; };
       {
@@ -53,6 +46,7 @@
           });
         
         ev3sim-windows-installer = pkgs.callPackage ./nix/windows-installer.nix {};
+        python = pkgs.callPackage ./nix/python.nix {};
       };
 
     defaultPackage.x86_64-linux = self.packages.x86_64-linux.ev3sim;
