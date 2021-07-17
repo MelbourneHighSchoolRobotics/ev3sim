@@ -47,11 +47,13 @@ def recursive_merge(dict1, dict2):
 
 def _latest_version(q, i):
     from ev3sim import __version__
-    from luddite import get_version_pypi
+    import requests
 
     q._internal_size = i
     try:
-        v = get_version_pypi("ev3sim")
+        r = requests.get("https://pypi.org/pypi/ev3sim/json")
+        j = r.json()
+        v = j["info"]["version"]
         q.put(v)
     except:
         q.put(__version__)
