@@ -17,6 +17,8 @@ stdenv.mkDerivation rec {
 
   src = builtins.path { path = ./..; name = "ev3sim"; };
 
+  fetcher = ./dependency-fetcher;
+
   phases = [ "buildPhase" "installPhase" ];
 
   nativeBuildInputs = [ nsis ];
