@@ -14,7 +14,7 @@ def config_locations():
         config_dir = os.path.join(xdg_config_dir, "ev3sim")
         # Ensure config dir exists
         Path(config_dir).mkdir(parents=True, exist_ok=True)
-        return ["workspace", "local/" + config_dir]
+        return ["workspace", "local|" + config_dir]
 
     return ["workspace", "package"]
 
