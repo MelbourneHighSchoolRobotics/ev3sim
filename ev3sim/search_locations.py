@@ -1,9 +1,22 @@
 preset_locations = lambda: ["workspace/presets/", "workspace", "package/presets/"]
-config_locations = lambda: ["workspace", "package"]
 device_locations = lambda: ["workspace/devices/", "package/devices/"]
 theme_locations = lambda: ["workspace/assets/", "workspace", "package/assets"]
 asset_locations = lambda: ["workspace/assets/", "workspace", "package/assets/"]
 
+def config_locations():
+    import os
+    import platform
+    from pathlib import Path
+
+    if platform.system() == "Linux":
+        home_dir = os.path.expanduser("~")
+        xdg_config_dir = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home_dir, ".config")
+        config_dir = os.path.join(xdg_config_dir, "ev3sim")
+        # Ensure config dir exists
+        Path(config_dir).mkdir(parents=True, exist_ok=True)
+        return ["workspace", "local/" + config_dir]
+
+    return ["workspace", "package"]
 
 def code_locations(bot_path):
     from ev3sim.file_helper import find_abs_directory
