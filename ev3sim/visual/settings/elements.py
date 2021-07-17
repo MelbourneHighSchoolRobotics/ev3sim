@@ -170,26 +170,12 @@ class FileEntry(SettingsVisualElement):
             self.current = actual_path
             self.filename.set_text(self.current)
 
-        import platform
-
-        if platform.system() == "Windows":
-            from os.path import join
-            from tkinter import Tk
-            from tkinter.filedialog import askdirectory, askopenfilename
-
-            Tk().withdraw()
-            if self.is_directory:
-                path = askdirectory()
-            else:
-                path = join(askopenfilename())
-            onComplete(path)
-        else:
-            self.menu.addFileDialog(
-                "Select " + self.title,
-                find_abs_directory(self.relative_paths[0], create=True) if self.relative_paths else None,
-                self.is_directory,
-                onComplete,
-            )
+        self.menu.addFileDialog(
+            "Select " + self.title,
+            find_abs_directory(self.relative_paths[0], create=True) if self.relative_paths else None,
+            self.is_directory,
+            onComplete,
+        )
 
 
 class TextEntry(SettingsVisualElement):
