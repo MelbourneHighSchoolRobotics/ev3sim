@@ -1,7 +1,8 @@
 {
   description = "A simulator for soccer robots programmed with ev3dev.";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/21.05";
+  # On unstable to use some new python packages. Eventually will be merged into Nix 21.11
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   inputs.mindpile.url = "github:MelbourneHighSchoolRobotics/mindpile";
   inputs.mindpile.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -12,7 +13,6 @@
         pymunk = callPackage ./nix/pymunk.nix python39Packages;
         ev3dev2 = callPackage ./nix/ev3dev2.nix python39Packages;
         opensimplex = callPackage ./nix/opensimplex.nix python39Packages;
-        luddite = callPackage ./nix/luddite.nix python39Packages;
         pygame-gui = callPackage ./nix/pygame-gui.nix python39Packages;
 
         ev3sim =
@@ -28,8 +28,7 @@
               pyyaml
               self.packages.x86_64-linux.pymunk
               self.packages.x86_64-linux.ev3dev2
-              self.packages.x86_64-linux.opensimplex
-              self.packages.x86_64-linux.luddite
+              opensimplex
               self.packages.x86_64-linux.pygame-gui
               mindpile.packages.x86_64-linux.mindpile
               sentry-sdk
