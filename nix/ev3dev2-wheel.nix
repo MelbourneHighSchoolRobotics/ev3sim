@@ -1,4 +1,4 @@
-# HACK! Build an ev3dev2 wheel natively as it and doesn't build under Wine for some reason, and isn't on PyPi
+# HACK! Build an ev3dev2 wheel natively as it doesn't build under Wine for some reason, and isn't on PyPi
 { pkgs, fetchurl, ... }:
 let
   ev3dev2 = fetchurl {
