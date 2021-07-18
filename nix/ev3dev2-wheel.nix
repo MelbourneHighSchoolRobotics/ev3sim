@@ -9,5 +9,5 @@ let
 in
 pkgs.runCommandNoCC "ev3dev2-wheel" {} ''
   mkdir $out
-  ${python}/bin/python -m pip wheel -w $out --no-deps ${ev3dev2}
+  ${python}/bin/python -m pip wheel -w $out --no-deps --no-index ${ev3dev2}
 ''

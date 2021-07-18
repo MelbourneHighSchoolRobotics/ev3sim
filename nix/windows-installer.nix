@@ -7,11 +7,24 @@ let
   version = pkgs.callPackage ./version.nix {};
   winePkg = pkgs.callPackage ./wine.nix {};
   wine = "${winePkg}/bin/wine64";
+  fetchRequirements = pkgs.callPackage ./fetch-requirements.nix {};
   python64 = pkgs.callPackage ./python.nix {};
-  python64Deps = pkgs.callPackage ./windows-dependencies.nix { python-embed = python64; };
   python32 = pkgs.callPackage ./python.nix { is32bit = true; };
-  python32Deps = pkgs.callPackage ./windows-dependencies.nix { python-embed = python32; };
   nsis = pkgs.callPackage ./nsis.nix {};
+
+  requirements = builtins.path { path = ./../requirements.txt; name = "requirements.txt"; };
+  python64Deps = fetchRequirements {
+    inherit requirements;
+    pyVersion = "39";
+    is32bit = false;
+    sha256 = "sha256-eh/dDjvnzGiyGwWhEztwIAwFgXwtgRluBChEiXgKpWY=";
+  };
+  python32Deps = fetchRequirements {
+    inherit requirements;
+    pyVersion = "39";
+    is32bit = true;
+    sha256 = "sha256-gFubpvxhl1w2GbkG52jtmJWiZDESd0wMR9/C/Yfod7g=";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "ev3sim-windows-installer";
