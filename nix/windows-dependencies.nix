@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
-    export HOME=$TMPDIR
+    export WINEPREFIX=$TMPDIR/.wine
     ${wine} ${python-embed}/python.exe -m pip wheel -w $out -f ${ev3dev2} -r $src
   '';
 }

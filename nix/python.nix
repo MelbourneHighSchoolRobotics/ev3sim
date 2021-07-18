@@ -51,7 +51,7 @@ stdenv.mkDerivation rec {
 
     substituteInPlace $out/python39._pth --replace '#import site' 'import site'
     
-    export HOME=$TMPDIR
+    export WINEPREFIX=$TMPDIR/.wine
     ${wine} $out/python.exe "${pip.wheel}/pip" install --no-index ${pip.wheel} ${setuptools.wheel} ${wheel.wheel}
   '';
 }

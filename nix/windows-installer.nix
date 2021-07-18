@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
 
     cp ev3sim/presets/default_config.yaml ev3sim/user_config.yaml
 
-    export HOME=$TMPDIR
+    export WINEPREFIX=$TMPDIR/.wine
 
     mkdir python_embed-64/wheels
     cp ${python64Deps}/* python_embed-64/wheels
