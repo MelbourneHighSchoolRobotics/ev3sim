@@ -7,7 +7,6 @@ let
   version = pkgs.callPackage ./version.nix {};
   winePkg = pkgs.callPackage ./wine.nix {};
   wine = "${winePkg}/bin/wine64";
-  winepath = "${winePkg}/bin/winepath";
   python64 = pkgs.callPackage ./python.nix {};
   python64Deps = pkgs.callPackage ./windows-dependencies.nix { python-embed = python64; };
   python32 = pkgs.callPackage ./python.nix { is32bit = true; };
