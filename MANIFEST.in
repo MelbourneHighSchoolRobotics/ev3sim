@@ -3,6 +3,8 @@ global-include *.bot
 global-include *.sim
 global-include *.png
 global-include *.py
+global-include *.json
+global-include *.ev3
 graft ev3sim/assets
 prune venv
 prune python_embed*
