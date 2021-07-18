@@ -3,6 +3,7 @@ device_locations = lambda: ["workspace/devices/", "package/devices/"]
 theme_locations = lambda: ["workspace/assets/", "workspace", "package/assets"]
 asset_locations = lambda: ["workspace/assets/", "workspace", "package/assets/"]
 
+
 def config_locations():
     import os
     import platform
@@ -17,6 +18,7 @@ def config_locations():
         return ["workspace", "local|" + config_dir]
 
     return ["workspace", "package"]
+
 
 def code_locations(bot_path):
     from ev3sim.file_helper import find_abs_directory
