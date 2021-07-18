@@ -14,7 +14,7 @@
         ev3dev2 = callPackage ./nix/ev3dev2.nix python39Packages;
         pygame-gui = callPackage ./nix/pygame-gui.nix python39Packages;
 
-        ev3sim =
+        linux =
           pkgs.python39Packages.buildPythonPackage (let
             version = callPackage ./nix/version.nix {};
           in {
@@ -35,14 +35,15 @@
               requests
             ];
             preBuild = ''
-              substituteInPlace requirements.txt --replace "numpy==1.19.3" "numpy"
-              substituteInPlace requirements.txt --replace "python-certifi-win32>=1.6" ""
+              # Remove version pinning (handled by Nix)
+              sed -i -e 's/^\(.*\)[><=]=.*$/\1/g' requirements.txt
+              # Remove Windows-only dependency
+              substituteInPlace requirements.txt --replace "python-certifi-win32" ""
             '';
             doCheck = false;
           });
         
-        ev3sim-windows-installer = pkgs.callPackage ./nix/windows-installer.nix {};
-        python = pkgs.callPackage ./nix/python.nix {};
+        windows = pkgs.callPackage ./nix/windows-installer.nix {};
       };
 
     defaultPackage.x86_64-linux = self.packages.x86_64-linux.ev3sim;
