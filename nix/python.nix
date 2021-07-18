@@ -10,16 +10,24 @@
 let
   winePkg = pkgs.callPackage ./wine.nix {};
   wine = "${winePkg}/bin/wine64";
-  winepath = "${winePkg}/bin/winepath";
-  pipWheelName = "pip-21.1.3-py3-none-any.whl";
-  pipWheelSrc = fetchurl {
-    url = "https://files.pythonhosted.org/packages/47/ca/f0d790b6e18b3a6f3bd5e80c2ee4edbb5807286c21cdd0862ca933f751dd/${pipWheelName}";
+  fetchWheel = pkgs.callPackage ./fetch-wheel.nix {};
+  pip = fetchWheel {
+    pname = "pip";
+    version = "21.1.3";
     sha256 = "01520f9zj482ml1y2cnqxbzpldy59p402f2l8qr0gp7y243pdjvq";
   };
-  pipWheel = pkgs.runCommandNoCC "pip-wheel" {} ''
-    mkdir $out
-    cp ${pipWheelSrc} $out/${pipWheelName}
-  '';
+  setuptools = fetchWheel {
+    pname = "setuptools";
+    version = "57.2.0";
+    sha256 = "03hrybnjma3pchin9g5k30fh5xxmsvb9xspmypj03frz2brl5fxl";
+  };
+  wheel = fetchWheel {
+    pname = "wheel";
+    version = "0.36.2";
+    dist = "py2.py3";
+    python = "py2.py3";
+    sha256 = "03nw2n951cpladw5z0hfm4n1hjfxm9rl6chyr8k3qxp5y22v3dbq";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "python-windows-embed";
@@ -44,8 +52,6 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/python39._pth --replace '#import site' 'import site'
     
     export HOME=$TMPDIR
-    export PIP=$(${winepath} -w ${pipWheel}/${pipWheelName})
-    ${wine} $out/python.exe "$PIP\pip" install --no-index $PIP
-    ${wine} $out/python.exe -m pip install setuptools
+    ${wine} $out/python.exe "${pip.wheel}/pip" install --no-index ${pip.wheel} ${setuptools.wheel} ${wheel.wheel}
   '';
 }
