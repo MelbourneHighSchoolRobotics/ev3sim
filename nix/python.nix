@@ -46,5 +46,6 @@ stdenv.mkDerivation rec {
     export HOME=$TMPDIR
     export PIP=$(${winepath} -w ${pipWheel}/${pipWheelName})
     ${wine} $out/python.exe "$PIP\pip" install --no-index $PIP
+    ${wine} $out/python.exe -m pip install setuptools
   '';
 }
