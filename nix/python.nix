@@ -30,7 +30,7 @@ let
   };
 in
 stdenv.mkDerivation rec {
-  pname = "python-windows-embed";
+  pname = "python-windows-embed${if is32bit then "32" else "64"}";
   version = "3.9.6";
 
   src = fetchzip (if is32bit then {

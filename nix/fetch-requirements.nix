@@ -21,7 +21,7 @@ let
   platform = if is32bit then "win32" else "win_amd64";
 in
 stdenv.mkDerivation rec {
-  pname = "ev3sim-windows-dependencies";
+  pname = "ev3sim-${platform}-requirements";
   inherit version;
 
   src = requirements;

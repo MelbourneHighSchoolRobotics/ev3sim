@@ -7,7 +7,7 @@ let
   src = fetchurl {
     inherit url sha256;
   };
-  path = pkgs.runCommandNoCC "${pname}-${version}-wheel" {} ''
+  path = pkgs.runCommandNoCC name {} ''
     mkdir $out
     cp ${src} $out/${name}
   '';
