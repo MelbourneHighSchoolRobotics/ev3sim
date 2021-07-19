@@ -1,3 +1,4 @@
+# Python embedded distribution for Windows with pip
 { lib
 , pkgs
 , stdenv

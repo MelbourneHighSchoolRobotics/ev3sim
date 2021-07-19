@@ -1,3 +1,4 @@
+# Get the EV3Sim version number
 { lib }:
 let
   versionFile = builtins.readFile ./../ev3sim/__init__.py;

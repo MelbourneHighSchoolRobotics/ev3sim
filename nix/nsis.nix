@@ -1,3 +1,4 @@
+# NSIS with ExecDos plugin
 { pkgs, fetchzip, ... }:
 let
   execDos = fetchzip {
