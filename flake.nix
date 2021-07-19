@@ -49,6 +49,6 @@
         windows = pkgs.callPackage ./nix/windows-installer.nix {};
       };
 
-    defaultPackage.x86_64-linux = self.packages.x86_64-linux.ev3sim;
+    defaultPackage.x86_64-linux = self.packages.x86_64-linux.linux;
   };
 }
