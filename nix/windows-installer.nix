@@ -60,6 +60,6 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
-    cp -r installer-{32,64}bit.exe python_embed-{32,64} $out
+    cp installer-{32,64}bit.exe $out
   '';
 }
