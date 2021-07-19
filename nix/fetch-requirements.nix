@@ -16,7 +16,7 @@ let
   python = pkgs.python39.withPackages (p: with p; [ pip setuptools wheel ]);
   ev3dev2 = pkgs.callPackage ./ev3dev2-wheel.nix {};
 
-  platform = if is32bit then "win32" else "amd64";
+  platform = if is32bit then "win32" else "win_amd64";
 in
 stdenv.mkDerivation rec {
   pname = "ev3sim-windows-dependencies";
