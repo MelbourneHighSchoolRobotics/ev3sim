@@ -8,8 +8,7 @@
 , ...
 }:
 let
-  winePkg = pkgs.callPackage ./wine.nix {};
-  wine = "${winePkg}/bin/wine64";
+  wine = pkgs.callPackage ./wine.nix {};
   fetchWheel = pkgs.callPackage ./fetch-wheel.nix {};
   pip = fetchWheel {
     pname = "pip";
@@ -51,7 +50,6 @@ stdenv.mkDerivation rec {
 
     substituteInPlace $out/python39._pth --replace '#import site' 'import site'
     
-    export WINEPREFIX=$TMPDIR/.wine
     ${wine} $out/python.exe "${pip.wheel}/pip" install --no-index ${pip.wheel} ${setuptools.wheel} ${wheel.wheel}
   '';
 }

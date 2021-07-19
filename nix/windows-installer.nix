@@ -5,8 +5,7 @@
 }:
 let
   version = pkgs.callPackage ./version.nix {};
-  winePkg = pkgs.callPackage ./wine.nix {};
-  wine = "${winePkg}/bin/wine64";
+  wine = pkgs.callPackage ./wine.nix {};
   fetchRequirements = pkgs.callPackage ./fetch-requirements.nix {};
   python64 = pkgs.callPackage ./python.nix {};
   python32 = pkgs.callPackage ./python.nix { is32bit = true; };
@@ -44,8 +43,6 @@ stdenv.mkDerivation rec {
     chmod a+w -R .
 
     cp ev3sim/presets/default_config.yaml ev3sim/user_config.yaml
-
-    export WINEPREFIX=$TMPDIR/.wine
 
     mkdir python_embed-64/wheels
     cp ${python64Deps}/* python_embed-64/wheels
