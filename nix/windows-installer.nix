@@ -17,13 +17,13 @@ let
     inherit requirements;
     pyVersion = "39";
     is32bit = false;
-    sha256 = "sha256-eh/dDjvnzGiyGwWhEztwIAwFgXwtgRluBChEiXgKpWY=";
+    sha256 = "sha256-uixtPHJMs0Dxn+DgnxQ8NQJYkPmTadg0ZiXnUBjmCto=";
   };
   python32Deps = fetchRequirements {
     inherit requirements;
     pyVersion = "39";
     is32bit = true;
-    sha256 = "sha256-gFubpvxhl1w2GbkG52jtmJWiZDESd0wMR9/C/Yfod7g=";
+    sha256 = "sha256-XqSAK1Uy2SxN4EL08xNmEEDccJUcivQDoQIEJ2dfi8w=";
   };
 in
 stdenv.mkDerivation rec {

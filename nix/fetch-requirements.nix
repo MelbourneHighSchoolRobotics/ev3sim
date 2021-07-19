@@ -13,7 +13,9 @@
 }:
 let
   version = pkgs.callPackage ./version.nix {};
-  python = pkgs.python39.withPackages (p: with p; [ pip setuptools wheel ]);
+  winePkg = pkgs.callPackage ./wine.nix {};
+  wine = "${winePkg}/bin/wine64";
+  python = pkgs.callPackage ./python.nix { inherit is32bit; };
   ev3dev2 = pkgs.callPackage ./ev3dev2-wheel.nix {};
 
   platform = if is32bit then "win32" else "win_amd64";
@@ -28,14 +30,10 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
-    ${python.interpreter} -m pip download \
-      --dest $out \
+    export WINEPREFIX=$TMPDIR/.wine
+    ${wine} ${python}/python.exe -m pip wheel \
+      --wheel-dir $out \
       --requirement $src \
-      --only-binary ":all:" \ # Only get wheels, not source
-      --platform ${platform} \
-      --python-version ${pyVersion} \
-      --implementation cp \ # Force CPython
-      --abi "cp${pyVersion}" \
       -f ${ev3dev2} # Hack to find ev3dev2 wheel
   '';
 
