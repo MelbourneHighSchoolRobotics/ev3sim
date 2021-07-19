@@ -31,3 +31,44 @@ Pull requests are linted with `black`_. To run black locally to fix any formatti
     black --config pyproject.toml .
 
 .. _black: https://github.com/psf/black
+
+Building with Nix
+-----------------
+
+The `Nix <https://nixos.org/>`_ package manager can be used to create reproducible builds on Linux and Mac.
+
+Setup
+^^^^^
+
+First `install Nix <https://nixos.org/download.html>`_ with experimental `Flakes <https://nixos.wiki/wiki/Flakes#Non-NixOS>`_ support.
+
+.. code-block:: bash
+
+    curl -L https://nixos.org/nix/install | sh
+    . /home/$USER/.nix-profile/etc/profile.d/nix.sh
+
+    nix-env -iA nixpkgs.nixUnstable
+    mkdir -p ~/.config/nix
+    echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+
+Then set up the binary cache for faster builds.
+
+.. code-block:: bash
+
+    nix-env -iA cachix -f https://cachix.org/api/v1/install
+    cachix use melbournehighschoolrobotics
+
+Release
+^^^^^^^
+
+To build installers for Windows:
+
+.. code-block:: bash
+
+    nix build ".#windows"
+
+To build for Linux:
+
+.. code-block:: bash
+
+    nix build ".#linux"
