@@ -1,5 +1,4 @@
-{ lib
-, pkgs
+{ pkgs
 , stdenv
 , ...
 }:
@@ -12,19 +11,18 @@ let
   nsis = pkgs.callPackage ./nsis.nix {};
 
   requirements = ./../requirements.txt;
-  pyVersion = "39";
   python64Deps = fetchRequirements {
-    inherit requirements pyVersion;
+    inherit requirements;
     is32bit = false;
     sha256 = "sha256-uixtPHJMs0Dxn+DgnxQ8NQJYkPmTadg0ZiXnUBjmCto=";
   };
   python32Deps = fetchRequirements {
-    inherit requirements pyVersion;
+    inherit requirements;
     is32bit = true;
     sha256 = "sha256-XqSAK1Uy2SxN4EL08xNmEEDccJUcivQDoQIEJ2dfi8w=";
   };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "ev3sim-windows-installer";
   inherit version;
 

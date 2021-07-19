@@ -22,7 +22,7 @@
             version = callPackage ./nix/version.nix {};
           in {
             pname = "ev3sim";
-            version = version;
+            inherit version;
             src = builtins.path { path = ./.; name = "ev3sim"; };
             propagatedBuildInputs = with pkgs.python39Packages; [
               numpy

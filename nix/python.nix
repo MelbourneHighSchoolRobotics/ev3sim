@@ -1,10 +1,7 @@
 # Python embedded distribution for Windows with pip
-{ lib
-, pkgs
+{ pkgs
 , stdenv
-, fetchurl
 , fetchzip
-, fetchFromGitHub
 , is32bit ? false
 , ...
 }:

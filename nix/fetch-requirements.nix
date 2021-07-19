@@ -1,26 +1,22 @@
 # Fetch and cache Windows wheels for requirements
-{ lib
-, pkgs
+{ pkgs
 , stdenv
-, fetchFromGitHub
 , ...
 }:
 
 { requirements
-, pyVersion ? "39"
 , is32bit ? false
 , sha256 ? ""
 }:
 let
   version = pkgs.callPackage ./version.nix {};
-  winePkg = pkgs.callPackage ./wine.nix {};
-  wine = "${winePkg}/bin/wine64";
+  wine = pkgs.callPackage ./wine.nix {};
   python = pkgs.callPackage ./python.nix { inherit is32bit; };
   ev3dev2 = pkgs.callPackage ./ev3dev2-wheel.nix {};
 
   platform = if is32bit then "win32" else "win_amd64";
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "ev3sim-${platform}-requirements";
   inherit version;
 
@@ -30,7 +26,6 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
-    export WINEPREFIX=$TMPDIR/.wine
     ${wine} ${python}/python.exe -m pip wheel \
       --wheel-dir $out \
       --requirement $src \

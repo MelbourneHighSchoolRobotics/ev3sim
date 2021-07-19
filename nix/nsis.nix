@@ -7,7 +7,7 @@ let
     stripRoot = false;
   };
 in
-pkgs.nsis.overrideAttrs (old: {
+pkgs.nsis.overrideAttrs (_: {
   postBuild = ''
     cp -r ${execDos}/* $out/share/nsis
   '';
