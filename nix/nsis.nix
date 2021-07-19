@@ -6,8 +6,7 @@ let
     sha256 = "mVo9/Gn7CAMUqF2P/wP10uCqw42GSTFxD2lwdx4aMUI=";
     stripRoot = false;
   };
-in
-pkgs.nsis.overrideAttrs (_: {
+in pkgs.nsis.overrideAttrs (_: {
   postBuild = ''
     cp -r ${execDos}/* $out/share/nsis
   '';

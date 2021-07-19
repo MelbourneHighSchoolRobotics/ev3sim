@@ -1,22 +1,15 @@
 # Fetch and cache Windows wheels for requirements
-{ pkgs
-, stdenv
-, ...
-}:
+{ pkgs, stdenv, ... }:
 
-{ requirements
-, is32bit ? false
-, sha256 ? ""
-}:
+{ requirements, is32bit ? false, sha256 ? "" }:
 let
-  version = pkgs.callPackage ./version.nix {};
-  wine = pkgs.callPackage ./wine.nix {};
+  version = pkgs.callPackage ./version.nix { };
+  wine = pkgs.callPackage ./wine.nix { };
   python = pkgs.callPackage ./python.nix { inherit is32bit; };
-  ev3dev2 = pkgs.callPackage ./ev3dev2-wheel.nix {};
+  ev3dev2 = pkgs.callPackage ./ev3dev2-wheel.nix { };
 
   platform = if is32bit then "win32" else "win_amd64";
-in
-stdenv.mkDerivation {
+in stdenv.mkDerivation {
   pname = "ev3sim-${platform}-requirements";
   inherit version;
 

@@ -7,8 +7,7 @@ let
     export WINEDEBUG=-all
     # Disable looking for Gecko support
     export WINEDLLOVERRIDES="mscoree,mshtml="
-    
+
     ${wine}/bin/wine64 "$@"
   '';
-in 
-  wrapper
+in wrapper

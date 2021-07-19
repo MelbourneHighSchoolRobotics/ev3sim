@@ -1,8 +1,4 @@
-{ buildPythonPackage
-, fetchPypi
-, cffi
-, ...
-}:
+{ buildPythonPackage, fetchPypi, cffi, ... }:
 
 buildPythonPackage rec {
   pname = "pymunk";

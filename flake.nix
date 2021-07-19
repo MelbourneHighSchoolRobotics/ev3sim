@@ -8,22 +8,21 @@
   inputs.mindpile.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, unstable, mindpile }: {
-    packages.x86_64-linux =
-      with import nixpkgs { system = "x86_64-linux"; };
-      let
-        unstablePkgs = import unstable { system = "x86_64-linux"; };
-      in
-      {
+    packages.x86_64-linux = with import nixpkgs { system = "x86_64-linux"; };
+      let unstablePkgs = import unstable { system = "x86_64-linux"; };
+      in {
         pymunk = callPackage ./nix/pymunk.nix python39Packages;
         pygame-gui = callPackage ./nix/pygame-gui.nix python39Packages;
 
-        linux =
-          pkgs.python39Packages.buildPythonPackage (let
-            version = callPackage ./nix/version.nix {};
+        linux = pkgs.python39Packages.buildPythonPackage
+          (let version = callPackage ./nix/version.nix { };
           in {
             pname = "ev3sim";
             inherit version;
-            src = builtins.path { path = ./.; name = "ev3sim"; };
+            src = builtins.path {
+              path = ./.;
+              name = "ev3sim";
+            };
             propagatedBuildInputs = with pkgs.python39Packages; [
               numpy
               pygame
@@ -45,8 +44,8 @@
             '';
             doCheck = false;
           });
-        
-        windows = pkgs.callPackage ./nix/windows-installer.nix {};
+
+        windows = pkgs.callPackage ./nix/windows-installer.nix { };
       };
 
     defaultPackage.x86_64-linux = self.packages.x86_64-linux.linux;

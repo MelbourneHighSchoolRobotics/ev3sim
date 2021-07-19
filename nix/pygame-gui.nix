@@ -1,8 +1,4 @@
-{ buildPythonPackage
-, fetchPypi
-, pygame
-, ...
-}:
+{ buildPythonPackage, fetchPypi, pygame, ... }:
 
 buildPythonPackage rec {
   pname = "pygame-gui";
