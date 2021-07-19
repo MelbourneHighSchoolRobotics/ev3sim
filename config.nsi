@@ -108,7 +108,7 @@ second_ws_no_update:
 
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
-createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExeLocation" "" "$ExeLocation" 0
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExeLocation" "" "$InstDir\python_embed\Lib\site-packages\ev3sim\assets\Logo.ico" 0
 ;File Associations
 ;URL associations for custom tasks.
 WriteRegStr HKCR "ev3simc" "" "URL:ev3simc Protocol"
