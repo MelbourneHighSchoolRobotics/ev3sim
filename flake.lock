@@ -1,17 +1,35 @@
 {
   "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1623875721,
+        "narHash": "sha256-A8BU7bjS5GirpAUv4QA+QnJ4CceLHkcXdRp4xITDB0s=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "f7e004a55b120c02ecb6219596820fcd32ca8772",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "mindpile": {
       "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1625715715,
-        "narHash": "sha256-qPW9wGsmphrtWIm+dJDqUVPDTX+LORwJz4u3FJoAhpQ=",
+        "lastModified": 1626770506,
+        "narHash": "sha256-HjJUBB+jaFEaUDMQjbDYgmJUc7Lqf1SCME9yx90ulgg=",
         "owner": "MelbourneHighSchoolRobotics",
         "repo": "mindpile",
-        "rev": "83a2fda5f964bdc817463c93cde29bfe922c2b50",
+        "rev": "9dd0a14ee336810c2b62826afff4da8719455ba0",
         "type": "github"
       },
       "original": {
@@ -38,6 +56,7 @@
     },
     "root": {
       "inputs": {
+        "flake-utils": "flake-utils",
         "mindpile": "mindpile",
         "nixpkgs": "nixpkgs",
         "unstable": "unstable"
@@ -45,11 +64,11 @@
     },
     "unstable": {
       "locked": {
-        "lastModified": 1626611756,
-        "narHash": "sha256-8WCMsLAx/ESp8Rk4SuYQaguMyXRhTw298fw9e1D7bMc=",
+        "lastModified": 1626732200,
+        "narHash": "sha256-+S4r56of+/+jwqd44c4nXqIrLR6nXwTUIzdLan+U1Vc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "64c4e4bccebc056e0156ad7b822cdec87e29a87a",
+        "rev": "4331afb9461ed13de9c8ddbfd5dc0eaa799cb8a2",
         "type": "github"
       },
       "original": {
