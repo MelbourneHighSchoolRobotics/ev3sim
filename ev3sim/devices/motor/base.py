@@ -34,6 +34,7 @@ class MotorMixin:
         self.reset()
 
     def reset(self):
+        self.off()
         self.state = "holding"
         self.stop_action = "hold"
         self.time_sp = 0

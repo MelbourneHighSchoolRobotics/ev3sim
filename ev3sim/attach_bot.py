@@ -1,4 +1,5 @@
 import multiprocessing
+import importlib
 from os import getcwd
 from queue import Empty, Queue as NonMultiQueue
 import sys
@@ -13,6 +14,15 @@ tick_rate = 30
 current_data = {}
 last_checked_tick = -1
 communications_messages = NonMultiQueue()
+input_messages = NonMultiQueue()
+
+
+def safe_patch(mname, cname, obj):
+    try:
+        getattr(importlib.import_module(mname), cname.split(".", 1)[0])
+    except Exception as e:
+        return lambda f: f
+    return mock.patch(f"{mname}.{cname}", obj)
 
 
 def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_internal, rq, rq_internal, sq, sq_internal):
@@ -63,9 +73,15 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     tick = msg["tick"]
                     tick_rate = msg["tick_rate"]
                     current_data = msg["data"]
+                    if isinstance(current_data, str):
+                        # Not pretty but it works.
+                        e = Exception(current_data)
+                        raise e
                     for ev in msg["events"]:
                         cur_events.put(ev)
                     return msg_type, msg
+                elif msg_type == SIM_INPUT:
+                    input_messages.put((msg_type, msg))
                 else:
                     communications_messages.put((msg_type, msg))
 
@@ -106,6 +122,23 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                             wait_for_tick()
                         else:
                             return msg
+                    except Empty:
+                        wait_for_tick()
+
+            def fake_input(message=None):
+                sq.put(
+                    (
+                        MESSAGE_INPUT_REQUESTED,
+                        {
+                            "robot_id": robot_id,
+                            "message": str(message) if message is not None else None,
+                        },
+                    )
+                )
+                while True:
+                    try:
+                        _, msg = input_messages.get_nowait()
+                        return msg
                     except Empty:
                         wait_for_tick()
 
@@ -269,6 +302,8 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
 
                 def write(self, value):
                     send_q.put((DEVICE_WRITE, (f"{self.k2} {self.k3} {self.k4}", value.decode())))
+                    while self.k4 == "mode" and current_data[self.k2][self.k3][self.k4] != value.decode():
+                        wait_for_tick()
 
                 def flush(self):
                     pass
@@ -423,40 +458,48 @@ def attach_bot(robot_id, filename, fake_roots, result_queue, result_queue_intern
                     return mock.Mock()
                 return orig_import(name, *args)
 
-            @mock.patch("time.time", get_time)
-            @mock.patch("time.sleep", sleep)
-            @mock.patch("ev3dev2.motor.Motor.wait", wait)
-            @mock.patch("ev3dev2.Device.__init__", device__init__)
-            @mock.patch("ev3dev2.Device._attribute_file_open", _attribute_file_open)
-            @mock.patch("ev3dev2.button.Button", MockedButton)
-            @mock.patch("ev3sim.code_helpers.is_ev3", False)
-            @mock.patch("ev3sim.code_helpers.is_sim", True)
-            @mock.patch("ev3sim.code_helpers.robot_id", robot_id)
-            @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
-            @mock.patch("ev3sim.code_helpers.CommServer", MockedCommServer)
-            @mock.patch("ev3sim.code_helpers.CommClient", MockedCommClient)
-            @mock.patch("ev3sim.code_helpers.wait_for_tick", wait_for_tick)
-            @mock.patch("builtins.__import__", import_mock)
-            @mock.patch("ev3sim.code_helpers.CommandSystem", MockCommandSystem)
-            @mock.patch("ev3sim.code_helpers.EventSystem.handle_events", handle_events)
-            @mock.patch("sys.path", fake_path)
+            def raiseEV3Error():
+                raise ValueError(
+                    "This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/"
+                )
+
+            @safe_patch("time", "time", get_time)
+            @safe_patch("time", "sleep", sleep)
+            @safe_patch("ev3dev2.motor", "Motor.wait", wait)
+            @safe_patch("ev3dev2", "Device.__init__", device__init__)
+            @safe_patch("ev3dev2", "Device._attribute_file_open", _attribute_file_open)
+            @safe_patch("ev3dev2.button", "Button", MockedButton)
+            @safe_patch("ev3sim.code_helpers", "is_ev3", False)
+            @safe_patch("ev3sim.code_helpers", "is_sim", True)
+            @safe_patch("ev3sim.code_helpers", "robot_id", robot_id)
+            @safe_patch("ev3sim.code_helpers", "wait_for_tick", wait_for_tick)
+            @safe_patch("ev3sim.code_helpers", "CommServer", MockedCommServer)
+            @safe_patch("ev3sim.code_helpers", "CommClient", MockedCommClient)
+            @safe_patch("ev3sim.code_helpers", "wait_for_tick", wait_for_tick)
+            @safe_patch("builtins", "__import__", import_mock)
+            @safe_patch("ev3sim.code_helpers", "CommandSystem", MockCommandSystem)
+            @safe_patch("ev3sim.code_helpers", "EventSystem.handle_events", handle_events)
+            @safe_patch("sys", "path", fake_path)
+            @safe_patch("builtins", "input", fake_input)
+            # These ev3dev2 objects are not implemented in the sim.
+            @safe_patch("ev3dev2", "led", mock.Mock())
+            @safe_patch("ev3dev2.led", "Leds", mock.Mock())
+            @safe_patch("ev3dev2", "sound", mock.Mock())
+            @safe_patch("ev3dev2.sound", "Sound", mock.Mock())
+            @safe_patch("ev3dev2", "display", mock.Mock())
+            @safe_patch("ev3dev2.display", "Display", mock.Mock())
+            @safe_patch("ev3dev2", "console", mock.Mock())
+            @safe_patch("ev3dev2.console", "Console", mock.Mock())
+            # TODO: This should probably actually give reasonable values for voltage/current/amps
+            @safe_patch("ev3dev2", "power", mock.Mock())
+            @safe_patch("ev3dev2.power", "Power", mock.Mock())
+            @safe_patch("ev3dev2", "fonts", mock.Mock())
+            @safe_patch("ev3dev.core", "Device.__init__", raiseEV3Error)
             def run_script(fname):
                 from importlib.machinery import SourceFileLoader
 
                 wait_for_tick()
                 module = SourceFileLoader("__main__", fname).load_module()
-
-            try:
-                import ev3dev
-
-                def raiseEV3Error():
-                    raise ValueError(
-                        "This simulator is not compatible with ev3dev. Please use ev3dev2: https://pypi.org/project/python-ev3dev2/"
-                    )
-
-                run_script = mock.patch("ev3dev.core.Device.__init__", raiseEV3Error)(run_script)
-            except:
-                pass
 
             run_script(fname)
 

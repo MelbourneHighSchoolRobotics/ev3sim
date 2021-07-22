@@ -1,7 +1,8 @@
+import time
 from ev3sim.logging import Logger
 from ev3sim.settings import ObjectSetting, SettingsManager
 from queue import Empty
-import time
+from multiprocessing import Process
 from typing import List
 
 from ev3sim.objects.base import objectFactory
@@ -13,8 +14,7 @@ from ev3sim.visual.objects import visualFactory
 import ev3sim.visual.utils
 from ev3sim.constants import *
 from ev3sim.search_locations import bot_locations
-from ev3sim.file_helper import find_abs, find_abs_directory
-from multiprocessing import Process
+from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_directory, WorkspaceError
 
 
 class ScriptLoader:
@@ -63,10 +63,23 @@ class ScriptLoader:
             else:
                 raise ValueError("Did not expect an existing process!")
         if self.scriptnames[robot_id] is not None:
-            from os.path import join, split
+            from os.path import join, split, dirname
             from ev3sim.attach_bot import attach_bot
 
-            format_filename = join(self.scriptnames[robot_id])
+            if self.scriptnames[robot_id].endswith(".ev3"):
+                actual_script = join(dirname(self.scriptnames[robot_id]), ".compiled.py")
+                try:
+                    from mindpile import from_ev3
+
+                    with open(actual_script, "w") as f:
+                        f.write(from_ev3(self.scriptnames[robot_id], ev3sim_support=True))
+                except Exception as e:
+                    with open(actual_script, "w") as f:
+                        f.write(f'print("Mindstorms compilation failed! {e}")')
+            else:
+                actual_script = self.scriptnames[robot_id]
+
+            format_filename = join(actual_script)
             # This ensures that as long as the code sits in the bot directory, relative imports will work fine.
             possible_locations = ["workspace/robots/", "workspace", "package/examples/robots"]
             extra_dirs = []
@@ -84,7 +97,7 @@ class ScriptLoader:
                 target=attach_bot,
                 args=(
                     robot_id,
-                    self.scriptnames[robot_id],
+                    actual_script,
                     extra_dirs[::-1],
                     StateHandler.instance.shared_info["result_queue"],
                     StateHandler.instance.shared_info["result_queue"]._internal_size,
@@ -136,6 +149,8 @@ class ScriptLoader:
         self.object_map = {}
         self.physics_tick = 0
         self.current_tick = 0
+        self.input_messages = []
+        self.input_requests = []
 
     def loadElements(self, items, preview_mode=False):
         # Handle any programmatic color references.
@@ -199,6 +214,17 @@ class ScriptLoader:
                         )
                     elif write_type == MESSAGE_PRINT:
                         Logger.instance.writeMessage(data["robot_id"], data["data"], **data.get("kwargs", {}))
+
+                        class Event:
+                            pass
+
+                        event = Event()
+                        event.type = EV3SIM_PRINT
+                        event.robot_id = data["robot_id"]
+                        event.message = data["data"]
+                        ScreenObjectManager.instance.unhandled_events.append(event)
+                    elif write_type == MESSAGE_INPUT_REQUESTED:
+                        self.requestInput(data["robot_id"], data["message"])
                     elif write_type == BOT_COMMAND:
 
                         class Event:
@@ -254,6 +280,66 @@ class ScriptLoader:
         self.incrementPhysicsTick()
         self.current_tick += 1
 
+    def consumeMessage(self, message, output):
+        if isinstance(output, IInteractor):
+            output.handleInput(message)
+        else:
+            # Assumed to be robot id.
+            self.queues[output][self.SEND].put((SIM_INPUT, message))
+        # If there is a prompt being shown in console, remove it.
+        sim = ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM]
+        to_remove = []
+        for i, message in enumerate(sim.messages):
+            if message[1] == f"input_{str(output)}":
+                to_remove.append(i)
+        for index in to_remove[::-1]:
+            del sim.messages[index]
+        sim.regenerateObjects()
+
+    def postInput(self, message, preffered_output=None):
+        # First, try to grab an existing request from the queue.
+        for i, output in enumerate(self.input_requests):
+            if preffered_output is None or preffered_output == output:
+                del self.input_requests[i]
+                self.consumeMessage(message, output)
+
+                class Event:
+                    pass
+
+                event = Event()
+                event.type = EV3SIM_MESSAGE_POSTED
+                event.output = output
+                event.message = message
+                ScreenObjectManager.instance.unhandled_events.append(event)
+                break
+        else:
+            self.input_messages.append([message, preffered_output])
+
+    def requestInput(self, output, message):
+        # First, try to grab an existing message from the queue.
+        for i, (msg, out) in enumerate(self.input_messages):
+            if out is None or out == output:
+                del self.input_messages[i]
+                self.consumeMessage(msg, output)
+                break
+        else:
+            self.input_requests.append(output)
+            if message is not None:
+                preamble = "[System] " if isinstance(output, IInteractor) else f"[{output}] "
+                ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].printStyledMessage(
+                    preamble + message,
+                    alive_id=f"input_{str(output)}",
+                    push_to_front=True,
+                )
+        if len(self.input_requests) > 0:
+            ScreenObjectManager.instance.screens[ScreenObjectManager.instance.SCREEN_SIM].regenerateObjects()
+
+
+class WorkspaceSetting(ObjectSetting):
+    def on_change(self, new_value):
+        super().on_change(new_value)
+        ensure_workspace_filled(new_value)
+
 
 class StateHandler:
     """
@@ -268,6 +354,7 @@ class StateHandler:
     shared_info: dict
 
     WORKSPACE_FOLDER = None
+    SEND_CRASH_REPORTS = None
 
     def __init__(self):
         StateHandler.instance = self
@@ -280,7 +367,8 @@ class StateHandler:
             "tick_rate": ObjectSetting(ScriptLoader, "GAME_TICK_RATE"),
             "timescale": ObjectSetting(ScriptLoader, "TIME_SCALE"),
             "console_log": ObjectSetting(Logger, "LOG_CONSOLE"),
-            "workspace_folder": ObjectSetting(StateHandler, "WORKSPACE_FOLDER"),
+            "workspace_folder": WorkspaceSetting(StateHandler, "WORKSPACE_FOLDER"),
+            "send_crash_reports": ObjectSetting(StateHandler, "SEND_CRASH_REPORTS"),
         }
         settings.addSettingGroup("app", loader_settings)
         settings.addSettingGroup("screen", screen_settings)
@@ -302,12 +390,11 @@ class StateHandler:
         man = ScreenObjectManager()
         man.startScreen(**kwargs)
 
-    def beginSimulation(self, **kwargs):
+    def beginSimulation(self, batch, seed=None):
         self.is_simulating = True
-        from ev3sim.sim import main
+        from ev3sim.sim import start_batch
 
-        kwargs["command_line"] = False
-        main(passed_args=kwargs)
+        start_batch(batch, seed=seed)
 
     def mainLoop(self):
         last_vis_update = time.time() - 1.1 / ScriptLoader.instance.VISUAL_TICK_RATE
@@ -315,39 +402,42 @@ class StateHandler:
         total_lag_ticks = 0
         lag_printed = False
         while self.is_running:
-            new_time = time.time()
-            if self.is_simulating:
-                if (
-                    new_time - last_game_update
-                    > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
-                ):
-                    ScriptLoader.instance.simulation_tick()
+            try:
+                new_time = time.time()
+                if self.is_simulating:
                     if (
                         new_time - last_game_update
-                        > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                        > 1 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
                     ):
-                        total_lag_ticks += 1
-                    last_game_update = new_time
-                    if (
-                        ScriptLoader.instance.current_tick > 10
-                        and total_lag_ticks / ScriptLoader.instance.current_tick > 0.5
-                    ) and not lag_printed:
-                        lag_printed = True
-                        print("The simulation is currently lagging, you may want to turn down the game tick rate.")
-                try:
-                    r = self.shared_info["result_queue"].get_nowait()
-                    if r is not True:
-                        Logger.instance.reportError(r[0], r[1])
-                except Empty:
-                    pass
-            if new_time - last_vis_update > 1 / ScriptLoader.instance.VISUAL_TICK_RATE:
-                last_vis_update = new_time
-                events = ScreenObjectManager.instance.handleEvents()
-                if self.is_running:
-                    # We might've closed with those events.
-                    if self.is_simulating:
-                        ScriptLoader.instance.handleEvents(events)
-                    ScreenObjectManager.instance.applyToScreen()
+                        ScriptLoader.instance.simulation_tick()
+                        if (
+                            new_time - last_game_update
+                            > 2 / ScriptLoader.instance.GAME_TICK_RATE / ScriptLoader.instance.TIME_SCALE
+                        ):
+                            total_lag_ticks += 1
+                        last_game_update = new_time
+                        if (
+                            ScriptLoader.instance.current_tick > 10
+                            and total_lag_ticks / ScriptLoader.instance.current_tick > 0.5
+                        ) and not lag_printed:
+                            lag_printed = True
+                            print("The simulation is currently lagging, you may want to turn down the game tick rate.")
+                    try:
+                        r = self.shared_info["result_queue"].get_nowait()
+                        if r is not True:
+                            Logger.instance.reportError(r[0], r[1])
+                    except Empty:
+                        pass
+                if new_time - last_vis_update > 1 / ScriptLoader.instance.VISUAL_TICK_RATE:
+                    last_vis_update = new_time
+                    events = ScreenObjectManager.instance.handleEvents()
+                    if self.is_running:
+                        # We might've closed with those events.
+                        if self.is_simulating:
+                            ScriptLoader.instance.handleEvents(events)
+                        ScreenObjectManager.instance.applyToScreen()
+            except WorkspaceError:
+                pass
 
 
 def initialiseFromConfig(config, send_queues, recv_queues):

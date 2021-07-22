@@ -1,7 +1,7 @@
 import os.path
 from setuptools import setup
 
-REQUIRES_PYTHON = ">=3.7.0"
+REQUIRES_PYTHON = ">=3.9.0"
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -38,8 +38,8 @@ setup(
     include_package_data=True,
     install_requires=REQUIREMENTS,
     entry_points={
-        "console_scripts": [
-            "ev3sim=ev3sim.gui:main",
+        "gui_scripts": [
+            "ev3sim=ev3sim.entry:main",
         ]
     },
 )

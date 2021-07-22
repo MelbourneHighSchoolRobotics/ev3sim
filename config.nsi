@@ -2,38 +2,20 @@
 ;Includes
 !include MUI2.nsh
 !include "FileAssociation.nsh"
-RequestExecutionLevel admin
 
 ;---------------------------------
 ;About
 Name "EV3Sim"
-OutFile "one_click.exe"
+OutFile "installer.exe"
 Unicode true
 InstallDirRegKey HKCU "Software\EV3Sim" ""
-Var IsAdminMode
-!macro SetAdminMode
-StrCpy $IsAdminMode 1
-SetShellVarContext All
-${IfThen} $InstDir == "" ${|} StrCpy $InstDir "$Programfiles\$(^Name)" ${|}
-!macroend
-!macro SetUserMode
-StrCpy $IsAdminMode 0
-SetShellVarContext Current
-${IfThen} $InstDir == "" ${|} StrCpy $InstDir "$LocalAppData\Programs\$(^Name)" ${|}
-!macroend
+
+Var ExeLocation
 
 Function .onInit
-UserInfo::GetAccountType
-Pop $0
-${IfThen} $0 != "Admin" ${|} Goto setmode_currentuser ${|}
-
-!insertmacro SetAdminMode
-Goto finalize_mode
-
-setmode_currentuser:
-!insertmacro SetUserMode
-
-finalize_mode:
+StrCpy $InstDir "$LocalAppData\$(^Name)"
+StrCpy $ExeLocation "$InstDir\python_embed\Scripts\ev3sim.exe"
+SetShellVarContext Current
 FunctionEnd 
 
 ;---------------------------------
@@ -50,6 +32,8 @@ FunctionEnd
 !define MUI_PAGE_HEADER_TEXT "EV3Sim"
 !define MUI_PAGE_HEADER_SUBTEXT "Robotics Simulator"
 
+!define MUI_DIRECTORYPAGE_VARIABLE $InstDir
+
 !define MUI_WELCOMEPAGE_TITLE "Welcome to EV3Sim!"
 !define MUI_WELCOMEPAGE_TEXT "You'll need to select a few options before you can get started with ev3sim."
 
@@ -59,7 +43,7 @@ FunctionEnd
 !define MUI_INSTFILESPAGE_ABORTHEADER_TEXT "Installation Aborted."
 
 !define MUI_FINISHPAGE_TITLE "All Done!"
-!define MUI_FINISHPAGE_RUN "$INSTDIR\ev3sim.exe"
+!define MUI_FINISHPAGE_RUN "$ExeLocation"
 !define MUI_FINISHPAGE_SHOWREADME "https://ev3sim.mhsrobotics.club/"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Go to documentation."
@@ -84,27 +68,65 @@ FunctionEnd
 ;---------------------------------
 ;Sections
 Section "Dummy Section" SecDummy
-SetOutPath "$INSTDIR"
-File /nonfatal /a /r "dist\ev3sim\"
-WriteRegStr HKCU "Software\EV3Sim" "" $INSTDIR
-IfFileExists "$INSTDIR\ev3sim\user_config.yaml" update
-;Generate the default user config if not in update.
-CopyFiles "$INSTDIR\ev3sim\presets\default_config.yaml" "$INSTDIR\ev3sim\user_config.yaml"
+; Remove previous installation
+IfFileExists "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" update no_update
 update:
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml" "$InstDir\default_config.yaml"
+IfFileExists "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace" ws_update ws_no_update
+ws_update:
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace" "$InstDir\workspace"
+ws_no_update:
+no_update:
+RMDir /r "$InstDir\python_embed"
+SetOutPath "$InstDir"
+File /nonfatal /a /r "dist\"
+WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
+
+;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
+;To use test.pypi: '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1'
+ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' "" "$InstDir\pip.log"
+Pop $0
+StrCmp "0" $0 fine
+
+MessageBox MB_OK "Installation failed, check '$InstDir\pip.log'"
+Quit
+
+fine:
+
+;Do user_config stuff
+IfFileExists "$InstDir\default_config.yaml" second_update
+CopyFiles "$InstDir\python_embed\Lib\site-packages\ev3sim\presets\default_config.yaml" "$InstDir\default_config.yaml"
+second_update:
+CopyFiles "$InstDir\default_config.yaml" "$InstDir\python_embed\Lib\site-packages\ev3sim\user_config.yaml"
+
+IfFileExists "$InstDir\workspace" second_ws_update second_ws_no_update
+
+second_ws_update:
+CopyFiles "$InstDir\workspace" "$InstDir\python_embed\Lib\site-packages\ev3sim\workspace"
+RMDir /r /REBOOTOK "$InstDir\workspace"
+second_ws_no_update:
+
 ;Start Menu
 createDirectory "$SMPROGRAMS\MHS_Robotics"
-createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$INSTDIR\ev3sim.exe" "" "$INSTDIR\ev3sim.exe" 0
+createShortCut "$SMPROGRAMS\MHS_Robotics\EV3Sim.lnk" "$ExeLocation" "" "$ExeLocation" 0
 ;File Associations
+;URL associations for custom tasks.
+WriteRegStr HKCR "ev3simc" "" "URL:ev3simc Protocol"
+WriteRegStr HKCR "ev3simc" "URL Protocol" ""
+WriteRegStr HKCR "ev3simc\shell" "" ""
+WriteRegStr HKCR "ev3simc\DefaultIcon" "" "$ExeLocation,0"
+WriteRegStr HKCR "ev3simc\shell\open" "" ""
+WriteRegStr HKCR "ev3simc\shell\open\command" "" '"$ExeLocation" "%l" --custom-url'
 ;Open sims by default.
-${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
-${registerExtensionEdit} "$INSTDIR\ev3sim.exe" ".sim" "ev3sim.sim_file"
+${registerExtensionOpen} "$ExeLocation" ".sim" "ev3sim.sim_file"
+${registerExtensionEdit} "$ExeLocation" ".sim" "ev3sim.sim_file"
 ;Open bots by default.
-${registerExtensionOpen} "$INSTDIR\ev3sim.exe" ".bot" "ev3sim.bot_file"
+${registerExtensionOpen} "$ExeLocation" ".bot" "ev3sim.bot_file"
 ;Create uninstaller
-WriteUninstaller "$INSTDIR\Uninstall.exe"
+WriteUninstaller "$InstDir\Uninstall.exe"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "DisplayName" "EV3Sim - Robotics Simulator"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "QuietUninstallString" "$\"$INSTDIR\Uninstall.exe$\" /S"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "UninstallString" "$\"$InstDir\Uninstall.exe$\""
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim" "QuietUninstallString" "$\"$InstDir\Uninstall.exe$\" /S"
 SectionEnd
 
 ;---------------------------------
@@ -122,8 +144,8 @@ LangString DESC_SecDummy ${LANG_ENGLISH} "A test section."
 ;Uninstaller Section
 
 Section "Uninstall"
-Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
-RMDir /R /REBOOTOK "$INSTDIR"
+Delete /REBOOTOK "$InstDir\Uninstall.exe"
+RMDir /R /REBOOTOK "$InstDir"
 DeleteRegKey /ifempty HKCU "Software\EV3Sim"
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\EV3Sim"
 ;File Associations

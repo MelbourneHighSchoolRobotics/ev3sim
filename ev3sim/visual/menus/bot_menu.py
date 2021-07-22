@@ -119,6 +119,8 @@ class BotMenu(BaseMenu):
             min(preview_size[1], (preview_size[0] * 3) // 4),
         )
         try:
+            if self.bot_index >= len(self.available_bots):
+                self.bot_index = -1
             if self.bot_index == -1:
                 image = pygame.Surface(preview_size)
                 image.fill(pygame.Color(self.bg.background_colour))
@@ -148,39 +150,37 @@ class BotMenu(BaseMenu):
         self._all_objs.append(self.preview_image)
 
         if len(self.bot_keys) == 0:
-            folder_size = preview_size[0] * 0.4, preview_size[1] * 0.4
-            folder_button_pos = (
-                self._size[0] * 0.9 - folder_size[0] - 10,
+            code_size = preview_size[0] * 0.4, preview_size[1] * 0.4
+            code_button_pos = (
+                self._size[0] * 0.9 - code_size[0] - 10,
                 self._size[1] * 0.1 + preview_size[1] + 10,
             )
-            folder_icon_size = folder_size[1] * 0.6, folder_size[1] * 0.6
-            self.folder_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(*folder_button_pos, *folder_size),
+            code_icon_size = code_size[1] * 0.6, code_size[1] * 0.6
+            self.code_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(*code_button_pos, *code_size),
                 text="",
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("bot-folder", "settings_buttons"),
+                object_id=pygame_gui.core.ObjectID("bot-code", "settings_buttons"),
             )
-            self.addButtonEvent("bot-folder", self.clickFolder)
-            if not self.folder_enable:
-                self.folder_button.disable()
-            folder_icon_path = find_abs("ui/folder_white.png", allowed_areas=asset_locations())
-            self.folder_icon = pygame_gui.elements.UIImage(
-                relative_rect=pygame.Rect(
-                    *self.iconPos(folder_button_pos, folder_size, folder_icon_size), *folder_icon_size
-                ),
-                image_surface=pygame.image.load(folder_icon_path),
+            self.addButtonEvent("bot-code", self.clickCode)
+            if not self.code_enable:
+                self.code_button.disable()
+            code_icon_path = find_abs("ui/code.png", allowed_areas=asset_locations())
+            self.code_icon = pygame_gui.elements.UIImage(
+                relative_rect=pygame.Rect(*self.iconPos(code_button_pos, code_size, code_icon_size), *code_icon_size),
+                image_surface=pygame.image.load(code_icon_path),
                 manager=self,
-                object_id=pygame_gui.core.ObjectID("settings-icon"),
+                object_id=pygame_gui.core.ObjectID("code-icon"),
             )
-            self._all_objs.append(self.folder_button)
-            self._all_objs.append(self.folder_icon)
+            self._all_objs.append(self.code_button)
+            self._all_objs.append(self.code_icon)
 
             edit_button_pos = (
                 self._size[0] * 0.9 - preview_size[0],
                 self._size[1] * 0.1 + preview_size[1] + 10,
             )
             self.edit_button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(*edit_button_pos, *folder_size),
+                relative_rect=pygame.Rect(*edit_button_pos, *code_size),
                 text="",
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("bot-edit", "settings_buttons"),
@@ -190,9 +190,7 @@ class BotMenu(BaseMenu):
                 self.edit_button.disable()
             edit_icon_path = find_abs("ui/edit.png", allowed_areas=asset_locations())
             self.edit_icon = pygame_gui.elements.UIImage(
-                relative_rect=pygame.Rect(
-                    *self.iconPos(edit_button_pos, folder_size, folder_icon_size), *folder_icon_size
-                ),
+                relative_rect=pygame.Rect(*self.iconPos(edit_button_pos, code_size, code_icon_size), *code_icon_size),
                 image_surface=pygame.image.load(edit_icon_path),
                 manager=self,
                 object_id=pygame_gui.core.ObjectID("edit-icon"),
@@ -368,7 +366,7 @@ class BotMenu(BaseMenu):
             self.preview_images = [None] * len(self.bot_keys)
         self.bot_select_index = 0
         self.select_enable = False
-        self.folder_enable = False
+        self.code_enable = False
         self.edit_enable = False
         self.remove_enable = False
         self.bot_index = -1
@@ -390,17 +388,27 @@ class BotMenu(BaseMenu):
 
         ScreenObjectManager.instance.screens[ScreenObjectManager.SCREEN_BOT_EDIT].clearEvents()
 
-    def clickFolder(self):
-        # No more renaming.
-        import platform
-        import subprocess
+    def clickCode(self):
+        from ev3sim.utils import open_file, APP_VSCODE, APP_MINDSTORMS
 
-        if platform.system() == "Windows":
-            subprocess.Popen(["explorer", "/select,", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
+        # Shouldn't happen but lets be safe.
+        if self.bot_index == -1:
+            return
+        with open(os.path.join(self.available_bots[self.bot_index][1], "config.bot")) as f:
+            conf = yaml.safe_load(f)
+
+        if conf.get("type", "python") == "mindstorms":
+            script_location = conf.get("script", "program.ev3")
+
+            open_file(os.path.join(self.available_bots[self.bot_index][1], script_location), APP_MINDSTORMS)
         else:
-            subprocess.Popen(["xdg-open", os.path.join(self.available_bots[self.bot_index][1], "code.py")])
+            script_location = conf.get("script", "code.py")
+
+            open_file(
+                os.path.join(self.available_bots[self.bot_index][1], script_location),
+                APP_VSCODE,
+                folder=os.path.join(find_abs_directory("workspace")),
+            )
 
     def clickSelect(self):
         # Shouldn't happen but lets be safe.
@@ -454,12 +462,12 @@ class BotMenu(BaseMenu):
             elif event.key in [pygame.K_UP, pygame.K_s]:
                 self.incrementBotIndex(-1)
             elif event.key == pygame.K_RETURN:
-                self.clickFolder()
+                self.clickCode()
 
     def setBotIndex(self, new_index):
         self.bot_index = new_index
         if len(self.bot_keys) == 0:
-            self.folder_enable = new_index != -1
+            self.code_enable = new_index != -1
             self.edit_enable = new_index != -1
             self.remove_enable = new_index != -1 and not self.available_bots[new_index][2].startswith("package")
         else:

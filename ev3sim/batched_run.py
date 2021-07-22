@@ -32,10 +32,9 @@ def simulate(batch_file, preset_filename, bot_paths, seed, override_settings, *q
     initialiseFromConfig(config, send_queues, recv_queues)
 
 
-def batched_run(batch_file, bind_addr, seed):
+def batched_run(batch_file, seed):
 
-    batch_path = find_abs(batch_file, allowed_areas=batch_locations())
-    with open(batch_path, "r") as f:
+    with open(batch_file, "r") as f:
         config = yaml.safe_load(f)
 
     bot_paths = [x for x in config["bots"]]

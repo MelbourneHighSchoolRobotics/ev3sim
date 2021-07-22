@@ -4,12 +4,19 @@ import os
 import pygame
 import pygame_gui
 import yaml
-from ev3sim.file_helper import find_abs
+from ev3sim.file_helper import find_abs, find_abs_directory
+from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
-from ev3sim.search_locations import asset_locations, batch_locations, bot_locations, config_locations, preset_locations
 import ev3sim.visual.animation_utils as utils
-
+from ev3sim.search_locations import (
+    asset_locations,
+    batch_locations,
+    bot_locations,
+    code_locations,
+    config_locations,
+    preset_locations,
+)
 
 class MainMenu(BaseMenu):
 
@@ -19,7 +26,9 @@ class MainMenu(BaseMenu):
     def buttonPos(self, i):
         return (
             (self._size[0] - self.button_size[0]) / 2,
-            (self._size[1] - self.button_size[1]) / 2 + self.button_size[1] * (1.5 * i - 2) + 50,
+            (self._size[1] - self.button_size[1]) / 2
+            + self.button_size[1] * (1.5 * i - (2.5 if self.show_custom else 2))
+            + 50,
         )
 
     def playSim(self, preset):
@@ -37,6 +46,21 @@ class MainMenu(BaseMenu):
                     bot_config = yaml.safe_load(f)
                 if not BotValidator.validate_json(bot_config):
                     to_remove.append(index)
+                if bot_config.get("type", "python") == "python":
+                    fname = bot_config.get("script", "code.py")
+                else:
+                    fname = bot_config.get("script", "program.ev3")
+                if not os.path.exists(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname)):
+
+                    def action():
+                        with open(os.path.join(find_abs(sim_config["bots"][index], bot_locations()), fname), "w") as f:
+                            f.write("# Put your code here!\n")
+
+                    ScreenObjectManager.instance.forceCloseError(
+                        f"Your bot {sim_config['bots'][index]} does not contain the file {fname}. You may have renamed or deleted it by accident. In order to use this bot, you need to add this file back. Click \"Add {fname}\" to create this file, or do it manually.",
+                        (f"Add {fname}", action),
+                    )
+                    return
             except:
                 to_remove.append(index)
         if to_remove:
@@ -66,6 +90,20 @@ class MainMenu(BaseMenu):
     def generateObjects(self):
         from ev3sim.visual.manager import ScreenObjectManager
 
+        self.show_custom = False
+        # First, check if there are any valid batches in the custom folder.
+        for rel_dir in batch_locations():
+            # Only consider custom sims.
+            if not rel_dir.startswith("workspace/custom/"):
+                continue
+            try:
+                actual_dir = find_abs_directory(rel_dir)
+            except:
+                continue
+            for _ in BatchValidator.all_valid_in_dir(actual_dir):
+                self.show_custom = True
+                break
+
         # In order to respect theme changes, objects must be built in initWithKwargs
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
@@ -84,7 +122,9 @@ class MainMenu(BaseMenu):
         self.title.set_position(((self._size[0] - self.title.rect.width) / 2, 50))
         self._all_objs.append(self.title)
 
-        self.button_size = self._size[0] / 4, self._size[1] / 8
+        self.button_size = (
+            (self._size[0] / 4, self._size[1] / 10) if self.show_custom else (self._size[0] / 4, self._size[1] / 8)
+        )
         settings_size = self.button_size[0] * 0.3, self.button_size[1]
         bot_size = settings_size
         settings_icon_size = settings_size[1] * 0.6, settings_size[1] * 0.6
@@ -186,8 +226,18 @@ class MainMenu(BaseMenu):
         self._all_objs.append(self.rescue_bot_button)
         self._all_objs.append(self.rescue_bot_icon)
 
+        if self.show_custom:
+            self.custom_button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
+                text="Custom",
+                manager=self,
+                object_id=pygame_gui.core.ObjectID("custom_button", "menu_button"),
+            )
+            self.addButtonEvent("custom_button", self.clickCustom)
+            self._all_objs.append(self.custom_button)
+
         self.bot_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(*self.buttonPos(2), *self.button_size),
+            relative_rect=pygame.Rect(*self.buttonPos(3 if self.show_custom else 2), *self.button_size),
             text="Bots",
             manager=self,
             object_id=pygame_gui.core.ObjectID("bots_button", "menu_button"),
@@ -199,7 +249,7 @@ class MainMenu(BaseMenu):
         self._all_objs.append(self.bot_button)
 
         self.settings_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(*self.buttonPos(3), *self.button_size),
+            relative_rect=pygame.Rect(*self.buttonPos(4 if self.show_custom else 3), *self.button_size),
             text="Settings",
             manager=self,
             object_id=pygame_gui.core.ObjectID("main_settings_button", "menu_button"),
@@ -277,6 +327,9 @@ class MainMenu(BaseMenu):
             ScreenObjectManager.SCREEN_BOTS,
             batch_file=sim_path,
         )
+
+    def clickCustom(self):
+        ScreenObjectManager.instance.pushScreen(ScreenObjectManager.SCREEN_BATCH)
 
     def draw_ui(self, window_surface: pygame.surface.Surface):
         super().draw_ui(window_surface)

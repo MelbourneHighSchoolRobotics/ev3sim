@@ -18,8 +18,8 @@ class ScreenObjectManager:
     SCREEN_MENU = "MAIN_MENU"
     SCREEN_SIM = "SIMULATOR"
     SCREEN_BOTS = "BOT_SELECT"
+    SCREEN_BATCH = "BATCH_SELECT"
     SCREEN_SETTINGS = "SETTINGS"
-    SCREEN_WORKSPACE = "WORKSPACE"
     SCREEN_UPDATE = "UPDATE"
     SCREEN_BOT_EDIT = "BOT_EDIT"
     SCREEN_RESCUE_EDIT = "RESCUE_EDIT"
@@ -83,10 +83,6 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.update_dialog import UpdateMenu
 
         self.screens[self.SCREEN_UPDATE] = UpdateMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        # Workspace select dialog
-        from ev3sim.visual.menus.workspace_menu import WorkspaceMenu
-
-        self.screens[self.SCREEN_WORKSPACE] = WorkspaceMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Menu screen
         from ev3sim.visual.menus.main import MainMenu
 
@@ -99,6 +95,10 @@ class ScreenObjectManager:
         from ev3sim.visual.menus.bot_edit import BotEditMenu
 
         self.screens[self.SCREEN_BOT_EDIT] = BotEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        # Batch screen
+        from ev3sim.visual.menus.batch_select import BatchMenu
+
+        self.screens[self.SCREEN_BATCH] = BatchMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         # Simulator screen
         from ev3sim.visual.menus.sim_menu import SimulatorMenu
 
@@ -113,7 +113,7 @@ class ScreenObjectManager:
         self.screens[self.SCREEN_RESCUE_EDIT] = RescueMapEditMenu((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
     def pushScreen(self, screenString, **kwargs):
-        if len(self.screen_stack) == 0:
+        if len(self.screen_stack) == 0 and screenString == self.SCREEN_SIM:
             from ev3sim.simulation.loader import StateHandler
 
             StateHandler.instance.is_running = True
@@ -132,16 +132,43 @@ class ScreenObjectManager:
         else:
             self.screens[self.screen_stack[-1]].regenerateObjects()
 
-    def startScreen(self, push_screen=None, push_kwargs={}):
+    def forceCloseError(self, errorInfo, errorButton=None):
+        # We hit some error which is either unexpected or expected.
+        # In either case remove all previous windows, give them the option to fix (highlight the user_config file for example)
+        # And then close.
+        self.screen_stack = []
+        if errorButton is not None:
+            self.pushScreen(
+                self.SCREEN_UPDATE,
+                panels=[
+                    {
+                        "text": errorInfo,
+                        "type": "boolean",
+                        "button_yes": errorButton[0],
+                        "button_no": "Close",
+                        "action": lambda v: v and errorButton[1](),
+                    }
+                ],
+            )
+        else:
+            self.pushScreen(
+                self.SCREEN_UPDATE,
+                panels=[
+                    {
+                        "text": errorInfo,
+                        "type": "accept",
+                        "button": "Close",
+                    }
+                ],
+            )
+
+    def startScreen(self, push_screens=None, push_kwargss={}):
         from ev3sim import __version__ as version
         from ev3sim.file_helper import find_abs
-        from ev3sim.simulation.loader import StateHandler
 
         pygame.init()
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.RESIZABLE)
         caption = f"ev3sim: MHS Robotics Club Simulator - version {version}"
-        if ScreenObjectManager.NEW_VERSION:
-            caption = f"[NEW VERSION AVAILABLE] {caption}"
         pygame.display.set_caption(caption)
         img_path = find_abs("Logo.png", allowed_areas=["package/assets/"])
         img = pygame.image.load(img_path)
@@ -149,13 +176,10 @@ class ScreenObjectManager:
         pygame.display.set_icon(img)
 
         self.initScreens()
-        if push_screen is not None:
-            self.pushScreen(push_screen, **push_kwargs)
-        else:
-            if not StateHandler.WORKSPACE_FOLDER:
-                self.pushScreen(self.SCREEN_WORKSPACE)
-            else:
-                self.pushScreen(self.SCREEN_MENU)
+        for screen, kwargs in zip(push_screens, push_kwargss):
+            self.pushScreen(screen, **kwargs)
+        if not push_screens:
+            self.pushScreen(self.SCREEN_MENU)
 
     def registerVisual(
         self, obj: "visual.objects.IVisualElement", key, kill_time=None, overwrite_key=False

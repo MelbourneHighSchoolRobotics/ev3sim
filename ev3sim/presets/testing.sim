@@ -1,0 +1,3 @@
+bots:
+- default_testing
+preset_file: soccer.yaml

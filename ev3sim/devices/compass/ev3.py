@@ -69,7 +69,7 @@ class CompassSensor(CompassSensorMixin, Device):
                 Randomiser.getPortRandom(self._interactor.port_key),
             )
         else:
-            self.dist = CompassValueDistributionNoRandom(0, 360, self.NEAREST_POINTS_NUMBER)
+            self.dist = CompassValueDistributionNoRandom(0, 360, 360)
         self.current_offset = 0
         self.device_y_offset = self.NOISE_Y_OFFSET_MAX * self._interactor.random()
         self.noise_tick = 0
@@ -78,15 +78,18 @@ class CompassSensor(CompassSensorMixin, Device):
         self.calibrate()
 
     def _calc(self):
-        noise = self.noise.noise2d(
-            x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset
-        )
-        self.current_offset += noise * self.NOISE_AMPLIFIER
-        self.current_offset = min(max(self.current_offset, -self.NOISE_EFFECT_MAX), self.NOISE_EFFECT_MAX)
-        self.noise_tick += 1
-        add_offset = self.dist.get_closest(self._getValue()) + self.current_offset
-        add_offset %= 360
-        self._value = int(add_offset)
+        if ScriptLoader.RANDOMISE_SENSORS:
+            noise = self.noise.noise2d(
+                x=self.noise_tick * self.NOISE_WIDTH_PER_TICK, y=self.current_sample_point + self.device_y_offset
+            )
+            self.current_offset += noise * self.NOISE_AMPLIFIER
+            self.current_offset = min(max(self.current_offset, -self.NOISE_EFFECT_MAX), self.NOISE_EFFECT_MAX)
+            self.noise_tick += 1
+            add_offset = self.dist.get_closest(self._getValue()) + self.current_offset
+            add_offset %= 360
+            self._value = int(add_offset)
+        else:
+            self._value = int(self.dist.get_closest(self._getValue()))
 
     def value(self):
         """
@@ -116,4 +119,8 @@ class CompassSensor(CompassSensorMixin, Device):
         """
         self._setRelative()
         self.current_offset = 0
-        self.current_sample_point = Randomiser.random() * self.NOISE_SAMPLE_HEIGHT
+        if ScriptLoader.RANDOMISE_SENSORS:
+            self.current_sample_point = Randomiser.random() * self.NOISE_SAMPLE_HEIGHT
+
+    def reset(self):
+        self.calibrate()

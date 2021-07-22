@@ -29,7 +29,9 @@ visual_settings = [
         "objects": [
             TextEntry(["settings", "soccer", "TEAM_NAME_1"], "Team 1", "Team 1 Name", (lambda s: (0, 20))),
             TextEntry(["settings", "soccer", "TEAM_NAME_2"], "Team 2", "Team 2 Name", (lambda s: (0, 70))),
-            NumberEntry(["settings", "soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120))),
+            NumberEntry(
+                ["settings", "soccer", "GAME_HALF_LENGTH_MINUTES"], 5, "Halftime (m)", (lambda s: (0, 120)), float
+            ),
         ],
     },
     {
@@ -47,12 +49,14 @@ visual_settings = [
                 30,
                 "Bot out penalty",
                 (lambda s: (0, 120) if s[0] < 540 else (0, 70)),
+                float,
             ),
             NumberEntry(
                 ["settings", "soccer", "BALL_RESET_WHITE_DELAY_SECONDS"],
                 5,
                 "Ball reset delay",
                 (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+                float,
             ),
         ],
     },

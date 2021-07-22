@@ -1,8 +1,10 @@
-Bot editing
+The basics
 ===========
 
+Now that we've got EV3Sim installed, we can try out a few of the features EV3Sim has on offer.
+
 EV3Sim allows you to design, test and simulate your own bots, all through the application!
-The only thing you'll want an external program for is writing the code to be run on your bot.
+The only thing you'll need an external program for is writing the program to be run on your bot.
 
 Designing a bot
 ---------------
@@ -12,8 +14,6 @@ If you want to change the design of an existing bot, you can select that bot and
 .. image:: images/bot_menu_edit.png
   :width: 600
   :alt: The bot select screen highlighting the new and edit buttons.
-
-If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Open`` to edit the bot.
 
 If you are creating a new bot, you'll be prompted to pick a baseplate for the bot.
 The baseplate is the object that all other components of your robot will rest on. This can be a circle, a regular polygon, or a rectangle.
@@ -78,20 +78,57 @@ Just as before, enter the selecting mode and select the element.
 On the left sidebar, a 'Remove' button should appear, you can press this to delete the element.
 Additionally, the backspace key should also remove the element.
 
+Saving the bot
+--------------
+
+After you are happy with the components on you bot, you click the Create/Save button on the bottom right.
+If you are creating a robot, this will first prompt you for:
+
+* The programming language this bot will use (Mindstorms or Python)
+* The name of the robot (This must be a valid filename)
+
 Adding code to a bot
 --------------------
 
-Designing a good bot also includes designing code to run! You can specify the code location for a specific bot by selecting it in the bot menu and pressing the settings cog.
+After creating your bot, you can press the code icon on the right of the bot menu to edit the code it will run.
+If on windows, this will try to detect VSCode / Mindstorms and open it accordingly. Otherwise it will focus the code in a file explorer window.
 
-If you have the windows one click install, you can also find your bot in ``workspace/robots`` and right click, select ``Edit`` to go to the same window.
-
-.. image:: images/bot_menu_settings.png
+.. image:: images/open_code.png
   :width: 600
-  :alt: The bot menu screen, showing the bot properties cog.
+  :alt: The button for opening a bot's program.
 
-Then press the button next to 'Bot script' to open the file selector. 
-All code you want to run on your bot should be located in the ``code`` folder of your workspace!
+Using your bot
+--------------
 
-.. image:: images/bot_edit_code.png
+Provided you've now created a bot, you can start using it in simulations be going back to the main menu with the Escape button.
+From here, select the robot icon next to Soccer.
+
+.. image:: images/bot_select.png
   :width: 600
-  :alt: The bot property editing screen, showing the code location button.
+  :alt: The bot selection screen for a simulation.
+
+Now, your bot should show up in the list on the left, click it, then click Select. Finally, click done. This should take you back to the main menu.
+
+From here, you can press "Soccer" to simulate with your robot!
+
+Changing the simulation
+-----------------------
+
+When you opened the soccer simulation, you might have noticed that certain rules were enforced, such as halftimes of 5 minutes, and robots being penalised for venturing past the white line.
+To change this, we can press the cog icon on the main menu:
+
+.. image:: images/cog_main.png
+  :width: 600
+  :alt: The soccer settings button.
+
+After pressing "Soccer" again, you should notice the changes taking effect.
+
+EV3Sim settings
+---------------
+
+Lastly, there are some general settings available for ev3sim, such as the FPS, Default screen width and height, as well as disabling/enabling the console in simulation:
+
+
+.. image:: images/settings_main.png
+  :width: 600
+  :alt: The main settings menu of EV3Sim.
