@@ -16,13 +16,8 @@
         unstablePkgs = unstable.legacyPackages.${system};
       in rec {
         packages = {
-          pymunk = pkgs.callPackage ./nix/pymunk.nix pkgs.python39Packages;
-          pygame-gui =
-            pkgs.callPackage ./nix/pygame-gui.nix pkgs.python39Packages;
-
           linux = pkgs.callPackage ./nix/linux.nix {
-            inherit (unstablePkgs.python39Packages) ev3dev2 opensimplex;
-            inherit (packages) pymunk pygame-gui;
+            inherit (unstablePkgs.python39Packages) ev3dev2 opensimplex pymunk pygame pygame-gui;
             mindpile = mindpile.legacyPackages.${system}.mindpile;
           };
 
