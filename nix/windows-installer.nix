@@ -11,12 +11,12 @@ let
   python64Deps = fetchRequirements {
     inherit requirements;
     is32bit = false;
-    sha256 = "sha256-uixtPHJMs0Dxn+DgnxQ8NQJYkPmTadg0ZiXnUBjmCto=";
+    sha256 = "sha256-g7z8bQw7fs6sl3pDlzDClf9k7G3yohSqEivoWSLeG7o=";
   };
   python32Deps = fetchRequirements {
     inherit requirements;
     is32bit = true;
-    sha256 = "sha256-XqSAK1Uy2SxN4EL08xNmEEDccJUcivQDoQIEJ2dfi8w=";
+    sha256 = "sha256-2Ln1C4nf3WSa2QZ/BAAoYI9tnRK/iL661ha1hIM/EO8=";
   };
 in stdenv.mkDerivation {
   pname = "ev3sim-windows-installer";

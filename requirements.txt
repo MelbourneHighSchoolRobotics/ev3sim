@@ -1,3 +1,4 @@
+# Changing dependencies here will need the hash to be updated in nix/windows-installer.nix!
 # We need 1.19.3 for some windows installations.
 # https://github.com/numpy/numpy/wiki/FMod-Bug-on-Windows
 numpy==1.19.3
