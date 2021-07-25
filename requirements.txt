@@ -2,7 +2,7 @@
 # https://github.com/numpy/numpy/wiki/FMod-Bug-on-Windows
 numpy==1.19.3
 pygame==2.0.1
-PyYAML==5.3.1
+PyYAML==5.4
 pymunk==6.0.0
 python-ev3dev2==2.1.0.post1
 opensimplex==0.3
