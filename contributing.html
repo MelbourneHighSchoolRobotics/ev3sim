@@ -91,6 +91,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#running-locally">Running locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linting-code">Linting code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-with-nix">Building with Nix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release">Release</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -180,6 +185,38 @@ While in the top level directory, you can run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black --config pyproject.toml .
 </pre></div>
 </div>
+</section>
+<section id="building-with-nix">
+<h2>Building with Nix<a class="headerlink" href="#building-with-nix" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://nixos.org/">Nix</a> package manager can be used to create reproducible builds on Linux and Mac.</p>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>First <a class="reference external" href="https://nixos.org/download.html">install Nix</a> with experimental <a class="reference external" href="https://nixos.wiki/wiki/Flakes#Non-NixOS">Flakes</a> support.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -L https://nixos.org/nix/install <span class="p">|</span> sh
+. /home/<span class="nv">$USER</span>/.nix-profile/etc/profile.d/nix.sh
+
+nix-env -iA nixpkgs.nixUnstable
+mkdir -p ~/.config/nix
+<span class="nb">echo</span> <span class="s2">&quot;experimental-features = nix-command flakes&quot;</span> &gt;&gt; ~/.config/nix/nix.conf
+</pre></div>
+</div>
+<p>Then set up the binary cache for faster builds.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nix-env -iA cachix -f https://cachix.org/api/v1/install
+cachix use melbournehighschoolrobotics
+</pre></div>
+</div>
+</section>
+<section id="release">
+<h3>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h3>
+<p>To build installers for Windows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nix build <span class="s2">&quot;.#windows&quot;</span>
+</pre></div>
+</div>
+<p>To build for Linux:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nix build <span class="s2">&quot;.#linux&quot;</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
