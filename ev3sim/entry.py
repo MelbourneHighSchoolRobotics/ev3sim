@@ -7,7 +7,7 @@ from os.path import join, dirname, abspath, basename, isfile, sep, exists
 
 from ev3sim import __version__
 from ev3sim.file_helper import WorkspaceError, find_abs, find_abs_directory, make_relative
-from ev3sim.search_locations import bot_locations, config_locations, preset_locations
+from ev3sim.search_locations import bot_locations, config_locations, preset_locations, workspace_locations
 from ev3sim.simulation.loader import StateHandler
 from ev3sim.updates import handle_updates
 from ev3sim.utils import canUpdate
@@ -199,7 +199,7 @@ def main(passed_args=None):
         args.__dict__.update(passed_args)
 
     # Useful for a few things.
-    ev3sim_folder = dirname(abspath(__file__))
+    ev3sim_folder = find_abs_directory(config_locations())
 
     # Step 1: Handling helper commands
 
@@ -219,8 +219,18 @@ def main(passed_args=None):
     # Step 2: Safely load configs and set up error reporting
 
     try:
-        # This should always exist.
-        conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
+        try:
+            conf_file = find_abs("user_config.yaml", allowed_areas=config_locations())
+        except ValueError:
+            # Config file can't be found
+            # Can happen when this is a fresh install
+            import shutil
+
+            conf_dir = find_abs_directory(config_locations())
+            default_conf_file = find_abs("default_config.yaml", allowed_areas=["package/presets/"])
+            conf_file = join(conf_dir, "user_config.yaml")
+            shutil.copyfile(default_conf_file, conf_file)
+
         with open(conf_file, "r") as f:
             conf = yaml.safe_load(f)
 
@@ -232,7 +242,7 @@ def main(passed_args=None):
             handler.setConfig(
                 **{
                     "app": {
-                        "workspace_folder": find_abs_directory("package/workspace", create=True),
+                        "workspace_folder": find_abs_directory(workspace_locations(), create=True),
                     }
                 }
             )

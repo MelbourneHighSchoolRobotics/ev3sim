@@ -1,4 +1,4 @@
-{ pkgs, pymunk, ev3dev2, opensimplex, pygame, pygame-gui, mindpile, ... }:
+{ pkgs, mindpile, ... }:
 pkgs.python39Packages.buildPythonPackage
 (let version = pkgs.callPackage ./version.nix { };
 in {
