@@ -67,8 +67,8 @@ To build installers for Windows:
 
     nix build ".#windows"
 
-To build for Linux:
+To build for Linux and macOS:
 
 .. code-block:: bash
 
-    nix build ".#linux"
+    nix build ".#unix"

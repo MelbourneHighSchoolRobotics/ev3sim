@@ -23,9 +23,9 @@ jobs:
       with:
         name: melbournehighschoolrobotics
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-
+    
+    - run: nix build --print-build-logs ".#unix"
     - run: nix build --print-build-logs ".#windows"
-    - run: nix flake check
 
     - uses: actions/upload-artifact@v1
       with:
