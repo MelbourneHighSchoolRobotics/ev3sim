@@ -13,7 +13,8 @@ def find_platform_location(dir_type):
     """
     Attempt to find and create operating system data folders
     """
-    if platform.system() == "Linux":
+    p = platform.system()
+    if p == "Linux":
         home_dir = os.path.expanduser("~")
         if dir_type == "config":
             xdg_dir = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home_dir, ".config")
@@ -22,6 +23,10 @@ def find_platform_location(dir_type):
         ev3sim_dir = os.path.join(xdg_dir, "ev3sim")
         Path(ev3sim_dir).mkdir(parents=True, exist_ok=True)
         return ev3sim_dir
+    elif p == "Darwin":
+        directory = os.path.expanduser("~/Library/Application Support/ev3sim/" + dir_type)
+        Path(directory).mkdir(parents=True, exist_ok=True)
+        return directory
     return None
 
 
