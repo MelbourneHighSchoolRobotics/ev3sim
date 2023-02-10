@@ -16,7 +16,7 @@ Function .onInit
 StrCpy $InstDir "$LocalAppData\$(^Name)"
 StrCpy $ExeLocation "$InstDir\python_embed\Scripts\ev3sim.exe"
 SetShellVarContext Current
-FunctionEnd 
+FunctionEnd
 
 ;---------------------------------
 ;Styling
@@ -62,7 +62,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
 !insertmacro MUI_LANGUAGE "English"
 
 ;---------------------------------
@@ -83,7 +83,8 @@ File /nonfatal /a /r "dist\"
 WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
 
 ;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
-ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install -f "$InstDir\python_embed\wheels" --no-index ev3sim' "" "$InstDir\pip.log"
+;To use test.pypi: '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1'
+ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' "" "$InstDir\pip.log"
 Pop $0
 StrCmp "0" $0 fine
 
