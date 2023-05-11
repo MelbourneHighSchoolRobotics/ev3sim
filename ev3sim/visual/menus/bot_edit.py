@@ -269,7 +269,7 @@ class BotEditMenu(BaseMenu):
         # Bg
         self.sidebar = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(-5, -5, self.side_width, self._size[1] + 10),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("sidebar-bot-edit", "bot_edit_bar"),
         )
@@ -282,7 +282,7 @@ class BotEditMenu(BaseMenu):
                 self._size[0] - self.side_width + 20,
                 self.bot_height,
             ),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("botbar-bot-edit", "bot_edit_bar"),
         )

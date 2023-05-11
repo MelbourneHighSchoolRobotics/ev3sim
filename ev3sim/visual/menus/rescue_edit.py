@@ -222,7 +222,7 @@ class RescueMapEditMenu(BaseMenu):
         self.side_width = self._size[0] / 6
         self.sidebar = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(-5, -5, self.side_width, self._size[1] + 10),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("sidebar-bot-edit", "bot_edit_bar"),
         )

@@ -74,7 +74,7 @@ class SimulatorMenu(BaseMenu):
 
         self.console_bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + (30 if draw_input else 0)),
-            starting_layer_height=0.5,
+            starting_height=0.5,
             manager=self,
             object_id=ObjectID("console-bg"),
         )

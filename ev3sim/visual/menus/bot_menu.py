@@ -55,7 +55,7 @@ class BotMenu(BaseMenu):
 
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
-            starting_layer_height=-1,
+            starting_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )

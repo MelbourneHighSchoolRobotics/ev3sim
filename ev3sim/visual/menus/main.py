@@ -107,7 +107,7 @@ class MainMenu(BaseMenu):
         # In order to respect theme changes, objects must be built in initWithKwargs
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
-            starting_layer_height=-1,
+            starting_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )
