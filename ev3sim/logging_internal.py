@@ -2,7 +2,6 @@ import os
 from ev3sim.file_helper import find_abs_directory
 from ev3sim.visual.manager import ScreenObjectManager
 
-
 class Logger:
 
     LOG_CONSOLE = True

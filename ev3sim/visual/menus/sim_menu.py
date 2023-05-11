@@ -1,4 +1,4 @@
-from ev3sim.logging import Logger
+from ev3sim.logging_internal import Logger
 import pygame
 import pygame_gui
 from pygame_gui.core.ui_element import ObjectID

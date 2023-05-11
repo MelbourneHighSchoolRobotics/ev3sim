@@ -1,5 +1,5 @@
 import time
-from ev3sim.logging import Logger
+from ev3sim.logging_internal import Logger
 from ev3sim.settings import ObjectSetting, SettingsManager
 from queue import Empty
 from multiprocessing import Process
