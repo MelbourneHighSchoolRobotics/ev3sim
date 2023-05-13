@@ -11,7 +11,6 @@ STATIC_CATEGORY = 0b100
 
 
 class BaseObject:
-
     parent: "BaseObject"
 
     _position: np.ndarray
@@ -79,7 +78,6 @@ class BaseObject:
 
 
 class PhysicsObject(BaseObject):
-
     mass: float
 
     friction_coefficient: float

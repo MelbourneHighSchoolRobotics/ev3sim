@@ -19,7 +19,6 @@ from ev3sim.search_locations import (
 
 
 class MainMenu(BaseMenu):
-
     SLIDE_NUMS = 4
     SLIDE_TIME = 5
 

@@ -5,7 +5,6 @@ from ev3sim.visual.manager import ScreenObjectManager
 
 
 class SoccerUIInteractor(IInteractor):
-
     # Must occur before device interactors.
     SORT_ORDER = -10
     instance = None

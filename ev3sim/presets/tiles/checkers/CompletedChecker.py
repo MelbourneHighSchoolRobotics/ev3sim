@@ -2,7 +2,6 @@ from ev3sim.presets.tiles.checkers.RescueChecker import BaseRescueChecker
 
 
 class CompletedChecker(BaseRescueChecker):
-
     # You need 4/5 of the start and end follow points to count a tile as completed, as well as 80% of that tile.
     FOLLOW_POINT_START_END = 5
     FOLLOW_POINT_AMOUNT_REQUIRED = 4

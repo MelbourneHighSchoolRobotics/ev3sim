@@ -11,7 +11,6 @@ from ev3sim.search_locations import asset_locations, bot_locations, preset_locat
 
 
 class BotMenu(BaseMenu):
-
     bot_keys = []
 
     def iconPos(self, buttonPos, buttonSize, iconSize):

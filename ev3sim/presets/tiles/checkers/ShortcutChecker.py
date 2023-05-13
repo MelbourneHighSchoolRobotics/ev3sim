@@ -4,7 +4,6 @@ from ev3sim.presets.tiles.checkers.CompletedChecker import CompletedChecker
 
 
 class ShortcutChecker(CompletedChecker):
-
     SHORTCUT_SCORE = 5
 
     def __init__(self, *args, **kwargs):

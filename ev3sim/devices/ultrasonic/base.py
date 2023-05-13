@@ -9,7 +9,6 @@ from ev3sim.objects.base import STATIC_CATEGORY, DYNAMIC_CATEGORY
 
 
 class UltrasonicSensorMixin:
-
     MODE_DIST_CM = "US-DIST-CM"
 
     device_type = "lego-sensor"

@@ -3,7 +3,6 @@ import pygame_gui
 
 
 class BaseMenu(pygame_gui.UIManager):
-
     WINDOW_MODE_NORMAL = "normal"
     WINDOW_MODE_ERROR = "error"
     WINDOW_MODE_FILE = "file"

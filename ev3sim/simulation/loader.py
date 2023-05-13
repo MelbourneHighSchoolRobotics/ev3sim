@@ -18,7 +18,6 @@ from ev3sim.file_helper import ensure_workspace_filled, find_abs, find_abs_direc
 
 
 class ScriptLoader:
-
     SEND = 0
     RECV = 1
 

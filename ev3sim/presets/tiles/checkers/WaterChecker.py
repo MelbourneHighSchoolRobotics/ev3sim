@@ -4,7 +4,6 @@ from ev3sim.objects.utils import magnitude_sq
 
 
 class WaterChecker(CompletedChecker):
-
     COMPLETE_SCORE = 20
     MAX_WATER_VELOCITY_SQ = 100
 

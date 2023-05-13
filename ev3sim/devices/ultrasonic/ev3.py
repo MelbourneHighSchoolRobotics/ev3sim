@@ -5,7 +5,6 @@ from ev3sim.simulation.loader import ScriptLoader
 
 
 class UltrasonicInteractor(IDeviceInteractor):
-
     UPDATE_PER_SECOND = 5
 
     def tick(self, tick):

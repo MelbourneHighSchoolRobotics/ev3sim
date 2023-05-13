@@ -16,7 +16,6 @@ from ev3sim.search_locations import asset_locations
 
 
 class BotEditMenu(BaseMenu):
-
     onSave = None
 
     MODE_NORMAL = "NORMAL"
@@ -262,7 +261,6 @@ class BotEditMenu(BaseMenu):
             self.selected_index = None
 
     def generateObjects(self):
-
         self.side_width = self._size[0] / 6
         self.bot_height = self._size[1] / 6
 
@@ -1300,7 +1298,6 @@ class BotEditMenu(BaseMenu):
         )
 
     def addPortPicker(self, on_close):
-
         self.mode = self.MODE_PORT_DIALOG
 
         device_type = (
@@ -1396,7 +1393,6 @@ class BotEditMenu(BaseMenu):
         )
 
     def addDevicePicker(self):
-
         self.mode = self.MODE_DEVICE_DIALOG
 
         device_data = [

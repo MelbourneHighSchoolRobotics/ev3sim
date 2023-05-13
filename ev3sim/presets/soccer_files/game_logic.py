@@ -14,7 +14,6 @@ from ev3sim.simulation.world import World, stop_on_pause
 
 
 class SoccerLogicInteractor(IInteractor):
-
     # Must occur before device interactors.
     SORT_ORDER = -9
     instance = None

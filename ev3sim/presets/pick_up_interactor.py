@@ -8,7 +8,6 @@ from ev3sim.objects.base import DYNAMIC_CATEGORY
 
 
 class PickUpInteractor(IInteractor):
-
     # Variables for grabbing an object
     obj_grabbed = False
     obj_rel_pos = None

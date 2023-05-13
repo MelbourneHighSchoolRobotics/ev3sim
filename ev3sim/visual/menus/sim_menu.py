@@ -7,7 +7,6 @@ from ev3sim.simulation.loader import ScriptLoader, StateHandler
 
 
 class SimulatorMenu(BaseMenu):
-
     ROBOT_COLOURS = [
         "#ff006e",
         "#02c39a",
@@ -83,7 +82,6 @@ class SimulatorMenu(BaseMenu):
         if draw_input:
 
             class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
-
                 _text = ""
                 _edit_pos = 0
 

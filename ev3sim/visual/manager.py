@@ -12,7 +12,6 @@ import ev3sim.visual.utils as utils
 
 
 class ScreenObjectManager:
-
     instance: "ScreenObjectManager"
 
     SCREEN_MENU = "MAIN_MENU"

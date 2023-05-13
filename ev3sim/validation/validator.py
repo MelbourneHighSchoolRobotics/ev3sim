@@ -3,7 +3,6 @@ import yaml
 
 
 class Validator:
-
     FILE_EXT = "yaml"
     # Abstract methods
 

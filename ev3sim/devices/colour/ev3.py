@@ -6,7 +6,6 @@ from ev3sim.visual.utils import worldspace_to_screenspace
 
 
 class ColorInteractor(IDeviceInteractor):
-
     name = "COLOUR"
 
     def tick(self, tick):

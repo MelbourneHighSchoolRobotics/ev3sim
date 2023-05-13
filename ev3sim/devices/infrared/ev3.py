@@ -6,7 +6,6 @@ from ev3sim.simulation.loader import ScriptLoader
 
 
 class InfraredInteractor(IDeviceInteractor):
-
     name = "INFRARED"
 
     functional = True

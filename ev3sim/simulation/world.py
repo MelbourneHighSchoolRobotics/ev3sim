@@ -13,7 +13,6 @@ def stop_on_pause(f):
 
 
 class World:
-
     instance: "World" = None
 
     # Allow objects to collide 5mm before

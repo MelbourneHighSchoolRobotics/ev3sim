@@ -9,7 +9,6 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 class SettingsMenu(BaseMenu):
-
     onSave = None
     onCancel = None
 

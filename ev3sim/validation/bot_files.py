@@ -2,7 +2,6 @@ from ev3sim.validation.validator import Validator
 
 
 class BotValidator(Validator):
-
     FILE_EXT = "bot"
 
     REQUIRED_KEYS = ["base_plate"]

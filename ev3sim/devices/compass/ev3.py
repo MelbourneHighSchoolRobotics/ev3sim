@@ -8,7 +8,6 @@ from opensimplex import OpenSimplex
 
 
 class CompassInteractor(IDeviceInteractor):
-
     name = "COMPASS"
 
     def tick(self, tick):

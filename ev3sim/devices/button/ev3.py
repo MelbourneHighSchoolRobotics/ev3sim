@@ -8,7 +8,6 @@ from ev3sim.visual.utils import screenspace_to_worldspace
 
 
 class ButtonInteractor(IDeviceInteractor):
-
     name = "BUTTON"
 
     def handleEvent(self, event):

@@ -3,7 +3,6 @@ import numpy.random as rd
 
 
 class Randomiser:
-
     instance: "Randomiser" = None
 
     def __init__(self, seed):

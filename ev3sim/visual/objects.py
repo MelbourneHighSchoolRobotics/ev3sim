@@ -355,7 +355,6 @@ class Image(Colorable):
 
 
 class Line(Colorable):
-
     # THESE DON'T HAVE A LOCAL POSITION
 
     def initFromKwargs(self, **kwargs):
@@ -423,7 +422,6 @@ class Line(Colorable):
 
 
 class Polygon(Colorable):
-
     verts: np.array
 
     def initFromKwargs(self, **kwargs):
@@ -509,7 +507,6 @@ class Polygon(Colorable):
 
 
 class Rectangle(Polygon):
-
     width: float
     height: float
 
@@ -526,7 +523,6 @@ class Rectangle(Polygon):
 
 
 class Circle(Colorable):
-
     radius: float
 
     def initFromKwargs(self, **kwargs):
@@ -647,7 +643,6 @@ class Arc(Polygon):
 
 
 class Text(Colorable):
-
     font_style: str
     font_size: int
     _text: str

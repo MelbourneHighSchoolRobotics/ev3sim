@@ -14,7 +14,6 @@ from ev3sim.objects.utils import magnitude_sq
 
 
 class RescueMapEditMenu(BaseMenu):
-
     MODE_NORMAL = "NORMAL"
     MODE_TILE_DIALOG = "TILE_SELECT"
     MODE_CAN_DRAGGING = "CAN_DRAGGING"

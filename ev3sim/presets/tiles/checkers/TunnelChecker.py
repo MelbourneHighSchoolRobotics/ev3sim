@@ -4,7 +4,6 @@ from ev3sim.objects.utils import magnitude_sq, local_space_to_world_space
 
 
 class TunnelChecker(CompletedChecker):
-
     COMPLETE_SCORE = 20
     MAX_TUNNEL_VELOCITY_SQ = 100
 
