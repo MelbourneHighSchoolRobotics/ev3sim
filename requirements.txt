@@ -12,4 +12,4 @@ sentry-sdk==0.20.0
 debugpy==1.2.1
 python-certifi-win32==1.6
 mindpile==0.0.2
-requests==2.25.1
+requests==2.31.0
