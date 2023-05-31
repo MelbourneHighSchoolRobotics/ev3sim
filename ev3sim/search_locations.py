@@ -1,9 +1,9 @@
 preset_locations = lambda: ["workspace/presets/", "workspace", "package/presets/"]
-config_locations = lambda: ["workspace", "platform/config", "package"]
+config_locations = lambda: ["workspace", "package"]
 device_locations = lambda: ["workspace/devices/", "package/devices/"]
 theme_locations = lambda: ["workspace/assets/", "workspace", "package/assets"]
 asset_locations = lambda: ["workspace/assets/", "workspace", "package/assets/"]
-workspace_locations = lambda: ["platform/data/workspace/", "package/workspace/"]
+workspace_locations = lambda: ["package/workspace/"]
 
 
 def code_locations(bot_path):
