@@ -87,7 +87,7 @@ def find_abs(filepath, allowed_areas=None):
         else:
             raise ValueError(f"Unknown file area {area}")
         if os.path.isdir(path) or os.path.isfile(path):
-            return path
+            return os.path.abspath(path)
     if workspace_missing:
         # We got problems with workspace from user_config.
         import yaml
