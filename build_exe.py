@@ -15,6 +15,7 @@ def generalBuild(arch):
     os.makedirs("dist", exist_ok=True)
 
     insertPythonEmbed(arch)
+    insertClonedRepo()
 
     process = Popen(["makensis", "config.nsi"])
     process.wait()
@@ -24,6 +25,9 @@ def insertPythonEmbed(arch):
     if os.path.exists("dist/python_embed"):
         shutil.rmtree("dist/python_embed")
     shutil.copytree(f"python_embed-{arch}", "dist/python_embed")
+
+def insertClonedRepo():
+    shutil.copytree(f"../ev3sim_clone", "dist/ev3sim")
 
 if __name__ == "__main__":
     generalBuild(32)

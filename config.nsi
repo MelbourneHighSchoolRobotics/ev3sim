@@ -84,7 +84,7 @@ WriteRegStr HKCU "Software\EV3Sim" "" $InstDir
 
 ;Run pip install process. pythonw seems to not finish correctly, and so ev3sim doesn't get installed.
 ;To use test.pypi: '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple ev3sim==2.1.8.post1'
-ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org ev3sim' "" "$InstDir\pip.log"
+ExecDos::exec '"$InstDir\python_embed\python.exe" -m pip install $InstDir\ev3sim' "" "$InstDir\pip.log"
 Pop $0
 StrCmp "0" $0 fine
 
@@ -92,6 +92,8 @@ MessageBox MB_OK "Installation failed, check '$InstDir\pip.log'"
 Quit
 
 fine:
+;Remove the ev3sim folder
+RMDir /r /REBOOTOK "$InstDir\ev3sim"
 
 ;Do user_config stuff
 IfFileExists "$InstDir\default_config.yaml" second_update
