@@ -9,7 +9,8 @@ with open("version_file_template.txt", "r") as f:
 with open("version_file.txt", "w") as f:
     f.write(string)
 
-def generalBuild(arch): 
+
+def generalBuild(arch):
     if os.path.exists("dist"):
         shutil.rmtree("dist")
     os.makedirs("dist", exist_ok=True)
@@ -21,13 +22,16 @@ def generalBuild(arch):
     process.wait()
     shutil.move("installer.exe", f"installer-{arch}bit.exe")
 
+
 def insertPythonEmbed(arch):
     if os.path.exists("dist/python_embed"):
         shutil.rmtree("dist/python_embed")
     shutil.copytree(f"python_embed-{arch}", "dist/python_embed")
 
+
 def insertClonedRepo():
     shutil.copytree(f"../ev3sim_clone", "dist/ev3sim")
+
 
 if __name__ == "__main__":
     generalBuild(32)
