@@ -1094,10 +1094,10 @@ class BotEditMenu(BaseMenu):
                 }
             },
         }
-        self.ui_theme._load_element_colour_data_from_theme("colours", "fill_colour-button", data)
-        self.fill_img.rebuild_from_changed_theme_data()
-        self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
-        self.stroke_img.rebuild_from_changed_theme_data()
+        # self.ui_theme._load_element_colour_data_from_theme("colours", "fill_colour-button", data)
+        # self.fill_img.rebuild_from_changed_theme_data()
+        # self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
+        # self.stroke_img.rebuild_from_changed_theme_data()
 
     def addCodePicker(self):
         self.mode = self.MODE_CODE_DIALOG
