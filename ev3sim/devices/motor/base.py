@@ -8,7 +8,6 @@ from ev3sim.simulation.world import World
 
 
 class MotorMixin:
-
     THEORETICAL_MAX_FORCE = 10000
     # Possible multipliers for the theoretical maximum force.
     MIN_FORCE_PCT = 0.9

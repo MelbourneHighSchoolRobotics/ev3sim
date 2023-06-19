@@ -11,7 +11,6 @@ from ev3sim.search_locations import asset_locations, bot_locations, preset_locat
 
 
 class BotMenu(BaseMenu):
-
     bot_keys = []
 
     def iconPos(self, buttonPos, buttonSize, iconSize):
@@ -55,7 +54,7 @@ class BotMenu(BaseMenu):
 
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
-            starting_layer_height=-1,
+            starting_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )

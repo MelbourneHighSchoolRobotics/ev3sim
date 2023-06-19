@@ -17,7 +17,6 @@ from ev3sim.visual.utils import screenspace_to_worldspace
 
 
 class RescueInteractor(IInteractor):
-
     # Must occur before device interactors.
     SORT_ORDER = -10
 

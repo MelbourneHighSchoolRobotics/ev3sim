@@ -151,3 +151,6 @@ ev3sim/logs
 
 # Python embeddable with pip
 python_embed*
+
+# Local build version ignores
+ev3sim/workspace

@@ -10,7 +10,6 @@ from ev3sim.search_locations import device_locations
 
 
 class Device:
-
     device_type = "CHANGE_ME"
 
     def __init__(self, parent, relativePos, relativeRot):
@@ -47,7 +46,6 @@ class Device:
 
 
 class IDeviceInteractor(IInteractor):
-
     # Device Interactor goes before robot class to precalc.
     SORT_ORDER = -5
 

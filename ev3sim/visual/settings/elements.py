@@ -5,7 +5,6 @@ from ev3sim.search_locations import asset_locations
 
 
 class SettingsVisualElement:
-
     num_objs = 0
 
     def __init__(self, json_keys, default_value, title, offset):
@@ -42,7 +41,6 @@ class SettingsVisualElement:
 
 
 class Button(SettingsVisualElement):
-
     num_objs = 1
 
     def __init__(self, title, offset, onClick):
@@ -84,7 +82,6 @@ class Button(SettingsVisualElement):
 
 
 class FileEntry(SettingsVisualElement):
-
     num_objs = 4
 
     def __init__(self, json_keys, default_value, is_directory, relative_paths, title, offset):
@@ -265,7 +262,6 @@ class NumberEntry(TextEntry):
 
 
 class Checkbox(SettingsVisualElement):
-
     num_objs = 3
 
     def handlePressed(self, idx):

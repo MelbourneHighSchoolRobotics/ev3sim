@@ -1,5 +1,4 @@
 class ButtonMixin:
-
     device_type = "brick_button"
 
     pressed = False

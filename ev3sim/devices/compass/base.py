@@ -2,7 +2,6 @@ import numpy as np
 
 
 class CompassSensorMixin:
-
     device_type = "lego-sensor"
 
     relative = 0

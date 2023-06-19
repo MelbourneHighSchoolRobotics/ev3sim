@@ -9,7 +9,7 @@ class UpdateMenu(BaseMenu):
         # In order to respect theme changes, objects must be built in initWithKwargs
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
-            starting_layer_height=-1,
+            starting_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )
@@ -18,7 +18,7 @@ class UpdateMenu(BaseMenu):
         text_size = (self._size[0] / 2, self._size[1] / 2)
         self.text_panel = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(text_size[0] / 2, text_size[1] / 2, *text_size),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("text_background"),
         )

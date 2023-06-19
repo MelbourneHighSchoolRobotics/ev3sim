@@ -9,7 +9,6 @@ from ev3sim.visual.menus.base_menu import BaseMenu
 
 
 class SettingsMenu(BaseMenu):
-
     onSave = None
     onCancel = None
 
@@ -28,7 +27,7 @@ class SettingsMenu(BaseMenu):
             yOffset += yPadding
             container = pygame_gui.elements.UIPanel(
                 relative_rect=pygame.Rect(0, 0, *self._size),
-                starting_layer_height=-1,
+                starting_height=-1,
                 manager=self,
                 object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
             )
@@ -51,7 +50,7 @@ class SettingsMenu(BaseMenu):
 
         self.bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, *self._size),
-            starting_layer_height=-2,
+            starting_height=-2,
             manager=self,
             object_id=pygame_gui.core.ObjectID("background"),
         )
@@ -59,7 +58,7 @@ class SettingsMenu(BaseMenu):
 
         container = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(20, yOffset, self._size[0] - 40, 80),
-            starting_layer_height=-1,
+            starting_height=-1,
             manager=self,
             object_id=pygame_gui.core.ObjectID(f"{index}-bg", "settings-background"),
         )

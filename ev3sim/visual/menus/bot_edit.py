@@ -16,7 +16,6 @@ from ev3sim.search_locations import asset_locations
 
 
 class BotEditMenu(BaseMenu):
-
     onSave = None
 
     MODE_NORMAL = "NORMAL"
@@ -262,14 +261,13 @@ class BotEditMenu(BaseMenu):
             self.selected_index = None
 
     def generateObjects(self):
-
         self.side_width = self._size[0] / 6
         self.bot_height = self._size[1] / 6
 
         # Bg
         self.sidebar = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(-5, -5, self.side_width, self._size[1] + 10),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("sidebar-bot-edit", "bot_edit_bar"),
         )
@@ -282,7 +280,7 @@ class BotEditMenu(BaseMenu):
                 self._size[0] - self.side_width + 20,
                 self.bot_height,
             ),
-            starting_layer_height=-0.5,
+            starting_height=-0.5,
             manager=self,
             object_id=pygame_gui.core.ObjectID("botbar-bot-edit", "bot_edit_bar"),
         )
@@ -1096,10 +1094,10 @@ class BotEditMenu(BaseMenu):
                 }
             },
         }
-        self.ui_theme._load_element_colour_data_from_theme("colours", "fill_colour-button", data)
-        self.fill_img.rebuild_from_changed_theme_data()
-        self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
-        self.stroke_img.rebuild_from_changed_theme_data()
+        # self.ui_theme._load_element_colour_data_from_theme("colours", "fill_colour-button", data)
+        # self.fill_img.rebuild_from_changed_theme_data()
+        # self.ui_theme._load_element_colour_data_from_theme("colours", "stroke_colour-button", data)
+        # self.stroke_img.rebuild_from_changed_theme_data()
 
     def addCodePicker(self):
         self.mode = self.MODE_CODE_DIALOG
@@ -1300,7 +1298,6 @@ class BotEditMenu(BaseMenu):
         )
 
     def addPortPicker(self, on_close):
-
         self.mode = self.MODE_PORT_DIALOG
 
         device_type = (
@@ -1396,7 +1393,6 @@ class BotEditMenu(BaseMenu):
         )
 
     def addDevicePicker(self):
-
         self.mode = self.MODE_DEVICE_DIALOG
 
         device_data = [

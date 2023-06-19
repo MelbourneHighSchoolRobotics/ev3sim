@@ -1,15 +1,15 @@
 # Changing dependencies here will need the hash to be updated in nix/windows-installer.nix!
 # We need 1.19.3 for some windows installations.
 # https://github.com/numpy/numpy/wiki/FMod-Bug-on-Windows
-numpy==1.19.3
-pygame==2.0.1
-PyYAML==5.4
-pymunk==6.0.0
-python-ev3dev2==2.1.0.post1
-opensimplex==0.3
-pygame-gui==0.5.7
-sentry-sdk==0.20.0
-debugpy==1.2.1
-python-certifi-win32==1.6
-mindpile==0.0.2
-requests==2.25.1
+numpy
+pygame
+PyYAML
+pymunk
+python-ev3dev2
+opensimplex
+pygame-gui
+sentry-sdk
+debugpy
+python-certifi-win32
+mindpile
+requests

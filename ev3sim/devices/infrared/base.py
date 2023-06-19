@@ -4,7 +4,6 @@ from ev3sim.simulation.loader import ScriptLoader
 
 
 class InfraredSensorMixin:
-
     device_type = "lego-sensor"
 
     ALL_VALUES = "AC-ALL"

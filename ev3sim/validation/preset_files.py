@@ -2,7 +2,6 @@ from ev3sim.validation.validator import Validator
 
 
 class PresetValidator(Validator):
-
     REQUIRED_KEYS = ["interactors", "elements"]
     # Most of these keys are required if the preset is not "hidden".
     AVAILABLE_KEYS = REQUIRED_KEYS + [

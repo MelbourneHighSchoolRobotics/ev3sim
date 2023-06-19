@@ -3,7 +3,6 @@ from ev3sim.simulation.randomisation import Randomiser
 
 
 class ColourSensorMixin:
-
     RGB_RAW = "RGB-RAW"
     COL_REFLECT = "COL-REFLECT"
     COL_COLOR = "COL-COLOR"

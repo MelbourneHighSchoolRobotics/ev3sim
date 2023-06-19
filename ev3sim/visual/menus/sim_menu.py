@@ -1,4 +1,4 @@
-from ev3sim.logging import Logger
+from ev3sim.logging_internal import Logger
 import pygame
 import pygame_gui
 from pygame_gui.core.ui_element import ObjectID
@@ -7,7 +7,6 @@ from ev3sim.simulation.loader import ScriptLoader, StateHandler
 
 
 class SimulatorMenu(BaseMenu):
-
     ROBOT_COLOURS = [
         "#ff006e",
         "#02c39a",
@@ -74,7 +73,7 @@ class SimulatorMenu(BaseMenu):
 
         self.console_bg = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(0, 0, self._size[0] / 2, current_y + (30 if draw_input else 0)),
-            starting_layer_height=0.5,
+            starting_height=0.5,
             manager=self,
             object_id=ObjectID("console-bg"),
         )
@@ -83,7 +82,6 @@ class SimulatorMenu(BaseMenu):
         if draw_input:
 
             class WatchedUITextEntryLine(pygame_gui.elements.UITextEntryLine):
-
                 _text = ""
                 _edit_pos = 0
 

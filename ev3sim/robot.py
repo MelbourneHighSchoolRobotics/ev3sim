@@ -208,7 +208,6 @@ class Robot:
 
 
 class AngleSnapRobot(Robot):
-
     # This isn't very lenient, you still need to do most of the work.
     SNAP_ANGLES = [0, np.pi / 2, np.pi, 3 * np.pi / 2]
     ANGLE_CUTOFF = np.pi / 24

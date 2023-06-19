@@ -4,7 +4,6 @@ from ev3sim.visual.manager import ScreenObjectManager
 
 
 class Logger:
-
     LOG_CONSOLE = True
 
     instance: "Logger"

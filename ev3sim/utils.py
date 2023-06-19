@@ -113,15 +113,9 @@ def open_file(filepath, pref_app, folder=""):
                             f = os.path.join(path, fd)
                             for file in os.listdir(f):
                                 if folder:
-                                    subprocess.run(
-                                        f'start "code" "{os.path.join(f, file)}" ""{folder}" --goto "{filepath}""',
-                                        shell=True,
-                                    )
+                                    subprocess.run([os.path.join(f, file), folder, "--goto", filepath], shell="True")
                                 else:
-                                    subprocess.run(
-                                        f'start "code" "{os.path.join(f, file)}" ""{filepath}""',
-                                        shell=True,
-                                    )
+                                    subprocess.run([os.path.join(f, file), filepath], shell=True)
                                 return
                         if pref_app == APP_MINDSTORMS and "MINDSTORMS" in fd:
                             f = os.path.join(path, fd)
