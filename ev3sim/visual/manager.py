@@ -32,6 +32,7 @@ class ScreenObjectManager:
     MAP_WIDTH: float = 200
     MAP_HEIGHT: float = 200
     BACKGROUND_COLOUR = "#1f1f1f"
+    PLAY_ANIMATIONS = True
 
     _background_colour: Tuple[int]
 
@@ -392,6 +393,7 @@ screen_settings = {
         "MAP_WIDTH",
         "MAP_HEIGHT",
         "BACKGROUND_COLOUR",
+        "PLAY_ANIMATIONS",
     ]
 }
 

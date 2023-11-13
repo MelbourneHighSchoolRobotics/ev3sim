@@ -8,6 +8,7 @@ from ev3sim.file_helper import find_abs, find_abs_directory
 from ev3sim.validation.batch_files import BatchValidator
 from ev3sim.visual.menus.base_menu import BaseMenu
 from ev3sim.visual.settings.main_settings import main_settings
+import ev3sim.visual.animation_utils as utils
 from ev3sim.search_locations import (
     asset_locations,
     batch_locations,
@@ -16,7 +17,6 @@ from ev3sim.search_locations import (
     config_locations,
     preset_locations,
 )
-
 
 class MainMenu(BaseMenu):
 
@@ -339,5 +339,36 @@ class MainMenu(BaseMenu):
 
     def initWithKwargs(self, **kwargs):
         super().initWithKwargs(**kwargs)
+        self.animateProperty(
+            self.soccer_button,
+            ["position", "normal_bg", "dimensions"],
+            [
+                (self.buttonPos(0)[0] - 200, self.buttonPos(0)[1]),
+                utils.hex_to_rgb("#f00"),
+                [b / 2 for b in self.button_size],
+            ],
+            [
+                self.buttonPos(0),
+                utils.hex_to_rgb("#0ff"),
+                self.button_size,
+            ],
+            utils.CubicEaseOut,
+            2,
+        )
+        self.animateProperty(
+            self.rescue_button,
+            ["position", "normal_bg"],
+            [
+                (self.buttonPos(1)[0] - 200, self.buttonPos(1)[1]),
+                utils.hex_to_rgb("#0f0"),
+            ],
+            [
+                self.buttonPos(1),
+                utils.hex_to_rgb("#000"),
+            ],
+            utils.BackEaseIn,
+            2,
+            "follow",
+        )
         self.slide_index = 0
         self.swapSlides()

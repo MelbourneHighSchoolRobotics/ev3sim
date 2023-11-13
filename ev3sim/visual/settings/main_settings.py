@@ -14,6 +14,12 @@ main_settings = [
             ),
             NumberEntry(["app", "FPS"], 30, "FPS", (lambda s: (0, 120) if s[0] < 540 else (0, 70)), int),
             Checkbox(["app", "console_log"], True, "Console", (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70))),
+            Checkbox(
+                ["screen", "PLAY_ANIMATIONS"],
+                True,
+                "UI Animations",
+                (lambda s: (0, 170) if s[0] < 540 else (s[0] / 2, 70)),
+            ),
         ],
     },
 ]
